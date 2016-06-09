@@ -1,0 +1,46 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+        >
+    <ui:style>
+        .panel{
+            background: url("http://2.bp.blogspot.com/-x4D3EPELYRU/VMHu52a4qUI/AAAAAAAAHek/EmnIgqTtu_U/s0/fon116%2B2160x1920.png");
+            background-size: 100%;
+            padding: 0px !important;
+            padding-top: 40% !important;
+        }
+        .fieldPanel{
+            background: white;
+            padding: 6%;
+        }
+        .imgProfile{
+            margin-top: -120px;
+            width: 40%;
+            margin-left: 30%;
+            border: 5px solid #fff;
+        }
+        .rowAction{
+            margin-top: 20px;
+        }
+        .login_demo{
+            padding: 5%;
+        }
+    </ui:style>
+        <design:MaterialRow backgroundColor="grey lighten-4" addStyleNames="{style.login_demo}">
+            <design:MaterialColumn grid="s12 m8 l6" offset="l4" >
+                <design:MaterialPanel shadow="1" addStyleNames="{style.panel}">
+                    <design:MaterialPanel addStyleNames="{style.fieldPanel}">
+                        <design:MaterialImage addStyleNames="{style.imgProfile} z-depth-1" ui:field="logo"/>
+                        <design:MaterialTextBox type="EMAIL" placeholder="Email"/>
+                        <design:MaterialTextBox type="PASSWORD" placeholder="Password" />
+                        <design:MaterialButton ui:field="btnLogin" backgroundColor="blue" waves="LIGHT" text="Log In" width="100%"/>
+                        <design:MaterialRow addStyleNames="{style.rowAction}">
+                            <design:MaterialColumn grid="s12 m12 l6">
+                                <design:MaterialCheckBox text="Keep me logged in"/>
+                            </design:MaterialColumn>
+                        </design:MaterialRow>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+</ui:UiBinder>

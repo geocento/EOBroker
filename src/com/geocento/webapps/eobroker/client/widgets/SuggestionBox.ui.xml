@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <g:MaterialValueBox>
+        <design:MaterialIcon iconType="SEARCH"></design:MaterialIcon>
+        <!-- Activator -->
+        <design:MaterialButton text="Dropdown" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="white" backgroundColor="blue" activates="categories"/>
+        <!-- My Drop Down -->
+        <design:MaterialDropDown activator="categories" constrainWidth="true">
+             <design:MaterialLink text="First" />
+             <design:MaterialLink text="Second" />
+             <design:MaterialLink text="Third" />
+        </design:MaterialDropDown>
+        <design:MaterialIcon iconType="CLOSE"></design:MaterialIcon>
+    </g:MaterialValueBox>
+</ui:UiBinder>

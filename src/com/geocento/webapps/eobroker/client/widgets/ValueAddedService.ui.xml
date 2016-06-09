@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <g:HTMLPanel>
+        <design:MaterialSideNav type="OPEN" design:id="sideNav" closeOnClick="false" width="280">
+            <design:MaterialNavBrand href="#Test">EO Broker</design:MaterialNavBrand>
+            <design:MaterialLink text="Starter" textColor="blue" iconType="WHATSHOT"/>
+            <design:MaterialLink text="Apps" textColor="blue" iconType="VIEW_MODULE"/>
+            <design:MaterialLink text="Notifications" textColor="blue" iconType="NOTIFICATIONS" separator="true"/>
+            <design:MaterialLink text="Navigation" textColor="blue" iconType="NAVIGATION"/>
+            <design:MaterialLink text="Favorite" textColor="blue" iconType="FAVORITE"/>
+        </design:MaterialSideNav>
+    </g:HTMLPanel>
+</ui:UiBinder>

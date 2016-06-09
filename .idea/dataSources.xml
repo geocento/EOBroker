@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="404240837">
+    <data-source source="LOCAL" name="PostgreSQL - eobroker@localhost" uuid="16c64c37-a4bd-4026-a8a9-65a5c6c286d0">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5433/eobroker</jdbc-url>
+      <user-name>geocento</user-name>
+      <user-password>dfcddfcfdfc5dfc9dfcfdfc4dfdedfc5</user-password>
+      <libraries />
+    </data-source>
+  </component>
+</project>
+
