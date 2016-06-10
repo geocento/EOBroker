@@ -213,25 +213,25 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
             return;
         }
         // Populate the search result items
-        for(final Suggestion searchObject : listSearches) {
+        for(final Suggestion suggestion : listSearches) {
             MaterialLink link = new MaterialLink();
             link.setIconColor("grey");
             link.setTextColor("black");
             // Generate an icon
             IconType iconType = IconType.ACCESS_ALARM;
-            switch (searchObject.getCategory()) {
+            switch (suggestion.getCategory()) {
                 case products:
                     break;
             }
             link.setIconType(iconType);
 
             // Generate an image
-            link.setText(searchObject.getName());
+            link.setText(suggestion.getName());
             link.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    reset(searchObject.getName());
-                    eobroker.clientFactory.getEventBus().fireEvent(new SuggestionSelected(searchObject.getCategory(), searchObject.getName()));
+                    reset(suggestion.getName());
+                    eobroker.clientFactory.getEventBus().fireEvent(new SuggestionSelected(suggestion));
                 }
             });
             searchResult.add(link);

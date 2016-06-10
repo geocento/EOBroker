@@ -3,17 +3,16 @@ package com.geocento.webapps.eobroker.client.views;
 import com.geocento.webapps.eobroker.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.client.eobroker;
 import com.geocento.webapps.eobroker.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.client.widgets.ProductServiceWidget;
 import com.geocento.webapps.eobroker.client.widgets.ProductWidget;
 import com.geocento.webapps.eobroker.shared.entities.Category;
 import com.geocento.webapps.eobroker.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.shared.entities.dtos.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,14 +30,20 @@ import java.util.List;
  */
 public class SearchPageViewImpl extends Composite implements SearchPageView {
 
-    private Presenter presenter;
-
-    private MaterialRow productRow;
-
     interface SearchPageUiBinder extends UiBinder<Widget, SearchPageViewImpl> {
     }
 
     private static SearchPageUiBinder ourUiBinder = GWT.create(SearchPageUiBinder.class);
+
+    static public interface Style extends CssResource {
+
+        String productTitle();
+        String productServicesTitle();
+        String alternativesTitle();
+    }
+
+    @UiField
+    Style style;
 
     @UiField
     MaterialLink signIn;
@@ -58,6 +63,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     MaterialSideNav filtersPanel;
     @UiField
     MaterialContainer container;
+
+    private Presenter presenter;
 
     public SearchPageViewImpl(ClientFactoryImpl clientFactory) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -87,6 +94,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         for(Category category : Category.values()) {
             MaterialCheckBox materialCheckBox = new MaterialCheckBox();
             materialCheckBox.setText(category.getName());
+            materialCheckBox.setObject(category);
             categories.add(materialCheckBox);
             materialCheckBox.addClickHandler(new ClickHandler() {
                 @Override
@@ -133,29 +141,87 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     }
 
     @Override
-    public void addProduct(ProductDTO productDTO, List<ProductServiceDTO> services) {
-        if(productRow == null) {
-            productRow = new MaterialRow();
-            container.add(productRow);
-        }
-        MaterialColumn materialColumn = new MaterialColumn(6, 6, 12);
+    public void setProductSelection(ProductDTO productDTO, List<ProductServiceDTO> services, List<ProductDTO> others) {
+        clearResults();
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "Selected product", style.productTitle());
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         productRow.add(materialColumn);
         materialColumn.add(new ProductWidget(productDTO));
+        addTitle(productRow, "EO Broker services offering this product", style.productServicesTitle());
+        for(ProductServiceDTO productServiceDTO : services) {
+            MaterialColumn serviceColumn = new MaterialColumn(12, 12, 6);
+            productRow.add(serviceColumn);
+            serviceColumn.add(new ProductServiceWidget(productServiceDTO));
+        }
+        addTitle(productRow, "Also", style.alternativesTitle());
+    }
+
+    private void addTitle(MaterialRow productRow, String message, String style) {
+        HTMLPanel htmlPanel = new HTMLPanel("<span class='flow-text'>" + message + "</span>");
+        htmlPanel.addStyleName(style);
+        MaterialColumn titleMaterialColumn = new MaterialColumn(12, 12, 12);
+        productRow.add(titleMaterialColumn);
+        titleMaterialColumn.add(htmlPanel);
     }
 
     @Override
     public void setCategory(Category category) {
+        for(Widget widget : categories) {
+            if(widget instanceof MaterialCheckBox) {
+                MaterialCheckBox checkBox = ((MaterialCheckBox) widget);
+                checkBox.setValue(((Category) checkBox.getObject()) == category);
+            }
+        }
+    }
 
+    @Override
+    public HasClickHandlers getChangeSearch() {
+        return currentSearch;
+    }
+
+    @Override
+    public void setMatchingProducts(List<ProductDTO> suggestedProducts) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "Products matching your request", style.productTitle());
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        productRow.add(materialColumn);
+        for(ProductDTO productDTO : suggestedProducts) {
+            materialColumn.add(new ProductWidget(productDTO));
+        }
+        addTitle(productRow, "Also", style.alternativesTitle());
+    }
+
+    @Override
+    public void setMatchingServices(List<ProductServiceDTO> productServices) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "EO Broker services matching your request", style.productServicesTitle());
+        for(ProductServiceDTO productServiceDTO : productServices) {
+            MaterialColumn serviceColumn = new MaterialColumn(12, 12, 6);
+            productRow.add(serviceColumn);
+            serviceColumn.add(new ProductServiceWidget(productServiceDTO));
+        }
+    }
+
+    @Override
+    public void displayProductsList(List<ProductDTO> products, int start, int limit, String text) {
+        HTMLPanel panel = new HTMLPanel("<span class='flow-text'>TODO - add controls to navigate through the list</span>");
+        container.add(panel);
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        productRow.add(materialColumn);
+        for(ProductDTO productDTO : products) {
+            materialColumn.add(new ProductWidget(productDTO));
+        }
     }
 
     @UiHandler("signIn")
     void signIn(ClickEvent clickEvent) {
         eobroker.clientFactory.getPlaceController().goTo(new LoginPagePlace());
-    }
-
-    @UiHandler("currentSearch")
-    void search(ClickEvent clickEvent) {
-        displayTextSearch(true);
     }
 
     @Override

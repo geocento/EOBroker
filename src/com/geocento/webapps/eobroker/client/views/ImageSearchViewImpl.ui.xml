@@ -56,7 +56,7 @@
             display: flex !important;
         }
 
-        .categories {
+        .providers {
             padding-left: 20px;
         }
 
@@ -68,7 +68,7 @@
                 <m:MaterialNavSection flex="NONE">
                     <m:MaterialImage height="64px" resource="{res.logoEOBroker}"></m:MaterialImage>
                 </m:MaterialNavSection>
-                <m:MaterialLink text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
+                <m:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
                 <widgets:MaterialSuggestion ui:field="textSearch" iconColor="white" backgroundColor="blue" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO"/>
                 <m:MaterialNavSection flex="NONE" float="RIGHT">
                     <m:MaterialTooltip text="Orders" position="BOTTOM">

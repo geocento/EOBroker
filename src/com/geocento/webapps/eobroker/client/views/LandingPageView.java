@@ -22,6 +22,8 @@ public interface LandingPageView extends IsWidget {
 
     void displayText(String text);
 
+    void displaySearchError(String message);
+
     public interface Presenter {
 
         void categoryChanged(Category category);

@@ -9,6 +9,8 @@ import com.geocento.webapps.eobroker.client.views.SearchPageView;
 import com.geocento.webapps.eobroker.shared.entities.Category;
 import com.geocento.webapps.eobroker.shared.entities.SearchResult;
 import com.geocento.webapps.eobroker.shared.entities.dtos.ProductDTO;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -18,6 +20,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -42,13 +45,28 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
         handleHistory();
     }
 
+    @Override
+    protected void bind() {
+        handlers.add(searchPageView.getChangeSearch().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new LandingPagePlace(""));
+            }
+        }));
+    }
+
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
-        // text cannot be null
-        if(text == null) {
-            clientFactory.getPlaceController().goTo(new LandingPagePlace());
+        final String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
+        Long productId = null;
+        if(tokens.containsKey(SearchPagePlace.TOKENS.product.toString())) {
+            try {
+                productId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.product.toString()));
+            } catch (Exception e) {
+
+            }
         }
+        String browse = tokens.get(SearchPagePlace.TOKENS.browse.toString());
         Long aoiId = null;
         if(tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
             try {
@@ -59,42 +77,86 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
         Category category = null;
         if(tokens.containsKey(SearchPagePlace.TOKENS.category.toString())) {
             try {
-                Category.valueOf(tokens.get(SearchPagePlace.TOKENS.category.toString()));
+                category = Category.valueOf(tokens.get(SearchPagePlace.TOKENS.category.toString()));
             } catch (Exception e) {
 
             }
         }
         // update the interface
-        searchPageView.setCurrentSearch(text);
         searchPageView.setCategory(category);
+        // either text or product is provided
+        if(text == null && productId == null && (browse == null || (browse != null && category == null))) {
+            clientFactory.getPlaceController().goTo(new LandingPagePlace());
+            return;
+        }
         // now start the search
         searchPageView.clearResults();
-        searchPageView.displayLoadingResults("Searching matching results...");
-        try {
-            REST.withCallback(new MethodCallback<SearchResult>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
-                }
+        if(browse != null) {
+            switch (category) {
+                case products:
+                    searchPageView.setCurrentSearch("Browsing existing products");
+                    searchPageView.displayLoadingResults("Loading products...");
+                    try {
+                        final int start = 0, limit = 10;
+                        REST.withCallback(new MethodCallback<SearchResult>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                Window.alert("Error");
+                            }
 
-                @Override
-                public void onSuccess(Method method, SearchResult searchResult) {
-                    searchPageView.hideLoadingResults();
-                    // add all results to the interface
-                    for(ProductDTO productDTO : searchResult.getProducts()) {
-                        // TODO map the services corresponding to the product
-                        searchPageView.addProduct(productDTO, searchResult.getProductServices());
+                            @Override
+                            public void onSuccess(Method method, SearchResult searchResult) {
+                                searchPageView.hideLoadingResults();
+                                // add all results to the interface
+                                List<ProductDTO> products = searchResult.getProducts();
+                                searchPageView.displayProductsList(products, start, limit, text);
+                            }
+                        }).call(ServicesUtil.searchService).listProducts(text, start, limit, aoiId);
+                    } catch (RequestException e) {
                     }
-                }
-            }).call(ServicesUtil.searchService).getMatchingServices(text, category, null);
-        } catch (RequestException e) {
+                    break;
+            }
+        } else if(productId != null) {
+            searchPageView.displayLoadingResults("Loading product and matching results...");
+            try {
+                REST.withCallback(new MethodCallback<SearchResult>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        Window.alert("Error");
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, SearchResult searchResult) {
+                        searchPageView.hideLoadingResults();
+                        // add all results to the interface
+                        List<ProductDTO> suggestedProducts = searchResult.getProducts();
+                        searchPageView.setProductSelection(suggestedProducts.get(0), searchResult.getProductServices(), suggestedProducts.subList(0, Math.min(1, suggestedProducts.size() - 1)));
+                    }
+                }).call(ServicesUtil.searchService).getMatchingServicesForProduct(productId, null);
+            } catch (RequestException e) {
+            }
+        } else if(text != null) {
+            searchPageView.displayLoadingResults("Searching matching results...");
+            searchPageView.setCurrentSearch(text);
+            try {
+                REST.withCallback(new MethodCallback<SearchResult>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        Window.alert("Error");
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, SearchResult searchResult) {
+                        searchPageView.hideLoadingResults();
+                        // add all results to the interface
+                        List<ProductDTO> suggestedProducts = searchResult.getProducts();
+                        searchPageView.setMatchingProducts(suggestedProducts);
+                        searchPageView.setMatchingServices(searchResult.getProductServices());
+                    }
+                }).call(ServicesUtil.searchService).getMatchingServices(text, category, null);
+            } catch (RequestException e) {
+            }
         }
-
-    }
-
-    @Override
-    protected void bind() {
-
     }
 
 }

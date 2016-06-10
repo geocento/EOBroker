@@ -14,19 +14,15 @@ import com.geocento.webapps.eobroker.shared.entities.AoI;
 import com.geocento.webapps.eobroker.shared.entities.Category;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialAnchorButton;
-import gwt.material.design.client.ui.MaterialDropDown;
-import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.MaterialNavBar;
+import gwt.material.design.client.ui.*;
 
 import java.util.List;
 
@@ -143,6 +139,20 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
             }
 
         });
+        textSearch.addCloseHandler(new CloseHandler<String>() {
+            @Override
+            public void onClose(CloseEvent<String> event) {
+                textSearch.setText("");
+                presenter.textChanged("");
+                textSearch.setFocus(true);
+            }
+        });
+        textSearch.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                presenter.textChanged(textSearch.getText());
+            }
+        });
 
         // add categories
         for(final Category category : Category.values()) {
@@ -195,6 +205,11 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     @Override
     public void displayText(String text) {
         textSearch.setText(text);
+    }
+
+    @Override
+    public void displaySearchError(String message) {
+        MaterialToast.fireToast(message);
     }
 
     @Override

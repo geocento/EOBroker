@@ -2,9 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:design="urn:import:gwt.material.design.client.ui"
         >
-
-    <ui:with field="res" type="com.geocento.webapps.eobroker.client.styles.StyleResources"/>
-    <ui:style>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.client.views.SearchPageViewImpl.Style">
         .panel header, .panel main, .panel footer {
             padding-left: 280px;
         }
@@ -31,13 +29,39 @@
 
         .categories {
             padding-left: 30px;
+            line-height: normal !important;
         }
 
         .navBrand {
             position: relative !important;
         }
 
+        .productTitle, .productServicesTitle {
+            margin: 7px 0;
+            text-align: center;
+            line-height: 50px;
+            font-size: 28px;
+            color: white;
+        }
+
+        .productTitle {
+            background-color: tomato;
+        }
+
+        .productServicesTitle {
+            background-color: tomato;
+        }
+
+        .alternativesTitle {
+
+        }
+
+        .filters {
+            line-height: normal !important;
+        }
+
     </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.panel}">
         <header>
             <!-- NavBar -->

@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.client.events;
 
-import com.geocento.webapps.eobroker.shared.entities.Category;
+import com.geocento.webapps.eobroker.shared.Suggestion;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
@@ -10,20 +10,14 @@ public class SuggestionSelected extends GwtEvent<SuggestionSelectedHandler> {
 
     public static Type<SuggestionSelectedHandler> TYPE = new Type<SuggestionSelectedHandler>();
 
-    private final Category category;
-    private final String name;
+    private Suggestion suggestion;
 
-    public SuggestionSelected(Category category, String name) {
-        this.category = category;
-        this.name = name;
+    public SuggestionSelected(Suggestion suggestion) {
+        this.suggestion = suggestion;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public String getName() {
-        return name;
+    public Suggestion getSuggestion() {
+        return suggestion;
     }
 
     public Type<SuggestionSelectedHandler> getAssociatedType() {

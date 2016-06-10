@@ -5,6 +5,8 @@ import com.geocento.webapps.eobroker.client.events.SuggestionSelected;
 import com.geocento.webapps.eobroker.client.events.SuggestionSelectedHandler;
 import com.geocento.webapps.eobroker.client.events.TextSelected;
 import com.geocento.webapps.eobroker.client.events.TextSelectedHandler;
+import com.geocento.webapps.eobroker.client.places.EOBrokerPlace;
+import com.geocento.webapps.eobroker.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.client.services.ServicesUtil;
@@ -19,6 +21,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,29 +57,88 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
             @Override
             public void onSuggestionSelected(SuggestionSelected event) {
                 // update the fields
-                setCategory(event.getCategory());
-                setText(event.getName());
-                gotoSearchPage();
+                Suggestion suggestion = event.getSuggestion();
+                setCategory(suggestion.getCategory());
+                setText(suggestion.getName());
+                // TODO - move to a helper class
+                String uri = suggestion.getUri();
+                String action = uri.split("::")[0];
+                String parameters = uri.split("::")[1];
+                EOBrokerPlace searchPlace = null;
+                switch(suggestion.getCategory()) {
+                    case imagery:
+                        if(action.contentEquals("search")) {
+                            searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
+                                    (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                        } else if(action.contentEquals("request")) {
+
+                        };
+                        break;
+                    case products:
+                        String token = "";
+                        if(action.contentEquals("product")) {
+                            token += SearchPagePlace.TOKENS.product.toString() + "=" + parameters;
+                        } else if(action.contentEquals("browse")) {
+                                token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                        } else {
+                            token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                        }
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                        if(aoi != null) {
+                            token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                        }
+                        searchPlace = new SearchPagePlace(token);
+                        break;
+                }
+                if(searchPlace != null) {
+                    clientFactory.getPlaceController().goTo(searchPlace);
+                } else {
+                    landingPageView.displaySearchError("Sorry I could not understand your request...");
+                }
             }
         });
         activityEventBus.addHandler(TextSelected.TYPE, new TextSelectedHandler() {
             @Override
             public void onTextSelected(TextSelected event) {
-                gotoSearchPage();
+                EOBrokerPlace eoBrokerPlace = null;
+                if(category == null) {
+                    // go to general search results page
+                    String token = "";
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    if(category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+                    if(aoi != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    }
+                    eoBrokerPlace = new SearchPagePlace(token);
+                } else {
+                    switch (category) {
+                        case imagery:
+                            eoBrokerPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + text +
+                                    (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                            break;
+                        case products:
+                        case companies:
+                        case datasets:
+                        case software:
+                            // go to general search results page
+                            String token = "";
+                            token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                            token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                            if(aoi != null) {
+                                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                            }
+                            eoBrokerPlace = new SearchPagePlace(token);
+                    }
+                }
+                if(eoBrokerPlace != null) {
+                    clientFactory.getPlaceController().goTo(eoBrokerPlace);
+                } else {
+                    landingPageView.displaySearchError("Sorry I could not understand your request...");
+                }
             }
         });
-    }
-
-    private void gotoSearchPage() {
-        String token = "";
-        token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
-        if(category != null) {
-            token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-        }
-        if(aoi != null) {
-            token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
-        }
-        clientFactory.getPlaceController().goTo(new SearchPagePlace(token));
     }
 
     private void setCategory(Category category) {
@@ -125,8 +187,37 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
                 }
             }).call(ServicesUtil.searchService).complete(text, category, toWkt(aoi));
         } else {
-            landingPageView.displayListSuggestions(null);
+            // TODO - move to the server side
+            List<Suggestion> suggestions = new ArrayList<Suggestion>();
+            if(category == null) {
+                for(Category suggestionCategory : Category.values()) {
+                    suggestions.addAll(getSuggestion(suggestionCategory));
+                }
+            } else {
+                suggestions.addAll(getSuggestion(category));
+            }
+            landingPageView.displayListSuggestions(suggestions);
         }
+    }
+
+    private List<Suggestion> getSuggestion(Category category) {
+        List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        switch (category) {
+            case products:
+                suggestions.add(new Suggestion("Browse products", Category.products, "browse::"));
+                break;
+            case imagery:
+                suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
+                suggestions.add(new Suggestion("Submit request for imagery", Category.imagery, "request::"));
+                break;
+            case companies:
+                suggestions.add(new Suggestion("Browse companies", Category.companies, "browse::"));
+                break;
+            case datasets:
+                suggestions.add(new Suggestion("Browse datasets", Category.datasets, "browse::"));
+                break;
+        }
+        return suggestions;
     }
 
     private String toWkt(AoI aoi) {

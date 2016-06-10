@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.client.views;
 import com.geocento.webapps.eobroker.shared.entities.Category;
 import com.geocento.webapps.eobroker.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.shared.entities.dtos.ProductServiceDTO;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.List;
@@ -22,9 +23,17 @@ public interface SearchPageView extends IsWidget {
 
     void clearResults();
 
-    void addProduct(ProductDTO productDTO, List<ProductServiceDTO> services);
-
     void setCategory(Category category);
+
+    void setProductSelection(ProductDTO productDTO, List<ProductServiceDTO> productServices, List<ProductDTO> productDTOs);
+
+    HasClickHandlers getChangeSearch();
+
+    void setMatchingProducts(List<ProductDTO> suggestedProducts);
+
+    void setMatchingServices(List<ProductServiceDTO> productServices);
+
+    void displayProductsList(List<ProductDTO> products, int start, int limit, String text);
 
     public interface Presenter {
     }
