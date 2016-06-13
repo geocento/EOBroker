@@ -11,6 +11,7 @@
           <element id="library" level="project" name="libraries" />
         </element>
       </element>
+      <element id="gwt-compiler-output" facet="EOBroker/gwt/GWT" />
     </root>
   </artifact>
 </component>

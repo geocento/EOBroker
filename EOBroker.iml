@@ -4,9 +4,13 @@
     <facet type="gwt" name="GWT">
       <configuration>
         <setting name="compilerMaxHeapSize" value="1024" />
-        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="gwtScriptOutputStyle" value="OBF" />
         <setting name="gwtSdkUrl" value="file://$USER_HOME$/gwt/gwt-2.7.0" />
         <setting name="webFacet" value="Web" />
+        <packaging>
+          <module name="com.geocento.webapps.eobroker.common.common" enabled="false" />
+          <module name="com.geocento.webapps.eobroker.supplier.supplier" path="/supplier" />
+        </packaging>
       </configuration>
     </facet>
     <facet type="web" name="Web">

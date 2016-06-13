@@ -6,7 +6,10 @@
 
     <persistence-unit name="eobroker">
     	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.geocento.webapps.eobroker.shared.entities.Product</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Product</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Company</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.User</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ProductService</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

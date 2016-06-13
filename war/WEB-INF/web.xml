@@ -6,21 +6,35 @@
            version="3.0">
 
     <listener>
-        <listener-class>com.geocento.webapps.eobroker.server.ContextListener</listener-class>
+        <listener-class>com.geocento.webapps.eobroker.common.server.ContextListener</listener-class>
     </listener>
 
     <servlet>
-        <servlet-name>RestAPI</servlet-name>
+        <servlet-name>RestAPICustomer</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>
-                com.geocento.webapps.eobroker.server.servlets
+                com.geocento.webapps.eobroker.customer.server.servlets
+            </param-value>
+        </init-param>
+    </servlet>
+    <servlet>
+        <servlet-name>RestAPISupplier</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>
+                com.geocento.webapps.eobroker.supplier.server.servlets
             </param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>RestAPI</servlet-name>
-        <url-pattern>/eobroker/api/*</url-pattern>
+        <servlet-name>RestAPICustomer</servlet-name>
+        <url-pattern>/customer/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestAPISupplier</servlet-name>
+        <url-pattern>/supplier/api/*</url-pattern>
     </servlet-mapping>
 </web-app>
