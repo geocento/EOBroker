@@ -3,13 +3,20 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
-        .panel header, .panel main, .panel footer {
+        .panel header {
+
+        }
+
+        .panel main, .panel footer {
             padding-left: 280px;
         }
 
-        .panel main {
-            overflow-x: auto;
-            height: 100%;
+        .mainPanel {
+            position: fixed;
+            top: 64px;
+            bottom: 0px;
+            width: 100%;
+            overflow-y: auto;
         }
 
         .label {
@@ -17,10 +24,11 @@
         }
 
         .currentSearch {
-            display: block;
-            top: 0px;
-            bottodesign: 0px;
-            margin-right: 300px;
+            margin: 20px 10px;
+            font-size: 1.5em;
+        }
+        .currentSearch:hover {
+            text-decoration: underline;
         }
 
         .textSearch > input {
@@ -33,7 +41,9 @@
         }
 
         .navBrand {
-            position: relative !important;
+            color: grey;
+            padding-left: 20px;
+            font-size: 1.4em;
         }
 
         .productTitle, .productServicesTitle {
@@ -45,11 +55,11 @@
         }
 
         .productTitle {
-            background-color: tomato;
+            background-color: grey;
         }
 
         .productServicesTitle {
-            background-color: tomato;
+            background-color: grey;
         }
 
         .alternativesTitle {
@@ -60,12 +70,20 @@
             line-height: normal !important;
         }
 
+        .logoImage {
+            display: block;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.panel}">
         <header>
             <!-- NavBar -->
             <design:MaterialNavBar activates="sideNav" paddingLeft="20" backgroundColor="blue" ui:field="navBar">
+                <design:MaterialNavSection flex="NONE">
+                    <design:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
+                    <design:MaterialLabel text="Search Results" paddingLeft="50" fontSize="1.5em"></design:MaterialLabel>
+                </design:MaterialNavSection>
                 <design:MaterialNavSection float="RIGHT">
                     <design:MaterialTooltip text="Orders" position="BOTTOM">
                         <design:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE"/>
@@ -77,7 +95,6 @@
                         <design:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
                     </design:MaterialTooltip>
                 </design:MaterialNavSection>
-                <design:MaterialLink ui:field="currentSearch" addStyleNames="{style.currentSearch}, truncate" textColor="white" text="some search keywords" iconType="SEARCH"/>
             </design:MaterialNavBar>
 
             <!-- Search Bar -->
@@ -86,8 +103,8 @@
             </design:MaterialNavBar>
 
             <!-- SideNav -->
-            <design:MaterialSideNav type="FIXED" design:id="sideNav" closeOnClick="true" width="280" ui:field="filtersPanel">
-                <design:MaterialNavBrand addStyleNames="{style.navBrand}" href="#Test">EO Broker</design:MaterialNavBrand>
+            <design:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="true" top="64" closeOnClick="true" width="280" ui:field="filtersPanel">
+                <design:MaterialLabel addStyleNames="{style.navBrand}">Show results for</design:MaterialLabel>
                 <design:MaterialCollapsible>
                     <design:MaterialCollapsibleItem ui:field="categoriesPanel">
                         <design:MaterialCollapsibleHeader>
@@ -111,67 +128,21 @@
             </design:MaterialSideNav>
         </header>
 
-        <design:MaterialContainer fontSize="0.8em" ui:field="container">
-            <design:MaterialRow>
-                <design:MaterialColumn grid="l3 m4 s12">
-                    <design:MaterialCard backgroundColor="indigo">
-                        <design:MaterialCardImage>
-                            <design:MaterialImage url="https://13thflooroffice.files.wordpress.com/2013/06/kodaline_in-a-perfect-world-packshot-1000.jpg"></design:MaterialImage>
-                        </design:MaterialCardImage>
-                        <design:MaterialCardContent textColor="white">
-                            <design:MaterialImage layoutPosition="ABSOLUTE" marginTop="-32" resource="{res.logoEOBroker}"></design:MaterialImage>
-                            <design:MaterialLabel fontSize="1.4em" text="Text Service Card"></design:MaterialLabel>
-                            <design:MaterialLabel fontSize="1.2em" opacity="0.6" text="Some extra details as needed"></design:MaterialLabel>
-                        </design:MaterialCardContent>
-                        <design:MaterialCardAction>
-                            <design:MaterialLink text="FEASIBILITY"></design:MaterialLink>
-                            <design:MaterialLink text="REQUEST"></design:MaterialLink>
-                            <design:MaterialLink iconType="INFO"></design:MaterialLink>
-                        </design:MaterialCardAction>
-                    </design:MaterialCard>
-                </design:MaterialColumn>
-            </design:MaterialRow>
+        <g:HTMLPanel addStyleNames="{style.mainPanel}">
+            <design:MaterialContainer fontSize="0.8em">
+                <g:HTMLPanel>
+                    <design:MaterialTooltip text="Click to change your search">
+                        <design:MaterialLink ui:field="currentSearch" addStyleNames="{style.currentSearch}, truncate" textColor="black" text="some search keywords" iconType="SEARCH"/>
+                    </design:MaterialTooltip>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="container"></g:HTMLPanel>
+            </design:MaterialContainer>
+            <design:MaterialFooter backgroundColor="blue">
+                <design:MaterialFooterCopyright>
+                    <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
+                </design:MaterialFooterCopyright>
+            </design:MaterialFooter>
+        </g:HTMLPanel>
 
-            <design:MaterialColumn grid="l6 s12 m6" padding="4">
-                <design:MaterialCard marginBottom="0" marginTop="0" backgroundColor="grey darken-1">
-                    <design:MaterialCardImage waves="DEFAULT">
-                        <design:MaterialImage url="https://13thflooroffice.files.wordpress.com/2013/06/kodaline_in-a-perfect-world-packshot-1000.jpg"/>
-                    </design:MaterialCardImage>
-                    <design:MaterialCardContent textColor="black">
-                        <design:MaterialRow marginBottom="0">
-                            <design:MaterialLabel fontSize="1.2em" text="In a Perfect World" textColor="white" grid="l9 s9 m9" truncate="true"/>
-                            <design:MaterialIcon iconType="STAR" textAlign="RIGHT" iconColor="white" grid="l3 s3 m3" />
-                        </design:MaterialRow>
-                        <design:MaterialLabel text="Kodaline" textColor="white"/>
-                        <design:MaterialLabel text="Recently Added" fontSize="0.8em" textColor="white"/>
-                    </design:MaterialCardContent>
-                </design:MaterialCard>
-            </design:MaterialColumn>
-
-        </design:MaterialContainer>
-
-        <!-- FAB -->
-        <design:MaterialFAB>
-            <design:MaterialTooltip text="Create" position="LEFT">
-                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
-            </design:MaterialTooltip>
-            <design:MaterialFABList>
-                <design:MaterialTooltip text="Theme" position="LEFT">
-                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="PALETTE"/>
-                </design:MaterialTooltip>
-                <design:MaterialTooltip text="Mail " position="LEFT">
-                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="MAIL"/>
-                </design:MaterialTooltip>
-            </design:MaterialFABList>
-        </design:MaterialFAB>
-
-        <!--
-                    &lt;!&ndash; Footer &ndash;&gt;
-                    <design:MaterialFooter backgroundColor="blue" type="FIXED">
-                        <design:MaterialFooterCopyright>
-                            <design:MaterialLabel text="© 2015 Copyright GWT Material" />
-                        </design:MaterialFooterCopyright>
-                    </design:MaterialFooter>
-        -->
     </g:HTMLPanel>
 </ui:UiBinder>

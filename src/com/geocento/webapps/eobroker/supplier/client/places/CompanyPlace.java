@@ -8,6 +8,8 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class CompanyPlace extends EOBrokerPlace {
 
+    static public enum TOKENS {id};
+
     public CompanyPlace() {
     }
 

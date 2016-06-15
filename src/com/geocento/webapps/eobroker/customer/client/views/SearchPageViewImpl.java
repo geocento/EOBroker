@@ -1,17 +1,19 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.customer.client.widgets.ImageRequestWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.ImageSearchWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProductWidget;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,7 +22,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.ProgressType;
-import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
 
 import java.util.List;
@@ -62,32 +63,12 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     @UiField
     MaterialSideNav filtersPanel;
     @UiField
-    MaterialContainer container;
+    HTMLPanel container;
 
     private Presenter presenter;
 
     public SearchPageViewImpl(ClientFactoryImpl clientFactory) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        textSearch.addCloseHandler(new CloseHandler<String>() {
-            @Override
-            public void onClose(CloseEvent<String> event) {
-                displayTextSearch(false);
-            }
-        });
-        textSearch.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
-            @Override
-            public void onSearchFinish(SearchFinishEvent event) {
-                currentSearch.setText(textSearch.getSelectedObject().getKeyword());
-                MaterialToast.fireToast("You search : " + textSearch.getSelectedObject().getKeyword());
-                displayTextSearch(false);
-            }
-        });
-        textSearch.addDomHandler(new BlurHandler() {
-            @Override
-            public void onBlur(BlurEvent event) {
-                displayTextSearch(false);
-            }
-        }, BlurEvent.getType());
 
         // add categories controls
         categories.clear();
@@ -106,13 +87,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         categoriesPanel.expand();
 
         filtersPanel.show();
-    }
-
-    private void displayTextSearch(boolean display) {
-        navBar.setVisible(!display);
-        navBarSearch.setVisible(display);
-        textSearch.setText(currentSearch.getText());
-        textSearch.setFocus(display);
     }
 
     @Override
@@ -167,11 +141,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     }
 
     @Override
-    public void setCategory(Category category) {
-        for(Widget widget : categories) {
+    public void setCategories(List<Category> categories) {
+        for(Widget widget : this.categories) {
             if(widget instanceof MaterialCheckBox) {
                 MaterialCheckBox checkBox = ((MaterialCheckBox) widget);
-                checkBox.setValue(((Category) checkBox.getObject()) == category);
+                checkBox.setValue(categories.contains((Category) checkBox.getObject()));
             }
         }
     }
@@ -191,7 +165,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         for(ProductDTO productDTO : suggestedProducts) {
             materialColumn.add(new ProductWidget(productDTO));
         }
-        addTitle(productRow, "Also", style.alternativesTitle());
     }
 
     @Override
@@ -217,6 +190,19 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         for(ProductDTO productDTO : products) {
             materialColumn.add(new ProductWidget(productDTO));
         }
+    }
+
+    @Override
+    public void setMatchingImagery(String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "Search or request imagery for '" + text + "'", style.productServicesTitle());
+        MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
+        productRow.add(serviceColumn);
+        serviceColumn.add(new ImageSearchWidget(text));
+        serviceColumn = new MaterialColumn(12, 6, 4);
+        productRow.add(serviceColumn);
+        serviceColumn.add(new ImageRequestWidget(text));
     }
 
     @UiHandler("signIn")

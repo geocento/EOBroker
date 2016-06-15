@@ -99,6 +99,8 @@ public class ContextListener implements ServletContextListener {
         } finally {
             em.close();
         }
+        // create resource handler for serving static files
+
     }
 
     private String findNearest(List<String> values, String name) {

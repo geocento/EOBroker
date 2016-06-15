@@ -175,15 +175,35 @@ public class AssetsResource implements AssetsService {
     @Override
     public CompanyDTO getCompany(Long id) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
-        if(id == null) {
-            throw new RequestException("Company id cannot be null");
-        }
         EntityManager em = EMF.get().createEntityManager();
-        Company company = em.find(Company.class, id);
-        if(company == null) {
-            throw new RequestException("Unknown company");
+        try {
+            Company company = null;
+            if (id == null) {
+                User user = em.find(User.class, userName);
+                company = user.getCompany();
+                if (company == null) {
+                    em.getTransaction().begin();
+                    company = new Company();
+                    em.persist(company);
+                    user.setCompany(company);
+                    em.getTransaction().commit();
+                }
+            } else {
+                company = em.find(Company.class, id);
+            }
+            if (company == null) {
+                throw new RequestException("Unknown company");
+            }
+            return CompanyHelper.createCompanyDTO(company);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Issue retrieving company");
+        } finally {
+            em.close();
         }
-        return CompanyHelper.createCompanyDTO(company);
     }
 
     @Override
@@ -205,6 +225,9 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().begin();
             company.setName(companyDTO.getName());
             company.setDescription(companyDTO.getDescription());
+            company.setWebsite(companyDTO.getWebsite());
+            company.setContactEmail(companyDTO.getContactEmail());
+            company.setFullDescription(companyDTO.getFullDescription());
             company.setIconURL(companyDTO.getIconURL());
             em.getTransaction().commit();
         } catch (Exception e) {

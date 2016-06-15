@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
-import com.geocento.webapps.eobroker.common.shared.LatLng;
-
 import java.util.Date;
 
 // not to be stored, only for passing results and displaying them
@@ -28,7 +26,6 @@ public class ImageProductDTO {
     String sensorInformationUrl;
 
     String coordinatesWKT;
-    LatLng center;
 
     Date start;
     Date stop;

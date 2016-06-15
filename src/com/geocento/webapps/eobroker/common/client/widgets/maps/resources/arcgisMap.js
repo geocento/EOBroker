@@ -28,9 +28,10 @@ var arcgisMap = function(callback) {
                 mapContainer, {
                     basemap: baseMap,
                     center: [lng, lat],
-                    zoom: zoom
+                    zoom: zoom,
+                    autoResize: true
             });
-            map.on("load", onload(map));
+            map.on("load", function(){onload(map);});
         }
 
         self.createLineSymbol = function(color, width) {

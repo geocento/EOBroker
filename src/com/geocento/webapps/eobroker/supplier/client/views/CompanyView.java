@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -8,6 +10,28 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface CompanyView extends IsWidget {
 
     void setPresenter(Presenter presenter);
+
+    void setTitleLine(String title);
+
+    HasText getName();
+
+    HasText getEmail();
+
+    HasText getWebsite();
+
+    HasText getDescription();
+
+    String getFullDescription();
+
+    void setFullDescription(String fullDescription);
+
+    HasClickHandlers getSubmit();
+
+    String getIconUrl();
+
+    void setIconUrl(String iconURL);
+
+    HasClickHandlers getHomeButton();
 
     public interface Presenter {
     }

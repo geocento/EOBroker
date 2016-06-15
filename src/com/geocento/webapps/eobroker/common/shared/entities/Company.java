@@ -24,6 +24,15 @@ public class Company {
     @Column(length = 1000)
     String description;
 
+    @Column(length = 10000)
+    private String fullDescription;
+
+    @Column(length = 1000)
+    private String contactEmail;
+
+    @Column(length = 1000)
+    private String website;
+
     public Company() {
     }
 
@@ -57,5 +66,29 @@ public class Company {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getFullDescription() {
+        return fullDescription;
+    }
+
+    public void setFullDescription(String fullDescription) {
+        this.fullDescription = fullDescription;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 }

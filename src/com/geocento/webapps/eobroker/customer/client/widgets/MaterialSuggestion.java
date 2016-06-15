@@ -20,10 +20,10 @@ package com.geocento.webapps.eobroker.customer.client.widgets;
  * #L%
  */
 
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
 import com.geocento.webapps.eobroker.customer.client.events.TextSelected;
-import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -236,7 +236,7 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
             });
             searchResult.add(link);
         }
-
+        searchResult.setVisible(true);
     }
 
     // Resets the search result panel
@@ -254,6 +254,24 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
         this.curSel = curSel;
     }
 
+    public void hideListSearches() {
+        searchResult.setVisible(false);
+    }
+
+/*
+    @Override
+    public HandlerRegistration addBlurHandler(final BlurHandler handler) {
+        return super.addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event) {
+                EventTarget nextFocus = event.getNativeEvent().getRelatedEventTarget();
+                if(!Element.is(nextFocus) || Element.as(nextFocus) != searchResult.getElement()) {
+                    handler.onBlur(event);
+                }
+            }
+        });
+    }
+*/
 }
 
 

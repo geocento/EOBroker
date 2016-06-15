@@ -1,6 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
 import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelectedHandler;
 import com.geocento.webapps.eobroker.customer.client.events.TextSelected;
@@ -11,9 +15,6 @@ import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.LandingPageView;
-import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -56,32 +57,40 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
         activityEventBus.addHandler(SuggestionSelected.TYPE, new SuggestionSelectedHandler() {
             @Override
             public void onSuggestionSelected(SuggestionSelected event) {
+                // TODO - save or update current AoI
+                Customer.currentAoI = aoi;
                 // update the fields
                 Suggestion suggestion = event.getSuggestion();
                 setCategory(suggestion.getCategory());
-                setText(suggestion.getName());
                 // TODO - move to a helper class
                 String uri = suggestion.getUri();
                 String action = uri.split("::")[0];
                 String parameters = uri.split("::")[1];
+                if(parameters == null) {
+                    parameters = "";
+                }
                 EOBrokerPlace searchPlace = null;
                 switch(suggestion.getCategory()) {
                     case imagery:
                         if(action.contentEquals("search")) {
                             searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
                                     (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                            setText(parameters);
                         } else if(action.contentEquals("request")) {
-
+                            setText("");
                         };
                         break;
                     case products:
                         String token = "";
                         if(action.contentEquals("product")) {
                             token += SearchPagePlace.TOKENS.product.toString() + "=" + parameters;
+                            setText(suggestion.getName());
                         } else if(action.contentEquals("browse")) {
-                                token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                            token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                            setText("");
                         } else {
                             token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                            setText(text);
                         }
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                         if(aoi != null) {
@@ -100,6 +109,12 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
         activityEventBus.addHandler(TextSelected.TYPE, new TextSelectedHandler() {
             @Override
             public void onTextSelected(TextSelected event) {
+                // TODO - save or update current AoI
+                Customer.currentAoI = aoi;
+                text = event.getText();
+                if(text.trim().length() == 0) {
+                    return;
+                }
                 EOBrokerPlace eoBrokerPlace = null;
                 if(category == null) {
                     // go to general search results page
@@ -227,7 +242,7 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
     @Override
     public void aoiChanged(AoI aoi) {
         this.aoi = aoi;
-        updateSuggestions();
+        //updateSuggestions();
     }
 
     @Override

@@ -18,4 +18,12 @@ public class MapJSNI extends JavaScriptObject {
         this.removeAllLayers();
     }-*/;
 
+    public final native void resize() /*-{
+        this.resize();
+    }-*/;
+
+    public final native void setZoom(int zoom) /*-{
+        this.setZoom(zoom);
+    }-*/;
+
 }

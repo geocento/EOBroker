@@ -23,7 +23,7 @@ public interface SearchPageView extends IsWidget {
 
     void clearResults();
 
-    void setCategory(Category category);
+    void setCategories(List<Category> categories);
 
     void setProductSelection(ProductDTO productDTO, List<ProductServiceDTO> productServices, List<ProductDTO> productDTOs);
 
@@ -34,6 +34,8 @@ public interface SearchPageView extends IsWidget {
     void setMatchingServices(List<ProductServiceDTO> productServices);
 
     void displayProductsList(List<ProductDTO> products, int start, int limit, String text);
+
+    void setMatchingImagery(String text);
 
     public interface Presenter {
     }

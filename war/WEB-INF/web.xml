@@ -29,6 +29,14 @@
             </param-value>
         </init-param>
     </servlet>
+    <servlet>
+        <servlet-name>FileServlet</servlet-name>
+        <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.FileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ImageUploadServlet</servlet-name>
+        <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.ImageUploadServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RestAPICustomer</servlet-name>
         <url-pattern>/customer/api/*</url-pattern>
@@ -36,5 +44,13 @@
     <servlet-mapping>
         <servlet-name>RestAPISupplier</servlet-name>
         <url-pattern>/supplier/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FileServlet</servlet-name>
+        <url-pattern>/uploaded/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImageUploadServlet</servlet-name>
+        <url-pattern>/uploaded/image/</url-pattern>
     </servlet-mapping>
 </web-app>

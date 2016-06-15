@@ -61,7 +61,10 @@ public class CompanyHelper {
         companyDTO.setId(company.getId());
         companyDTO.setName(company.getName());
         companyDTO.setDescription(company.getDescription());
+        companyDTO.setFullDescription(company.getFullDescription());
         companyDTO.setIconURL(company.getIconURL());
+        companyDTO.setContactEmail(company.getContactEmail());
+        companyDTO.setWebsite(company.getWebsite());
         return companyDTO;
     }
 

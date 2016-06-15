@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client;
 
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.customer.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMapper;
 import com.google.gwt.activity.shared.ActivityManager;
@@ -22,6 +23,7 @@ import org.fusesource.restygwt.client.Defaults;
  */
 public class Customer implements EntryPoint {
 
+    public static AoI currentAoI;
     private SimpleLayoutPanel appWidget = new SimpleLayoutPanel();
 
     public static ClientFactory clientFactory;
@@ -86,6 +88,7 @@ public class Customer implements EntryPoint {
 
     private void initialise() {
         Defaults.setServiceRoot("/customer/api");
+        Defaults.setDateFormat(null);
     }
 
 }

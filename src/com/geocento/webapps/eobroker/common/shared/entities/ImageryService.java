@@ -26,4 +26,46 @@ public class ImageryService {
     @OneToMany
     Company company;
 
+    public ImageryService() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIconURL() {
+        return iconURL;
+    }
+
+    public void setIconURL(String iconURL) {
+        this.iconURL = iconURL;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 }

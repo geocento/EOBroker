@@ -9,6 +9,9 @@ public class CompanyDTO {
     String name;
     String iconURL;
     String description;
+    private String contactEmail;
+    private String fullDescription;
+    private String website;
 
     public CompanyDTO() {
     }
@@ -43,5 +46,29 @@ public class CompanyDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getFullDescription() {
+        return fullDescription;
+    }
+
+    public void setFullDescription(String fullDescription) {
+        this.fullDescription = fullDescription;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getWebsite() {
+        return website;
     }
 }

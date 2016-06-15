@@ -9,12 +9,30 @@
 
             @external nav-wrapper;
 
+            .panel {
+            }
+
             .panel header, .panel main, .panel footer {
             }
 
-            .panel main {
-                overflow-x: auto;
-                height: 100%;
+            .panel header {
+                position: fixed;
+                top: 0px;
+                width: 100%;
+                z-index: 1000;
+            }
+
+            .mainPanel {
+                position: fixed;
+                top: 64px;
+                bottom: 0px;
+                width: 100%;
+                overflow-y: auto;
+                z-index: 500;
+            }
+
+            .mapPanel {
+                position: relative;
             }
 
             .label {
@@ -60,6 +78,14 @@
                 padding-left: 20px;
             }
 
+            .mainPanel {
+            }
+
+            .content {
+                margin: 30px auto;
+                max-width: 960px;
+            }
+
         </ui:style>
         <g:HTMLPanel addStyleNames="{style.panel}">
             <header>
@@ -72,10 +98,13 @@
                     <widgets:MaterialSuggestion ui:field="textSearch" iconColor="white" backgroundColor="blue" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO"/>
                     <m:MaterialNavSection flex="NONE" float="RIGHT">
                         <m:MaterialTooltip text="Orders" position="BOTTOM">
-                            <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE"/>
+                            <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE">
+                            </m:MaterialLink>
                         </m:MaterialTooltip>
                         <m:MaterialTooltip text="Notifications" position="BOTTOM">
-                            <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE"/>
+                            <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE">
+                                <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true"/>
+                            </m:MaterialLink>
                         </m:MaterialTooltip>
                         <m:MaterialTooltip text="Sign-in" position="BOTTOM">
                             <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
@@ -87,37 +116,96 @@
                 </m:MaterialDropDown>
             </header>
 
-            <m:MaterialContainer fontSize="0.8em" >
-                <maps:ArcGISMap width="100%" height="100%" ui:field="mapContainer">
-<!--
-                    <maps:topcenter>
-                        <g:HTMLPanel>
-                            <m:MaterialIcon paddingLeft="20" paddingRight="20" iconType="SEARCH" textColor="white"/>
-                            <autocomplete:MaterialAutoComplete addStyleNames="{style.searchBar}" textColor="white" focus="true" placeholder="Type in your query" ui:field="searchBar"></autocomplete:MaterialAutoComplete>
-                        </g:HTMLPanel>
-                    </maps:topcenter>
--->
-                </maps:ArcGISMap>
-            </m:MaterialContainer>
+            <g:HTMLPanel addStyleNames="{style.mainPanel}">
+                <m:MaterialRow addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                    <maps:ArcGISMap width="100%" ui:field="mapContainer">
+                    </maps:ArcGISMap>
+                    <!-- FAB -->
+                    <m:MaterialFAB layoutPosition="ABSOLUTE" bottom="60">
+                        <m:MaterialTooltip text="Create" position="LEFT">
+                            <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
+                        </m:MaterialTooltip>
+                        <m:MaterialFABList>
+                            <m:MaterialTooltip text="Theme" position="LEFT">
+                                <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
+                            </m:MaterialTooltip>
+                            <m:MaterialTooltip text="Mail " position="LEFT">
+                                <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
+                            </m:MaterialTooltip>
+                        </m:MaterialFABList>
+                    </m:MaterialFAB>
+                    <m:MaterialFAB layoutPosition="ABSOLUTE" left="20">
+                        <m:MaterialTooltip text="Close map" position="RIGHT">
+                            <m:MaterialButton type="FLOATING" backgroundColor="grey" iconType="CLOSE" size="MEDIUM" ui:field="closeMap"/>
+                        </m:MaterialTooltip>
+                    </m:MaterialFAB>
+                </m:MaterialRow>
 
-            <!-- FAB -->
-            <m:MaterialFAB>
-                <m:MaterialTooltip text="Create" position="LEFT">
-                    <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
-                </m:MaterialTooltip>
-                <m:MaterialFABList>
-                    <m:MaterialTooltip text="Theme" position="LEFT">
-                        <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
-                    </m:MaterialTooltip>
-                    <m:MaterialTooltip text="Mail " position="LEFT">
-                        <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
-                    </m:MaterialTooltip>
-                </m:MaterialFABList>
-            </m:MaterialFAB>
-            <m:MaterialFooter backgroundColor="blue" type="FIXED">
-                <m:MaterialFooterCopyright>
-                    <m:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
-                </m:MaterialFooterCopyright>
-            </m:MaterialFooter>
+                <g:HTMLPanel addStyleNames="{style.content}">
+                    <m:MaterialSlider ui:field="slider" fullscreen="false">
+                        <m:MaterialSlideItem>
+                            <m:MaterialImage url="http://www.ogeo-portal.eu/images/1440.jpg"/>
+                            <m:MaterialSlideCaption textAlign="CENTER">
+                                <m:MaterialTitle title="Some slider about EO Broker" description="Here's our small slogan."/>
+                            </m:MaterialSlideCaption>
+                        </m:MaterialSlideItem>
+                    </m:MaterialSlider>
+
+                    <m:MaterialRow>
+                        <m:MaterialTitle title="Recommended products for you" />
+                        <m:MaterialColumn grid="l3">
+                            <m:MaterialCard backgroundColor="white">
+                                <m:MaterialCardImage waves="LIGHT">
+                                    <m:MaterialImage url="http://assets.materialup.com/uploads/ac9bf2ac-bf1c-4dc0-b655-0e13bf523bc8/20150710-__.png"/>
+                                    <m:MaterialCardTitle text="Sample"/>
+                                </m:MaterialCardImage>
+
+                                <m:MaterialCardContent textColor="black">
+                                    <m:MaterialLabel text="I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively." />
+                                </m:MaterialCardContent>
+
+                                <m:MaterialCardAction>
+                                    <m:MaterialLink text="Link 1" />
+                                    <m:MaterialLink text="Link 1" />
+                                </m:MaterialCardAction>
+                            </m:MaterialCard>
+                        </m:MaterialColumn>
+                        <m:MaterialColumn grid="l3">
+                            <m:MaterialCard backgroundColor="white">
+                                <m:MaterialCardImage waves="LIGHT">
+                                    <m:MaterialImage url="http://assets.materialup.com/uploads/0a2a2331-daa8-46a1-86e1-3ad154d3c5db/open-uri20150804-3-rnmrsb"/>
+                                    <m:MaterialCardTitle text="Sample" />
+                                </m:MaterialCardImage>
+
+                                <m:MaterialCardContent textColor="black">
+                                    <m:MaterialLabel text="I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively." />
+                                </m:MaterialCardContent>
+
+                                <m:MaterialCardAction>
+                                    <m:MaterialLink text="Link 1"/>
+                                    <m:MaterialLink text="Link 1"/>
+                                </m:MaterialCardAction>
+                            </m:MaterialCard>
+                        </m:MaterialColumn>
+                    </m:MaterialRow>
+
+                </g:HTMLPanel>
+
+                <m:MaterialFooter backgroundColor="blue">
+                    <m:MaterialRow>
+                        <m:MaterialColumn grid="s12 m6 l6">
+                            <m:MaterialTitle textColor="white" title="Join The Discussion" description="We provide Gitter Chat rooms in order for GWT Developers discussed and collaborate about GWT Material Design and Phonegap Integration."/>
+                            <m:MaterialButton ui:field="btnChat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                        </m:MaterialColumn>
+                        <m:MaterialColumn grid="s12 m6 l6">
+                            <m:MaterialTitle textColor="white" title="GWT Phonegap" description="We provide Gitter Chat rooms in order for GWT Developers discussed and collaborate about GWT Material Design and Phonegap Integration."/>
+                            <m:MaterialButton ui:field="btnDownloadPhonegap" text="GWT Material APK" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                        </m:MaterialColumn>
+                    </m:MaterialRow>
+                    <m:MaterialFooterCopyright>
+                        <m:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
+                    </m:MaterialFooterCopyright>
+                </m:MaterialFooter>
+            </g:HTMLPanel>
         </g:HTMLPanel>
     </ui:UiBinder>

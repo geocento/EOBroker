@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class Configuration {
 
     static public enum APPLICATION_SETTINGS {
-        eiToken
+        uploadPath, eiToken
     };
 
     static private Properties props=new Properties();

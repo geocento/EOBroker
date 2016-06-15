@@ -14,9 +14,8 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.EventBus;
 import org.fusesource.restygwt.client.Defaults;
 import org.fusesource.restygwt.client.Method;
@@ -30,7 +29,10 @@ public class Supplier implements EntryPoint {
 
     private static LoginInfo loginInfo;
 
-    private SimpleLayoutPanel appWidget = new SimpleLayoutPanel();
+    /*
+        private SimpleLayoutPanel appWidget = new SimpleLayoutPanel();
+    */
+    private SimplePanel appWidget = new SimplePanel();
 
     public static ClientFactory clientFactory;
 
@@ -65,7 +67,7 @@ public class Supplier implements EntryPoint {
         final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
         historyHandler.register(placeController, eventBus, clientFactory.getDefaultPlace());
 
-        RootLayoutPanel.get().add(appWidget);
+        RootPanel.get().add(appWidget);
 
         // remove the loading div
         DOM.removeChild(RootPanel.getBodyElement(), DOM.getElementById("loading"));

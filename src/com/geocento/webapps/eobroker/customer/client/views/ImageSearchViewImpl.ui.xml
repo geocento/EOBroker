@@ -2,7 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:m="urn:import:gwt.material.design.client.ui"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
-             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps">
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
+             xmlns:cellview="urn:import:com.google.gwt.user.cellview.client">
 
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:style>
@@ -13,7 +15,6 @@
         }
 
         .panel main {
-            overflow-x: auto;
             height: 100%;
         }
 
@@ -28,22 +29,6 @@
             padding-top: 0px !important;
         }
 
-        .currentSearch {
-            display: block;
-            top: 0px;
-            bottom: 0px;
-            margin-right: 300px;
-        }
-
-        .textSearch {
-            height: 100%;
-        }
-
-        .textSearch > input {
-            display: inline-block !important;
-            height: 100%;
-        }
-
         .searchBar {
             display: inline-block;
             margin-right: 300px;
@@ -53,37 +38,105 @@
         }
 
         .navBar > .nav-wrapper {
-            display: flex !important;
         }
 
         .providers {
             padding-left: 20px;
+            font-size: 1.2em !important;
+            line-height: normal !important;
+        }
+
+        .providers > i {
+            line-height: normal !important;
+        }
+
+        .logoImage {
+            display: block;
+        }
+
+        .queryPanel {
+            line-height: normal !important;
+        }
+
+        .result {
+            min-height: 200px;
+            overflow: hidden;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .queryButton {
+            text-align: center;
+            padding: 10px;
         }
 
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.panel}">
         <header>
             <!-- NavBar -->
-            <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" ui:field="navBar" backgroundColor="blue">
-                <m:MaterialNavSection flex="NONE">
-                    <m:MaterialImage height="64px" resource="{res.logoEOBroker}"></m:MaterialImage>
+            <m:MaterialNavBar addStyleNames="{style.navBar}" backgroundColor="blue" activates="searchBar" ui:field="navBar">
+                <m:MaterialNavSection>
+                    <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                    <m:MaterialLabel text="Image Search" paddingLeft="50" fontSize="1.5em"></m:MaterialLabel>
                 </m:MaterialNavSection>
-                <m:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
-                <widgets:MaterialSuggestion ui:field="textSearch" iconColor="white" backgroundColor="blue" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO"/>
-                <m:MaterialNavSection flex="NONE" float="RIGHT">
+                <m:MaterialNavSection float="RIGHT">
                     <m:MaterialTooltip text="Orders" position="BOTTOM">
                         <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE"/>
                     </m:MaterialTooltip>
                     <m:MaterialTooltip text="Notifications" position="BOTTOM">
-                        <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE"/>
+                        <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE"/>
                     </m:MaterialTooltip>
                     <m:MaterialTooltip text="Sign-in" position="BOTTOM">
                         <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
                     </m:MaterialTooltip>
                 </m:MaterialNavSection>
             </m:MaterialNavBar>
-            <m:MaterialDropDown activator="provider" constrainWidth="true" ui:field="providerDropdown">
-            </m:MaterialDropDown>
+            <m:MaterialSideNav width="400" m:id="searchBar" type="CARD" closeOnClick="false" ui:field="searchBar">
+                <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
+                    <m:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
+                    <m:MaterialDropDown activator="provider" ui:field="providerDropdown">
+                    </m:MaterialDropDown>
+                </sideprofile:MaterialSideProfile>
+                <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
+                    <m:MaterialColumn grid="s12" padding="0" width="100%" height="100%">
+                        <m:MaterialTab ui:field="tab" backgroundColor="teal lighten-2">
+                            <m:MaterialTabItem waves="YELLOW" grid="s6">
+                                <m:MaterialLink text="Query" href="#query" textColor="white"></m:MaterialLink>
+                            </m:MaterialTabItem>
+                            <m:MaterialTabItem waves="YELLOW" grid="s6">
+                                <m:MaterialLink text="Results" href="#results" textColor="white"></m:MaterialLink>
+                            </m:MaterialTabItem>
+                        </m:MaterialTab>
+                    </m:MaterialColumn>
+                    <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="white">
+                        <m:MaterialRow padding="0" margin="0">
+                            <m:MaterialColumn grid="s12">
+                                <m:MaterialTextBox text="Sensors" ui:field="sensors"></m:MaterialTextBox>
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialDatePicker ui:field="startDate" placeholder="Start Date" />
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialDatePicker ui:field="stopDate" placeholder="Stop Date" />
+                            </m:MaterialColumn>
+                        </m:MaterialRow>
+                        <m:MaterialLabel text="Add more..."></m:MaterialLabel>
+                        <m:MaterialRow addStyleNames="{style.queryButton}">
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="blue" enabled="false" ui:field="update"/>
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialButton text="Request" type="FLAT" textAlign="CENTER" backgroundColor="green" enabled="false" ui:field="request"/>
+                            </m:MaterialColumn>
+                        </m:MaterialRow>
+                    </m:MaterialColumn>
+                    <m:MaterialColumn m:id="results" grid="s12" padding="0">
+                        <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
+                        </g:SimplePanel>
+                    </m:MaterialColumn>
+                </m:MaterialRow>
+            </m:MaterialSideNav>
         </header>
 
         <m:MaterialContainer fontSize="0.8em" >
@@ -93,14 +146,14 @@
 
         <!-- FAB -->
         <m:MaterialFAB>
-            <m:MaterialTooltip text="Create" position="LEFT">
-                <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
+            <m:MaterialTooltip text="Change AoI" position="LEFT">
+                <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE"/>
             </m:MaterialTooltip>
             <m:MaterialFABList>
-                <m:MaterialTooltip text="Theme" position="LEFT">
+                <m:MaterialTooltip text="Draw new polygon" position="LEFT">
                     <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
                 </m:MaterialTooltip>
-                <m:MaterialTooltip text="Mail " position="LEFT">
+                <m:MaterialTooltip text="Clear AoI" position="LEFT">
                     <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
                 </m:MaterialTooltip>
             </m:MaterialFABList>

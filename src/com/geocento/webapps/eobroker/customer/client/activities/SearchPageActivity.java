@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
@@ -83,7 +84,7 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
             }
         }
         // update the interface
-        searchPageView.setCategory(category);
+        searchPageView.setCategories(category == null ? ListUtil.toList(Category.values()) : ListUtil.toList(category));
         // either text or product is provided
         if(text == null && productId == null && (browse == null || (browse != null && category == null))) {
             clientFactory.getPlaceController().goTo(new LandingPagePlace());
@@ -130,14 +131,17 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
                         searchPageView.hideLoadingResults();
                         // add all results to the interface
                         List<ProductDTO> suggestedProducts = searchResult.getProducts();
-                        searchPageView.setProductSelection(suggestedProducts.get(0), searchResult.getProductServices(), suggestedProducts.subList(0, Math.min(1, suggestedProducts.size() - 1)));
+                        ProductDTO product = suggestedProducts.get(0);
+                        searchPageView.setCurrentSearch("You selected '" + product.getName() + "'");
+                        searchPageView.setProductSelection(product, searchResult.getProductServices(), suggestedProducts.subList(0, Math.min(1, suggestedProducts.size() - 1)));
+                        searchPageView.setMatchingImagery(product.getName());
                     }
                 }).call(ServicesUtil.searchService).getMatchingServicesForProduct(productId, null);
             } catch (RequestException e) {
             }
         } else if(text != null) {
             searchPageView.displayLoadingResults("Searching matching results...");
-            searchPageView.setCurrentSearch(text);
+            searchPageView.setCurrentSearch("You searched for '" + text + "'");
             try {
                 REST.withCallback(new MethodCallback<SearchResult>() {
                     @Override
@@ -152,6 +156,7 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
                         List<ProductDTO> suggestedProducts = searchResult.getProducts();
                         searchPageView.setMatchingProducts(suggestedProducts);
                         searchPageView.setMatchingServices(searchResult.getProductServices());
+                        searchPageView.setMatchingImagery(text);
                     }
                 }).call(ServicesUtil.searchService).getMatchingServices(text, category, null);
             } catch (RequestException e) {
