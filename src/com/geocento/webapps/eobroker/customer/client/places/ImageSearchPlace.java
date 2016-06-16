@@ -15,7 +15,7 @@ public class ImageSearchPlace extends EOBrokerPlace {
         super(token);
     }
 
-    public enum TOKENS {text, aoiId};
+    public enum TOKENS {text, aoiId, uri, product};
 
     @Prefix("imagesearch")
     public static class Tokenizer implements PlaceTokenizer<ImageSearchPlace> {

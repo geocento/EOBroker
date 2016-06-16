@@ -221,6 +221,16 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
             IconType iconType = IconType.ACCESS_ALARM;
             switch (suggestion.getCategory()) {
                 case products:
+                    iconType = IconType.ADD_LOCATION;
+                    break;
+                case imagery:
+                    iconType = IconType.PICTURE_IN_PICTURE;
+                    break;
+                case datasets:
+                    iconType = IconType.LAYERS;
+                    break;
+                case companies:
+                    iconType = IconType.BUSINESS;
                     break;
             }
             link.setIconType(iconType);

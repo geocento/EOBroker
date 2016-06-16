@@ -1,11 +1,14 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
+import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
 import com.geocento.webapps.eobroker.common.shared.entities.Product;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
+import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
+import javax.persistence.EntityManager;
 import javax.ws.rs.Path;
 
 @Path("/")
@@ -33,8 +36,20 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public ProductDTO getProduct(Long id) {
-        return null;
+    public ProductDTO getProduct(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Product product = em.find(Product.class, id);
+            if(product == null) {
+                throw new RequestException("Product does not exist");
+            }
+            return ProductHelper.createProductDTO(product);
+        } finally {
+            em.close();
+        }
     }
 
     @Override

@@ -57,9 +57,7 @@ public class ImageUploadServlet extends HttpServlet {
 			        System.out.println("field name " + fieldName);
 		            saveFile = FilenameUtils.getName(item.getName());
 			        System.out.println("file name " + saveFile);
-		            if(fieldName.equalsIgnoreCase("image")) {
-			            filecontent = item.getInputStream();
-		            }
+                    filecontent = item.getInputStream();
 		        }
 		    }
 	        System.out.println("Processing " + saveFile);
@@ -118,7 +116,7 @@ public class ImageUploadServlet extends HttpServlet {
             }
             return filePath;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
     }

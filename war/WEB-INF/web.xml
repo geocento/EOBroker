@@ -51,6 +51,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImageUploadServlet</servlet-name>
-        <url-pattern>/uploaded/image/</url-pattern>
+        <url-pattern>/upload/image/</url-pattern>
     </servlet-mapping>
 </web-app>

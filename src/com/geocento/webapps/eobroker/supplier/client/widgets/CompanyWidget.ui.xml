@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui">
-    <design:MaterialCard backgroundColor="white" axis="HORIZONTAL">
+    <design:MaterialCard backgroundColor="white">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>

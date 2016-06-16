@@ -60,7 +60,7 @@ public class ServicesViewImpl extends Composite implements ServicesView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        final String uploadedUrl = "/uploaded/image/";
+        final String uploadedUrl = "/upload/image/";
         imageUploader.setUrl(uploadedUrl);
         // Added the progress to card uploader
         imageUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
@@ -75,7 +75,7 @@ public class ServicesViewImpl extends Composite implements ServicesView {
             public void onSuccess(SuccessEvent<UploadFile> event) {
                 iconName.setText(event.getTarget().getName());
                 iconSize.setText(event.getTarget().getType());
-                iconPreview.setUrl(GWT.getHostPageBaseURL() + uploadedUrl + "/" + event.getTarget().getName());
+                iconPreview.setUrl(event.getResponse().getMessage().replaceAll("<value>", "").replaceAll("</value>", ""));
             }
         });
 

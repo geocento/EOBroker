@@ -9,10 +9,7 @@ import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
 import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelectedHandler;
 import com.geocento.webapps.eobroker.customer.client.events.TextSelected;
 import com.geocento.webapps.eobroker.customer.client.events.TextSelectedHandler;
-import com.geocento.webapps.eobroker.customer.client.places.EOBrokerPlace;
-import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
-import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
-import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.LandingPageView;
 import com.google.gwt.event.shared.EventBus;
@@ -61,7 +58,7 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
                 Customer.currentAoI = aoi;
                 // update the fields
                 Suggestion suggestion = event.getSuggestion();
-                setCategory(suggestion.getCategory());
+                //setCategory(suggestion.getCategory());
                 // TODO - move to a helper class
                 String uri = suggestion.getUri();
                 String action = uri.split("::")[0];
@@ -75,24 +72,27 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
                         if(action.contentEquals("search")) {
                             searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
                                     (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
-                            setText(parameters);
+                            //setText(parameters);
                         } else if(action.contentEquals("request")) {
-                            setText("");
+                            searchPlace = new RequestImageryPlace(parameters);
+                            //setText("");
                         };
                         break;
                     case products:
                         String token = "";
                         if(action.contentEquals("product")) {
                             token += SearchPagePlace.TOKENS.product.toString() + "=" + parameters;
-                            setText(suggestion.getName());
+                            //setText(suggestion.getName());
                         } else if(action.contentEquals("browse")) {
                             token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
-                            setText("");
+                            //setText("");
                         } else {
                             token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
-                            setText(text);
+                            //setText(text);
                         }
-                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                        if(category != null) {
+                            token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                        }
                         if(aoi != null) {
                             token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
                         }
@@ -189,15 +189,6 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
                     // show only if last one to be called
                     if (lastCall == LandingPageActivity.this.lastCall) {
                         landingPageView.displayListSuggestions(response);
-/*
-                        ListUtil.mutate(response, new ListUtil.Mutate<Suggestion, SearchObject>() {
-                            @Override
-                            public SearchObject mutate(Suggestion suggestion) {
-                                return new SearchObject(IconType.ACCESS_ALARM,
-                                        suggestion.getName());
-                            }
-                        }));
-*/
                     }
                 }
             }).call(ServicesUtil.searchService).complete(text, category, toWkt(aoi));
@@ -223,7 +214,7 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
                 break;
             case imagery:
                 suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
-                suggestions.add(new Suggestion("Submit request for imagery", Category.imagery, "request::"));
+                suggestions.add(new Suggestion("Request quotation for imagery", Category.imagery, "request::"));
                 break;
             case companies:
                 suggestions.add(new Suggestion("Browse companies", Category.companies, "browse::"));

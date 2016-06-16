@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.*;
@@ -28,7 +29,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/products/{id}")
     @Produces("application/json")
-    public ProductDTO getProduct(@PathParam("id") Long id);
+    public ProductDTO getProduct(@PathParam("id") Long id) throws RequestException;
 
     @POST
     @Path("/assets/products/")

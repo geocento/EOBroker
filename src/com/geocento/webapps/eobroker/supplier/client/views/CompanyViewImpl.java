@@ -75,7 +75,7 @@ public class CompanyViewImpl extends Composite implements CompanyView {
             public void onSuccess(SuccessEvent<UploadFile> event) {
                 iconName.setText(event.getTarget().getName());
                 iconSize.setText(event.getTarget().getType());
-                iconPreview.setUrl(GWT.getHostPageBaseURL() + uploadedUrl + "/" + event.getTarget().getName());
+                iconPreview.setUrl(event.getResponse().getMessage().replaceAll("<value>", "").replaceAll("</value>", ""));
             }
         });
 

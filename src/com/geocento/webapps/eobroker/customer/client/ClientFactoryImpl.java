@@ -21,6 +21,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ImageSearchViewImpl imageSearchView = null;
 
+    private RequestImageryViewImpl requestImageryView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -66,6 +68,14 @@ public class ClientFactoryImpl implements ClientFactory {
             imageSearchView = new ImageSearchViewImpl(this);
         }
         return imageSearchView;
+    }
+
+    @Override
+    public RequestImageryView getRequestImageryView() {
+        if(requestImageryView == null) {
+            requestImageryView = new RequestImageryViewImpl(this);
+        }
+        return requestImageryView;
     }
 
 }

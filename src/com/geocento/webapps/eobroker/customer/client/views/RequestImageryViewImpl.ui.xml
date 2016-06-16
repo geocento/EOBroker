@@ -1,0 +1,191 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+             xmlns:h="urn:import:com.google.gwt.user.client.ui">
+
+        <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+        <ui:style>
+
+            @external nav-wrapper;
+
+            .panel {
+            }
+
+            .panel header, .panel main, .panel footer {
+            }
+
+            .panel main {
+                max-width: 960px;
+                margin: auto;
+            }
+
+            .panel header {
+                position: fixed;
+                top: 0px;
+                width: 100%;
+                z-index: 1000;
+            }
+
+            .mainPanel {
+                position: fixed;
+                top: 64px;
+                bottom: 0px;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                overflow-y: auto;
+                z-index: 500;
+            }
+
+            .mapPanel {
+                position: relative;
+            }
+
+            .label {
+                margin: 24px;
+            }
+
+            .footer {
+                position: fixed;
+                width: 100%;
+                bottom: 0px;
+                padding-top: 0px !important;
+            }
+
+            .currentSearch {
+                display: block;
+                top: 0px;
+                bottom: 0px;
+                margin-right: 300px;
+            }
+
+            .textSearch {
+                height: 100%;
+            }
+
+            .textSearch > input {
+                display: inline-block !important;
+                height: 100%;
+            }
+
+            .searchBar {
+                display: inline-block;
+                margin-right: 300px;
+            }
+
+            .navBar {
+            }
+
+            .categories {
+                padding-left: 20px;
+            }
+
+            .mainPanel {
+            }
+
+            .content {
+                margin: 30px auto;
+                max-width: 960px;
+            }
+
+            .section {
+                padding: 10px 0px 10px 20px;
+                font-size: 1rem;
+                color: #9e9e9e;
+            }
+
+            .suppliersPanel {
+                padding-left: 50px;
+            }
+
+            .buttonPanel {
+                padding: 20px;
+                text-align: center;
+            }
+
+        </ui:style>
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <header>
+                <!-- NavBar -->
+                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" backgroundColor="blue" ui:field="navBar">
+                    <m:MaterialNavSection>
+                        <m:MaterialImage height="64px" resource="{res.logoEOBroker}" ui:field="logo"></m:MaterialImage>
+                    </m:MaterialNavSection>
+                    <m:MaterialLink text="Imagery quotation" textColor="white" paddingLeft="50" fontSize="1.5em"></m:MaterialLink>
+                    <m:MaterialNavSection float="RIGHT">
+                        <m:MaterialTooltip text="Orders" position="BOTTOM">
+                            <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE">
+                            </m:MaterialLink>
+                        </m:MaterialTooltip>
+                        <m:MaterialTooltip text="Notifications" position="BOTTOM">
+                            <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE">
+                                <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true"/>
+                            </m:MaterialLink>
+                        </m:MaterialTooltip>
+                        <m:MaterialTooltip text="Sign-in" position="BOTTOM">
+                            <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
+                        </m:MaterialTooltip>
+                    </m:MaterialNavSection>
+                </m:MaterialNavBar>
+            </header>
+
+            <g:HTMLPanel addStyleNames="{style.mainPanel}">
+                <m:MaterialContainer>
+                    <m:MaterialTitle title="Request quotation for imagery" description="" ui:field="title"></m:MaterialTitle>
+                    <m:MaterialTextBox placeholder="Specify type of imagery you request"></m:MaterialTextBox>
+                    <m:MaterialLabel text="Draw or upload AoI" addStyleNames="{style.section}"></m:MaterialLabel>
+                    <m:MaterialRow addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                        <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
+                        </maps:ArcGISMap>
+                        <!-- FAB -->
+                        <m:MaterialFAB layoutPosition="ABSOLUTE" bottom="60">
+                            <m:MaterialTooltip text="Create" position="LEFT">
+                                <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
+                            </m:MaterialTooltip>
+                            <m:MaterialFABList>
+                                <m:MaterialTooltip text="Theme" position="LEFT">
+                                    <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
+                                </m:MaterialTooltip>
+                                <m:MaterialTooltip text="Mail " position="LEFT">
+                                    <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
+                                </m:MaterialTooltip>
+                            </m:MaterialFABList>
+                        </m:MaterialFAB>
+                        <m:MaterialFAB layoutPosition="ABSOLUTE" left="20">
+                            <m:MaterialTooltip text="Close map" position="RIGHT">
+                                <m:MaterialButton type="FLOATING" backgroundColor="grey" iconType="CLOSE" size="MEDIUM" ui:field="closeMap"/>
+                            </m:MaterialTooltip>
+                        </m:MaterialFAB>
+                    </m:MaterialRow>
+                    <m:MaterialLabel text="Many more fields..." addStyleNames="{style.section}"></m:MaterialLabel>
+                    <m:MaterialLabel text="Select suppliers" addStyleNames="{style.section}"></m:MaterialLabel>
+                    <g:HTMLPanel addStyleNames="{style.suppliersPanel}" ui:field="suppliers">
+                        <m:MaterialCheckBox text="Geocento"></m:MaterialCheckBox>
+                        <m:MaterialCheckBox text="KSAT"></m:MaterialCheckBox>
+                    </g:HTMLPanel>
+                    <h:HTMLPanel addStyleNames="{style.buttonPanel}">
+                        <m:MaterialButton text="SUBMIT"></m:MaterialButton>
+                    </h:HTMLPanel>
+                </m:MaterialContainer>
+
+
+                <m:MaterialFooter backgroundColor="blue">
+                    <m:MaterialRow>
+                        <m:MaterialColumn grid="s12 m6 l6">
+                            <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>
+                            <m:MaterialButton ui:field="chat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                        </m:MaterialColumn>
+                        <m:MaterialColumn grid="s12 m6 l6">
+                            <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
+                            <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                        </m:MaterialColumn>
+                    </m:MaterialRow>
+                    <m:MaterialFooterCopyright>
+                        <m:MaterialLabel text="© 2016 Copyright Geocento Ltd and partners" />
+                    </m:MaterialFooterCopyright>
+                </m:MaterialFooter>
+            </g:HTMLPanel>
+        </g:HTMLPanel>
+    </ui:UiBinder>

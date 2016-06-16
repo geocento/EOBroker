@@ -6,7 +6,13 @@ import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.events.RequestImagery;
+import com.geocento.webapps.eobroker.customer.client.events.RequestImageryHandler;
+import com.geocento.webapps.eobroker.customer.client.events.SearchImagery;
+import com.geocento.webapps.eobroker.customer.client.events.SearchImageryHandler;
+import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.SearchPageView;
@@ -54,6 +60,27 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
                 clientFactory.getPlaceController().goTo(new LandingPagePlace(""));
             }
         }));
+
+        handlers.add(searchPageView.getHomeButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new LandingPagePlace());
+            }
+        }));
+
+        activityEventBus.addHandler(RequestImagery.TYPE, new RequestImageryHandler() {
+            @Override
+            public void onRequestImagery(RequestImagery event) {
+                clientFactory.getPlaceController().goTo(new RequestImageryPlace(place.getToken()));
+            }
+        });
+
+        activityEventBus.addHandler(SearchImagery.TYPE, new SearchImageryHandler() {
+            @Override
+            public void onSearchImagery(SearchImagery event) {
+                clientFactory.getPlaceController().goTo(new ImageSearchPlace(place.getToken()));
+            }
+        });
     }
 
     private void handleHistory() {

@@ -48,18 +48,18 @@
 
         .productTitle, .productServicesTitle {
             margin: 7px 0;
-            text-align: center;
+            padding-left: 10px;
             line-height: 50px;
             font-size: 28px;
             color: white;
         }
 
         .productTitle {
-            background-color: grey;
+            background-color: #4db6ac;
         }
 
         .productServicesTitle {
-            background-color: grey;
+            background-color: #4db6ac;
         }
 
         .alternativesTitle {
@@ -72,6 +72,7 @@
 
         .logoImage {
             display: block;
+            cursor: pointer;
         }
 
     </ui:style>

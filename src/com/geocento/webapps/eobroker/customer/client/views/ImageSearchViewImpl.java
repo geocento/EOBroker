@@ -223,7 +223,8 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
         for(ImageProductDTO imageProductDTO : imageProductDTOs) {
             AoIPolygon aoiPolygon = new AoIPolygon();
             aoiPolygon.setWktRings(imageProductDTO.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoiPolygon), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
+            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoiPolygon),
+                    mapContainer.arcgisMap.createFillSymbol(imageProductDTO.isArchiveProduct() ? "#ff0000" : "#00ffff" , 2, "rgba(0,0,0,0.2)"));
         }
 
         // add products to results table

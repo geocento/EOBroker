@@ -37,6 +37,8 @@ public interface SearchPageView extends IsWidget {
 
     void setMatchingImagery(String text);
 
+    HasClickHandlers getHomeButton();
+
     public interface Presenter {
     }
 

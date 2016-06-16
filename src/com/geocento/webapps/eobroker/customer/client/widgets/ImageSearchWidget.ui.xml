@@ -6,7 +6,7 @@
             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action">
-            <design:MaterialButton text="Search Images" backgroundColor="blue-grey" textColor="white"></design:MaterialButton>
+            <design:MaterialButton text="Search Images" backgroundColor="blue-grey" textColor="white" ui:field="search"></design:MaterialButton>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

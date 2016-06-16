@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialLabel;
 
 import java.util.List;
 
@@ -50,6 +51,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public void setServices(List<ProductServiceDTO> productServiceDTOs) {
         services.clear();
+        if(productServiceDTOs == null || productServiceDTOs.size() == 0) {
+            services.add(new MaterialLabel("No service, click on the button below to add a new service"));
+            return;
+        }
         for(ProductServiceDTO productServiceDTO : productServiceDTOs) {
             services.add(new ProductServiceWidget(productServiceDTO));
         }

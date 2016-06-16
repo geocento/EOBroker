@@ -4,13 +4,13 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
-import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImageSearchView;
 import com.google.gwt.core.client.Callback;
@@ -70,20 +70,19 @@ public class ImageSearchActivity extends AbstractApplicationActivity implements 
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        final String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
+        final String text = tokens.get(ImageSearchPlace.TOKENS.text.toString());
         Long productId = null;
-        if (tokens.containsKey(SearchPagePlace.TOKENS.product.toString())) {
+        if (tokens.containsKey(ImageSearchPlace.TOKENS.product.toString())) {
             try {
-                productId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.product.toString()));
+                productId = Long.parseLong(tokens.get(ImageSearchPlace.TOKENS.product.toString()));
             } catch (Exception e) {
 
             }
         }
-        String browse = tokens.get(SearchPagePlace.TOKENS.browse.toString());
         Long aoiId = null;
-        if (tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
+        if (tokens.containsKey(ImageSearchPlace.TOKENS.aoiId.toString())) {
             try {
-                aoiId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.aoiId.toString()));
+                aoiId = Long.parseLong(tokens.get(ImageSearchPlace.TOKENS.aoiId.toString()));
             } catch (Exception e) {
             }
         }
@@ -91,20 +90,37 @@ public class ImageSearchActivity extends AbstractApplicationActivity implements 
         List<ImageryService> suppliers = generateSuppliersList();
         imageSearchView.setSuppliers(suppliers);
         imageSearchView.displaySupplier(suppliers.get(0));
-/*
-        AoIPolygon aoIPolygon = new AoIPolygon();
-        aoIPolygon.setWktRings("-2.4609375 56.87749838693283,0.439453125 58.6583707283785,3.076171875 57.25973712933438,3.251953125 55.5581558834549,0.087890625 55.10822970202758,-2.4609375 55.805911967706635,-2.4609375 56.87749838693283");
-        setAoi(aoIPolygon);
-*/
         setAoi(Customer.currentAoI);
-        setSensors(text);
         Date now = new Date();
         setStartDate(new Date(now.getTime() - 10 * 24 * 3600 * 1000));
         setStopDate(now);
         setCurrency("EUR");
-        enableUpdateMaybe();
-        if(aoi != null && text != null && text.length() > 0) {
-            updateSearch();
+        if(productId != null) {
+            try {
+                REST.withCallback(new MethodCallback<ProductDTO>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, ProductDTO productDTO) {
+                        setSensors("Suitable for '" + productDTO.getName() + "'");
+                        enableUpdateMaybe();
+                        if(aoi != null && text != null && text.length() > 0) {
+                            updateSearch();
+                        }
+                    }
+                }).call(ServicesUtil.assetsService).getProduct(productId);
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
+        } else {
+            setSensors(text);
+            enableUpdateMaybe();
+            if(aoi != null && text != null && text.length() > 0) {
+                updateSearch();
+            }
         }
     }
 
@@ -185,7 +201,9 @@ public class ImageSearchActivity extends AbstractApplicationActivity implements 
     }
 
     private String getSensorsFilter(String sensors) {
-        return sensors.startsWith("free") ? "SENTI*;LANDSAT*" : sensors;
+        return sensors.startsWith("free") ? "SENTI*;LANDSAT*" :
+                sensors.startsWith("Suitable") ? "SPOT-6_*;TerraSAR*" :
+                sensors;
     }
 
     @Override

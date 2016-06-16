@@ -64,6 +64,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     MaterialSideNav filtersPanel;
     @UiField
     HTMLPanel container;
+    @UiField
+    MaterialImage logo;
 
     private Presenter presenter;
 
@@ -129,7 +131,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
             productRow.add(serviceColumn);
             serviceColumn.add(new ProductServiceWidget(productServiceDTO));
         }
-        addTitle(productRow, "Also", style.alternativesTitle());
     }
 
     private void addTitle(MaterialRow productRow, String message, String style) {
@@ -203,6 +204,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         serviceColumn = new MaterialColumn(12, 6, 4);
         productRow.add(serviceColumn);
         serviceColumn.add(new ImageRequestWidget(text));
+    }
+
+    @Override
+    public HasClickHandlers getHomeButton() {
+        return logo;
     }
 
     @UiHandler("signIn")

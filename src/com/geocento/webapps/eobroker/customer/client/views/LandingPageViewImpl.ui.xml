@@ -194,16 +194,16 @@
                 <m:MaterialFooter backgroundColor="blue">
                     <m:MaterialRow>
                         <m:MaterialColumn grid="s12 m6 l6">
-                            <m:MaterialTitle textColor="white" title="Join The Discussion" description="We provide Gitter Chat rooms in order for GWT Developers discussed and collaborate about GWT Material Design and Phonegap Integration."/>
-                            <m:MaterialButton ui:field="btnChat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                            <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>
+                            <m:MaterialButton ui:field="chat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
                         </m:MaterialColumn>
                         <m:MaterialColumn grid="s12 m6 l6">
-                            <m:MaterialTitle textColor="white" title="GWT Phonegap" description="We provide Gitter Chat rooms in order for GWT Developers discussed and collaborate about GWT Material Design and Phonegap Integration."/>
-                            <m:MaterialButton ui:field="btnDownloadPhonegap" text="GWT Material APK" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                            <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
+                            <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT"/>
                         </m:MaterialColumn>
                     </m:MaterialRow>
                     <m:MaterialFooterCopyright>
-                        <m:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
+                        <m:MaterialLabel text="© 2016 Copyright Geocento Ltd and partners" />
                     </m:MaterialFooterCopyright>
                 </m:MaterialFooter>
             </g:HTMLPanel>
