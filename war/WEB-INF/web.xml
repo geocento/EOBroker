@@ -30,6 +30,16 @@
         </init-param>
     </servlet>
     <servlet>
+        <servlet-name>RestAPIAdmin</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>
+                com.geocento.webapps.eobroker.admin.server.servlets
+            </param-value>
+        </init-param>
+    </servlet>
+    <servlet>
         <servlet-name>FileServlet</servlet-name>
         <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.FileServlet</servlet-class>
     </servlet>
@@ -46,8 +56,12 @@
         <url-pattern>/supplier/api/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>RestAPIAdmin</servlet-name>
+        <url-pattern>/admin/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>FileServlet</servlet-name>
-        <url-pattern>/uploaded/</url-pattern>
+        <url-pattern>/uploaded/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImageUploadServlet</servlet-name>

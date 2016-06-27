@@ -10,6 +10,11 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.Company</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.User</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductService</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.FormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.AoIFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ChoiceFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.TextFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.DateFormElement</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />
