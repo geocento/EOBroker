@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .buttonPanel {
+            padding: 20px 0px;
+        }
+        .buttonPanel > * {
+            display: inline-block;
+        }
+
+        .selectElement {
+            max-width: 300px;
+        }
+
+        .container > * {
+            max-width: 600px;
+        }
+
+    </ui:style>
+    <g:HTMLPanel>
+        <design:MaterialLabel ui:field="comment"></design:MaterialLabel>
+        <g:FlowPanel addStyleNames="{style.container}" ui:field="container"></g:FlowPanel>
+        <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+            <design:MaterialListBox addStyleNames="{style.selectElement}" ui:field="selectElement"></design:MaterialListBox>
+            <design:MaterialButton text="Add Element" ui:field="addElement"></design:MaterialButton>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -1,0 +1,21 @@
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.0//EN"
+        "http://google-web-toolkit.googlecode.com/svn/releases/2.0/distro-source/core/src/gwt-module.dtd">
+<module rename-to="admin">
+
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name="com.google.gwt.activity.Activity"/>
+    <inherits name="com.geocento.webapps.eobroker.common.common"/>
+
+    <entry-point class='com.geocento.webapps.eobroker.admin.client.Admin'/>
+
+    <replace-with class="com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl">
+        <when-type-is class="com.geocento.webapps.eobroker.admin.client.ClientFactory"/>
+    </replace-with>
+
+    <source path='client'/>
+    <source path='shared'/>
+
+    <!-- Fallback User Agent for use by CRAWLERS -->
+    <set-property-fallback name="user.agent" value="gecko1_8" />
+
+</module>

@@ -1,0 +1,69 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.admin.client.widgets"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.admin.client.views"
+        >
+    <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.DashboardViewImpl.Style">
+        .panel header {
+
+        }
+
+        .panel main, .panel footer {
+        }
+
+        .panel main {
+            min-height: 80%;
+        }
+
+        .mainPanel {
+            position: fixed;
+            top: 64px;
+            bottom: 0px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .navBrand {
+            color: grey;
+            padding-left: 20px;
+            font-size: 1.4em;
+        }
+
+        .logoImage {
+            display: block;
+        }
+
+        .section {
+            margin: 7px 0;
+            text-align: center;
+            line-height: 50px;
+            font-size: 28px;
+            color: grey;
+        }
+
+        .services {
+            margin: 20px 0px;
+        }
+
+        .companyWidget {
+            display: inline-block;
+        }
+
+        .navBar {
+            z-index: 1000;
+        }
+
+        .navOpened main, .navOpened footer {
+            padding-left: 300px;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
+    <views:TemplateView ui:field="template">
+        <design:MaterialTitle title="Messages"></design:MaterialTitle>
+        <g:HTMLPanel addStyleNames="{style.services}">
+            List of notifications and messages...
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

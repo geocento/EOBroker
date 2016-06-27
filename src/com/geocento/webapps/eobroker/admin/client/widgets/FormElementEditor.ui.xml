@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <g:HTMLPanel>
+        <design:MaterialCard backgroundColor="blue">
+            <design:MaterialCardContent textColor="white">
+                <design:MaterialCardContent textColor="white" ui:field="title">
+                    <design:MaterialCardTitle text="EDIT FORM ELEMENT"></design:MaterialCardTitle>
+                    <design:MaterialTextBox textColor="white" placeholder="name" ui:field="name"></design:MaterialTextBox>
+                    <design:MaterialTextArea textColor="white" placeholder="description" ui:field="description"></design:MaterialTextArea>
+                </design:MaterialCardContent>
+            </design:MaterialCardContent>
+            <design:MaterialCardAction textColor="white">
+                <design:MaterialLink iconType="SAVE" text="OK" ui:field="save"></design:MaterialLink>
+                <design:MaterialLink iconType="CANCEL" text="CANCEL" ui:field="cancel"></design:MaterialLink>
+            </design:MaterialCardAction>
+        </design:MaterialCard>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -1,0 +1,95 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+        >
+    <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.TemplateView.Style">
+        .panel header {
+
+        }
+
+        .panel main, .panel footer {
+        }
+
+        .panel main {
+            min-height: 80%;
+        }
+
+        .mainPanel {
+            position: fixed;
+            top: 64px;
+            bottom: 0px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .navBrand {
+            color: grey;
+            padding-left: 20px;
+            font-size: 1.4em;
+        }
+
+        .logoImage {
+            display: block;
+            cursor: pointer;
+        }
+
+        .section {
+            margin: 7px 0;
+            text-align: center;
+            line-height: 50px;
+            font-size: 28px;
+            color: grey;
+        }
+
+        .services {
+            margin: 20px 0px;
+        }
+
+        .companyWidget {
+            display: inline-block;
+        }
+
+        .navBar {
+            z-index: 1000;
+        }
+
+        .navOpened main, .navOpened footer {
+            padding-left: 300px;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
+    <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
+        <header>
+            <!-- NavBar -->
+            <design:MaterialNavBar activates="sideNav" backgroundColor="grey" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
+                <design:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="true" allowBodyScroll="true" showOnAttach="true" backgroundColor="white" top="64" shadow="0" width="300" ui:field="sideNav">
+                    <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
+<!--
+                    <design:MaterialNavBrand text="Categories"></design:MaterialNavBrand>
+-->
+                    <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" ui:field="companies"></design:MaterialLink>
+                    <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" ui:field="products"></design:MaterialLink>
+                </design:MaterialSideNav>
+                <design:MaterialNavSection>
+                    <design:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
+                    <design:MaterialLabel text="Admin dashboard" paddingLeft="50" fontSize="1.5em"></design:MaterialLabel>
+                </design:MaterialNavSection>
+                <design:MaterialNavSection float="RIGHT">
+                    <design:MaterialTooltip text="Notifications" position="BOTTOM">
+                        <design:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE"/>
+                    </design:MaterialTooltip>
+                </design:MaterialNavSection>
+            </design:MaterialNavBar>
+        </header>
+
+        <design:MaterialContainer fontSize="0.8em" paddingTop="64" ui:field="mainPanel">
+        </design:MaterialContainer>
+        <design:MaterialFooter backgroundColor="blue">
+            <design:MaterialFooterCopyright>
+                <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
+            </design:MaterialFooterCopyright>
+        </design:MaterialFooter>
+
+    </g:HTMLPanel>
+</ui:UiBinder>
