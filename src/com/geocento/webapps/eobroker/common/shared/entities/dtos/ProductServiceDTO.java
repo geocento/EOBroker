@@ -9,9 +9,13 @@ public class ProductServiceDTO {
     String name;
     String description;
     String serviceImage;
-    Long productId;
+    ProductDTO product;
     String companyName;
     String companyLogo;
+    String email;
+    String website;
+    String fullDescription;
+    Long companyId;
 
     public ProductServiceDTO() {
     }
@@ -48,12 +52,12 @@ public class ProductServiceDTO {
         this.serviceImage = serviceImage;
     }
 
-    public Long getProductId() {
-        return productId;
+    public ProductDTO getProduct() {
+        return product;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setProduct(ProductDTO product) {
+        this.product = product;
     }
 
     public String getCompanyName() {
@@ -70,5 +74,38 @@ public class ProductServiceDTO {
 
     public void setCompanyLogo(String companyLogo) {
         this.companyLogo = companyLogo;
+    }
+
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setFullDescription(String fullDescription) {
+        this.fullDescription = fullDescription;
+    }
+
+    public String getFullDescription() {
+        return fullDescription;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 }

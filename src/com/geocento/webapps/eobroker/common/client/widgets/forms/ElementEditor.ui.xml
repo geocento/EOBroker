@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .buttons {
+            float: right;
+        }
+
+        .label {
+
+        }
+
+    </ui:style>
+    <g:HTMLPanel>
+        <g:HTMLPanel addStyleNames="{style.buttons}" ui:field="buttons">
+            <design:MaterialTooltip ui:field="information">
+                <design:MaterialIcon iconType="INFO"></design:MaterialIcon>
+            </design:MaterialTooltip>
+        </g:HTMLPanel>
+        <design:MaterialLabel truncate="true" addStyleNames="{style.label}" ui:field="label"></design:MaterialLabel>
+        <g:HTMLPanel ui:field="container"></g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

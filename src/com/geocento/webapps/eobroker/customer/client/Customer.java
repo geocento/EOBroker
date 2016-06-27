@@ -12,9 +12,8 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.EventBus;
 import org.fusesource.restygwt.client.Defaults;
 
@@ -24,7 +23,7 @@ import org.fusesource.restygwt.client.Defaults;
 public class Customer implements EntryPoint {
 
     public static AoI currentAoI;
-    private SimpleLayoutPanel appWidget = new SimpleLayoutPanel();
+    private SimplePanel appWidget = new SimplePanel();
 
     public static ClientFactory clientFactory;
 
@@ -55,7 +54,7 @@ public class Customer implements EntryPoint {
         final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
         historyHandler.register(placeController, eventBus, clientFactory.getDefaultPlace());
 
-        RootLayoutPanel.get().add(appWidget);
+        RootPanel.get().add(appWidget);
 
         // remove the loading div
         DOM.removeChild(RootPanel.getBodyElement(), DOM.getElementById("loading"));
@@ -63,27 +62,6 @@ public class Customer implements EntryPoint {
         initialise();
 
         historyHandler.handleCurrentHistory();
-
-/*
-        final MaterialSplashScreen splash = new MaterialSplashScreen();
-        splash.setBackgroundColor("blue");
-        splash.setTextColor("white");
-        splash.setTextAlign(TextAlign.CENTER);
-        MaterialImage materialImage = new MaterialImage();
-        materialImage.setResource(StyleResources.INSTANCE.logoEOBroker());
-        splash.add(materialImage);
-        MaterialTitle materialTitle = new MaterialTitle("EO Broker", "The ESA EO Broker description");
-        splash.add(materialTitle);
-        splash.show();
-        Timer timer = new Timer() {
-            @Override
-            public void run() {
-                splash.hide();
-                historyHandler.handleCurrentHistory();
-            }
-        };
-        timer.schedule(3000);
-*/
     }
 
     private void initialise() {

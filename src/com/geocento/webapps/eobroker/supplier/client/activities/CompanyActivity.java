@@ -88,13 +88,6 @@ public class CompanyActivity extends AbstractApplicationActivity implements Comp
     @Override
     protected void bind() {
 
-        handlers.add(companyView.getHomeButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new DashboardPlace());
-            }
-        }));
-
         handlers.add(companyView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

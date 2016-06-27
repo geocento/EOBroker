@@ -15,6 +15,11 @@ public class FileServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String pathInfo = request.getPathInfo();
+        if(pathInfo == null || pathInfo.length() == 0) {
+            response.sendError(500, "Please specify a file path in your request");
+            return;
+        }
         String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
         File file = new File(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath), filename);
         response.setHeader("Content-Type", getServletContext().getMimeType(filename));

@@ -1,0 +1,50 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+        >
+    <ui:style>
+        .formPanel {
+            width: 960px;
+            margin: 0px auto;
+        }
+
+        .buttonsPanel {
+            padding: 20px 0px;
+        }
+
+        .container {
+            margin: 20px 0px 20px 30px;
+        }
+
+    </ui:style>
+    <views:TemplateView ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.formPanel}">
+            <design:MaterialTitle title="Request quotation for the following product" ui:field="title"></design:MaterialTitle>
+            <design:MaterialCard backgroundColor="white" axis="HORIZONTAL" shadow="0">
+                <design:MaterialCardImage waves="LIGHT">
+                    <design:MaterialImage ui:field="image"></design:MaterialImage>
+                </design:MaterialCardImage>
+                <design:MaterialCardContent>
+                    <design:MaterialLabel fontSize="1.5em" ui:field="name"/>
+                    <design:MaterialLabel ui:field="description"></design:MaterialLabel>
+                </design:MaterialCardContent>
+                <design:MaterialCardAction ui:field="action">
+                    <design:MaterialLink iconType="INFO" text="MORE INFORMATION" ui:field="information"></design:MaterialLink>
+                </design:MaterialCardAction>
+            </design:MaterialCard>
+            <g:HTMLPanel>
+                <design:MaterialLabel text="Please fill in the form" fontSize="1.5em"/>
+                <g:HTMLPanel addStyleNames="{style.container}" ui:field="formContainer"></g:HTMLPanel>
+            </g:HTMLPanel>
+            <g:HTMLPanel>
+                <design:MaterialLabel text="Select your suppliers" fontSize="1.5em"/>
+                <g:HTMLPanel addStyleNames="{style.container}" ui:field="suppliers">
+                </g:HTMLPanel>
+            </g:HTMLPanel>
+            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+            </g:HTMLPanel>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

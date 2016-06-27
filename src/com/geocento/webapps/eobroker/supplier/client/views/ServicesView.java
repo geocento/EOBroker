@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -31,7 +32,17 @@ public interface ServicesView extends IsWidget {
 
     void setIconUrl(String iconURL);
 
-    HasClickHandlers getHomeButton();
+    ProductDTO getSelectProduct();
+
+    void setSelectedProduct(ProductDTO productDTO);
+
+    void displayLoading(String message);
+
+    void hideLoading();
+
+    void displayError(String message);
+
+    void displaySuccess(String message);
 
     public interface Presenter {
     }

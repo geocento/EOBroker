@@ -3,7 +3,6 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
-import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
 import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ServicesView;
@@ -13,7 +12,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -88,17 +86,14 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
         servicesView.getName().setText(productServiceDTO.getName());
         servicesView.getDescription().setText(productServiceDTO.getDescription());
         servicesView.setIconUrl(productServiceDTO.getServiceImage());
+        servicesView.getEmail().setText(productServiceDTO.getEmail());
+        servicesView.getWebsite().setText(productServiceDTO.getWebsite());
+        servicesView.setSelectedProduct(productServiceDTO.getProduct());
+        servicesView.setFullDescription(productServiceDTO.getFullDescription());
     }
 
     @Override
     protected void bind() {
-
-        handlers.add(servicesView.getHomeButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new DashboardPlace());
-            }
-        }));
 
         handlers.add(servicesView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
@@ -106,17 +101,23 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
                 productServiceDTO.setName(servicesView.getName().getText());
                 productServiceDTO.setDescription(servicesView.getDescription().getText());
                 productServiceDTO.setServiceImage(servicesView.getIconUrl());
+                productServiceDTO.setProduct(servicesView.getSelectProduct());
+                productServiceDTO.setEmail(servicesView.getEmail().getText());
+                productServiceDTO.setWebsite(servicesView.getWebsite().getText());
+                productServiceDTO.setFullDescription(servicesView.getFullDescription());
+                servicesView.displayLoading("Saving product service");
                 try {
                     REST.withCallback(new MethodCallback<Void>() {
-
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            servicesView.hideLoading();
+                            servicesView.displayError("Could not save product service");
                         }
 
                         @Override
-                        public void onSuccess(Method method, Void result) {
-                            MaterialToast.fireToast("Product service changes saved");
+                        public void onSuccess(Method method, Void response) {
+                            servicesView.hideLoading();
+                            servicesView.displaySuccess("Product service saved");
                         }
 
                     }).call(ServicesUtil.assetsService).updateProductService(productServiceDTO);

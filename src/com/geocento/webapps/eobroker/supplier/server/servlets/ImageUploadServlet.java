@@ -75,7 +75,7 @@ public class ImageUploadServlet extends HttpServlet {
             }
 
 	        System.out.println("Processing image");
-            String imagePath = processAndStoreImage(out, saveFile, width, height);
+            String imagePath = "./uploaded/" + processAndStoreImage(out, saveFile, width, height);
             System.out.println(imagePath);
             
 		    // return the url of the file

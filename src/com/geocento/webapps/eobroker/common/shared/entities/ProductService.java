@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class ProductService {
 
     @Id
+    @GeneratedValue
     Long id;
 
     @ManyToOne
@@ -22,6 +23,18 @@ public class ProductService {
 
     @Column(length = 10000)
     String description;
+
+    @Column(length = 1000)
+    String imageUrl;
+
+    @Column(length = 1000)
+    String email;
+
+    @Column(length = 1000)
+    String website;
+
+    @Column(length = 100000)
+    String fullDescription;
 
     public ProductService() {
     }
@@ -64,5 +77,37 @@ public class ProductService {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String image) {
+        this.imageUrl = image;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getFullDescription() {
+        return fullDescription;
+    }
+
+    public void setFullDescription(String fullDescription) {
+        this.fullDescription = fullDescription;
     }
 }

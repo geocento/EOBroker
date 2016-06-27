@@ -9,9 +9,9 @@ public class CompanyDTO {
     String name;
     String iconURL;
     String description;
-    private String contactEmail;
-    private String fullDescription;
-    private String website;
+    String contactEmail;
+    String fullDescription;
+    String website;
 
     public CompanyDTO() {
     }

@@ -23,6 +23,10 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private RequestImageryViewImpl requestImageryView = null;
 
+    private ProductFormViewImpl productFormView = null;
+
+    private FullViewImpl fullView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -76,6 +80,22 @@ public class ClientFactoryImpl implements ClientFactory {
             requestImageryView = new RequestImageryViewImpl(this);
         }
         return requestImageryView;
+    }
+
+    @Override
+    public ProductFormView getProductFormView() {
+        if(productFormView == null) {
+            productFormView = new ProductFormViewImpl(this);
+        }
+        return productFormView;
+    }
+
+    @Override
+    public FullView getFullView() {
+        if(fullView == null) {
+            fullView = new FullViewImpl(this);
+        }
+        return fullView;
     }
 
 }

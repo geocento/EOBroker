@@ -2,10 +2,8 @@ package com.geocento.webapps.eobroker.common.shared.entities.utils;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.entities.Product;
-import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -56,25 +54,22 @@ public class ProductServiceHelper {
                 "|| setweight(to_tsvector('english','" + product.getDescription() + "'), 'B')";
     }
 
+/*
     public static ProductServiceDTO createProductServiceDTO(ProductService productService) {
         ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+        productServiceDTO.setId(productService.getId());
         productServiceDTO.setName(productService.getName());
         productServiceDTO.setDescription(productService.getDescription());
+        productServiceDTO.setFullDescription(productService.getFullDescription());
+        productServiceDTO.setEmail(productService.getEmail());
+        productServiceDTO.setWebsite(productService.getWebsite());
+        productServiceDTO.setFullDescription(productService.getFullDescription());
         productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
         productServiceDTO.setCompanyName(productService.getCompany().getName());
-        productServiceDTO.setServiceImage(getImage());
-        productServiceDTO.setProductId(productService.getProduct().getId());
+        productServiceDTO.setServiceImage(productService.getImageUrl());
+        productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
         return productServiceDTO;
     }
+*/
 
-    static private String getImage() {
-        String[] images = new String[]{
-                "https://www3.epa.gov/climatechange/images/basics/factorysmoke.jpg",
-                "http://www.nasa.gov/sites/default/files/styles/full_width/public/thumbnails/image/15-115.jpg?itok=-S4q6bvE",
-                "https://www3.epa.gov/climatechange/kids/images/scientists-clues-print.jpg",
-                "http://a.fastcompany.net/multisite_files/coexist/imagecache/1280/poster/2012/11/1680998-poster-1280-how-to-profit-from-climate-change.jpg",
-                "http://www.unep.org/climatechange/Portals/5/images/CC-New/main_banner.jpg"
-        };
-        return images[((int) Math.floor(Math.random() * images.length))];
-    }
 }

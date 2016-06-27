@@ -31,8 +31,6 @@ public interface CompanyView extends IsWidget {
 
     void setIconUrl(String iconURL);
 
-    HasClickHandlers getHomeButton();
-
     public interface Presenter {
     }
 

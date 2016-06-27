@@ -14,6 +14,7 @@ public class ProductDTO {
     Sector sector;
     Thematic thematic;
     private String imageUrl;
+    private String shortDescription;
 
     public ProductDTO() {
     }
@@ -64,5 +65,13 @@ public class ProductDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 }

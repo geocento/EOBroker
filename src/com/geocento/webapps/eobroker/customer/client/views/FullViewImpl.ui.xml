@@ -1,0 +1,37 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+        >
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.FullViewImpl.Style">
+        .formPanel {
+            width: 960px;
+            margin: 0px auto;
+        }
+
+        .section {
+            font-size: 1.5em;
+        }
+
+        .image {
+            max-width: 300px;
+            max-height: 200px;
+            margin-right: 30px;
+        }
+
+        .details {
+            clear: both;
+            padding: 10px 0px;
+        }
+
+    </ui:style>
+    <views:TemplateView ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.formPanel}">
+            <g:HTMLPanel>
+                <design:MaterialImage float="LEFT" addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
+                <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+            </g:HTMLPanel>
+            <g:HTMLPanel addStyleNames="{style.details}" ui:field="details"></g:HTMLPanel>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

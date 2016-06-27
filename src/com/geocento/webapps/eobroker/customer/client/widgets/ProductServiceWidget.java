@@ -1,11 +1,11 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,6 +42,8 @@ public class ProductServiceWidget extends Composite {
     MaterialTitle cutoutTitle;
     @UiField
     MaterialLink quote;
+    @UiField
+    MaterialLink information;
 
     public ProductServiceWidget(ProductServiceDTO productServiceDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -52,34 +54,8 @@ public class ProductServiceWidget extends Composite {
         title.setText(productServiceDTO.getName());
         shortDescription.setText(productServiceDTO.getDescription());
         description.setText(productServiceDTO.getDescription());
+        information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceDTO.getId())));
+        companyLogo.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + productServiceDTO.getCompanyId())));
     }
 
-    @UiHandler("companyLogo")
-    void companyDescription(ClickEvent clickEvent) {
-        cutout.setTarget(companyLogo);
-        cutoutTitle.setTitle("Description of company");
-        cutoutTitle.setDescription("This will eventually move to a company page");
-        cutout.openCutOut();
-    }
-
-    @UiHandler("quote")
-    void quote(ClickEvent clickEvent) {
-        cutout.setTarget(companyLogo);
-        cutoutTitle.setTitle("Request Quote");
-        cutoutTitle.setDescription("This will eventually move to a request quote page where you can enter your parameters and submit a request for quotation");
-        cutout.openCutOut();
-    }
-
-    @UiHandler("information")
-    void information(ClickEvent clickEvent) {
-        cutout.setTarget(companyLogo);
-        cutoutTitle.setTitle("View Information");
-        cutoutTitle.setDescription("This will eventually move to a view information page where you can get more information and view sample products");
-        cutout.openCutOut();
-    }
-
-    @UiHandler("close")
-    void close(ClickEvent clickEvent) {
-        cutout.closeCutOut();
-    }
 }

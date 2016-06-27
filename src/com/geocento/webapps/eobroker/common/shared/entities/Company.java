@@ -1,9 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -32,6 +30,9 @@ public class Company {
 
     @Column(length = 1000)
     private String website;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    Set<ProductService> services;
 
     public Company() {
     }
@@ -90,5 +91,13 @@ public class Company {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public Set<ProductService> getServices() {
+        return services;
+    }
+
+    public void setServices(Set<ProductService> services) {
+        this.services = services;
     }
 }

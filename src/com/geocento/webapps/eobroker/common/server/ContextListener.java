@@ -4,7 +4,6 @@ import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
 import com.geocento.webapps.eobroker.common.server.Utils.UserUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.LevenshteinDistance;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -59,14 +58,27 @@ public class ContextListener implements ServletContextListener {
                         return thematic.name();
                     }
                 }), record.get(3).toLowerCase());
-                ProductHelper.addProduct(em, record.get(0), record.get(4), Sector.valueOf(sectorString), Thematic.valueOf(thematicString));
+                com.geocento.webapps.eobroker.admin.shared.dtos.ProductHelper.addProduct(em, record.get(0), record.get(4), Sector.valueOf(sectorString), Thematic.valueOf(thematicString));
             }
             em.getTransaction().commit();
             // add companies and some users
             em.getTransaction().begin();
             TypedQuery<Company> companyQuery = em.createQuery("select c from Company c where c.name = :companyName", Company.class);
-            companyQuery.setParameter("companyName", "KSAT");
+            companyQuery.setParameter("companyName", "Geocento");
             List<Company> companies = companyQuery.getResultList();
+            if(companies.size() == 0) {
+                Company geocentoCompany = new Company();
+                geocentoCompany.setName("Geocento");
+                geocentoCompany.setDescription("Geocento company description");
+                geocentoCompany.setIconURL("http://geocento.com/wp-content/uploads/2016/03/logo-geocento-global-earth-imaging.jpg");
+                em.persist(geocentoCompany);
+                // add a few users
+                User geocentoUser = UserUtils.createUser("geocentoUser", "password", User.USER_ROLE.administrator, null, geocentoCompany);
+                em.persist(geocentoUser);
+            }
+            companyQuery = em.createQuery("select c from Company c where c.name = :companyName", Company.class);
+            companyQuery.setParameter("companyName", "KSAT");
+            companies = companyQuery.getResultList();
             if(companies.size() == 0) {
                 Company ksatCompany = new Company();
                 ksatCompany.setName("KSAT");

@@ -1,0 +1,95 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+        >
+    <ui:style>
+        .panel header {
+
+        }
+
+        .panel main, .panel footer {
+        }
+
+        .panel main {
+            min-height: 80%;
+            max-width: 960px;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+
+        .mainPanel {
+            position: fixed;
+            top: 64px;
+            bottom: 0px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .navBrand {
+            color: grey;
+            padding-left: 20px;
+            font-size: 1.4em;
+        }
+
+        .logoImage {
+            display: block;
+        }
+
+        .section {
+            margin: 7px 0;
+            text-align: center;
+            line-height: 50px;
+            font-size: 28px;
+            color: grey;
+        }
+
+        .services {
+            margin: 20px 0px;
+        }
+
+        .navBar {
+            z-index: 1000;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
+    <g:HTMLPanel addStyleNames="{style.panel}">
+        <header>
+            <!-- NavBar -->
+            <m:MaterialNavBar activates="sideNav" backgroundColor="grey" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
+                <m:MaterialNavSection flex="NONE">
+                    <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                    <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                </m:MaterialNavSection>
+                <m:MaterialNavSection float="RIGHT">
+                    <m:MaterialTooltip text="Orders" position="BOTTOM">
+                        <m:MaterialLink iconType="SHOP" iconPosition="NONE"/>
+                    </m:MaterialTooltip>
+                    <m:MaterialTooltip text="Notifications" position="BOTTOM">
+                        <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE"/>
+                    </m:MaterialTooltip>
+                    <m:MaterialTooltip text="Sign-in" position="BOTTOM">
+                        <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
+                    </m:MaterialTooltip>
+                </m:MaterialNavSection>
+            </m:MaterialNavBar>
+        </header>
+        <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
+        </m:MaterialContainer>
+        <m:MaterialFooter backgroundColor="blue">
+            <m:MaterialRow>
+                <m:MaterialColumn grid="s12 m6 l6">
+                    <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>
+                    <m:MaterialButton ui:field="chat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                </m:MaterialColumn>
+                <m:MaterialColumn grid="s12 m6 l6">
+                    <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
+                    <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                </m:MaterialColumn>
+            </m:MaterialRow>
+            <m:MaterialFooterCopyright>
+                <m:MaterialLabel text="© 2016 Copyright Geocento Ltd and partners" />
+            </m:MaterialFooterCopyright>
+        </m:MaterialFooter>
+    </g:HTMLPanel>
+</ui:UiBinder>

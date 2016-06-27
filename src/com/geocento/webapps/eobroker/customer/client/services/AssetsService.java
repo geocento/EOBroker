@@ -4,6 +4,10 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
@@ -31,16 +35,6 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public ProductDTO getProduct(@PathParam("id") Long id) throws RequestException;
 
-    @POST
-    @Path("/assets/products/")
-    @Produces("application/json")
-    public Long addProduct(ProductDTO product);
-
-    @PUT
-    @Path("/assets/products/")
-    @Produces("application/json")
-    public void updateProduct(ProductDTO product);
-
     @GET
     @Path("/assets/productservices/")
     @Produces("application/json")
@@ -57,7 +51,7 @@ public interface AssetsService extends DirectRestService {
     public void updateProductService(ProductServiceDTO product);
 
     @GET
-    @Path("/assets/companies/")
+    @Path("/assets/companies/{id}")
     @Produces("application/json")
     public CompanyDTO getCompany(@PathParam("id") Long id);
 
@@ -71,4 +65,23 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public void updateCompany(CompanyDTO product);
 
+    @GET
+    @Path("/assets/productsform/{id}")
+    @Produces("application/json")
+    ProductFormDTO getProductForm(@PathParam("id") Long productId) throws RequestException;
+
+    @GET
+    @Path("/assets/companies/full/{id}")
+    @Produces("application/json")
+    CompanyDescriptionDTO getCompanyDescription(@PathParam("id") Long companyId) throws RequestException;
+
+    @GET
+    @Path("/assets/productservices/full/{id}")
+    @Produces("application/json")
+    ProductServiceDescriptionDTO getProductServiceDescription(@PathParam("id") Long productServiceId) throws RequestException;
+
+    @GET
+    @Path("/assets/products/full/{id}")
+    @Produces("application/json")
+    ProductDescriptionDTO getProductDescription(@PathParam("id") Long productId) throws RequestException;
 }

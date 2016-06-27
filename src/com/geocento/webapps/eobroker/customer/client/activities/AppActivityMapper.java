@@ -25,6 +25,10 @@ public class AppActivityMapper implements ActivityMapper {
             return new ImageSearchActivity((ImageSearchPlace) place, clientFactory);
         } else if(place instanceof RequestImageryPlace) {
             return new RequestImageryActivity((RequestImageryPlace) place, clientFactory);
+        } else if(place instanceof ProductFormPlace) {
+            return new ProductFormActivity((ProductFormPlace) place, clientFactory);
+        } else if(place instanceof FullViewPlace) {
+            return new FullViewActivity((FullViewPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
         }

@@ -1,22 +1,28 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.fileuploader.MaterialFileUploader;
-import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
-import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
-import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
+import gwt.material.design.client.base.SearchObject;
+import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
-import gwt.material.design.client.ui.animate.MaterialAnimator;
-import gwt.material.design.client.ui.animate.Transition;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
+import org.fusesource.restygwt.client.REST;
+
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -38,15 +44,7 @@ public class ServicesViewImpl extends Composite implements ServicesView {
     @UiField
     MaterialTextBox website;
     @UiField
-    MaterialFileUploader imageUploader;
-    @UiField
-    MaterialImage iconPreview;
-    @UiField
-    MaterialLabel iconName;
-    @UiField
-    MaterialLabel iconSize;
-    @UiField
-    MaterialProgress iconProgress;
+    MaterialImageUploader imageUploader;
     @UiField
     MaterialTextArea description;
     @UiField
@@ -54,35 +52,41 @@ public class ServicesViewImpl extends Composite implements ServicesView {
     @UiField
     MaterialRichEditor fullDescription;
     @UiField
-    MaterialImage logo;
+    MaterialSearch product;
+    @UiField(provided = true)
+    TemplateView template;
 
     public ServicesViewImpl(ClientFactoryImpl clientFactory) {
 
+        template = new TemplateView(clientFactory);
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        final String uploadedUrl = "/upload/image/";
-        imageUploader.setUrl(uploadedUrl);
-        // Added the progress to card uploader
-        imageUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
+        product.addKeyUpHandler(new KeyUpHandler() {
             @Override
-            public void onTotalUploadProgress(TotalUploadProgressEvent event) {
-                iconProgress.setPercent(event.getProgress());
+            public void onKeyUp(KeyUpEvent event) {
+                REST.withCallback(new MethodCallback<List<ProductDTO>>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, List<ProductDTO> response) {
+                        product.setListSearches(ListUtil.mutate(response, new ListUtil.Mutate<ProductDTO, SearchObject>() {
+                            @Override
+                            public SearchObject mutate(ProductDTO productDTO) {
+                                return new SearchObject(productDTO.getName(), "", productDTO);
+                            }
+                        }));
+                    }
+                }).call(ServicesUtil.assetsService).findProducts(product.getValue());
             }
         });
-
-        imageUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
+        product.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
             @Override
-            public void onSuccess(SuccessEvent<UploadFile> event) {
-                iconName.setText(event.getTarget().getName());
-                iconSize.setText(event.getTarget().getType());
-                iconPreview.setUrl(event.getResponse().getMessage().replaceAll("<value>", "").replaceAll("</value>", ""));
-            }
-        });
+            public void onSearchFinish(SearchFinishEvent event) {
 
-        imageUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {
-            @Override
-            public void onDragOver(DragOverEvent event) {
-                MaterialAnimator.animate(Transition.RUBBERBAND, imageUploader, 0);
             }
         });
     }
@@ -139,17 +143,42 @@ public class ServicesViewImpl extends Composite implements ServicesView {
 
     @Override
     public String getIconUrl() {
-        return iconPreview.getUrl();
+        return imageUploader.getImageUrl();
     }
 
     @Override
     public void setIconUrl(String iconURL) {
-        iconPreview.setUrl(iconURL);
+        imageUploader.setImageUrl(iconURL);
     }
 
     @Override
-    public HasClickHandlers getHomeButton() {
-        return logo;
+    public ProductDTO getSelectProduct() {
+        return (ProductDTO) product.getSelectedObject().getO();
+    }
+
+    @Override
+    public void setSelectedProduct(ProductDTO productDTO) {
+        product.setText(productDTO == null ? "" : productDTO.getName());
+    }
+
+    @Override
+    public void displayLoading(String message) {
+        template.setLoading(message);
+    }
+
+    @Override
+    public void hideLoading() {
+        template.hideLoading();
+    }
+
+    @Override
+    public void displayError(String message) {
+        template.displayError(message);
+    }
+
+    @Override
+    public void displaySuccess(String message) {
+        template.displaySuccess(message);
     }
 
 }

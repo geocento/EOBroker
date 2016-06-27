@@ -1,9 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
              xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
-             xmlns:fileuploader="urn:import:gwt.material.design.addins.client.fileuploader"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
         >
     <ui:style>
         .panel header {
@@ -50,59 +50,26 @@
             margin: 20px 0px;
         }
 
+        .buttonsPanel {
+            padding: 20px 0px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
-    <g:HTMLPanel addStyleNames="{style.panel}">
-        <header>
-            <!-- NavBar -->
-            <design:MaterialNavBar activates="sideNav" backgroundColor="grey" ui:field="navBar">
-                <design:MaterialNavSection flex="NONE">
-                    <design:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
-                    <design:MaterialLabel text="Service details" paddingLeft="50" fontSize="1.5em"></design:MaterialLabel>
-                </design:MaterialNavSection>
-                <design:MaterialNavSection float="RIGHT">
-                    <design:MaterialTooltip text="Orders" position="BOTTOM">
-                        <design:MaterialLink iconType="SHOP" iconPosition="NONE"/>
-                    </design:MaterialTooltip>
-                    <design:MaterialTooltip text="Notifications" position="BOTTOM">
-                        <design:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE"/>
-                    </design:MaterialTooltip>
-                    <design:MaterialTooltip text="Sign-in" position="BOTTOM">
-                        <design:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
-                    </design:MaterialTooltip>
-                </design:MaterialNavSection>
-            </design:MaterialNavBar>
-        </header>
-
-        <design:MaterialContainer fontSize="0.8em">
-            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
-            <design:MaterialTextBox placeholder="Service Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-            <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
-            <design:MaterialTextBox placeholder="Service website" type="URL" iconType="WEB" ui:field="website"/>
-            <design:MaterialIcon text="Service image" textColor="black" iconType="IMAGE"></design:MaterialIcon>
-            <fileuploader:MaterialFileUploader acceptedFiles="image/*" url="" maxFileSize="100" height="auto" width="auto" display="INLINE_BLOCK" paddingLeft="50" shadow="0" ui:field="imageUploader">
-                <design:MaterialCard>
-                    <design:MaterialCardImage>
-                        <design:MaterialImage ui:field="iconPreview"/>
-                    </design:MaterialCardImage>
-                    <design:MaterialCardContent layoutPosition="RELATIVE">
-                        <design:MaterialLabel ui:field="iconName" text="" fontSize="1.5em"/>
-                        <design:MaterialLabel ui:field="iconSize" text="" fontSize="0.8em"/>
-                        <design:MaterialProgress ui:field="iconProgress" layoutPosition="ABSOLUTE" bottom="0" left="0" type="DETERMINATE" percent="0" />
-                        <design:MaterialButton design:id="cardUpload" layoutPosition="ABSOLUTE" top="-25" right="25" type="FLOATING" backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" iconColor="white"/>
-                    </design:MaterialCardContent>
-                </design:MaterialCard>
-            </fileuploader:MaterialFileUploader>
-            <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
-            <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
-            <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+    <views:TemplateView titleText="Product Service" ui:field="template">
+        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialTextBox placeholder="Service Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+        <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+        <design:MaterialTextBox placeholder="Service website" type="URL" iconType="WEB" ui:field="website"/>
+        <design:MaterialIcon text="Service product" textColor="black" iconType="MAP"></design:MaterialIcon>
+        <design:MaterialSearch ui:field="product"></design:MaterialSearch>
+        <design:MaterialIcon text="Service image" textColor="black" iconType="IMAGE"></design:MaterialIcon>
+        <widgets:MaterialImageUploader imageWidth="250" imageHeight="100" ui:field="imageUploader"></widgets:MaterialImageUploader>
+        <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
+        <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
+        <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+        <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
             <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-        </design:MaterialContainer>
-        <design:MaterialFooter backgroundColor="blue">
-            <design:MaterialFooterCopyright>
-                <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
-            </design:MaterialFooterCopyright>
-        </design:MaterialFooter>
-
-    </g:HTMLPanel>
+        </g:HTMLPanel>
+    </views:TemplateView>
 </ui:UiBinder>

@@ -1,14 +1,23 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
+import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.Product;
+import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
+import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Path;
 
 @Path("/")
@@ -53,19 +62,162 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Long addProduct(ProductDTO productDTO) {
+    public ProductFormDTO getProductForm(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
         try {
-            Product product = ProductHelper.addProduct(productDTO.getName(), productDTO.getDescription(), productDTO.getSector(), productDTO.getThematic());
-            return product.getId();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
+            Product product = em.find(Product.class, id);
+            if(product == null) {
+                throw new RequestException("Product does not exist");
+            }
+            ProductFormDTO productFormDTO = new ProductFormDTO();
+            productFormDTO.setId(product.getId());
+            productFormDTO.setName(product.getName());
+            productFormDTO.setDescription(product.getShortDescription());
+            productFormDTO.setImageUrl(product.getImageUrl());
+            productFormDTO.setSector(product.getSector());
+            productFormDTO.setThematic(product.getThematic());
+            productFormDTO.setFormFields(product.getFormFields());
+            // add relevant supplier services
+            TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product", ProductService.class);
+            query.setParameter("product", product);
+            productFormDTO.setProductServices(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+                @Override
+                public ProductServiceDTO mutate(ProductService productService) {
+                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                        productServiceDTO.setId(productService.getId());
+                        productServiceDTO.setName(productService.getName());
+                        productServiceDTO.setDescription(productService.getDescription());
+                        productServiceDTO.setEmail(productService.getEmail());
+                        productServiceDTO.setWebsite(productService.getWebsite());
+                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                        productServiceDTO.setCompanyName(productService.getCompany().getName());
+                        productServiceDTO.setCompanyId(productService.getCompany().getId());
+                        productServiceDTO.setServiceImage(productService.getImageUrl());
+                        productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+                        return productServiceDTO;
+                    }
+            }));
+            return productFormDTO;
+        } finally {
+            em.close();
         }
     }
 
     @Override
-    public void updateProduct(ProductDTO product) {
+    public ProductDescriptionDTO getProductDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Product product = em.find(Product.class, id);
+            if(product == null) {
+                throw new RequestException("Product does not exist");
+            }
+            ProductDescriptionDTO productDescriptionDTO = new ProductDescriptionDTO();
+            productDescriptionDTO.setId(product.getId());
+            productDescriptionDTO.setName(product.getName());
+            productDescriptionDTO.setShortDescription(product.getShortDescription());
+            productDescriptionDTO.setDescription(product.getDescription());
+            productDescriptionDTO.setImageUrl(product.getImageUrl());
+            productDescriptionDTO.setSector(product.getSector());
+            productDescriptionDTO.setThematic(product.getThematic());
+            // add relevant supplier services
+            TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product", ProductService.class);
+            query.setParameter("product", product);
+            productDescriptionDTO.setProductServices(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+                @Override
+                public ProductServiceDTO mutate(ProductService productService) {
+                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                    productServiceDTO.setId(productService.getId());
+                    productServiceDTO.setName(productService.getName());
+                    productServiceDTO.setDescription(productService.getDescription());
+                    productServiceDTO.setEmail(productService.getEmail());
+                    productServiceDTO.setWebsite(productService.getWebsite());
+                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                    productServiceDTO.setCompanyName(productService.getCompany().getName());
+                    productServiceDTO.setCompanyId(productService.getCompany().getId());
+                    productServiceDTO.setServiceImage(productService.getImageUrl());
+                    return productServiceDTO;
+                }
+            }));
+            return productDescriptionDTO;
+        } finally {
+            em.close();
+        }
+    }
 
+    @Override
+    public CompanyDescriptionDTO getCompanyDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Company company = em.find(Company.class, id);
+            if (company == null) {
+                throw new RequestException("Company does not exist");
+            }
+            CompanyDescriptionDTO companyDTO = new CompanyDescriptionDTO();
+            companyDTO.setId(company.getId());
+            companyDTO.setName(company.getName());
+            companyDTO.setDescription(company.getDescription());
+            companyDTO.setFullDescription(company.getFullDescription());
+            companyDTO.setIconURL(company.getIconURL());
+            companyDTO.setContactEmail(company.getContactEmail());
+            companyDTO.setWebsite(company.getWebsite());
+            companyDTO.setProductServices(ListUtil.mutate(company.getServices(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+                @Override
+                public ProductServiceDTO mutate(ProductService productService) {
+                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                    productServiceDTO.setId(productService.getId());
+                    productServiceDTO.setName(productService.getName());
+                    productServiceDTO.setDescription(productService.getDescription());
+                    productServiceDTO.setEmail(productService.getEmail());
+                    productServiceDTO.setWebsite(productService.getWebsite());
+                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                    productServiceDTO.setCompanyName(productService.getCompany().getName());
+                    productServiceDTO.setCompanyId(productService.getCompany().getId());
+                    productServiceDTO.setServiceImage(productService.getImageUrl());
+                    return productServiceDTO;
+                }
+            }));
+            return companyDTO;
+        } catch (Exception e) {
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProductServiceDescriptionDTO getProductServiceDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductService productService = em.find(ProductService.class, id);
+            if (productService == null) {
+                throw new RequestException("Company does not exist");
+            }
+            ProductServiceDescriptionDTO productServiceDescriptionDTO = new ProductServiceDescriptionDTO();
+            productServiceDescriptionDTO.setId(productService.getId());
+            productServiceDescriptionDTO.setName(productService.getName());
+            productServiceDescriptionDTO.setDescription(productService.getDescription());
+            productServiceDescriptionDTO.setFullDescription(productService.getFullDescription());
+            productServiceDescriptionDTO.setWebsite(productService.getWebsite());
+            productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
+            productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+            return productServiceDescriptionDTO;
+        } catch (Exception e) {
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
     }
 
     @Override

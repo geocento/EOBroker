@@ -9,18 +9,20 @@ import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductServiceHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/")
@@ -102,7 +104,18 @@ public class AssetsResource implements AssetsService {
             if(productService == null) {
                 throw new RequestException("Unknown product");
             }
-            return ProductServiceHelper.createProductServiceDTO(productService);
+            ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+            productServiceDTO.setId(productService.getId());
+            productServiceDTO.setName(productService.getName());
+            productServiceDTO.setDescription(productService.getDescription());
+            productServiceDTO.setFullDescription(productService.getFullDescription());
+            productServiceDTO.setEmail(productService.getEmail());
+            productServiceDTO.setWebsite(productService.getWebsite());
+            productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+            productServiceDTO.setCompanyName(productService.getCompany().getName());
+            productServiceDTO.setServiceImage(productService.getImageUrl());
+            productServiceDTO.setProduct(productService.getProduct() == null ? null : ProductHelper.createProductDTO(productService.getProduct()));
+            return productServiceDTO;
         } catch (Exception e) {
             throw new RequestException("Error");
         } finally {
@@ -121,8 +134,17 @@ public class AssetsResource implements AssetsService {
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
                 @Override
                 public ProductServiceDTO mutate(ProductService productService) {
-                    return ProductServiceHelper.createProductServiceDTO(productService);
-                }
+                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                        productServiceDTO.setId(productService.getId());
+                        productServiceDTO.setName(productService.getName());
+                        productServiceDTO.setDescription(productService.getDescription());
+                        productServiceDTO.setWebsite(productService.getWebsite());
+                        productServiceDTO.setFullDescription(productService.getFullDescription());
+                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                        productServiceDTO.setCompanyName(productService.getCompany().getName());
+                        productServiceDTO.setServiceImage(productService.getImageUrl());
+                        return productServiceDTO;
+                    }
             });
         } catch (Exception e) {
             throw new RequestException("Error");
@@ -139,34 +161,47 @@ public class AssetsResource implements AssetsService {
     @Override
     public void updateProductService(ProductServiceDTO productServiceDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
-        if(productServiceDTO == null || productServiceDTO.getId() == null) {
+        if(productServiceDTO == null ) {
             throw new RequestException("Product service cannot be null");
         }
         EntityManager em = EMF.get().createEntityManager();
-        ProductService productService = em.find(ProductService.class, productServiceDTO.getId());
-        if(productService == null) {
-            throw new RequestException("Unknown product");
-        }
-        User user = em.find(User.class, userName);
-        if(!user.getCompany().getName().contentEquals(productServiceDTO.getCompanyName())) {
-            throw new AuthorizationException();
-        }
         try {
             em.getTransaction().begin();
+            ProductService productService = null;
+            User user = em.find(User.class, userName);
+            if(productServiceDTO.getId() != null) {
+                productService = em.find(ProductService.class, productServiceDTO.getId());
+                if(productService == null) {
+                    throw new RequestException("Unknown product");
+                }
+                if(user.getCompany() != productService.getCompany()) {
+                    throw new AuthorizationException();
+                }
+            } else {
+                productService = new ProductService();
+                productService.setCompany(user.getCompany());
+                em.persist(productService);
+            }
             productService.setName(productServiceDTO.getName());
             productService.setDescription(productServiceDTO.getDescription());
-            Product product = em.find(Product.class, productServiceDTO.getProductId());
+            productService.setImageUrl(productServiceDTO.getServiceImage());
+            Product product = em.find(Product.class, productServiceDTO.getProduct().getId());
             if (product == null) {
                 throw new RequestException("Product does not exist");
             }
             productService.setProduct(product);
+            product.getProductServices().add(productService);
+            productService.setEmail(productServiceDTO.getEmail());
+            productService.setWebsite(productServiceDTO.getWebsite());
+            productService.setFullDescription(productServiceDTO.getFullDescription());
+            productService.getCompany().getServices().add(productService);
             em.getTransaction().commit();
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             logger.error(e.getMessage(), e);
-            throw new RequestException("Error updating product");
+            throw new RequestException("Error updating product service");
         } finally {
             em.close();
         }
@@ -240,4 +275,35 @@ public class AssetsResource implements AssetsService {
             em.close();
         }
     }
+
+    @Override
+    public List<ProductDTO> findProducts(String text) {
+        // check if last character is a space
+        boolean partialMatch = !text.endsWith(" ");
+        text.trim();
+        // break down text into sub words
+        String[] words = text.split(" ");
+        String keywords = StringUtils.join(words, " | ");
+        if(partialMatch) {
+            keywords += ":*";
+        }
+        // change the last word so that it allows for partial match
+        String sqlStatement = "SELECT id, \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+                "          FROM product, to_tsquery('" + keywords + "') AS keywords\n" +
+                "          WHERE tsvname @@ keywords\n" +
+                "          ORDER BY rank\n" +
+                "          LIMIT 10;";
+        EntityManager em = EMF.get().createEntityManager();
+        Query q = em.createNativeQuery(sqlStatement);
+        List<Object[]> results = q.getResultList();
+        List<ProductDTO> suggestions = new ArrayList<ProductDTO>();
+        for(Object[] result : results) {
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setId((Long) result[0]);
+            productDTO.setName((String) result[1]);
+            suggestions.add(productDTO);
+        }
+        return suggestions;
+    }
+
 }

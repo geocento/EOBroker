@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+        >
+    <ui:style>
+        .formPanel {
+            width: 960px;
+            margin: 0px auto;
+        }
+    </ui:style>
+    <views:TemplateView ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.formPanel}">
+            <design:MaterialTitle title="Form for product"></design:MaterialTitle>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

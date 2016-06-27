@@ -67,4 +67,8 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public void updateCompany(CompanyDTO product) throws RequestException;
 
+    @GET
+    @Path("/assets/products/find/")
+    @Produces("application/json")
+    List<ProductDTO> findProducts(@QueryParam("text") String text);
 }

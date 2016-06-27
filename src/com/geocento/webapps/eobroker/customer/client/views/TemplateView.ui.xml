@@ -1,0 +1,136 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets">
+
+        <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+        <ui:style>
+
+            @external nav-wrapper;
+
+            .panel {
+            }
+
+            .panel header, .panel main, .panel footer {
+            }
+
+            .panel header {
+                position: fixed;
+                top: 0px;
+                width: 100%;
+                z-index: 1000;
+            }
+
+            .mainPanel {
+                position: fixed;
+                top: 64px;
+                bottom: 0px;
+                width: 100%;
+                overflow-y: auto;
+                z-index: 500;
+            }
+
+            .mapPanel {
+                position: relative;
+            }
+
+            .label {
+                margin: 24px;
+            }
+
+            .footer {
+                position: fixed;
+                width: 100%;
+                bottom: 0px;
+                padding-top: 0px !important;
+            }
+
+            .currentSearch {
+                display: block;
+                top: 0px;
+                bottom: 0px;
+                margin-right: 300px;
+            }
+
+            .textSearch {
+                height: 100%;
+            }
+
+            .textSearch > input {
+                display: inline-block !important;
+                height: 100%;
+            }
+
+            .searchBar {
+                display: inline-block;
+                margin-right: 300px;
+            }
+
+            .navBar {
+            }
+
+            .navBar > .nav-wrapper {
+            }
+
+            .categories {
+                padding-left: 20px;
+            }
+
+            .mainPanel {
+            }
+
+            .content {
+                margin: 30px auto;
+                max-width: 960px;
+            }
+
+            .logoImage {
+                display: block;
+                cursor: pointer;
+            }
+
+        </ui:style>
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <header>
+                <!-- NavBar -->
+                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue" ui:field="navBar">
+                    <m:MaterialNavSection>
+                        <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}"></m:MaterialImage>
+                        <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                    </m:MaterialNavSection>
+                    <m:MaterialNavSection float="RIGHT">
+                        <m:MaterialTooltip text="Orders" position="BOTTOM">
+                            <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE">
+                            </m:MaterialLink>
+                        </m:MaterialTooltip>
+                        <m:MaterialTooltip text="Notifications" position="BOTTOM">
+                            <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE">
+                                <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true"/>
+                            </m:MaterialLink>
+                        </m:MaterialTooltip>
+                        <m:MaterialTooltip text="Sign-in" position="BOTTOM">
+                            <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
+                        </m:MaterialTooltip>
+                    </m:MaterialNavSection>
+                </m:MaterialNavBar>
+            </header>
+            <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
+            </m:MaterialContainer>
+            <m:MaterialFooter backgroundColor="blue">
+                <m:MaterialRow>
+                    <m:MaterialColumn grid="s12 m6 l6">
+                        <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>
+                        <m:MaterialButton ui:field="chat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                    </m:MaterialColumn>
+                    <m:MaterialColumn grid="s12 m6 l6">
+                        <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
+                        <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                    </m:MaterialColumn>
+                </m:MaterialRow>
+                <m:MaterialFooterCopyright>
+                    <m:MaterialLabel text="© 2016 Copyright Geocento Ltd and partners" />
+                </m:MaterialFooterCopyright>
+            </m:MaterialFooter>
+        </g:HTMLPanel>
+    </ui:UiBinder>

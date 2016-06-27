@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
+import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.common.server.EMF;
@@ -133,20 +134,27 @@ public class SearchResource implements SearchService {
         }
         TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
         productQuery.setParameter("productIds", productIds);
-        List<ProductDTO> products = ListUtil.mutate(productQuery.getResultList(), new ListUtil.Mutate<Product, ProductDTO>() {
-            @Override
-            public ProductDTO mutate(Product product) {
-                return ProductHelper.createProductDTO(product);
-            }
-        });
+        List<Product> products = productQuery.getResultList();
+        List<ProductDTO> productDTOs = new ArrayList<ProductDTO>();
         List<ProductServiceDTO> productServices = new ArrayList<ProductServiceDTO>();
-        for(ProductDTO product : products) {
-            ProductServiceDTO productServiceDTO = createProductServiceDTO();
-            productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
-                    productServiceDTO
-            }));
+        for(Product product : products) {
+            ProductDTO productDTO = ProductHelper.createProductDTO(product);
+            productDTOs.add(productDTO);
+            for(ProductService productService : product.getProductServices()) {
+                ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                productServiceDTO.setName(productService.getName());
+                productServiceDTO.setDescription(productService.getDescription());
+                productServiceDTO.setServiceImage(productService.getImageUrl());
+                productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                productServiceDTO.setCompanyName(productService.getCompany().getName());
+                productServiceDTO.setCompanyId(productService.getCompany().getId());
+                productServiceDTO.setProduct(productDTO);
+                productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
+                        productServiceDTO
+                }));
+            }
         }
-        searchResult.setProducts(products);
+        searchResult.setProducts(productDTOs);
         searchResult.setProductServices(productServices);
         // now get the product suppliers for each one of them
 
@@ -158,29 +166,30 @@ public class SearchResource implements SearchService {
         SearchResult searchResult = new SearchResult();
         EntityManager em = EMF.get().createEntityManager();
         Product product = em.find(Product.class, productId);
+        if(product == null) {
+            throw new RequestException("Product does not exist");
+        }
         ProductDTO productDTO = ProductHelper.createProductDTO(product);
-        // add product services
         List<ProductServiceDTO> productServices = new ArrayList<ProductServiceDTO>();
-        ProductServiceDTO productServiceDTO = createProductServiceDTO();
-        productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
-                productServiceDTO,
-                productServiceDTO,
-                productServiceDTO
-        }));
+        for(ProductService productService : product.getProductServices()) {
+            ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+            productServiceDTO.setId(productService.getId());
+            productServiceDTO.setName(productService.getName());
+            productServiceDTO.setDescription(productService.getDescription());
+            productServiceDTO.setServiceImage(productService.getImageUrl());
+            productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+            productServiceDTO.setCompanyName(productService.getCompany().getName());
+            productServiceDTO.setCompanyId(productService.getCompany().getId());
+            productServiceDTO.setProduct(productDTO);
+            productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
+                    productServiceDTO
+            }));
+        }
         searchResult.setProducts(ListUtil.toList(productDTO));
         searchResult.setProductServices(productServices);
         // now get the product suppliers for each one of them
 
         return searchResult;
-    }
-
-    private ProductServiceDTO createProductServiceDTO() {
-        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-        productServiceDTO.setName("Habitat assessment and monitoring");
-        productServiceDTO.setDescription("Habitat assessment and monitoring is a requirement in many jurisdictions under legislation such as international (PS 6), national or state environmental assessment acts. It can cover diverse environments and habitats depending on a specific locations and applications, including: terrestrial, freshwater aquatic and coastal area. EO derived information support the mapping and monitoring of critical habitat and especially when in-situ data are being integrated.");
-        productServiceDTO.setServiceImage("images/criticalhabitats.png");
-        productServiceDTO.setCompanyLogo("images/eomapLogo.png");
-        return productServiceDTO;
     }
 
     @Override

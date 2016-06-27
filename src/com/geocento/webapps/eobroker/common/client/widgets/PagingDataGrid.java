@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.client.widgets;
+package com.geocento.webapps.eobroker.common.client.widgets;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;

@@ -90,6 +90,7 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
                             token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                             //setText(text);
                         }
+                        Category category = suggestion.getCategory();
                         if(category != null) {
                             token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                         }

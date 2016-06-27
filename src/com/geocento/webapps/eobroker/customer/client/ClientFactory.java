@@ -22,4 +22,8 @@ public interface ClientFactory {
     ImageSearchView getImageSearchView();
 
     RequestImageryView getRequestImageryView();
+
+    ProductFormView getProductFormView();
+
+    FullView getFullView();
 }
