@@ -68,8 +68,8 @@
                     <m:MaterialTooltip text="Notifications" position="BOTTOM">
                         <m:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE"/>
                     </m:MaterialTooltip>
-                    <m:MaterialTooltip text="Sign-in" position="BOTTOM">
-                        <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
+                    <m:MaterialTooltip text="Log out" position="BOTTOM">
+                        <m:MaterialLink ui:field="logOut" iconType="FACE" iconPosition="NONE"/>
                     </m:MaterialTooltip>
                 </m:MaterialNavSection>
             </m:MaterialNavBar>

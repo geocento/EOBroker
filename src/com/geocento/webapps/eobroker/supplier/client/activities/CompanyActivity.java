@@ -24,7 +24,7 @@ import java.util.HashMap;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class CompanyActivity extends AbstractApplicationActivity implements CompanyView.Presenter {
+public class CompanyActivity extends TemplateActivity implements CompanyView.Presenter {
 
     private CompanyView companyView;
 
@@ -87,6 +87,7 @@ public class CompanyActivity extends AbstractApplicationActivity implements Comp
 
     @Override
     protected void bind() {
+        super.bind();
 
         handlers.add(companyView.getSubmit().addClickHandler(new ClickHandler() {
             @Override

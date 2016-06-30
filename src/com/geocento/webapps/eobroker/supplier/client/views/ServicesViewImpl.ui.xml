@@ -54,6 +54,18 @@
             padding: 20px 0px;
         }
 
+        .label {
+            display: block;
+            margin: 10px 0px;
+            font-size: 1.2em;
+        }
+
+        .explanation {
+            margin-left: 50px;
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Product Service" ui:field="template">
@@ -61,13 +73,19 @@
         <design:MaterialTextBox placeholder="Service Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
         <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
         <design:MaterialTextBox placeholder="Service website" type="URL" iconType="WEB" ui:field="website"/>
-        <design:MaterialIcon text="Service product" textColor="black" iconType="MAP"></design:MaterialIcon>
+        <design:MaterialLink text="Service product" textColor="black" iconType="MAP"/>
         <design:MaterialSearch ui:field="product"></design:MaterialSearch>
         <design:MaterialIcon text="Service image" textColor="black" iconType="IMAGE"></design:MaterialIcon>
         <widgets:MaterialImageUploader imageWidth="250" imageHeight="100" ui:field="imageUploader"></widgets:MaterialImageUploader>
         <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
-        <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
+        <design:MaterialLink text="Full description" iconType="TEXT_FIELDS"/>
         <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+        <design:MaterialLink addStyleNames="{style.label}" text="API URL" iconType="SETTINGS"/>
+        <design:MaterialTextBox type="URL" ui:field="apiURL"/>
+        <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the API URL conforming to the product API specifications. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
+        <design:MaterialLink addStyleNames="{style.label}" text="Sample WMS URL" iconType="SETTINGS"/>
+        <design:MaterialTextBox type="URL" ui:field="sampleWmsUrl"/>
+        <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the sample WMS URL for users to be able to view the product samples on a map. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
             <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
         </g:HTMLPanel>

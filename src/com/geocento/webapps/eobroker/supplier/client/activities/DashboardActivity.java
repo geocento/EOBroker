@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class DashboardActivity extends AbstractApplicationActivity implements DashboardView.Presenter {
+public class DashboardActivity extends TemplateActivity implements DashboardView.Presenter {
 
     private DashboardView dashboardView;
 
@@ -91,6 +91,7 @@ public class DashboardActivity extends AbstractApplicationActivity implements Da
 
     @Override
     protected void bind() {
+        super.bind();
         activityEventBus.addHandler(RemoveService.TYPE, new RemoveServiceHandler() {
             @Override
             public void onRemoveService(RemoveService event) {

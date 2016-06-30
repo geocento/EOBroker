@@ -21,7 +21,7 @@ import java.util.HashMap;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ProductActivity extends AbstractApplicationActivity implements ProductView.Presenter {
+public class ProductActivity extends TemplateActivity implements ProductView.Presenter {
 
     private ProductView productView;
 
@@ -81,11 +81,15 @@ public class ProductActivity extends AbstractApplicationActivity implements Prod
         productView.setSector(editProductDTO.getSector());
         productView.setThematic(editProductDTO.getThematic());
         productView.setFormFields(editProductDTO.getFormFields());
+        productView.setAPIFields(editProductDTO.getApiFormFields());
+        productView.setRecommendationRule(editProductDTO.getRecommendationRule());
     }
 
     @Override
     protected void bind() {
-        productView.getSubmit().addClickHandler(new ClickHandler() {
+        super.bind();
+
+        handlers.add(productView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 productDTO.setName(productView.getName().getText());
@@ -95,6 +99,8 @@ public class ProductActivity extends AbstractApplicationActivity implements Prod
                 productDTO.setSector(productView.getSector());
                 productDTO.setThematic(productView.getThematic());
                 productDTO.setFormFields(productView.getFormFields());
+                productDTO.setApiFormFields(productView.getAPIFields());
+                productDTO.setRecommendationRule(productView.getRecommendationRule());
                 productView.setLoading("Saving product...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {
@@ -112,7 +118,7 @@ public class ProductActivity extends AbstractApplicationActivity implements Prod
                 } catch (RequestException e) {
                 }
             }
-        });
+        }));
     }
 
 }

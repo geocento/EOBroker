@@ -36,6 +36,12 @@ public class ProductService {
     @Column(length = 100000)
     String fullDescription;
 
+    @Column(length = 1000)
+    String apiUrl;
+
+    @Column(length = 1000)
+    String sampleWmsUrl;
+
     public ProductService() {
     }
 
@@ -109,5 +115,21 @@ public class ProductService {
 
     public void setFullDescription(String fullDescription) {
         this.fullDescription = fullDescription;
+    }
+
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
+    }
+
+    public String getSampleWmsUrl() {
+        return sampleWmsUrl;
+    }
+
+    public void setSampleWmsUrl(String sampleWmsUrl) {
+        this.sampleWmsUrl = sampleWmsUrl;
     }
 }

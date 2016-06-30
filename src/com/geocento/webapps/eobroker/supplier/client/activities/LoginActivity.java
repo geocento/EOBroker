@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.supplier.client.views.LoginPageView;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import gwt.material.design.client.ui.MaterialToast;
@@ -62,7 +63,8 @@ public class LoginActivity extends AbstractApplicationActivity implements LoginP
                             MaterialToast.fireToast("Wrong combination of user name and password");
                         } else {
                             Supplier.setLoginInfo(response);
-                            clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
+                            Place nextPlace = ((LoginPagePlace) place).getNextPlace();
+                            clientFactory.getPlaceController().goTo(nextPlace == null ? clientFactory.getDefaultPlace() : nextPlace);
                         }
                     }
                 }).call(ServicesUtil.loginService).signin(loginPageView.getUserName().getText(), loginPageView.getPassword().getText());

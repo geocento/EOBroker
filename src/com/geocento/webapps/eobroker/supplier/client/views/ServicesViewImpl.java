@@ -55,6 +55,10 @@ public class ServicesViewImpl extends Composite implements ServicesView {
     MaterialSearch product;
     @UiField(provided = true)
     TemplateView template;
+    @UiField
+    MaterialTextBox sampleWmsUrl;
+    @UiField
+    MaterialTextBox apiURL;
 
     public ServicesViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -158,7 +162,18 @@ public class ServicesViewImpl extends Composite implements ServicesView {
 
     @Override
     public void setSelectedProduct(ProductDTO productDTO) {
-        product.setText(productDTO == null ? "" : productDTO.getName());
+        product.setSelectedObject(productDTO == null ? null : new SearchObject(productDTO.getName(), "", productDTO));
+        product.setText(productDTO.getName());
+    }
+
+    @Override
+    public HasText getAPIUrl() {
+        return apiURL;
+    }
+
+    @Override
+    public HasText getSampleWmsUrl() {
+        return sampleWmsUrl;
     }
 
     @Override

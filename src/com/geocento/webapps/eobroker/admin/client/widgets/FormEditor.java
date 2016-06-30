@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
-import com.geocento.webapps.eobroker.common.client.widgets.forms.TextEditor;
+import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIFormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.DateFormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
@@ -79,21 +79,18 @@ public class FormEditor extends Composite {
     }
 
     private ElementEditor createEditor(final FormElement formElement) {
-        if(formElement instanceof AoIFormElement) {
-
-        } else if(formElement instanceof TextFormElement) {
-            TextEditor textEditor = new TextEditor();
-            textEditor.setFormElement((TextFormElement) formElement);
-            textEditor.addAction(IconType.EDIT, new ClickHandler() {
-
-                @Override
-                public void onClick(ClickEvent event) {
-                    edit(formElement);
-                }
-            });
-            return textEditor;
+        ElementEditor editor = FormHelper.createEditor(formElement);
+        if(editor == null) {
+            return null;
         }
-        return null;
+        editor.addAction(IconType.EDIT, new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                edit(formElement);
+            }
+        });
+        return editor;
     }
 
     private void edit(final FormElement formElement) {

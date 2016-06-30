@@ -10,12 +10,10 @@ public class ProductServiceDTO {
     String description;
     String serviceImage;
     ProductDTO product;
+    Long companyId;
     String companyName;
     String companyLogo;
-    String email;
-    String website;
-    String fullDescription;
-    Long companyId;
+    boolean hasFeasibility;
 
     public ProductServiceDTO() {
     }
@@ -76,36 +74,19 @@ public class ProductServiceDTO {
         this.companyLogo = companyLogo;
     }
 
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setFullDescription(String fullDescription) {
-        this.fullDescription = fullDescription;
-    }
-
-    public String getFullDescription() {
-        return fullDescription;
-    }
-
     public Long getCompanyId() {
         return companyId;
     }
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public boolean isHasFeasibility() {
+        return hasFeasibility;
+    }
+
+    public void setHasFeasibility(boolean hasFeasibility) {
+        this.hasFeasibility = hasFeasibility;
     }
 }

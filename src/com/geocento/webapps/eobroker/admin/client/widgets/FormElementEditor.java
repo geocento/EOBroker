@@ -29,6 +29,8 @@ public class FormElementEditor<T extends FormElement> extends Composite {
     MaterialLink save;
     @UiField
     MaterialLink cancel;
+    @UiField
+    MaterialTextBox formId;
 
     private T formElement;
 
@@ -41,6 +43,7 @@ public class FormElementEditor<T extends FormElement> extends Composite {
         this.formElement = formElement;
         name.setText(formElement.getName());
         description.setText(formElement.getDescription());
+        formId.setText(formElement.getFormid());
     }
 
     public FormElement getFormElement() {

@@ -35,6 +35,7 @@
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="white">
+            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
             <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.shortDescription}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
@@ -43,9 +44,9 @@
             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
         </design:MaterialCardReveal>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
+            <design:MaterialLink visible="false" iconType="ASSESSMENT" text="CHECK" ui:field="check"></design:MaterialLink>
             <design:MaterialLink iconType="ASSESSMENT" text="QUOTE" ui:field="quote"></design:MaterialLink>
             <design:MaterialLink iconType="INFO" text="INFO" ui:field="information"></design:MaterialLink>
-            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
         </design:MaterialCardAction>
         <cutout:MaterialCutOut circle="true" opacity="0.9" textAlign="CENTER" ui:field="cutout">
             <design:MaterialTitle ui:field="cutoutTitle"></design:MaterialTitle>

@@ -41,8 +41,6 @@ public interface ImageSearchView extends IsWidget {
 
     HasClickHandlers getUpdateButton();
 
-    HasClickHandlers getHomeButton();
-
     void enableUpdate(boolean enable);
 
     void clearMap();

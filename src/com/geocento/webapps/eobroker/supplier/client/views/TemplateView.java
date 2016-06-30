@@ -1,12 +1,14 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -32,8 +34,15 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialImage logo;
     @UiField
     MaterialNavBar navBar;
+    @UiField
+    MaterialLink logOut;
+
+    private final ClientFactoryImpl clientFactory;
 
     public TemplateView(final ClientFactoryImpl clientFactory) {
+
+        this.clientFactory = clientFactory;
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         logo.addClickHandler(new ClickHandler() {
@@ -63,6 +72,11 @@ public class TemplateView extends Composite implements HasWidgets {
 
     public void displaySuccess(String message) {
         MaterialToast.fireToast(message, "green darken-1");
+    }
+
+    @UiHandler("logOut")
+    void logOut(ClickEvent clickEvent) {
+        clientFactory.getEventBus().fireEvent(new LogOut());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.admin.client.widgets.CodeEditor;
 import com.geocento.webapps.eobroker.admin.client.widgets.FormEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
@@ -60,6 +61,10 @@ public class ProductViewImpl extends Composite implements ProductView {
     MaterialListBox sector;
     @UiField
     FormEditor formFields;
+    @UiField
+    CodeEditor recommendationRule;
+    @UiField
+    FormEditor apiFormFields;
 
     private Presenter presenter;
 
@@ -167,6 +172,26 @@ public class ProductViewImpl extends Composite implements ProductView {
     @Override
     public void hideLoading(String message) {
         template.hideLoading(message);
+    }
+
+    @Override
+    public void setRecommendationRule(String recommendationRule) {
+        this.recommendationRule.startEditing(recommendationRule);
+    }
+
+    @Override
+    public void setAPIFields(List<FormElement> apiFields) {
+        apiFormFields.setElements(apiFields);
+    }
+
+    @Override
+    public List<FormElement> getAPIFields() {
+        return apiFormFields.getElements();
+    }
+
+    @Override
+    public String getRecommendationRule() {
+        return recommendationRule.getCode();
     }
 
 }

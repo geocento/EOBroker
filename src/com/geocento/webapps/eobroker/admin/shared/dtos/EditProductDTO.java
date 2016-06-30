@@ -11,6 +11,8 @@ import java.util.List;
 public class EditProductDTO extends ProductDTO {
 
     private List<FormElement> formFields;
+    private String recommendationRule;
+    private List<FormElement> apiFormFields;
 
     public EditProductDTO() {
     }
@@ -21,5 +23,21 @@ public class EditProductDTO extends ProductDTO {
 
     public void setFormFields(List<FormElement> formFields) {
         this.formFields = formFields;
+    }
+
+    public String getRecommendationRule() {
+        return recommendationRule;
+    }
+
+    public void setRecommendationRule(String recommendationRule) {
+        this.recommendationRule = recommendationRule;
+    }
+
+    public List<FormElement> getApiFormFields() {
+        return apiFormFields;
+    }
+
+    public void setApiFormFields(List<FormElement> apiFormFields) {
+        this.apiFormFields = apiFormFields;
     }
 }

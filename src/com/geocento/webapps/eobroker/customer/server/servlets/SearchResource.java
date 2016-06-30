@@ -142,12 +142,14 @@ public class SearchResource implements SearchService {
             productDTOs.add(productDTO);
             for(ProductService productService : product.getProductServices()) {
                 ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                productServiceDTO.setId(productService.getId());
                 productServiceDTO.setName(productService.getName());
                 productServiceDTO.setDescription(productService.getDescription());
                 productServiceDTO.setServiceImage(productService.getImageUrl());
                 productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
                 productServiceDTO.setCompanyName(productService.getCompany().getName());
                 productServiceDTO.setCompanyId(productService.getCompany().getId());
+                productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
                 productServiceDTO.setProduct(productDTO);
                 productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
                         productServiceDTO
@@ -180,6 +182,7 @@ public class SearchResource implements SearchService {
             productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
             productServiceDTO.setCompanyName(productService.getCompany().getName());
             productServiceDTO.setCompanyId(productService.getCompany().getId());
+            productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
             productServiceDTO.setProduct(productDTO);
             productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
                     productServiceDTO

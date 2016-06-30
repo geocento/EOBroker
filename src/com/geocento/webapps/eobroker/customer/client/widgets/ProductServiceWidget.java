@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.widgets;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -44,6 +45,8 @@ public class ProductServiceWidget extends Composite {
     MaterialLink quote;
     @UiField
     MaterialLink information;
+    @UiField
+    MaterialLink check;
 
     public ProductServiceWidget(ProductServiceDTO productServiceDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -56,6 +59,13 @@ public class ProductServiceWidget extends Composite {
         description.setText(productServiceDTO.getDescription());
         information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceDTO.getId())));
         companyLogo.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + productServiceDTO.getCompanyId())));
+        if(productServiceDTO.isHasFeasibility()) {
+            check.setVisible(true);
+            check.setHref("#" + PlaceHistoryHelper.convertPlace(
+                    new ProductFeasibilityPlace(
+                            ProductFeasibilityPlace.TOKENS.product.toString() + "=" + productServiceDTO.getProduct().getId() + "&" +
+                            ProductFeasibilityPlace.TOKENS.productservice.toString() + "=" + productServiceDTO.getId())));
+        }
     }
 
 }

@@ -15,7 +15,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -39,10 +38,8 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
 
     private static RequestImageryUiBinder ourUiBinder = GWT.create(RequestImageryUiBinder.class);
 
-    @UiField
-    MaterialLink signIn;
-    @UiField
-    MaterialNavBar navBar;
+    @UiField(provided = true)
+    TemplateView template;
     @UiField
     ArcGISMap mapContainer;
     @UiField
@@ -57,8 +54,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     MaterialTitle title;
     @UiField
     HTMLPanel suppliers;
-    @UiField
-    MaterialImage logo;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -67,6 +62,8 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     private boolean mapLoaded = false;
 
     public RequestImageryViewImpl(final ClientFactoryImpl clientFactory) {
+        template = new TemplateView(clientFactory);
+
         initWidget(ourUiBinder.createAndBindUi(this));
         mapContainer.setHeight((Window.getClientHeight() - 64) + "px");
         revealMap(false, false);
@@ -188,11 +185,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     @UiHandler("closeMap")
     void closeMap(ClickEvent clickEvent) {
         revealMap(false, true);
-    }
-
-    @Override
-    public HasClickHandlers getHomeButton() {
-        return logo;
     }
 
     @Override

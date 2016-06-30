@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -93,7 +94,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public ProductServiceDTO getProductService(Long id) throws RequestException {
+    public ProductServiceEditDTO getProductService(Long id) throws RequestException {
         UserUtils.verifyUserSupplier(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
@@ -104,17 +105,17 @@ public class AssetsResource implements AssetsService {
             if(productService == null) {
                 throw new RequestException("Unknown product");
             }
-            ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+            ProductServiceEditDTO productServiceDTO = new ProductServiceEditDTO();
             productServiceDTO.setId(productService.getId());
             productServiceDTO.setName(productService.getName());
             productServiceDTO.setDescription(productService.getDescription());
             productServiceDTO.setFullDescription(productService.getFullDescription());
             productServiceDTO.setEmail(productService.getEmail());
             productServiceDTO.setWebsite(productService.getWebsite());
-            productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-            productServiceDTO.setCompanyName(productService.getCompany().getName());
             productServiceDTO.setServiceImage(productService.getImageUrl());
             productServiceDTO.setProduct(productService.getProduct() == null ? null : ProductHelper.createProductDTO(productService.getProduct()));
+            productServiceDTO.setApiURL(productService.getApiUrl());
+            productServiceDTO.setSampleWmsUrl(productService.getSampleWmsUrl());
             return productServiceDTO;
         } catch (Exception e) {
             throw new RequestException("Error");
@@ -138,8 +139,6 @@ public class AssetsResource implements AssetsService {
                         productServiceDTO.setId(productService.getId());
                         productServiceDTO.setName(productService.getName());
                         productServiceDTO.setDescription(productService.getDescription());
-                        productServiceDTO.setWebsite(productService.getWebsite());
-                        productServiceDTO.setFullDescription(productService.getFullDescription());
                         productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
                         productServiceDTO.setCompanyName(productService.getCompany().getName());
                         productServiceDTO.setServiceImage(productService.getImageUrl());
@@ -159,7 +158,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public void updateProductService(ProductServiceDTO productServiceDTO) throws RequestException {
+    public void updateProductService(ProductServiceEditDTO productServiceDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         if(productServiceDTO == null ) {
             throw new RequestException("Product service cannot be null");
@@ -195,6 +194,8 @@ public class AssetsResource implements AssetsService {
             productService.setWebsite(productServiceDTO.getWebsite());
             productService.setFullDescription(productServiceDTO.getFullDescription());
             productService.getCompany().getServices().add(productService);
+            productService.setApiUrl(productServiceDTO.getApiURL());
+            productService.setSampleWmsUrl(productServiceDTO.getSampleWmsUrl());
             em.getTransaction().commit();
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
@@ -281,6 +282,9 @@ public class AssetsResource implements AssetsService {
         // check if last character is a space
         boolean partialMatch = !text.endsWith(" ");
         text.trim();
+        if(text.length() == 0) {
+            return null;
+        }
         // break down text into sub words
         String[] words = text.split(" ");
         String keywords = StringUtils.join(words, " | ");

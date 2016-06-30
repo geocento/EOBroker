@@ -23,10 +23,10 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
 
     private Presenter presenter;
 
-    interface LandingPageUiBinder extends UiBinder<Widget, LoginPageViewImpl> {
+    interface LoginPageUiBinder extends UiBinder<Widget, LoginPageViewImpl> {
     }
 
-    private static LandingPageUiBinder ourUiBinder = GWT.create(LandingPageUiBinder.class);
+    private static LoginPageUiBinder ourUiBinder = GWT.create(LoginPageUiBinder.class);
 
     @UiField(provided = true)
     MaterialImage logo;

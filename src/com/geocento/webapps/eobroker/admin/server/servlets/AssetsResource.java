@@ -79,6 +79,13 @@ public class AssetsResource implements AssetsService {
                     em.persist(formElement);
                 }
             }
+            product.setApiFormFields(productDTO.getApiFormFields());
+            for(FormElement formElement : product.getApiFormFields()) {
+                if(formElement.getId() == null) {
+                    em.persist(formElement);
+                }
+            }
+            product.setRecommendationRule(productDTO.getRecommendationRule());
             if(product.getId() == null) {
                 em.persist(product);
             } else {
@@ -132,6 +139,8 @@ public class AssetsResource implements AssetsService {
             productDTO.setSector(product.getSector());
             productDTO.setThematic(product.getThematic());
             productDTO.setFormFields(product.getFormFields());
+            productDTO.setApiFormFields(product.getApiFormFields());
+            productDTO.setRecommendationRule(product.getRecommendationRule());
             return productDTO;
         } catch (Exception e) {
             throw new RequestException("Error");
@@ -188,8 +197,6 @@ public class AssetsResource implements AssetsService {
             productServiceDTO.setId(productService.getId());
             productServiceDTO.setName(productService.getName());
             productServiceDTO.setDescription(productService.getDescription());
-            productServiceDTO.setEmail(productService.getEmail());
-            productServiceDTO.setWebsite(productService.getWebsite());
             productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
             productServiceDTO.setCompanyName(productService.getCompany().getName());
             productServiceDTO.setServiceImage(productService.getImageUrl());
@@ -216,8 +223,6 @@ public class AssetsResource implements AssetsService {
                     productServiceDTO.setId(productService.getId());
                     productServiceDTO.setName(productService.getName());
                     productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setEmail(productService.getEmail());
-                    productServiceDTO.setWebsite(productService.getWebsite());
                     productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
                     productServiceDTO.setCompanyName(productService.getCompany().getName());
                     productServiceDTO.setServiceImage(productService.getImageUrl());

@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ProductsActivity extends AbstractApplicationActivity implements ProductsView.Presenter {
+public class ProductsActivity extends TemplateActivity implements ProductsView.Presenter {
 
     private ProductsView productsView;
 
@@ -83,6 +83,7 @@ public class ProductsActivity extends AbstractApplicationActivity implements Pro
 
     @Override
     protected void bind() {
+        super.bind();
     }
 
 }

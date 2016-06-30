@@ -3,12 +3,9 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
 import com.geocento.webapps.eobroker.customer.client.views.RequestImageryView;
 import com.google.gwt.core.client.Callback;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -53,13 +50,7 @@ public class RequestImageryActivity extends AbstractApplicationActivity implemen
     @Override
     protected void bind() {
 
-        handlers.add(requestImageryView.getHomeButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new LandingPagePlace());
-            }
-        }));
-    }
+   }
 
     @Override
     public void aoiChanged(AoI aoi) {

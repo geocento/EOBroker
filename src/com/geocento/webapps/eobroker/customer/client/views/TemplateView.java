@@ -3,8 +3,10 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.ProgressType;
@@ -30,6 +32,8 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialLabel title;
     @UiField
     MaterialNavBar navBar;
+    @UiField
+    HTMLPanel header;
 
     public TemplateView(final ClientFactoryImpl clientFactory) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -42,6 +46,11 @@ public class TemplateView extends Composite implements HasWidgets {
     public void setLoading(String message) {
         displayLoading();
         MaterialToast.fireToast(message);
+    }
+
+    @UiChild(tagname = "header")
+    public void addHeader(Widget widget) {
+        header.add(widget);
     }
 
     public void displayLoading() {

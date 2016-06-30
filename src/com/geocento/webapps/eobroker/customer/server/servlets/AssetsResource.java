@@ -9,10 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
-import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -62,6 +59,42 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public ProductFeasibilityDTO getProductFeasibility(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Product product = em.find(Product.class, id);
+            if(product == null) {
+                throw new RequestException("Product does not exist");
+            }
+            ProductFeasibilityDTO productFeasibilityDTO = new ProductFeasibilityDTO();
+            productFeasibilityDTO.setId(product.getId());
+            productFeasibilityDTO.setName(product.getName());
+            productFeasibilityDTO.setImageUrl(product.getImageUrl());
+            productFeasibilityDTO.setApiFormElements(product.getFormFields());
+            // add relevant supplier services
+            TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product and p.apiUrl is not null", ProductService.class);
+            query.setParameter("product", product);
+            productFeasibilityDTO.setProductServices(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceFeasibilityDTO>() {
+                @Override
+                public ProductServiceFeasibilityDTO mutate(ProductService productService) {
+                    ProductServiceFeasibilityDTO productServiceFeasibilityDTO = new ProductServiceFeasibilityDTO();
+                    productServiceFeasibilityDTO.setId(productService.getId());
+                    productServiceFeasibilityDTO.setName(productService.getName());
+                    productServiceFeasibilityDTO.setCompanyName(productService.getCompany().getName());
+                    productServiceFeasibilityDTO.setApiURL(productService.getApiUrl());
+                    return productServiceFeasibilityDTO;
+                }
+            }));
+            return productFeasibilityDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ProductFormDTO getProductForm(Long id) throws RequestException {
         if(id == null) {
             throw new RequestException("Id cannot be null");
@@ -90,12 +123,11 @@ public class AssetsResource implements AssetsService {
                         productServiceDTO.setId(productService.getId());
                         productServiceDTO.setName(productService.getName());
                         productServiceDTO.setDescription(productService.getDescription());
-                        productServiceDTO.setEmail(productService.getEmail());
-                        productServiceDTO.setWebsite(productService.getWebsite());
                         productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
                         productServiceDTO.setCompanyName(productService.getCompany().getName());
                         productServiceDTO.setCompanyId(productService.getCompany().getId());
                         productServiceDTO.setServiceImage(productService.getImageUrl());
+                        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
                         productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
                         return productServiceDTO;
                     }
@@ -135,12 +167,11 @@ public class AssetsResource implements AssetsService {
                     productServiceDTO.setId(productService.getId());
                     productServiceDTO.setName(productService.getName());
                     productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setEmail(productService.getEmail());
-                    productServiceDTO.setWebsite(productService.getWebsite());
                     productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
                     productServiceDTO.setCompanyName(productService.getCompany().getName());
                     productServiceDTO.setCompanyId(productService.getCompany().getId());
                     productServiceDTO.setServiceImage(productService.getImageUrl());
+                    productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
                     return productServiceDTO;
                 }
             }));
@@ -176,12 +207,11 @@ public class AssetsResource implements AssetsService {
                     productServiceDTO.setId(productService.getId());
                     productServiceDTO.setName(productService.getName());
                     productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setEmail(productService.getEmail());
-                    productServiceDTO.setWebsite(productService.getWebsite());
                     productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
                     productServiceDTO.setCompanyName(productService.getCompany().getName());
                     productServiceDTO.setCompanyId(productService.getCompany().getId());
                     productServiceDTO.setServiceImage(productService.getImageUrl());
+                    productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
                     return productServiceDTO;
                 }
             }));

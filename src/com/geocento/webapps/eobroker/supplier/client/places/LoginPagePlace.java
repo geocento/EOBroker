@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.places;
 
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
@@ -8,11 +9,21 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class LoginPagePlace extends EOBrokerPlace {
 
+    private Place nextPlace = null;
+
     public LoginPagePlace() {
     }
 
     public LoginPagePlace(String token) {
         super(token);
+    }
+
+    public LoginPagePlace(Place nextPlace) {
+        this.nextPlace = nextPlace;
+    }
+
+    public Place getNextPlace() {
+        return nextPlace;
     }
 
     @Prefix("login")

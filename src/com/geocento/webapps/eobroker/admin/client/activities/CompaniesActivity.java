@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class CompaniesActivity extends AbstractApplicationActivity implements CompaniesView.Presenter {
+public class CompaniesActivity extends TemplateActivity implements CompaniesView.Presenter {
 
     private CompaniesView companiesView;
 
@@ -61,6 +61,7 @@ public class CompaniesActivity extends AbstractApplicationActivity implements Co
 
     @Override
     protected void bind() {
+        super.bind();
     }
 
 }

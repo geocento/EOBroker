@@ -10,7 +10,6 @@ import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
-import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImageSearchView;
 import com.google.gwt.core.client.Callback;
@@ -162,12 +161,6 @@ public class ImageSearchActivity extends AbstractApplicationActivity implements 
             }
         }));
 
-        handlers.add(imageSearchView.getHomeButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new LandingPagePlace());
-            }
-        }));
     }
 
     private void updateSearch() {

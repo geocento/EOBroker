@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class DashboardActivity extends AbstractApplicationActivity implements DashboardView.Presenter {
+public class DashboardActivity extends TemplateActivity implements DashboardView.Presenter {
 
     private DashboardView dashboardView;
 
@@ -31,6 +31,7 @@ public class DashboardActivity extends AbstractApplicationActivity implements Da
 
     @Override
     protected void bind() {
+        super.bind();
 
     }
 

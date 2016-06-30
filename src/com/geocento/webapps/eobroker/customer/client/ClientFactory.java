@@ -26,4 +26,6 @@ public interface ClientFactory {
     ProductFormView getProductFormView();
 
     FullView getFullView();
+
+    ProductFeasibilityView getProductFeasibilityView();
 }

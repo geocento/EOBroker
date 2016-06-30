@@ -32,8 +32,16 @@ public class Product {
     @Enumerated(EnumType.STRING)
     Thematic thematic;
 
+    @JoinTable(name = "product_formelement")
     @OneToMany(cascade = CascadeType.ALL)
     List<FormElement> formFields;
+
+    @JoinTable(name = "product_apielement")
+    @OneToMany(cascade = CascadeType.ALL)
+    List<FormElement> apiFormFields;
+
+    @Column(length = 10000)
+    String recommendationRule;
 
     @OneToMany(mappedBy = "product")
     Set<ProductService> productServices;
@@ -103,6 +111,22 @@ public class Product {
 
     public void setFormFields(List<FormElement> formFields) {
         this.formFields = formFields;
+    }
+
+    public List<FormElement> getApiFormFields() {
+        return apiFormFields;
+    }
+
+    public void setApiFormFields(List<FormElement> apiFormFields) {
+        this.apiFormFields = apiFormFields;
+    }
+
+    public String getRecommendationRule() {
+        return recommendationRule;
+    }
+
+    public void setRecommendationRule(String recommendationRule) {
+        this.recommendationRule = recommendationRule;
     }
 
     public Set<ProductService> getProductServices() {

@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -18,7 +19,12 @@ public class OrdersViewImpl extends Composite implements OrdersView {
 
     private static OrdersViewUiBinder ourUiBinder = GWT.create(OrdersViewUiBinder.class);
 
+    @UiField(provided = true)
+    TemplateView template;
+
     public OrdersViewImpl(ClientFactoryImpl clientFactory) {
+
+        template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
     }

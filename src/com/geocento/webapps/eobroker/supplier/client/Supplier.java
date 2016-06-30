@@ -54,7 +54,7 @@ public class Supplier implements EntryPoint {
             public Place filter(Place place) {
                 // sign in is required for any page
                 if(loginInfo == null) {
-                    return new LoginPagePlace();
+                    return new LoginPagePlace(place);
                 }
                 return place;
             }

@@ -1,11 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ServicesView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -21,11 +21,11 @@ import java.util.HashMap;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ServicesActivity extends AbstractApplicationActivity implements ServicesView.Presenter {
+public class ServicesActivity extends TemplateActivity implements ServicesView.Presenter {
 
     private ServicesView servicesView;
 
-    private ProductServiceDTO productServiceDTO;
+    private ProductServiceEditDTO productServiceDTO;
 
     public ServicesActivity(ServicesPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -57,7 +57,7 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
         if(serviceId != null) {
             servicesView.setTitleLine("Edit your services details and settings");
             try {
-                REST.withCallback(new MethodCallback<ProductServiceDTO>() {
+                REST.withCallback(new MethodCallback<ProductServiceEditDTO>() {
 
                     @Override
                     public void onFailure(Method method, Throwable exception) {
@@ -65,7 +65,7 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
                     }
 
                     @Override
-                    public void onSuccess(Method method, ProductServiceDTO productServiceDTO) {
+                    public void onSuccess(Method method, ProductServiceEditDTO productServiceDTO) {
                         setService(productServiceDTO);
                     }
 
@@ -75,13 +75,13 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
             }
         } else {
             servicesView.setTitleLine("Create new service");
-            ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+            ProductServiceEditDTO productServiceDTO = new ProductServiceEditDTO();
             setService(productServiceDTO);
         }
 
     }
 
-    private void setService(ProductServiceDTO productServiceDTO) {
+    private void setService(ProductServiceEditDTO productServiceDTO) {
         ServicesActivity.this.productServiceDTO = productServiceDTO;
         servicesView.getName().setText(productServiceDTO.getName());
         servicesView.getDescription().setText(productServiceDTO.getDescription());
@@ -90,10 +90,13 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
         servicesView.getWebsite().setText(productServiceDTO.getWebsite());
         servicesView.setSelectedProduct(productServiceDTO.getProduct());
         servicesView.setFullDescription(productServiceDTO.getFullDescription());
+        servicesView.getAPIUrl().setText(productServiceDTO.getApiURL() == null ? "" : productServiceDTO.getApiURL());
+        servicesView.getSampleWmsUrl().setText(productServiceDTO.getSampleWmsUrl() == null ? "" : productServiceDTO.getSampleWmsUrl());
     }
 
     @Override
     protected void bind() {
+        super.bind();
 
         handlers.add(servicesView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
@@ -105,6 +108,8 @@ public class ServicesActivity extends AbstractApplicationActivity implements Ser
                 productServiceDTO.setEmail(servicesView.getEmail().getText());
                 productServiceDTO.setWebsite(servicesView.getWebsite().getText());
                 productServiceDTO.setFullDescription(servicesView.getFullDescription());
+                productServiceDTO.setApiURL(servicesView.getAPIUrl().getText().length() > 0 ? servicesView.getAPIUrl().getText() : null);
+                productServiceDTO.setSampleWmsUrl(servicesView.getSampleWmsUrl().getText().length() > 0 ? servicesView.getSampleWmsUrl().getText() : null);
                 servicesView.displayLoading("Saving product service");
                 try {
                     REST.withCallback(new MethodCallback<Void>() {

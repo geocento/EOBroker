@@ -2,9 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.widgets.CompanyWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
@@ -16,7 +14,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialImage;
+import gwt.material.design.client.ui.MaterialRow;
 import gwt.material.design.client.ui.MaterialTitle;
 
 /**
@@ -116,7 +116,7 @@ public class FullViewImpl extends Composite implements FullView {
         title.setDescription(productServiceDescriptionDTO.getDescription());
         details.add(new HTMLPanel(productServiceDescriptionDTO.getFullDescription()));
         details.add(new HTMLPanel("<dl>" +
-                "<dt><b>More Information</b>:</dt><dd>" + productServiceDescriptionDTO.getWebsite() + "</dd>" +
+                "<dt><b>More Information</b>:</dt><dd>go to <a href='" + productServiceDescriptionDTO.getWebsite() + "' target='_blank'>service website</a></dd>" +
                 "</dl>"));
         details.add(new HTML("<p class='" + style.section() + "'>This service provides the following standard product</p>"));
         details.add(new ProductWidget(productServiceDescriptionDTO.getProduct()));
@@ -134,12 +134,20 @@ public class FullViewImpl extends Composite implements FullView {
         details.add(new HTMLPanel("<dl>" +
                 "<dt><b>Thematic</b>:</dt><dd>" + productDescriptionDTO.getThematic().toString() + "</dd>" +
                 "<dt><b>Sector</b>:</dt><dd>" + productDescriptionDTO.getSector().toString() + "</dd>" +
-                "<dt><b>More Information</b>:</dt><dd>go to <a href='" + productDescriptionDTO.getWebsite() + "' target='_blank'>service website</a></dd>" +
                 "</dl>"));
         details.add(new HTML("<p class='" + style.section() + "'>This product can be provided by the following services</p>"));
         for(ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
             details.add(new ProductServiceWidget(productServiceDTO));
         }
+        details.add(new HTML("<p class='" + style.section() + "'>You might also be interested in...</p>"));
+        MaterialRow otherItemsRow = new MaterialRow();
+        details.add(otherItemsRow);
+        MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
+        otherItemsRow.add(serviceColumn);
+        serviceColumn.add(new ImageSearchWidget(productDescriptionDTO.getName()));
+        serviceColumn = new MaterialColumn(12, 6, 4);
+        otherItemsRow.add(serviceColumn);
+        serviceColumn.add(new ImageRequestWidget(productDescriptionDTO.getName()));
     }
 
     @Override

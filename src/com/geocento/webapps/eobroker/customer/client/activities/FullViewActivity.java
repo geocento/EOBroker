@@ -87,7 +87,7 @@ public class FullViewActivity extends AbstractApplicationActivity implements Ful
                 @Override
                 public void onSuccess(Method method, ProductDescriptionDTO productDescriptionDTO) {
                     fullView.hideLoading();
-                    fullView.displayTitle("Product service information");
+                    fullView.displayTitle("Product information");
                     fullView.displayProduct(productDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductDescription(productId);

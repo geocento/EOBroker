@@ -48,6 +48,14 @@ public interface ProductView extends IsWidget {
 
     void hideLoading(String message);
 
+    void setRecommendationRule(String recommendationRule);
+
+    void setAPIFields(List<FormElement> apiFields);
+
+    List<FormElement> getAPIFields();
+
+    String getRecommendationRule();
+
     public interface Presenter {
     }
 

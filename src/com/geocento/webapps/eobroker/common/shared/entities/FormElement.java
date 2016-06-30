@@ -20,6 +20,8 @@ public abstract class FormElement {
 
     @Column(length = 100)
     String name;
+    @Column(length = 100)
+    String formid;
     @Column(length = 1000)
     String description;
 
@@ -32,6 +34,14 @@ public abstract class FormElement {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getFormid() {
+        return formid;
+    }
+
+    public void setFormid(String formid) {
+        this.formid = formid;
     }
 
     public String getName() {

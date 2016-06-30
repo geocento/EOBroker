@@ -63,14 +63,6 @@
         <header>
             <!-- NavBar -->
             <design:MaterialNavBar activates="sideNav" backgroundColor="grey" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
-                <design:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="true" allowBodyScroll="true" showOnAttach="true" backgroundColor="white" top="64" shadow="0" width="300" ui:field="sideNav">
-                    <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
-<!--
-                    <design:MaterialNavBrand text="Categories"></design:MaterialNavBrand>
--->
-                    <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" ui:field="companies"></design:MaterialLink>
-                    <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" ui:field="products"></design:MaterialLink>
-                </design:MaterialSideNav>
                 <design:MaterialNavSection>
                     <design:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
                     <design:MaterialLabel text="Admin dashboard" paddingLeft="50" fontSize="1.5em"></design:MaterialLabel>
@@ -79,8 +71,16 @@
                     <design:MaterialTooltip text="Notifications" position="BOTTOM">
                         <design:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE"/>
                     </design:MaterialTooltip>
+                    <design:MaterialTooltip text="Log out" position="BOTTOM">
+                        <design:MaterialLink iconType="FACE" iconPosition="NONE" ui:field="logOut"/>
+                    </design:MaterialTooltip>
                 </design:MaterialNavSection>
             </design:MaterialNavBar>
+            <design:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="true" allowBodyScroll="true" showOnAttach="true" backgroundColor="white" top="64" shadow="0" width="300" ui:field="sideNav">
+                <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
+                <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" ui:field="companies"></design:MaterialLink>
+                <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" ui:field="products"></design:MaterialLink>
+            </design:MaterialSideNav>
         </header>
 
         <design:MaterialContainer fontSize="0.8em" paddingTop="64" ui:field="mainPanel">

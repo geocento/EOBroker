@@ -17,6 +17,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -26,6 +28,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
@@ -37,7 +40,6 @@ import gwt.material.design.client.base.MaterialImageCell;
 import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.ImageType;
-import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 
 import java.util.ArrayList;
@@ -48,12 +50,15 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ImageSearchViewImpl extends Composite implements ImageSearchView {
+public class ImageSearchViewImpl extends Composite implements ImageSearchView, ResizeHandler {
 
     interface SearchPageUiBinder extends UiBinder<Widget, ImageSearchViewImpl> {
     }
 
     private static SearchPageUiBinder ourUiBinder = GWT.create(SearchPageUiBinder.class);
+
+    @UiField(provided = true)
+    TemplateView template;
 
     @UiField
     MaterialDropDown providerDropdown;
@@ -65,8 +70,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
     MaterialAnchorButton drawPolygon;
     @UiField
     MaterialAnchorButton clearAoIs;
-    @UiField
-    MaterialNavBar navBar;
     @UiField
     MaterialTab tab;
     @UiField
@@ -84,7 +87,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
     @UiField
     MaterialSideNav searchBar;
     @UiField
-    MaterialImage logo;
+    HTMLPanel mapPanel;
 
     private Presenter presenter;
 
@@ -105,7 +108,10 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
     private final SelectionModel<ImageProductDTO> selectionModel = new MultiSelectionModel<ImageProductDTO>(KEY_PROVIDER);
 
     public ImageSearchViewImpl(ClientFactoryImpl clientFactory) {
+        template = new TemplateView(clientFactory);
+
         initWidget(ourUiBinder.createAndBindUi(this));
+        onResize(null);
         mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -203,13 +209,13 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
 
     @Override
     public void displayLoadingResults(String message) {
-        navBar.showProgress(ProgressType.INDETERMINATE);
+        template.setLoading(message);
         searchBar.hide();
     }
 
     @Override
     public void hideLoadingResults() {
-        navBar.hideProgress();
+        template.hideLoading();
         searchBar.show();
         tab.selectTab("results");
     }
@@ -361,11 +367,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
     }
 
     @Override
-    public HasClickHandlers getHomeButton() {
-        return logo;
-    }
-
-    @Override
     public void enableUpdate(boolean enable) {
         update.setEnabled(enable);
     }
@@ -378,6 +379,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView {
     @Override
     public Widget asWidget() {
         return this;
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
     }
 
 }

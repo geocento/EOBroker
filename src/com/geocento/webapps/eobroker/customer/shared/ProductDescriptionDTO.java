@@ -19,7 +19,6 @@ public class ProductDescriptionDTO {
     Sector sector;
     Thematic thematic;
     List<ProductServiceDTO> productServices;
-    private String website;
 
     public ProductDescriptionDTO() {
     }
@@ -88,11 +87,4 @@ public class ProductDescriptionDTO {
         return productServices;
     }
 
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
 }

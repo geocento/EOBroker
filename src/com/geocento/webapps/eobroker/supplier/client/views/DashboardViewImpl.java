@@ -37,8 +37,12 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialButton editCompany;
     @UiField
     MaterialButton addService;
+    @UiField(provided = true)
+    TemplateView template;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
+
+        template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
     }

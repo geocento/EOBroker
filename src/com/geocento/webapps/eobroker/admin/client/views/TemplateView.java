@@ -1,17 +1,17 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.admin.client.events.LogOut;
 import com.geocento.webapps.eobroker.admin.client.places.CompaniesPlace;
 import com.geocento.webapps.eobroker.admin.client.places.EOBrokerPlace;
 import com.geocento.webapps.eobroker.admin.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -53,8 +53,14 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialLink products;
     @UiField
     MaterialNavBar navBar;
+    @UiField
+    MaterialLink logOut;
+
+    private final ClientFactoryImpl clientFactory;
 
     public TemplateView(final ClientFactoryImpl clientFactory) {
+
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -91,6 +97,11 @@ public class TemplateView extends Composite implements HasWidgets {
     public void hideLoading(String message) {
         navBar.hideProgress();
         MaterialToast.fireToast(message, "green darken-1");
+    }
+
+    @UiHandler("logOut")
+    void logOut(ClickEvent clickEvent) {
+        clientFactory.getEventBus().fireEvent(new LogOut());
     }
 
     @Override

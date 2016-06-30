@@ -36,6 +36,10 @@ public interface ServicesView extends IsWidget {
 
     void setSelectedProduct(ProductDTO productDTO);
 
+    HasText getAPIUrl();
+
+    HasText getSampleWmsUrl();
+
     void displayLoading(String message);
 
     void hideLoading();
