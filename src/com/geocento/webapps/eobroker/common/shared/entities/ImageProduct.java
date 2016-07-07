@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by thomas on 06/06/2016.
  */
 @Entity
-public class Product {
+public class ImageProduct {
 
     @Id
     @GeneratedValue
@@ -28,27 +28,14 @@ public class Product {
     @Column(length = 10000)
     String description;
 
-    @Enumerated(EnumType.STRING)
-    Sector sector;
-
-    @Enumerated(EnumType.STRING)
-    Thematic thematic;
-
-    @JoinTable(name = "product_formelement")
+    @JoinTable(name = "imageproduct_formelement")
     @OneToMany(cascade = CascadeType.ALL)
     List<FormElement> formFields;
 
-    @JoinTable(name = "product_apielement")
-    @OneToMany(cascade = CascadeType.ALL)
-    List<FormElement> apiFormFields;
-
-    @Column(length = 10000)
-    String recommendationRule;
-
     @OneToMany(mappedBy = "product")
-    Set<ProductService> productServices;
+    Set<ImageryService> imageServices;
 
-    public Product() {
+    public ImageProduct() {
     }
 
     public Long getId() {
@@ -75,22 +62,6 @@ public class Product {
         this.description = description;
     }
 
-    public Sector getSector() {
-        return sector;
-    }
-
-    public void setSector(Sector sector) {
-        this.sector = sector;
-    }
-
-    public Thematic getThematic() {
-        return thematic;
-    }
-
-    public void setThematic(Thematic thematic) {
-        this.thematic = thematic;
-    }
-
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
@@ -115,33 +86,13 @@ public class Product {
         this.formFields = formFields;
     }
 
-    public List<FormElement> getApiFormFields() {
-        return apiFormFields;
-    }
-
-    public void setApiFormFields(List<FormElement> apiFormFields) {
-        this.apiFormFields = apiFormFields;
-    }
-
-    public String getRecommendationRule() {
-        return recommendationRule;
-    }
-
-    public void setRecommendationRule(String recommendationRule) {
-        this.recommendationRule = recommendationRule;
-    }
-
-    public Set<ProductService> getProductServices() {
-        return productServices;
-    }
-
     @PreRemove
     private void removeProduct() {
-        if(productServices == null) {
+        if(imageServices == null) {
             return;
         }
-        for(ProductService productService : productServices) {
-            productService.setProduct(null);
+        for(ImageryService imageryService : imageServices) {
+            imageryService.setProduct(null);
         }
     }
 }

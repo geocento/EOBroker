@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
-import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -19,7 +20,7 @@ import java.util.Iterator;
 /**
  * Created by thomas on 23/06/2016.
  */
-public class ElementEditor<T extends FormElement> extends Composite implements HasWidgets {
+public abstract class ElementEditor<T extends FormElement> extends Composite implements HasWidgets {
 
     interface ElementContainerUiBinder extends UiBinder<HTMLPanel, ElementEditor> {
     }
@@ -59,6 +60,10 @@ public class ElementEditor<T extends FormElement> extends Composite implements H
         materialIcon.addClickHandler(clickHandler);
         buttons.add(materialIcon);
     }
+
+    public abstract FormElementValue getFormElementValue() throws Exception;
+
+    public abstract void setFormElementValue(String value);
 
     public T getFormElement() {
         return formElement;

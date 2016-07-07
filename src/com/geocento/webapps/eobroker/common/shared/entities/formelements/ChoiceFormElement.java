@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities;
+package com.geocento.webapps.eobroker.common.shared.entities.formelements;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -12,10 +12,20 @@ import java.util.List;
 @DiscriminatorValue("CHOICE")
 public class ChoiceFormElement extends FormElement {
 
+    boolean multiple;
+
     @ElementCollection
     List<String> choices;
 
     public ChoiceFormElement() {
+    }
+
+    public boolean isMultiple() {
+        return multiple;
+    }
+
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
     }
 
     public List<String> getChoices() {

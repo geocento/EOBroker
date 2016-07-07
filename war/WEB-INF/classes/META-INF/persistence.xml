@@ -10,11 +10,19 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.Company</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.User</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductService</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.FormElement</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.AoIFormElement</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.ChoiceFormElement</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.TextFormElement</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.DateFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.AoIFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.ChoiceFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.DateFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.DoubleFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ProductServiceRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ProductServiceSupplierRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

@@ -3,11 +3,12 @@
     <g:HTMLPanel>
         <design:MaterialCard backgroundColor="white">
             <design:MaterialCardContent textColor="black">
-                <design:MaterialCardContent textColor="black" ui:field="title">
+                <design:MaterialCardContent textColor="black" ui:field="content">
                     <design:MaterialCardTitle text="EDIT FORM ELEMENT"></design:MaterialCardTitle>
                     <design:MaterialTextBox placeholder="name" ui:field="name"></design:MaterialTextBox>
                     <design:MaterialTextArea placeholder="description" ui:field="description"></design:MaterialTextArea>
                     <design:MaterialTextBox placeholder="Form ID (camel case format)" ui:field="formId"></design:MaterialTextBox>
+                    <g:HTMLPanel ui:field="additionalFields"></g:HTMLPanel>
                 </design:MaterialCardContent>
             </design:MaterialCardContent>
             <design:MaterialCardAction textColor="white">

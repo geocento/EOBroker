@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.google.gwt.event.dom.client.HasClickHandlers;

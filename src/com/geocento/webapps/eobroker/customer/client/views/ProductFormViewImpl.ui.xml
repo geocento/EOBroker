@@ -39,7 +39,7 @@
             </g:HTMLPanel>
             <g:HTMLPanel>
                 <design:MaterialLabel text="Select your suppliers" fontSize="1.5em"/>
-                <g:HTMLPanel addStyleNames="{style.container}" ui:field="suppliers">
+                <g:HTMLPanel addStyleNames="{style.container}" ui:field="productServices">
                 </g:HTMLPanel>
             </g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">

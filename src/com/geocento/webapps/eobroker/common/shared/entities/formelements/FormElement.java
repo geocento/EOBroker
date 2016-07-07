@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities;
+package com.geocento.webapps.eobroker.common.shared.entities.formelements;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

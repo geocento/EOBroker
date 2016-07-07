@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -24,7 +25,7 @@ import java.util.List;
 @Path("/")
 public class AssetsResource implements AssetsService {
 
-    Logger logger = Logger.getLogger(AssetsResource.class);
+    static Logger logger = Logger.getLogger(AssetsResource.class);
 
     // assumes service is not a singleton
     @Context

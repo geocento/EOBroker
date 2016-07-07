@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
 import com.google.gwt.core.client.GWT;
+import org.fusesource.restygwt.client.DirectRestService;
 
 /**
  * Created by thomas on 03/06/2016.
@@ -11,4 +12,5 @@ public class ServicesUtil {
 
     public static AssetsService assetsService = GWT.create(AssetsService.class);
 
+    public static OrderService orderService;
 }

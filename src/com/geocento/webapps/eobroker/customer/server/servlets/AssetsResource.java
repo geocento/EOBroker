@@ -73,7 +73,7 @@ public class AssetsResource implements AssetsService {
             productFeasibilityDTO.setId(product.getId());
             productFeasibilityDTO.setName(product.getName());
             productFeasibilityDTO.setImageUrl(product.getImageUrl());
-            productFeasibilityDTO.setApiFormElements(product.getFormFields());
+            productFeasibilityDTO.setApiFormElements(product.getApiFormFields());
             // add relevant supplier services
             TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product and p.apiUrl is not null", ProductService.class);
             query.setParameter("product", product);

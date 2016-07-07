@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities;
+package com.geocento.webapps.eobroker.common.shared.entities.formelements;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -18,4 +18,23 @@ public class DateFormElement extends FormElement {
 
     @Temporal(TemporalType.TIMESTAMP)
     Date maxDate;
+
+    public DateFormElement() {
+    }
+
+    public Date getMinDate() {
+        return minDate;
+    }
+
+    public void setMinDate(Date minDate) {
+        this.minDate = minDate;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
+    }
+
+    public void setMaxDate(Date maxDate) {
+        this.maxDate = maxDate;
+    }
 }

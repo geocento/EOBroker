@@ -2,10 +2,7 @@ package com.geocento.webapps.eobroker.admin.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.AoIFormElement;
-import com.geocento.webapps.eobroker.common.shared.entities.DateFormElement;
-import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
-import com.geocento.webapps.eobroker.common.shared.entities.TextFormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -34,7 +31,7 @@ public class FormEditor extends Composite {
 
     private static FormEditorUiBinder ourUiBinder = GWT.create(FormEditorUiBinder.class);
 
-    private static enum TYPE {aoi, text, date};
+    private static enum TYPE {aoi, text, date, choice, integerNumber, doubleNumber};
 
     @UiField
     MaterialListBox selectElement;
@@ -51,6 +48,9 @@ public class FormEditor extends Composite {
         selectElement.addItem("Area of Interest", TYPE.aoi.toString());
         selectElement.addItem("Text", TYPE.text.toString());
         selectElement.addItem("Date", TYPE.date.toString());
+        selectElement.addItem("Choice", TYPE.choice.toString());
+        selectElement.addItem("Number (integer)", TYPE.integerNumber.toString());
+        selectElement.addItem("Number (double)", TYPE.doubleNumber.toString());
     }
 
     public void setElements(List<FormElement> formElements) {
@@ -145,6 +145,12 @@ public class FormEditor extends Composite {
                 return new TextFormElement();
             case date:
                 return new DateFormElement();
+            case choice:
+                return new ChoiceFormElement();
+            case integerNumber:
+                return new IntegerFormElement();
+            case doubleNumber:
+                return new DoubleFormElement();
         }
         return null;
     }

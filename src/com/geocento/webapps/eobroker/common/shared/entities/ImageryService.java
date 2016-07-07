@@ -1,9 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -23,8 +20,11 @@ public class ImageryService {
     @Column(length = 1000)
     String description;
 
-    @OneToMany
+    @ManyToOne
     Company company;
+
+    @ManyToOne
+    ImageProduct product;
 
     public ImageryService() {
     }
@@ -67,5 +67,13 @@ public class ImageryService {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public void setProduct(ImageProduct product) {
+        this.product = product;
+    }
+
+    public ImageProduct getProduct() {
+        return product;
     }
 }

@@ -10,7 +10,8 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJS
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
@@ -269,6 +270,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
             ElementEditor editor = FormHelper.createEditor(formElement);
             materialColumn.add(editor);
+            parameters.add(materialColumn);
         }
     }
 
@@ -285,6 +287,32 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         servicesLink.setText(productServiceFeasibilityDTO.getName());
+    }
+
+    @Override
+    public void setStart(Date start) {
+        startDate.setDate(start);
+    }
+
+    @Override
+    public void setStop(Date stop) {
+        stopDate.setDate(stop);
+    }
+
+    @Override
+    public void setFormElementValues(List<FormElementValue> formElementValues) {
+        for(int index = 0; index < parameters.getWidgetCount(); index++) {
+            MaterialColumn materialColumn = (MaterialColumn) parameters.getWidget(index);
+            if(materialColumn.getWidget(0) instanceof ElementEditor) {
+                ElementEditor elementEditor = (ElementEditor) materialColumn.getWidget(0);
+                // look for matching form element value
+                for(FormElementValue formElementValue : formElementValues) {
+                    if(formElementValue.getFormid().contentEquals(elementEditor.getFormElement().getFormid())) {
+                        elementEditor.setFormElementValue(formElementValue.getValue());
+                    }
+                }
+            }
+        }
     }
 
     @Override

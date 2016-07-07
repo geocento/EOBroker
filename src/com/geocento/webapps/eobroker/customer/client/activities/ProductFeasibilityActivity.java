@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.entities.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -12,6 +14,8 @@ import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityVie
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -22,6 +26,7 @@ import org.fusesource.restygwt.client.REST;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -29,6 +34,12 @@ import java.util.HashMap;
 public class ProductFeasibilityActivity extends AbstractApplicationActivity implements ProductFeasibilityView.Presenter {
 
     private ProductFeasibilityView productFeasibilityView;
+
+    private Date start;
+    private Date stop;
+    private List<FormElementValue> formElementValues;
+    private ProductServiceFeasibilityDTO productFeasibilityService;
+    private AoI aoi;
 
     public ProductFeasibilityActivity(ProductFeasibilityPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -98,7 +109,7 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
                     productFeasibilityView.setServices(response.getProductServices());
                     productFeasibilityView.setFormElements(response.getApiFormElements());
                     if(productServiceId != null) {
-                        productFeasibilityView.selectService(ListUtil.findValue(response.getProductServices(), new ListUtil.CheckValue<ProductServiceFeasibilityDTO>() {
+                        selectService(ListUtil.findValue(response.getProductServices(), new ListUtil.CheckValue<ProductServiceFeasibilityDTO>() {
                             @Override
                             public boolean isValue(ProductServiceFeasibilityDTO value) {
                                 return value.getId().longValue() == productServiceId.longValue();
@@ -111,29 +122,69 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
         }
     }
 
+    private void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
+        this.productFeasibilityService = productServiceFeasibilityDTO;
+        productFeasibilityView.selectService(productServiceFeasibilityDTO);
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
+        productFeasibilityView.setStart(start);
+    }
+
+    public void setStop(Date stop) {
+        this.stop = stop;
+        productFeasibilityView.setStop(stop);
+    }
+
+    public void setFormElementValues(List<FormElementValue> formElementValues) {
+        this.formElementValues = formElementValues;
+        productFeasibilityView.setFormElementValues(formElementValues);
+    }
+
     @Override
     protected void bind() {
+        handlers.add(productFeasibilityView.getUpdateButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                productFeasibilityView.displayLoadingResults("Checking feasibility...");
+                try {
+                    REST.withCallback(new MethodCallback<SupplierAPIResponse>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
 
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, SupplierAPIResponse response) {
+
+                        }
+                    }).call(ServicesUtil.searchService).callSupplierAPI(productFeasibilityService.getId(), aoi.getId(), start, stop, formElementValues);
+                } catch (Exception e) {
+
+                }
+            }
+        }));
     }
 
     @Override
     public void aoiChanged(AoI aoi) {
-
+        this.aoi = aoi;
     }
 
     @Override
-    public void onServiceChanged(ProductServiceFeasibilityDTO imageryService) {
-
+    public void onServiceChanged(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
+        this.productFeasibilityService = productServiceFeasibilityDTO;
     }
 
     @Override
-    public void onStartDateChanged(Date value) {
-
+    public void onStartDateChanged(Date start) {
+        this.start = start;
     }
 
     @Override
-    public void onStopDateChanged(Date value) {
-
+    public void onStopDateChanged(Date stop) {
+        this.stop = stop;
     }
 
     @Override

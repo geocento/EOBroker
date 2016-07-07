@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities;
+package com.geocento.webapps.eobroker.common.shared.entities.formelements;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

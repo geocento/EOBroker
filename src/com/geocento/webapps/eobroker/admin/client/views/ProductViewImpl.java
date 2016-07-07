@@ -4,7 +4,7 @@ import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.widgets.CodeEditor;
 import com.geocento.webapps.eobroker.admin.client.widgets.FormEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
-import com.geocento.webapps.eobroker.common.shared.entities.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.google.gwt.core.client.GWT;
