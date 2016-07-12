@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
@@ -55,6 +56,12 @@ public interface ProductFeasibilityView extends IsWidget {
     void setStop(Date stop);
 
     void setFormElementValues(List<FormElementValue> formElementValues);
+
+    void displayResultsError(String message);
+
+    void displayResponse(SupplierAPIResponse response);
+
+    void clearResults();
 
     public interface Presenter {
 

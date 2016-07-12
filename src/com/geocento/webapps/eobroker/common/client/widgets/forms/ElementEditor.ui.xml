@@ -7,7 +7,13 @@
         }
 
         .label {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-overflow: ellipsis;
+        }
 
+        .container {
+            clear: both;
         }
 
     </ui:style>
@@ -18,6 +24,6 @@
             </design:MaterialTooltip>
         </g:HTMLPanel>
         <design:MaterialLabel truncate="true" addStyleNames="{style.label}" ui:field="label"></design:MaterialLabel>
-        <g:HTMLPanel ui:field="container"></g:HTMLPanel>
+        <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

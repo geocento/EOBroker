@@ -39,4 +39,9 @@ public class OrdersViewImpl extends Composite implements OrdersView {
         return this;
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

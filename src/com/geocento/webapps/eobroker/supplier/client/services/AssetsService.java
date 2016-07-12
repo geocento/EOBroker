@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
@@ -72,4 +73,9 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/products/find/")
     @Produces("application/json")
     List<ProductDTO> findProducts(@QueryParam("text") String text);
+
+    @GET
+    @Path("/assets/notifications/")
+    @Produces("application/json")
+    List<SupplierNotificationDTO> getNotifications() throws RequestException;
 }

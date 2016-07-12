@@ -31,6 +31,8 @@ public interface CompanyView extends IsWidget {
 
     void setIconUrl(String iconURL);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

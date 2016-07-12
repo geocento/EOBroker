@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+        >
+    <ui:style>
+
+        .formValues {
+            margin: 2rem;
+        }
+
+    </ui:style>
+    <views:TemplateView ui:field="template">
+        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialRow ui:field="formValues" addStyleNames="{style.formValues}">
+        </design:MaterialRow>
+    </views:TemplateView>
+</ui:UiBinder>

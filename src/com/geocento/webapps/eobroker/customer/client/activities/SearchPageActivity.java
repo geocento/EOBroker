@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class SearchPageActivity extends AbstractApplicationActivity implements SearchPageView.Presenter {
+public class SearchPageActivity extends TemplateActivity implements SearchPageView.Presenter {
 
     private SearchPageView searchPageView;
 
@@ -54,6 +54,7 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
 
     @Override
     protected void bind() {
+        super.bind();
         handlers.add(searchPageView.getChangeSearch().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -126,17 +127,16 @@ public class SearchPageActivity extends AbstractApplicationActivity implements S
                     searchPageView.displayLoadingResults("Loading products...");
                     try {
                         final int start = 0, limit = 10;
-                        REST.withCallback(new MethodCallback<SearchResult>() {
+                        REST.withCallback(new MethodCallback<List<ProductDTO>>() {
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 Window.alert("Error");
                             }
 
                             @Override
-                            public void onSuccess(Method method, SearchResult searchResult) {
+                            public void onSuccess(Method method, List<ProductDTO> products) {
                                 searchPageView.hideLoadingResults();
                                 // add all results to the interface
-                                List<ProductDTO> products = searchResult.getProducts();
                                 searchPageView.displayProductsList(products, start, limit, text);
                             }
                         }).call(ServicesUtil.searchService).listProducts(text, start, limit, aoiId);

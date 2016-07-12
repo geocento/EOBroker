@@ -19,4 +19,11 @@ public class AoIUtil {
         }
         return null;
     }
+
+    public static String toWKT(AoI aoi) {
+        if(aoi instanceof AoIPolygon) {
+            return "POLYGON((" + ((AoIPolygon) aoi).getWktRings() + "))";
+        }
+        return null;
+    }
 }

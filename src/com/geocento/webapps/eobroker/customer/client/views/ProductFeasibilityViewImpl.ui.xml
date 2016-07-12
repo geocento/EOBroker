@@ -137,5 +137,8 @@
                 </m:MaterialFABList>
             </m:MaterialFAB>
         </g:HTMLPanel>
+        <g:HTMLPanel ui:field="results">
+
+        </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class RequestImageryActivity extends AbstractApplicationActivity implements RequestImageryView.Presenter {
+public class RequestImageryActivity extends TemplateActivity implements RequestImageryView.Presenter {
 
     private RequestImageryView requestImageryView;
 
@@ -49,6 +49,7 @@ public class RequestImageryActivity extends AbstractApplicationActivity implemen
 
     @Override
     protected void bind() {
+        super.bind();
 
    }
 

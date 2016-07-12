@@ -23,4 +23,6 @@ public interface ClientFactory {
 
     OrdersView getOrdersView();
 
+    OrderView getOrderView();
+
 }

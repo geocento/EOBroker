@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class LandingPageActivity extends AbstractApplicationActivity implements LandingPageView.Presenter {
+public class LandingPageActivity extends TemplateActivity implements LandingPageView.Presenter {
 
     private LandingPageView landingPageView;
     private Category category;
@@ -50,6 +50,7 @@ public class LandingPageActivity extends AbstractApplicationActivity implements 
 
     @Override
     protected void bind() {
+        super.bind();
 
         activityEventBus.addHandler(SuggestionSelected.TYPE, new SuggestionSelectedHandler() {
             @Override

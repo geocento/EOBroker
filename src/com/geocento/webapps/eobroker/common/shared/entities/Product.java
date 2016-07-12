@@ -34,10 +34,12 @@ public class Product {
     @Enumerated(EnumType.STRING)
     Thematic thematic;
 
+    @OrderColumn(name = "form_order")
     @JoinTable(name = "product_formelement")
     @OneToMany(cascade = CascadeType.ALL)
     List<FormElement> formFields;
 
+    @OrderColumn(name = "apiform_order")
     @JoinTable(name = "product_apielement")
     @OneToMany(cascade = CascadeType.ALL)
     List<FormElement> apiFormFields;

@@ -84,4 +84,9 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         return editCompany;
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

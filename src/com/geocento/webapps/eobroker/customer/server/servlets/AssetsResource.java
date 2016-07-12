@@ -65,10 +65,11 @@ public class AssetsResource implements AssetsService {
         }
         EntityManager em = EMF.get().createEntityManager();
         try {
-            Product product = em.find(Product.class, id);
-            if(product == null) {
-                throw new RequestException("Product does not exist");
+            ProductService productService = em.find(ProductService.class, id);
+            if(productService == null) {
+                throw new RequestException("Product service does not exist");
             }
+            Product product = productService.getProduct();
             ProductFeasibilityDTO productFeasibilityDTO = new ProductFeasibilityDTO();
             productFeasibilityDTO.setId(product.getId());
             productFeasibilityDTO.setName(product.getName());
@@ -149,7 +150,7 @@ public class AssetsResource implements AssetsService {
             if(product == null) {
                 throw new RequestException("Product does not exist");
             }
-            ProductDescriptionDTO productDescriptionDTO = new ProductDescriptionDTO();
+            final ProductDescriptionDTO productDescriptionDTO = new ProductDescriptionDTO();
             productDescriptionDTO.setId(product.getId());
             productDescriptionDTO.setName(product.getName());
             productDescriptionDTO.setShortDescription(product.getShortDescription());
@@ -172,6 +173,10 @@ public class AssetsResource implements AssetsService {
                     productServiceDTO.setCompanyId(productService.getCompany().getId());
                     productServiceDTO.setServiceImage(productService.getImageUrl());
                     productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+                    // initiate the services with product dto
+                    ProductDTO productDTO = new ProductDTO();
+                    productDTO.setId(productDescriptionDTO.getId());
+                    productServiceDTO.setProduct(productDTO);
                     return productServiceDTO;
                 }
             }));

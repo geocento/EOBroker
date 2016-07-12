@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
-import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
+import com.geocento.webapps.eobroker.common.shared.entities.Product;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 
@@ -19,13 +19,13 @@ public class ProductServiceRequest {
     @ManyToOne
     User customer;
 
-    @ManyToOne
-    ProductService productService;
-
     @ElementCollection
     List<FormElementValue> formValues;
 
-    @OneToMany(mappedBy = "productServiceRequest")
+    @ManyToOne
+    Product product;
+
+    @OneToMany(mappedBy = "productServiceRequest", cascade = CascadeType.ALL)
     List<ProductServiceSupplierRequest> supplierRequests;
 
     public ProductServiceRequest() {
@@ -47,12 +47,12 @@ public class ProductServiceRequest {
         return customer;
     }
 
-    public void setProductService(ProductService productService) {
-        this.productService = productService;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public ProductService getProductService() {
-        return productService;
+    public Product getProduct() {
+        return product;
     }
 
     public void setFormValues(List<FormElementValue> formValues) {

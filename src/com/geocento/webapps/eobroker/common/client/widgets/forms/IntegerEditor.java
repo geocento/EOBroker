@@ -2,17 +2,17 @@ package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement;
-import gwt.material.design.client.ui.MaterialNumberBox;
+import gwt.material.design.client.ui.MaterialIntegerBox;
 
 /**
  * Created by thomas on 23/06/2016.
  */
 public class IntegerEditor extends ElementEditor<IntegerFormElement> {
 
-    private final MaterialNumberBox<Integer> integerBox;
+    private final MaterialIntegerBox integerBox;
 
     public IntegerEditor() {
-        integerBox = new MaterialNumberBox<Integer>();
+        integerBox = new MaterialIntegerBox();
         add(integerBox);
     }
 

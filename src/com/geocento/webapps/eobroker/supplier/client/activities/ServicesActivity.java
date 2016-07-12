@@ -37,6 +37,7 @@ public class ServicesActivity extends TemplateActivity implements ServicesView.P
         super.start(panel, eventBus);
         servicesView = clientFactory.getServicesView();
         servicesView.setPresenter(this);
+        setTemplateView(servicesView.getTemplateView());
         panel.setWidget(servicesView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();

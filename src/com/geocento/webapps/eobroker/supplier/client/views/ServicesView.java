@@ -48,6 +48,8 @@ public interface ServicesView extends IsWidget {
 
     void displaySuccess(String message);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

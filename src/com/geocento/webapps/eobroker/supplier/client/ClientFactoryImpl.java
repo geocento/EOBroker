@@ -18,6 +18,7 @@ public class ClientFactoryImpl implements ClientFactory {
     private CompanyView companyView = null;
     private ServicesView servicesView = null;
     private OrdersView ordersView = null;
+    private OrderView orderView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -72,6 +73,14 @@ public class ClientFactoryImpl implements ClientFactory {
             ordersView = new OrdersViewImpl(this);
         }
         return ordersView;
+    }
+
+    @Override
+    public OrderView getOrderView() {
+        if(orderView == null) {
+            orderView = new OrderViewImpl(this);
+        }
+        return orderView;
     }
 
 }

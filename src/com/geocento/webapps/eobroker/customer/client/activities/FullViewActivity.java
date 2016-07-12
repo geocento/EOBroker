@@ -21,7 +21,7 @@ import java.util.HashMap;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class FullViewActivity extends AbstractApplicationActivity implements FullView.Presenter {
+public class FullViewActivity extends TemplateActivity implements FullView.Presenter {
 
     private FullView fullView;
 
@@ -43,6 +43,7 @@ public class FullViewActivity extends AbstractApplicationActivity implements Ful
 
     @Override
     protected void bind() {
+        super.bind();
 
     }
 

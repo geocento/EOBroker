@@ -112,6 +112,9 @@
                         <m:MaterialTooltip text="Sign-in" position="BOTTOM">
                             <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
                         </m:MaterialTooltip>
+                        <m:MaterialTooltip text="Sign-out" position="BOTTOM">
+                            <m:MaterialLink visible="false" ui:field="signOut" iconType="FACE" iconPosition="NONE"/>
+                        </m:MaterialTooltip>
                     </m:MaterialNavSection>
                 </m:MaterialNavBar>
                 <g:HTMLPanel ui:field="header"></g:HTMLPanel>

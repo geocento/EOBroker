@@ -10,6 +10,8 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJS
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.feasibility.Feature;
+import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
@@ -28,10 +30,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionModel;
@@ -83,6 +82,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialRow parameters;
     @UiField
     HTMLPanel mapPanel;
+    @UiField
+    HTMLPanel results;
 
     private Presenter presenter;
 
@@ -313,6 +314,33 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                 }
             }
         }
+    }
+
+    @Override
+    public void displayResultsError(String message) {
+        results.add(new MaterialLabel(message));
+    }
+
+    @Override
+    public void displayResponse(SupplierAPIResponse response) {
+        if(!response.isFeasible()) {
+            results.add(new MaterialLabel(response.getMessage()));
+            return;
+        }
+        results.add(new MaterialLabel(response.getMessage()));
+        String features = "<h4>Available features:</h4>" +
+                "<dl>";
+        for(Feature feature : response.getFeatures()) {
+            features += "<dt>" + feature.getName() + "</dt>" +
+                    "<dd>" + feature.getDescription() + "</dd>";
+        }
+        features += "</dl>";
+        results.add(new HTML(features));
+    }
+
+    @Override
+    public void clearResults() {
+        results.clear();
     }
 
     @Override

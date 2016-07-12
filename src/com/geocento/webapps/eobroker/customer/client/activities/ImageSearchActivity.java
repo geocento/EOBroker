@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ImageSearchActivity extends AbstractApplicationActivity implements ImageSearchView.Presenter {
+public class ImageSearchActivity extends TemplateActivity implements ImageSearchView.Presenter {
 
     private ImageSearchView imageSearchView;
     private AoI aoi;
@@ -153,6 +153,7 @@ public class ImageSearchActivity extends AbstractApplicationActivity implements 
 
     @Override
     protected void bind() {
+        super.bind();
 
         handlers.add(imageSearchView.getUpdateButton().addClickHandler(new ClickHandler() {
             @Override

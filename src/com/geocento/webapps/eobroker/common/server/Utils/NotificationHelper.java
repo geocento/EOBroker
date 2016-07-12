@@ -10,11 +10,12 @@ import javax.persistence.EntityManager;
  */
 public class NotificationHelper {
 
-    public static void notifySupplier(EntityManager em, Company company, SupplierNotification.TYPE type, String message) {
+    public static void notifySupplier(EntityManager em, Company company, SupplierNotification.TYPE type, String message, String linkId) {
         SupplierNotification supplierNotification = new SupplierNotification();
         supplierNotification.setCompany(company);
         supplierNotification.setType(type);
         supplierNotification.setMessage(message);
+        supplierNotification.setLinkId(linkId);
         em.persist(supplierNotification);
     }
 }

@@ -1,15 +1,18 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -19,6 +22,7 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
+import org.fusesource.restygwt.client.TextCallback;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +30,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ProductFormActivity extends AbstractApplicationActivity implements ProductFormView.Presenter {
+public class ProductFormActivity extends TemplateActivity implements ProductFormView.Presenter {
 
     private ProductFormView productFormView;
 
@@ -50,6 +54,7 @@ public class ProductFormActivity extends AbstractApplicationActivity implements 
 
     @Override
     protected void bind() {
+        super.bind();
         handlers.add(productFormView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -69,7 +74,11 @@ public class ProductFormActivity extends AbstractApplicationActivity implements 
             });
             try {
                 productFormView.displayLoading("Submitting requests");
-                REST.withCallback(new MethodCallback<String>() {
+                ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
+                productServiceRequestDTO.setProductId(productId);
+                productServiceRequestDTO.setProductServiceIds(productServiceIds);
+                productServiceRequestDTO.setValues(values);
+                REST.withCallback(new TextCallback() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
                         productFormView.hideLoading();
@@ -81,7 +90,7 @@ public class ProductFormActivity extends AbstractApplicationActivity implements 
                         productFormView.hideLoading();
                         productFormView.displaySubmittedSuccess("Your request has been successfully submitted");
                     }
-                }).call(ServicesUtil.orderService).submitProductRequest(productId, productServiceIds, values);
+                }).call(ServicesUtil.orderService).submitProductRequest(productServiceRequestDTO);
             } catch (Exception e) {
 
             }
@@ -129,6 +138,7 @@ public class ProductFormActivity extends AbstractApplicationActivity implements 
                     for(ProductServiceDTO productServiceDTO : productFormDTO.getProductServices()) {
                         productFormView.addProductService(productServiceDTO);
                     }
+                    productFormView.setInformationUrl("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productFormDTO.getId())));
                 }
             }).call(ServicesUtil.assetsService).getProductForm(productId);
         } catch (RequestException e) {

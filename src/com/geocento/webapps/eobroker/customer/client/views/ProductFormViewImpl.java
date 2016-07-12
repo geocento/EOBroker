@@ -8,6 +8,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -30,6 +31,14 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     }
 
     private static ProductFormUiBinder ourUiBinder = GWT.create(ProductFormUiBinder.class);
+
+    static public interface Style extends CssResource {
+
+        String editor();
+    }
+
+    @UiField
+    Style style;
 
     @UiField(provided = true)
     TemplateView template;
@@ -70,6 +79,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @Override
     public void addFormElement(FormElement formElement) {
         ElementEditor editor = createEditor(formElement);
+        editor.addStyleName(style.editor());
         formContainer.add(editor);
     }
 
@@ -109,6 +119,11 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @Override
     public HasClickHandlers getSubmit() {
         return submit;
+    }
+
+    @Override
+    public void setInformationUrl(String url) {
+        information.setHref(url);
     }
 
     @Override

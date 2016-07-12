@@ -13,7 +13,9 @@ import com.geocento.webapps.eobroker.common.shared.entities.orders.ProductServic
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.OrderService;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
+import com.geocento.webapps.eobroker.customer.shared.ImageRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.OrderDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -45,13 +47,19 @@ public class OrderResource implements OrderService {
     }
 
     @Override
-    public String submitImageRequest(List<Long> supplierIds, List<FormElementValue> values) {
+    public String submitImageRequest(ImageRequestDTO imageRequestDTO) {
         return null;
     }
 
     @Override
-    public String submitProductRequest(Long productId, final List<Long> productServiceIds, List<FormElementValue> values) throws RequestException {
+    public String submitProductRequest(ProductServiceRequestDTO productServiceRequestDTO) throws RequestException {
         String userName = UserUtils.verifyUser(request);
+        if(productServiceRequestDTO == null) {
+            throw new RequestException("Product service request cannot be null");
+        }
+        Long productId = productServiceRequestDTO.getProductId();
+        final List<Long> productServiceIds = productServiceRequestDTO.getProductServiceIds();
+        List<FormElementValue> values = productServiceRequestDTO.getValues();
         if(productId == null) {
             throw new RequestException("Product id is required");
         }
@@ -83,18 +91,20 @@ public class OrderResource implements OrderService {
             // store the request
             ProductServiceRequest productServiceRequest = new ProductServiceRequest();
             productServiceRequest.setId(keyGenerator.CreateKey());
+            productServiceRequest.setProduct(product);
             productServiceRequest.setCustomer(user);
             // TODO - check values are legitimate and correct?
             productServiceRequest.setFormValues(values);
+            productServiceRequest.setSupplierRequests(new ArrayList<ProductServiceSupplierRequest>());
             em.persist(productServiceRequest);
             for (ProductService productService : productServices) {
                 ProductServiceSupplierRequest productServiceSupplierRequest = new ProductServiceSupplierRequest();
                 productServiceSupplierRequest.setProductService(productService);
                 productServiceSupplierRequest.setProductServiceRequest(productServiceRequest);
                 productServiceRequest.getSupplierRequests().add(productServiceSupplierRequest);
-                em.persist(productServiceRequest);
+                em.persist(productServiceSupplierRequest);
                 // notify the supplier
-                NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.REQUEST, "New request for quotation for service '" + productService.getName() + "' from user '" + user.getUsername() + "'");
+                NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.REQUEST, "New request for quotation for service '" + productService.getName() + "' from user '" + user.getUsername() + "'", productServiceRequest.getId());
             }
             em.getTransaction().commit();
             return productServiceRequest.getId();

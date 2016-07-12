@@ -22,6 +22,8 @@ public interface DashboardView extends IsWidget {
 
     HasClickHandlers editCompany();
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

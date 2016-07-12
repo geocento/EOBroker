@@ -5,6 +5,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.ChoiceF
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import gwt.material.design.client.ui.MaterialListBox;
 
+import java.util.List;
+
 /**
  * Created by thomas on 23/06/2016.
  */
@@ -21,7 +23,11 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
     public void setFormElement(ChoiceFormElement choiceFormElement) {
         super.setFormElement(choiceFormElement);
         listBox.setMultipleSelect(choiceFormElement.isMultiple());
-        for(String value : choiceFormElement.getChoices()) {
+        List<String> values = choiceFormElement.getChoices();
+        if(values == null) {
+            return;
+        }
+        for(String value : values) {
             listBox.addItem(value);
         }
     }
@@ -48,6 +54,9 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
         // unselect all first
         for(String value : listBox.getItemsSelected()) {
             listBox.setValueSelected(value, false);
+        }
+        if(values == null) {
+            return;
         }
         // now select the selected values
         for(String value : values) {

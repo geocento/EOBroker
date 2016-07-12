@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.shared.entities.SupplierAPIResponse;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -20,6 +22,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -31,7 +34,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ProductFeasibilityActivity extends AbstractApplicationActivity implements ProductFeasibilityView.Presenter {
+public class ProductFeasibilityActivity extends TemplateActivity implements ProductFeasibilityView.Presenter {
 
     private ProductFeasibilityView productFeasibilityView;
 
@@ -69,6 +72,7 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+/*
         Long productId = null;
         if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.product.toString())) {
             try {
@@ -81,6 +85,7 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
             Window.alert("Product id cannot be null");
             clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
         }
+*/
         Long productServiceId = null;
         if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.productservice.toString())) {
             try {
@@ -89,11 +94,11 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
 
             }
         }
-        loadProduct(productId, productServiceId);
+        loadProduct(productServiceId);
         productFeasibilityView.displayAoI(Customer.currentAoI);
     }
 
-    private void loadProduct(Long productId, final Long productServiceId) {
+    private void loadProduct(final Long productServiceId) {
         productFeasibilityView.displayLoading("Loading product...");
         try {
             REST.withCallback(new MethodCallback<ProductFeasibilityDTO>() {
@@ -117,7 +122,7 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
                         }));
                     }
                 }
-            }).call(ServicesUtil.assetsService).getProductFeasibility(productId);
+            }).call(ServicesUtil.assetsService).getProductFeasibility(productServiceId);
         } catch (RequestException e) {
         }
     }
@@ -144,22 +149,33 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
 
     @Override
     protected void bind() {
+        super.bind();
         handlers.add(productFeasibilityView.getUpdateButton().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                productFeasibilityView.clearResults();
                 productFeasibilityView.displayLoadingResults("Checking feasibility...");
+                // create request
+                FeasibilityRequestDTO feasibilityRequestDTO = new FeasibilityRequestDTO();
+                feasibilityRequestDTO.setProductServiceId(productFeasibilityService.getId());
+                feasibilityRequestDTO.setAoiWKT(AoIUtil.toWKT(aoi));
+                feasibilityRequestDTO.setStart(start);
+                feasibilityRequestDTO.setStop(stop);
+                feasibilityRequestDTO.setFormElementValues(formElementValues);
                 try {
                     REST.withCallback(new MethodCallback<SupplierAPIResponse>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            productFeasibilityView.hideLoadingResults();
+                            productFeasibilityView.displayResultsError(exception.getMessage());
                         }
 
                         @Override
                         public void onSuccess(Method method, SupplierAPIResponse response) {
-
+                            productFeasibilityView.hideLoadingResults();
+                            productFeasibilityView.displayResponse(response);
                         }
-                    }).call(ServicesUtil.searchService).callSupplierAPI(productFeasibilityService.getId(), aoi.getId(), start, stop, formElementValues);
+                    }).call(ServicesUtil.searchService).callSupplierAPI(feasibilityRequestDTO);
                 } catch (Exception e) {
 
                 }
@@ -170,25 +186,56 @@ public class ProductFeasibilityActivity extends AbstractApplicationActivity impl
     @Override
     public void aoiChanged(AoI aoi) {
         this.aoi = aoi;
+        enableUpdateMaybe();
+    }
+
+    private void enableUpdateMaybe() {
+        if(aoi == null) {
+            MaterialToast.fireToast("Please select AoI");
+            enableUpdate(false);
+            return;
+        }
+        if(start == null || stop == null) {
+            MaterialToast.fireToast("Please select start and stop dates");
+            enableUpdate(false);
+            return;
+        }
+        enableUpdate(true);
+    }
+
+    private void enableUpdate(boolean enable) {
+        productFeasibilityView.enableUpdate(enable);
     }
 
     @Override
     public void onServiceChanged(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         this.productFeasibilityService = productServiceFeasibilityDTO;
+        enableUpdateMaybe();
     }
 
     @Override
     public void onStartDateChanged(Date start) {
         this.start = start;
+        enableUpdateMaybe();
     }
 
     @Override
     public void onStopDateChanged(Date stop) {
         this.stop = stop;
+        enableUpdateMaybe();
     }
 
     @Override
-    public void onFormElementChanged(FormElement formElement) {
-
+    public void onFormElementChanged(final FormElement formElement) {
+        // needs updating?
+/*
+        ListUtil.findValue(formElementValues, new ListUtil.CheckValue<FormElementValue>() {
+            @Override
+            public boolean isValue(FormElementValue value) {
+                return formElement.getFormid().contentEquals(value.getFormid());
+            }
+        });
+*/
+        enableUpdateMaybe();
     }
 }

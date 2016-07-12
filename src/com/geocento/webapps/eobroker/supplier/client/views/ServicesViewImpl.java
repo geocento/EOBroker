@@ -196,4 +196,9 @@ public class ServicesViewImpl extends Composite implements ServicesView {
         template.displaySuccess(message);
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

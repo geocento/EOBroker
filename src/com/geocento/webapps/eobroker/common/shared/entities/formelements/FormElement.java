@@ -9,10 +9,17 @@ import javax.persistence.*;
  * Created by thomas on 23/06/2016.
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@JsonSubTypes({@JsonSubTypes.Type(value=AoIFormElement.class, name="AoI"), @JsonSubTypes.Type(value = TextFormElement.class, name="TEXT")})
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value=AoIFormElement.class, name="AoI"),
+        @JsonSubTypes.Type(value = TextFormElement.class, name="TEXT"),
+        @JsonSubTypes.Type(value = DateFormElement.class, name="DATE"),
+        @JsonSubTypes.Type(value = ChoiceFormElement.class, name="CHOICE"),
+        @JsonSubTypes.Type(value = IntegerFormElement.class, name="INTEGER"),
+        @JsonSubTypes.Type(value = DoubleFormElement.class, name="DOUBLE")
+})
 @JsonTypeInfo(use= JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.PROPERTY, property="@class")
-public abstract class FormElement {
+public class FormElement {
 
     @Id
     @GeneratedValue

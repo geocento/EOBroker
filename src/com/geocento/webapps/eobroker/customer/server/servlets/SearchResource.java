@@ -3,10 +3,12 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
+import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
@@ -14,6 +16,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
+import com.google.gson.Gson;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -208,8 +211,7 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public SearchResult listProducts(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
-        SearchResult searchResult = new SearchResult();
+    public List<ProductDTO> listProducts(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
         List<Product> products = null;
         EntityManager em = EMF.get().createEntityManager();
         if(textFilter != null) {
@@ -245,15 +247,12 @@ public class SearchResource implements SearchService {
             products = productQuery.getResultList();
         }
         em.close();
-        List<ProductDTO> productDTOs = ListUtil.mutate(products, new ListUtil.Mutate<Product, ProductDTO>() {
+        return ListUtil.mutate(products, new ListUtil.Mutate<Product, ProductDTO>() {
             @Override
             public ProductDTO mutate(Product product) {
                 return ProductHelper.createProductDTO(product);
             }
         });
-        searchResult.setProducts(productDTOs);
-
-        return searchResult;
     }
 
     @Override
@@ -266,12 +265,30 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public SupplierAPIResponse callSupplierAPI(Long productServiceId, Long aoiId, Date start, Date stop, List<FormElementValue> formElementValues) throws RequestException {
+    public SupplierAPIResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequest) throws RequestException {
+        if(feasibilityRequest == null) {
+            throw new RequestException("Feasibility request cannot be null");
+        }
+        Long productServiceId = feasibilityRequest.getProductServiceId();
         if(productServiceId == null) {
             throw new RequestException("Product service id cannot be null");
         }
-        if(aoiId == null) {
+        String aoiWKT = feasibilityRequest.getAoiWKT();
+        if(aoiWKT == null) {
             throw new RequestException("AoI id cannot be null");
+        }
+        Date start = feasibilityRequest.getStart();
+        if(start == null) {
+            throw new RequestException("Start date cannot be null");
+        }
+        Date stop = feasibilityRequest.getStop();
+        if(stop == null) {
+            throw new RequestException("Stop date cannot be null");
+        }
+        List<FormElementValue> formElementValues = feasibilityRequest.getFormElementValues();
+        if(formElementValues == null) {
+            // TODO - allow empty form values?
+            formElementValues = new ArrayList<FormElementValue>();
         }
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -279,28 +296,34 @@ public class SearchResource implements SearchService {
             if(productService == null) {
                 throw new RequestException("Unknown product service");
             }
+/*
             AoI aoi = em.find(AoI.class, aoiId);
             if(aoi == null) {
                 throw new RequestException("Unknown AoI");
             }
+*/
             // now call the API with the parameters
             JSONObject json = new JSONObject();
             try {
-                json.put("aoiWKT", AoIUtil.toWKT(aoi));
+                json.put("aoiWKT", aoiWKT); //AoIUtil.toWKT(aoi));
                 json.put("start", start.getTime());
                 json.put("stop", stop.getTime());
+                // TODO - check they match the actual API definition?
                 for(FormElementValue formElementValue : formElementValues) {
                     json.put(formElementValue.getFormid(), formElementValue.getValue());
                 }
                 String response = sendAPIRequest(productService.getApiUrl(), json.toString());
+                FeasibilityResponse feasibilityResponse = new Gson().fromJson(response, FeasibilityResponse.class);
                 SupplierAPIResponse supplierAPIResponse = new SupplierAPIResponse();
-                supplierAPIResponse.setResponse(response);
+                supplierAPIResponse.setFeasible(feasibilityResponse.isFeasible());
+                supplierAPIResponse.setMessage(feasibilityResponse.getMessage());
+                supplierAPIResponse.setFeatures(feasibilityResponse.getFeatures());
                 return supplierAPIResponse;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
+                throw new RequestException("Failed to access supplier API");
             } finally {
             }
-            return null;
         } finally {
             em.close();
         }

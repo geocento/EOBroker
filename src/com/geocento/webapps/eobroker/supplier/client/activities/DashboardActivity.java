@@ -44,6 +44,7 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
         super.start(panel, eventBus);
         dashboardView = clientFactory.getDashboardView();
         dashboardView.setPresenter(this);
+        setTemplateView(dashboardView.getTemplateView());
         panel.setWidget(dashboardView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();

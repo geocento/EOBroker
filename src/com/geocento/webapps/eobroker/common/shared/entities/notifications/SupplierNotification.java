@@ -25,6 +25,9 @@ public class SupplierNotification {
     @ManyToOne
     Company company;
 
+    @Column(length = 100)
+    String linkId;
+
     public Long getId() {
         return id;
     }
@@ -55,6 +58,14 @@ public class SupplierNotification {
 
     public Company getCompany() {
         return company;
+    }
+
+    public String getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(String linkId) {
+        this.linkId = linkId;
     }
 
 }

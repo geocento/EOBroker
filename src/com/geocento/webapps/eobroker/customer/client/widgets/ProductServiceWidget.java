@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceD
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
+import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -63,9 +64,15 @@ public class ProductServiceWidget extends Composite {
             check.setVisible(true);
             check.setHref("#" + PlaceHistoryHelper.convertPlace(
                     new ProductFeasibilityPlace(
+/*
                             ProductFeasibilityPlace.TOKENS.product.toString() + "=" + productServiceDTO.getProduct().getId() + "&" +
+*/
                             ProductFeasibilityPlace.TOKENS.productservice.toString() + "=" + productServiceDTO.getId())));
         }
+        quote.setHref("#" + PlaceHistoryHelper.convertPlace(
+                new ProductFormPlace(
+                            ProductFormPlace.TOKENS.id.toString() + "=" + productServiceDTO.getProduct().getId() + "&" +
+                            ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceDTO.getId())));
     }
 
 }

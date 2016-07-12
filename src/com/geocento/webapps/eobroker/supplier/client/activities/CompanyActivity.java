@@ -40,6 +40,7 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
         super.start(panel, eventBus);
         companyView = clientFactory.getCompanyView();
         companyView.setPresenter(this);
+        setTemplateView(companyView.getTemplateView());
         panel.setWidget(companyView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();

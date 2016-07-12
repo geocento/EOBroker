@@ -28,17 +28,17 @@ public interface AssetsService extends DirectRestService {
     public void updateAoI(AoIDTO aoi);
 
     @GET
-    @Path("/assets/products/{id}")
+    @Path("/assets/product/{id}")
     @Produces("application/json")
     public ProductDTO getProduct(@PathParam("id") Long id) throws RequestException;
 
     @GET
-    @Path("/assets/productsfasibility/{id}")
+    @Path("/assets/product/{id}/feasibility/")
     @Produces("application/json")
     public ProductFeasibilityDTO getProductFeasibility(@PathParam("id") Long id) throws RequestException;
 
     @GET
-    @Path("/assets/productservices/")
+    @Path("/assets/productservices/{id}")
     @Produces("application/json")
     public ProductServiceDTO getProductService(@PathParam("id") Long id);
 
@@ -68,22 +68,23 @@ public interface AssetsService extends DirectRestService {
     public void updateCompany(CompanyDTO product);
 
     @GET
-    @Path("/assets/productsform/{id}")
+    @Path("/assets/product/form/{id}")
     @Produces("application/json")
     ProductFormDTO getProductForm(@PathParam("id") Long productId) throws RequestException;
 
     @GET
-    @Path("/assets/companies/full/{id}")
+    @Path("/assets/companies/description/{id}")
     @Produces("application/json")
     CompanyDescriptionDTO getCompanyDescription(@PathParam("id") Long companyId) throws RequestException;
 
     @GET
-    @Path("/assets/productservices/full/{id}")
+    @Path("/assets/productservices/description/{id}")
     @Produces("application/json")
     ProductServiceDescriptionDTO getProductServiceDescription(@PathParam("id") Long productServiceId) throws RequestException;
 
     @GET
-    @Path("/assets/products/full/{id}")
+    @Path("/assets/product/description/{id}")
     @Produces("application/json")
     ProductDescriptionDTO getProductDescription(@PathParam("id") Long productId) throws RequestException;
+
 }

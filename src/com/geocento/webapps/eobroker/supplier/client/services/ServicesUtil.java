@@ -12,4 +12,6 @@ public class ServicesUtil {
 
     public static AssetsService assetsService = GWT.create(AssetsService.class);
 
+    public static OrdersService ordersService = GWT.create(OrdersService.class);
+
 }

@@ -13,7 +13,7 @@ import java.util.HashMap;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class OrdersActivity extends AbstractApplicationActivity implements OrdersView.Presenter {
+public class OrdersActivity extends TemplateActivity implements OrdersView.Presenter {
 
     private OrdersView ordersView;
 
@@ -27,6 +27,7 @@ public class OrdersActivity extends AbstractApplicationActivity implements Order
         super.start(panel, eventBus);
         ordersView = clientFactory.getOrdersView();
         ordersView.setPresenter(this);
+        setTemplateView(ordersView.getTemplateView());
         panel.setWidget(ordersView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
@@ -38,6 +39,7 @@ public class OrdersActivity extends AbstractApplicationActivity implements Order
 
     @Override
     protected void bind() {
+        super.bind();
     }
 
 }

@@ -30,6 +30,8 @@ public interface ProductFormView extends IsWidget {
 
     HasClickHandlers getSubmit();
 
+    void setInformationUrl(String url);
+
     void displayLoading(String message);
 
     void hideLoading();

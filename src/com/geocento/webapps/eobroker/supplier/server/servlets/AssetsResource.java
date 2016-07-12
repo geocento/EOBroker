@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Product;
 import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -14,6 +15,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -308,6 +310,35 @@ public class AssetsResource implements AssetsService {
             suggestions.add(productDTO);
         }
         return suggestions;
+    }
+
+    @Override
+    public List<SupplierNotificationDTO> getNotifications() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<SupplierNotification> query = em.createQuery("select s from SupplierNotification s where s.company = :company", SupplierNotification.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<SupplierNotification, SupplierNotificationDTO>() {
+                @Override
+                public SupplierNotificationDTO mutate(SupplierNotification supplierNotification) {
+                    SupplierNotificationDTO supplierNotificationDTO = new SupplierNotificationDTO();
+                    supplierNotificationDTO.setType(supplierNotification.getType());
+                    supplierNotificationDTO.setMessage(supplierNotification.getMessage());
+                    supplierNotificationDTO.setLinkId(supplierNotification.getLinkId());
+                    return supplierNotificationDTO;
+                }
+            });
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error updating company");
+        } finally {
+            em.close();
+        }
     }
 
 }

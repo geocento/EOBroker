@@ -113,4 +113,9 @@ public class CompanyViewImpl extends Composite implements CompanyView {
         imageUploader.setImageUrl(iconURL);
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

@@ -3,7 +3,7 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
         >
-    <ui:style>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFormViewImpl.Style">
         .formPanel {
             width: 960px;
             margin: 0px auto;
@@ -15,6 +15,10 @@
 
         .container {
             margin: 20px 0px 20px 30px;
+        }
+
+        .editor {
+            margin-bottom: 20px;
         }
 
     </ui:style>
