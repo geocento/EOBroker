@@ -2,23 +2,29 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.feasibility.FeasibilityResponse;
-import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
-import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.Product;
+import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
+import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
+import com.geocento.webapps.eobroker.common.shared.feasibility.CoverageFeature;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
+import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.google.gson.Gson;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
+import org.geojson.geometry.Geometry;
+import org.geojson.geometry.Polygon;
+import org.geojson.object.Feature;
 import org.json.JSONObject;
 
 import javax.persistence.EntityManager;
@@ -27,6 +33,7 @@ import javax.persistence.TypedQuery;
 import javax.ws.rs.Path;
 import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
@@ -256,7 +263,7 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ImageProductDTO> queryImages(SearchRequest searchRequest) throws RequestException {
+    public List<com.geocento.webapps.eobroker.common.shared.imageapi.Product> queryImages(SearchRequest searchRequest) throws RequestException {
         try {
             return EIAPIUtil.queryProducts(searchRequest);
         } catch (Exception e) {
@@ -318,6 +325,26 @@ public class SearchResource implements SearchService {
                 supplierAPIResponse.setFeasible(feasibilityResponse.isFeasible());
                 supplierAPIResponse.setMessage(feasibilityResponse.getMessage());
                 supplierAPIResponse.setFeatures(feasibilityResponse.getFeatures());
+                supplierAPIResponse.setCoverages(ListUtil.mutate(feasibilityResponse.getCoverages().getFeatures(), new ListUtil.Mutate<Feature, CoverageFeature>() {
+                    @Override
+                    public CoverageFeature mutate(Feature feature) {
+                        CoverageFeature coverageFeature = new CoverageFeature();
+                        String wktValue = null;
+                        Geometry geometry = feature.getGeometry();
+                        switch(geometry.getType()) {
+                            case "Polygon":
+                                wktValue = "POLYGON(" + convertGeoJsonRings(((Polygon) geometry).getCoordinates()) + ")";
+                                break;
+                        }
+                        coverageFeature.setWktValue(wktValue);
+                        Map<String, Serializable> properties = feature.getProperties();
+                        if(properties != null) {
+                            coverageFeature.setName(properties.get("name") + "");
+                            coverageFeature.setDescription(properties.get("description") + "");
+                        }
+                        return coverageFeature;
+                    }
+                }));
                 return supplierAPIResponse;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -329,6 +356,27 @@ public class SearchResource implements SearchService {
         }
     }
 
+    private String convertGeoJsonRings(List<List<double[]>> rings) {
+        String wktCoordinates = ListUtil.toString(rings, new ListUtil.GetLabel<List<double[]>>() {
+            @Override
+            public String getLabel(List<double[]> ring) {
+                return convertGeoJsonRing(ring);
+            }
+        }, ",");
+        return wktCoordinates;
+    }
+
+    private String convertGeoJsonRing(List<double[]> ring) {
+        String wktCoordinates = "(";
+        wktCoordinates = ListUtil.toString(ring, new ListUtil.GetLabel<double[]>() {
+            @Override
+            public String getLabel(double[] value) {
+                return value[0] + " " + value[1];
+            }
+        }, ",");
+        wktCoordinates += ")";
+        return wktCoordinates;
+    }
 
     private static String sendAPIRequest(String apiURL, String payload) throws Exception {
 

@@ -29,7 +29,7 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="indigo lighten-1" axis="HORIZONTAL">
+    <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
@@ -44,9 +44,9 @@
             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
         </design:MaterialCardReveal>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
-            <design:MaterialLink visible="false" iconType="ASSESSMENT" text="CHECK" ui:field="check"></design:MaterialLink>
-            <design:MaterialLink iconType="ASSESSMENT" text="QUOTE" ui:field="quote"></design:MaterialLink>
-            <design:MaterialLink iconType="INFO" text="INFO" ui:field="information"></design:MaterialLink>
+            <design:MaterialLink visible="false" iconType="ASSESSMENT" text="CHECK" textColor="white" ui:field="check"></design:MaterialLink>
+            <design:MaterialLink iconType="ASSESSMENT" text="QUOTE" textColor="white" ui:field="quote"></design:MaterialLink>
+            <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
         <cutout:MaterialCutOut circle="true" opacity="0.9" textAlign="CENTER" ui:field="cutout">
             <design:MaterialTitle ui:field="cutoutTitle"></design:MaterialTitle>

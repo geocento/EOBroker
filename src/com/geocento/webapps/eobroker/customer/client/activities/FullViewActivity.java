@@ -2,7 +2,10 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.events.SearchImagery;
+import com.geocento.webapps.eobroker.customer.client.events.SearchImageryHandler;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.FullView;
 import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
@@ -45,6 +48,12 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     protected void bind() {
         super.bind();
 
+        activityEventBus.addHandler(SearchImagery.TYPE, new SearchImageryHandler() {
+            @Override
+            public void onSearchImagery(SearchImagery event) {
+                clientFactory.getPlaceController().goTo(new ImageSearchPlace(place.getToken()));
+            }
+        });
     }
 
     private void handleHistory() {

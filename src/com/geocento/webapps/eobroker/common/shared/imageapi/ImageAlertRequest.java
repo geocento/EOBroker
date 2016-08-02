@@ -2,9 +2,12 @@ package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
  *
- * Represents a search request with the various search fields allowed
+ * Request object to create an image alert on the EarthImages server
+ * Image alerts enables an account to be notified of new imagery acquired matching a search request
+ * The parameters are the same as for {@link SearchRequest}
+ * Notifications are sent to the account notification URL
  */
-public class SearchRequest {
+public class ImageAlertRequest {
 
     String sensors;
     SensorFilters sensorFilters;
@@ -15,17 +18,14 @@ public class SearchRequest {
     Integer limit = 100;
     String currency = "EUR";
 
-    public SearchRequest() {
+    public ImageAlertRequest() {
     }
 
     /**
      *
-     * a wildcard type of sensor selection based on the name of the satellite and instrument
-     * For instance:
-     * - senti will match all satellites which name starts with 'senti'
-     * specify either sensors or sensorFilters but not both
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return sensors
      */
     public String getSensors() {
         return sensors;
@@ -37,10 +37,9 @@ public class SearchRequest {
 
     /**
      *
-     * a sensor filter, allows to select sensors using criteria. See {@link SensorFilters} to see the list of criteria supported
-     * specify either sensors or sensorFilters but not both
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return sensorFilters
      */
     public SensorFilters getSensorFilters() {
         return sensorFilters;
@@ -52,9 +51,9 @@ public class SearchRequest {
 
     /**
      *
-     * the minimum date for the acquisition start date expressed as a Unix timestamp
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return start
      */
     public Long getStart() {
         return start;
@@ -66,9 +65,9 @@ public class SearchRequest {
 
     /**
      *
-     * the maximum date for the acquisition start date expressed as a Unix timestamp
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return stop
      */
     public Long getStop() {
         return stop;
@@ -80,10 +79,9 @@ public class SearchRequest {
 
     /**
      *
-     * the area of interest for the search expressed using WKT
-     * Only simple non intersecting geometries are supported, MULTI are not supported, run several queries instead
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return aoiWKT
      */
     public String getAoiWKT() {
         return aoiWKT;
@@ -95,9 +93,9 @@ public class SearchRequest {
 
     /**
      *
-     * the search constraints to apply, see {@link ProductFilters}
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return filters
      */
     public ProductFilters getFilters() {
         return filters;
@@ -109,10 +107,9 @@ public class SearchRequest {
 
     /**
      *
-     * the maximum number of results to return
-     * the EarthImages API does not provide pagination
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return limit
      */
     public Integer getLimit() {
         return limit;
@@ -124,9 +121,9 @@ public class SearchRequest {
 
     /**
      *
-     * the currency to use when providing prices
+     * as in {@link SearchRequest}
      *
-     * @return
+     * @return currency
      */
     public String getCurrency() {
         return currency;

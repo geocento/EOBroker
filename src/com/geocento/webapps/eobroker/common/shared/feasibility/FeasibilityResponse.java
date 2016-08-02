@@ -1,4 +1,6 @@
-package com.geocento.webapps.eobroker.common.shared.entities.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
+
+import org.geojson.object.FeatureCollection;
 
 import java.util.List;
 
@@ -11,6 +13,10 @@ public class FeasibilityResponse {
     String message;
 
     List<Feature> features;
+
+    FeatureCollection coverages;
+
+    String timeToDelivery;
 
     public FeasibilityResponse() {
     }
@@ -37,5 +43,21 @@ public class FeasibilityResponse {
 
     public void setFeatures(List<Feature> features) {
         this.features = features;
+    }
+
+    public FeatureCollection getCoverages() {
+        return coverages;
+    }
+
+    public void setCoverages(FeatureCollection coverages) {
+        this.coverages = coverages;
+    }
+
+    public String getTimeToDelivery() {
+        return timeToDelivery;
+    }
+
+    public void setTimeToDelivery(String timeToDelivery) {
+        this.timeToDelivery = timeToDelivery;
     }
 }

@@ -1,8 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
+import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -31,7 +31,7 @@ public interface ImageSearchView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayImageProducts(List<ImageProductDTO> imageProductDTOs);
+    void displayImageProducts(List<Product> imageProductDTOs);
 
     void displayStartDate(Date date);
 

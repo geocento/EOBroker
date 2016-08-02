@@ -5,7 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
+import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -168,22 +168,22 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setAoiWKT("POLYGON((" + ((AoIPolygon) aoi).getWktRings() + "))");
         searchRequest.setSensors(getSensorsFilter(sensors));
-        searchRequest.setStart(startDate.getTime());
-        searchRequest.setStop(stopDate.getTime());
+        searchRequest.setStart((long) (startDate.getTime() / 1000.0));
+        searchRequest.setStop((long) (stopDate.getTime() / 1000.0));
         searchRequest.setCurrency("EUR");
         imageSearchView.clearMap();
         imageSearchView.displayAoI(aoi);
         imageSearchView.displayLoadingResults("Searching products...");
         enableUpdate(false);
         try {
-            REST.withCallback(new MethodCallback<List<ImageProductDTO>>() {
+            REST.withCallback(new MethodCallback<List<Product>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     Window.alert("Error");
                 }
 
                 @Override
-                public void onSuccess(Method method, List<ImageProductDTO> imageProductDTOs) {
+                public void onSuccess(Method method, List<Product> imageProductDTOs) {
                     imageSearchView.hideLoadingResults();
                     // add all results to the interface
                     imageSearchView.displayImageProducts(imageProductDTOs);
@@ -196,6 +196,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
 
     private String getSensorsFilter(String sensors) {
         return sensors.startsWith("free") ? "SENTI*;LANDSAT*" :
+                sensors.startsWith("optical") ? "SPOT*;WV*;Plei*" :
                 sensors.startsWith("Suitable") ? "SPOT-6_*;TerraSAR*" :
                 sensors;
     }

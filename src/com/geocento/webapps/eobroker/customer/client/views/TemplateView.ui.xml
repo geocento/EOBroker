@@ -94,7 +94,7 @@
         <g:HTMLPanel addStyleNames="{style.panel}">
             <header>
                 <!-- NavBar -->
-                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue" ui:field="navBar">
+                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
                     <m:MaterialNavSection>
                         <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}"></m:MaterialImage>
                         <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
@@ -121,7 +121,7 @@
             </header>
             <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
             </m:MaterialContainer>
-            <m:MaterialFooter backgroundColor="blue">
+            <m:MaterialFooter backgroundColor="blue-grey">
                 <m:MaterialRow>
                     <m:MaterialColumn grid="s12 m6 l6">
                         <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>

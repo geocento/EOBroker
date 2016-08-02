@@ -10,7 +10,7 @@ import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
+import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
@@ -88,6 +88,8 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     MaterialSideNav searchBar;
     @UiField
     HTMLPanel mapPanel;
+    @UiField
+    MaterialButton submitForQuote;
 
     private Presenter presenter;
 
@@ -97,15 +99,15 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     private boolean mapLoaded = false;
 
-    private CellTable<ImageProductDTO> resultsTable;
+    private CellTable<Product> resultsTable;
 
-    private final ProvidesKey<ImageProductDTO> KEY_PROVIDER = new ProvidesKey<ImageProductDTO>() {
+    private final ProvidesKey<Product> KEY_PROVIDER = new ProvidesKey<Product>() {
         @Override
-        public Object getKey(ImageProductDTO item) {
+        public Object getKey(Product item) {
             return item.getProductId();
         }
     };
-    private final SelectionModel<ImageProductDTO> selectionModel = new MultiSelectionModel<ImageProductDTO>(KEY_PROVIDER);
+    private final SelectionModel<Product> selectionModel = new MultiSelectionModel<Product>(KEY_PROVIDER);
 
     public ImageSearchViewImpl(ClientFactoryImpl clientFactory) {
         template = new TemplateView(clientFactory);
@@ -221,41 +223,41 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     }
 
     @Override
-    public void displayImageProducts(List<ImageProductDTO> imageProductDTOs) {
+    public void displayImageProducts(List<Product> imageProductDTOs) {
         // add products to map
 /*
         map.getGraphics().clear();
 */
-        for(ImageProductDTO imageProductDTO : imageProductDTOs) {
+        for(Product imageProductDTO : imageProductDTOs) {
             AoIPolygon aoiPolygon = new AoIPolygon();
             aoiPolygon.setWktRings(imageProductDTO.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
             map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoiPolygon),
-                    mapContainer.arcgisMap.createFillSymbol(imageProductDTO.isArchiveProduct() ? "#ff0000" : "#00ffff" , 2, "rgba(0,0,0,0.2)"));
+                    mapContainer.arcgisMap.createFillSymbol(imageProductDTO.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff" , 2, "rgba(0,0,0,0.2)"));
         }
 
         // add products to results table
 
         // define columns
-        ColumnSortEvent.ListHandler<ImageProductDTO> sortDataHandler = new ColumnSortEvent.ListHandler<>(new ArrayList<ImageProductDTO>());
-        Column<ImageProductDTO, Boolean> checkColumn = new Column<ImageProductDTO, Boolean>(new MaterialCheckBoxCell()) {
+        ColumnSortEvent.ListHandler<Product> sortDataHandler = new ColumnSortEvent.ListHandler<>(new ArrayList<Product>());
+        Column<Product, Boolean> checkColumn = new Column<Product, Boolean>(new MaterialCheckBoxCell()) {
             @Override
-            public Boolean getValue(ImageProductDTO object) {
+            public Boolean getValue(Product object) {
                 return true; //selectionModel.isSelected(object);
             }
         };
 /*
-        checkColumn.setFieldUpdater(new FieldUpdater<ImageProductDTO, Boolean>() {
+        checkColumn.setFieldUpdater(new FieldUpdater<Product, Boolean>() {
             @Override
-            public void update(int index, ImageProductDTO object, Boolean value) {
+            public void update(int index, Product object, Boolean value) {
                 selectionModel.setSelected(object, value);
             }
         });
 */
 
         // IMAGE
-        Column<ImageProductDTO, MaterialImage> thumbnailColumn = new Column<ImageProductDTO, MaterialImage>(new MaterialImageCell()) {
+        Column<Product, MaterialImage> thumbnailColumn = new Column<Product, MaterialImage>(new MaterialImageCell()) {
             @Override
-            public MaterialImage getValue(ImageProductDTO object) {
+            public MaterialImage getValue(Product object) {
                 MaterialImage img = new MaterialImage();
                 img.setUrl(object.getThumbnail());
                 img.setWidth("40px");
@@ -266,33 +268,33 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
             }
         };
 
-        TextColumn<ImageProductDTO> sensorColumn = new TextColumn<ImageProductDTO>() {
+        TextColumn<Product> sensorColumn = new TextColumn<Product>() {
             @Override
-            public String getValue(ImageProductDTO object) {
+            public String getValue(Product object) {
                 return object.getSatelliteName();
             }
         };
         sensorColumn.setSortable(true);
 
         // ITEM NAME
-        TextColumn<ImageProductDTO> dateColumn = new TextColumn<ImageProductDTO>() {
+        TextColumn<Product> dateColumn = new TextColumn<Product>() {
 
             private DateTimeFormat fmt = DateTimeFormat.getShortDateFormat();
 
             @Override
-            public String getValue(ImageProductDTO imageProductDTO) {
+            public String getValue(Product imageProductDTO) {
                 return fmt.format(imageProductDTO.getStart());
             }
         };
         dateColumn.setSortable(true);
-        sortDataHandler.setComparator(dateColumn, new Comparator<ImageProductDTO>() {
+        sortDataHandler.setComparator(dateColumn, new Comparator<Product>() {
             @Override
-            public int compare(ImageProductDTO o1, ImageProductDTO o2) {
+            public int compare(Product o1, Product o2) {
                 return o1.getStart().compareTo(o2.getStart());
             }
         });
         // create table
-        resultsTable = new CellTable<ImageProductDTO>(100, KEY_PROVIDER);
+        resultsTable = new CellTable<Product>(100, KEY_PROVIDER);
         resultsTable.setSize("100%", "40vh");
         resultsTable.setStyleName("striped");
         resultsTable.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
@@ -310,12 +312,25 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         // now add table to the results panel
 
         resultsPanel.setWidget(resultsTable);
-        resultsPanel.getElement().getStyle().setProperty("maxHeight", (Window.getClientHeight() - 50 - queryPanel.getAbsoluteTop()) + "px");
+        resultsPanel.getElement().getStyle().setProperty("maxHeight", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
+
+        // enable quote button
+        enableQuotingMayBe();
 
         // create the list data provider
-        ListDataProvider<ImageProductDTO> imagesList = new ListDataProvider<ImageProductDTO>(imageProductDTOs);
+        ListDataProvider<Product> imagesList = new ListDataProvider<Product>(imageProductDTOs);
         imagesList.addDataDisplay(resultsTable);
 
+    }
+
+    private void enableQuotingMayBe() {
+        boolean enabled = true;
+        // TODO - check products have been selected
+        enableQuoting(enabled);
+    }
+
+    private void enableQuoting(boolean enabled) {
+        submitForQuote.setEnabled(enabled);
     }
 
     @Override

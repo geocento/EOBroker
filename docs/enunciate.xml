@@ -1,0 +1,34 @@
+<enunciate version="0.1">
+    <title>EOBroker API</title>
+    <description>
+        <![CDATA[
+      <h1>EOBroker API</h1>
+    ]]>
+    </description>
+    <copyright>Geocento Ltd</copyright>
+
+    <namespaces>
+        <namespace id="api" uri="http://eobroker.com/"/>
+    </namespaces>
+
+    <facets>
+        <exclude name="notavailable"></exclude>
+    </facets>
+
+    <modules>
+<!--
+        <jaxb disabled="true"/>
+        <jaxws disabled="true"/>
+-->
+        <spring-web disabled="true"/>
+        <jackson disabled="true"/>
+        <c-xml-client disabled="true"/>
+        <csharp-xml-client disabled="true"/>
+        <java-xml-client disabled="true"/>
+        <obj-c-client disabled="true"/>
+        <php-xml-client disabled="true"/>
+        <docs>
+            <download file="LICENSE" name="Apache II" description="The license governing this API" showLink="true"/>
+        </docs>
+    </modules>
+</enunciate>

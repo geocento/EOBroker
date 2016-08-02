@@ -1,20 +1,26 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
- * Created by thomas on 04/03/2016.
+ * a price structure
  */
-public class PriceDTO {
+public class Price {
 
-    private String currency;
-    private Double value;
+    String currency;
+    Double value;
 
-    public PriceDTO() {
+    public Price() {
     }
 
     public void setCurrency(String currency) {
         this.currency = currency;
     }
 
+    /**
+     *
+     * the currency using the ISO 4217 Currency Codes
+     *
+     * @return
+     */
     public String getCurrency() {
         return currency;
     }
@@ -23,6 +29,12 @@ public class PriceDTO {
         this.value = value;
     }
 
+    /**
+     *
+     * the price value in the specified currency
+     *
+     * @return
+     */
     public Double getValue() {
         return value;
     }

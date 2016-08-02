@@ -10,11 +10,11 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJS
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.feasibility.Feature;
-import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.Feature;
+import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
+import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.google.gwt.core.client.Callback;
@@ -93,15 +93,15 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     private boolean mapLoaded = false;
 
-    private CellTable<ImageProductDTO> resultsTable;
+    private CellTable<Product> resultsTable;
 
-    private final ProvidesKey<ImageProductDTO> KEY_PROVIDER = new ProvidesKey<ImageProductDTO>() {
+    private final ProvidesKey<Product> KEY_PROVIDER = new ProvidesKey<Product>() {
         @Override
-        public Object getKey(ImageProductDTO item) {
+        public Object getKey(Product item) {
             return item.getProductId();
         }
     };
-    private final SelectionModel<ImageProductDTO> selectionModel = new MultiSelectionModel<ImageProductDTO>(KEY_PROVIDER);
+    private final SelectionModel<Product> selectionModel = new MultiSelectionModel<Product>(KEY_PROVIDER);
 
     public ProductFeasibilityViewImpl(ClientFactoryImpl clientFactory) {
         template = new TemplateView(clientFactory);

@@ -1,7 +1,8 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
- * Created by thomas on 07/03/2016.
+ *
+ * a standard status response
  */
 public class StatusResponse {
 
@@ -16,6 +17,12 @@ public class StatusResponse {
         this.errorMessage = errorMessage;
     }
 
+    /**
+     *
+     * the error code
+     *
+     * @return
+     */
     public int getErrorCode() {
         return errorCode;
     }
@@ -24,6 +31,12 @@ public class StatusResponse {
         this.errorCode = errorCode;
     }
 
+    /**
+     *
+     * an error message
+     *
+     * @return
+     */
     public String getErrorMessage() {
         return errorMessage;
     }

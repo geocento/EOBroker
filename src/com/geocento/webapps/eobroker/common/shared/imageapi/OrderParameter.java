@@ -1,15 +1,16 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
- * Created by thomas on 03/03/2016.
+ * NOT SUPPORTED YET - an ordering parameter
  */
-public class OrderParameterDTO {
+public class OrderParameter {
 
     Long id;
     String name;
     String value;
+    Price price;
 
-    public OrderParameterDTO() {
+    public OrderParameter() {
     }
 
     public Long getId() {
@@ -34,5 +35,13 @@ public class OrderParameterDTO {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
+    }
+
+    public Price getPrice() {
+        return price;
     }
 }

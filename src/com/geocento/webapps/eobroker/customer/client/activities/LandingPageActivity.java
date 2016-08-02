@@ -81,24 +81,28 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
                         break;
                     case products:
                         String token = "";
+                        Category category = suggestion.getCategory();
                         if(action.contentEquals("product")) {
-                            token += SearchPagePlace.TOKENS.product.toString() + "=" + parameters;
-                            //setText(suggestion.getName());
+                            searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
                         } else if(action.contentEquals("browse")) {
                             token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
-                            //setText("");
+                            if(category != null) {
+                                token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                            }
+                            if(aoi != null) {
+                                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                            }
+                            searchPlace = new SearchPagePlace(token);
                         } else {
                             token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
-                            //setText(text);
+                            if(category != null) {
+                                token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                            }
+                            if(aoi != null) {
+                                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                            }
+                            searchPlace = new SearchPagePlace(token);
                         }
-                        Category category = suggestion.getCategory();
-                        if(category != null) {
-                            token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-                        }
-                        if(aoi != null) {
-                            token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
-                        }
-                        searchPlace = new SearchPagePlace(token);
                         break;
                 }
                 if(searchPlace != null) {

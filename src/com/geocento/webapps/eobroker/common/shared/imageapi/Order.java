@@ -5,38 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Created by thomas on 03/03/2016.
+ * NOT SUPPORTED YET - the order content
  */
-public class OrderDTO {
+public class Order {
 
-    private Date creationTime;
-    private Date lastUpdate;
-    private HashSet<String> eulas;
-
-    public void setCreationTime(Date creationTime) {
-        this.creationTime = creationTime;
-    }
-
-    public Date getCreationTime() {
-        return creationTime;
-    }
-
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setEulas(HashSet<String> eulas) {
-        this.eulas = eulas;
-    }
-
-    public HashSet<String> getEulas() {
-        return eulas;
-    }
-
+    /**
+     * the status of an order
+     */
     static public enum STATUS {
         // user requested the products in the order
         REQUESTED,
@@ -63,10 +38,13 @@ public class OrderDTO {
     String emailAddress;
     String name;
     String password;
-    List<CommentDTO> comments;
-    List<ProductOrderDTO> products;
+    List<Comment> comments;
+    List<ProductOrder> products;
+    Date creationTime;
+    Date lastUpdate;
+    HashSet<String> eulas;
 
-    public OrderDTO() {
+    public Order() {
     }
 
     public String getId() {
@@ -109,19 +87,43 @@ public class OrderDTO {
         this.password = password;
     }
 
-    public List<CommentDTO> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<CommentDTO> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
-    public List<ProductOrderDTO> getProducts() {
+    public List<ProductOrder> getProducts() {
         return products;
     }
 
-    public void setProducts(List<ProductOrderDTO> products) {
+    public void setProducts(List<ProductOrder> products) {
         this.products = products;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public HashSet<String> getEulas() {
+        return eulas;
+    }
+
+    public void setEulas(HashSet<String> eulas) {
+        this.eulas = eulas;
     }
 }

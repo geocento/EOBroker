@@ -3,9 +3,10 @@ package com.geocento.webapps.eobroker.common.shared.imageapi;
 import java.util.Date;
 
 /**
- * Created by thomas on 09/03/2016.
+ * NOT SUPPORTED YET - A user comment
  */
-public class CommentDTO {
+public class Comment {
+
     private String comment;
     private String from;
     private Date created;

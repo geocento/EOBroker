@@ -4,40 +4,41 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by thomas on 03/03/2016.
+ *
+ * NOT AVAILABLE YET - a product request, before it is actually converted into an order
  */
-public class ProductRequestDTO {
+public class ProductRequest {
 
     // specify either a catalogue request or a tasking request
-    CatalogueRequestDTO catalogueRequest;
-    TaskingDTO tasking;
+    ProductQuery catalogueRequest;
+    Tasking tasking;
 
     String aoiWKT;
 
     // license option
-    OrderParameterDTO licenseOption;
+    OrderParameter licenseOption;
     // used when sending the order
-    List<OrderParameterDTO> orderingOptions;
+    List<OrderParameter> orderingOptions;
 
     String comment;
     Date creationTime;
 
-    public ProductRequestDTO() {
+    public ProductRequest() {
     }
 
-    public CatalogueRequestDTO getCatalogueRequest() {
+    public ProductQuery getCatalogueRequest() {
         return catalogueRequest;
     }
 
-    public void setCatalogueRequest(CatalogueRequestDTO catalogueRequest) {
+    public void setCatalogueRequest(ProductQuery catalogueRequest) {
         this.catalogueRequest = catalogueRequest;
     }
 
-    public TaskingDTO getTasking() {
+    public Tasking getTasking() {
         return tasking;
     }
 
-    public void setTasking(TaskingDTO tasking) {
+    public void setTasking(Tasking tasking) {
         this.tasking = tasking;
     }
 
@@ -49,19 +50,19 @@ public class ProductRequestDTO {
         this.aoiWKT = aoiWKT;
     }
 
-    public OrderParameterDTO getLicenseOption() {
+    public OrderParameter getLicenseOption() {
         return licenseOption;
     }
 
-    public void setLicenseOption(OrderParameterDTO licenseOption) {
+    public void setLicenseOption(OrderParameter licenseOption) {
         this.licenseOption = licenseOption;
     }
 
-    public List<OrderParameterDTO> getOrderingOptions() {
+    public List<OrderParameter> getOrderingOptions() {
         return orderingOptions;
     }
 
-    public void setOrderingOptions(List<OrderParameterDTO> orderingOptions) {
+    public void setOrderingOptions(List<OrderParameter> orderingOptions) {
         this.orderingOptions = orderingOptions;
     }
 

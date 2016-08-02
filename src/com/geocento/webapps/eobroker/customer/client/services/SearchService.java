@@ -3,10 +3,10 @@ package com.geocento.webapps.eobroker.customer.client.services;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
-import com.geocento.webapps.eobroker.common.shared.entities.feasibility.SupplierAPIResponse;
+import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
+import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
@@ -39,7 +39,7 @@ public interface SearchService extends DirectRestService {
     @POST
     @Path("/search/images/")
     @Produces("application/json")
-    public List<ImageProductDTO> queryImages(SearchRequest searchRequest) throws RequestException;
+    public List<Product> queryImages(SearchRequest searchRequest) throws RequestException;
 
     @POST
     @Path("/search/products/feasibility")

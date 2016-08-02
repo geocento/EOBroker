@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.addins.client.masonry.MaterialMasonry;
 import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialRow;
@@ -93,8 +94,12 @@ public class FullViewImpl extends Composite implements FullView {
                 "<dt><b>Company website</b>:</dt><dd><a href='" + companyDescriptionDTO.getWebsite() + "' target='_blank'>" + companyDescriptionDTO.getWebsite() + "</a></dd>" +
                 "</dl>"));
         details.add(new HTML("<p class='" + style.section() + "'>Services provided</p>"));
+        MaterialRow materialRow = new MaterialRow();
+        details.add(materialRow);
         for(ProductServiceDTO productServiceDTO : companyDescriptionDTO.getProductServices()) {
-            details.add(new ProductServiceWidget(productServiceDTO));
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            materialColumn.add(new ProductServiceWidget(productServiceDTO));
+            materialRow.add(materialColumn);
         }
     }
 
@@ -119,9 +124,17 @@ public class FullViewImpl extends Composite implements FullView {
                 "<dt><b>More Information</b>:</dt><dd>go to <a href='" + productServiceDescriptionDTO.getWebsite() + "' target='_blank'>service website</a></dd>" +
                 "</dl>"));
         details.add(new HTML("<p class='" + style.section() + "'>This service provides the following standard product</p>"));
-        details.add(new ProductWidget(productServiceDescriptionDTO.getProduct()));
+        MaterialMasonry materialMasonry = new MaterialMasonry();
+        details.add(materialMasonry);
+        MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+        materialColumn.add(new ProductWidget(productServiceDescriptionDTO.getProduct()));
+        materialMasonry.add(materialColumn);
         details.add(new HTML("<p class='" + style.section() + "'>This service is provided by the following company</p>"));
-        details.add(new CompanyWidget(productServiceDescriptionDTO.getCompany()));
+        materialMasonry = new MaterialMasonry();
+        details.add(materialMasonry);
+        materialColumn = new MaterialColumn(12, 6, 4);
+        materialColumn.add(new CompanyWidget(productServiceDescriptionDTO.getCompany()));
+        materialMasonry.add(materialColumn);
     }
 
     @Override
@@ -136,8 +149,12 @@ public class FullViewImpl extends Composite implements FullView {
                 "<dt><b>Sector</b>:</dt><dd>" + productDescriptionDTO.getSector().toString() + "</dd>" +
                 "</dl>"));
         details.add(new HTML("<p class='" + style.section() + "'>This product can be provided by the following services</p>"));
+        MaterialRow materialRow = new MaterialRow();
+        details.add(materialRow);
         for(ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
-            details.add(new ProductServiceWidget(productServiceDTO));
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            materialColumn.add(new ProductServiceWidget(productServiceDTO));
+            materialRow.add(materialColumn);
         }
         details.add(new HTML("<p class='" + style.section() + "'>You might also be interested in...</p>"));
         MaterialRow otherItemsRow = new MaterialRow();

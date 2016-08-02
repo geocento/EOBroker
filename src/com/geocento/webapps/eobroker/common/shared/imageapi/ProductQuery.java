@@ -1,14 +1,19 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
- * Created by thomas on 08/03/2016.
+ *
+ * NOT AVAILABLE YET - specifies the archive scene selection when ordering
  */
-public class CatalogueRequestDTO {
+public class ProductQuery {
 
-    private String productId;
-    private SELECTION selectionType;
-    private String selectionGeometry;
+    String productId;
+    Policy.SELECTION selectionType;
+    String selectionGeometry;
 
+    /**
+     *
+     * @return the product identifier
+     */
     public String getProductId() {
         return productId;
     }
@@ -17,11 +22,11 @@ public class CatalogueRequestDTO {
         this.productId = productId;
     }
 
-    public SELECTION getSelectionType() {
+    public Policy.SELECTION getSelectionType() {
         return selectionType;
     }
 
-    public void setSelectionType(SELECTION selectionType) {
+    public void setSelectionType(Policy.SELECTION selectionType) {
         this.selectionType = selectionType;
     }
 

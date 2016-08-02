@@ -44,6 +44,13 @@
             position: relative;
         }
 
+        .buttonPanel {
+            height: 80px;
+            line-height: 80px;
+            margin: auto;
+            text-align: center;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
         <views:header>
@@ -66,8 +73,16 @@
                     </m:MaterialColumn>
                     <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="white">
                         <m:MaterialRow padding="0" margin="0">
-                            <m:MaterialColumn grid="s12">
+                            <m:MaterialColumn grid="s11">
                                 <m:MaterialTextBox placeholder="Sensors" textColor="black"  ui:field="sensors"></m:MaterialTextBox>
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s1">
+                                <m:MaterialIcon iconType="ASSIGNMENT" ui:field="sensorSettings"></m:MaterialIcon>
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s12">
+                                <g:HTMLPanel visible="false" ui:field="settings">
+                                    <m:MaterialLabel text="Add more..."></m:MaterialLabel>
+                                </g:HTMLPanel>
                             </m:MaterialColumn>
                             <m:MaterialColumn grid="s6">
                                 <m:MaterialDatePicker textColor="black" ui:field="startDate" placeholder="Start Date" />
@@ -76,7 +91,6 @@
                                 <m:MaterialDatePicker textColor="black" ui:field="stopDate" placeholder="Stop Date" />
                             </m:MaterialColumn>
                         </m:MaterialRow>
-                        <m:MaterialLabel text="Add more..."></m:MaterialLabel>
                         <m:MaterialRow addStyleNames="{style.queryButton}">
                             <m:MaterialColumn grid="s6">
                                 <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="blue" enabled="false" ui:field="update"/>
@@ -89,6 +103,9 @@
                     <m:MaterialColumn m:id="results" grid="s12" padding="0">
                         <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
                         </g:SimplePanel>
+                        <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                            <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="green" enabled="false" ui:field="submitForQuote"/>
+                        </g:HTMLPanel>
                     </m:MaterialColumn>
                 </m:MaterialRow>
             </m:MaterialSideNav>

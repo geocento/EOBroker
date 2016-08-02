@@ -1,0 +1,117 @@
+<project name="eobroker" basedir="." default="default">
+	
+	<property name="src.dir" value="src" />
+	
+	<property name="artifactsdir" value="C:/Users/thomas/IdeaProjects/EOBroker/out/artifacts" />
+
+    <property name="prodfilesdir" value="C:/Users/thomas/IdeaProjects/EOBroker/data/" />
+
+    <property name="gwtdir" value="C:/Users/thomas/gwt/gwt-2.7.0" />
+
+    <target name="default" depends="prepare, buildwar, deploy">
+
+    </target>
+
+    <target name="prepare">
+        <delete>
+            <fileset dir="${artifactsdir}/WEB-INF/lib" includes="**/junit*.jar"/>
+        </delete>
+    </target>
+
+    <target name="js.minify">
+        <echo>
+            ${artifactsdir}/js
+        </echo>
+        <apply executable="java" force="true">
+            <arg line="-jar"></arg>
+            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg line="-o"></arg>
+            <targetfile></targetfile>
+            <srcfile></srcfile>
+
+            <globmapper from="*.js" to="${artifactsdir}/js/*.js"/>
+            <fileset id="jsFiles" dir="${artifactsdir}\js">
+                <include name="**/*.js" />
+            </fileset>
+        </apply>
+        <fileset id="jsFiles" dir="${artifactsdir}/js">
+            <include name="**/*.js" />
+        </fileset>
+        <pathconvert property="jsConcatenatedFiles" refid="jsFiles" pathsep=", ">
+        </pathconvert>
+        <echo>
+            Minimise js files using the yui compressor from Yahoo
+            ${jsConcatenatedFiles}
+        </echo>
+    </target>
+
+    <target name="css.minify">
+        <echo>
+            ${artifactsdir}/css
+        </echo>
+        <apply executable="java" force="true">
+            <arg line="-jar"></arg>
+            <arg path="C:/Users/thomas/java libraries/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar"></arg>
+            <arg line="-o"></arg>
+            <targetfile></targetfile>
+            <srcfile></srcfile>
+
+            <globmapper from="*.css" to="${artifactsdir}/css/*.css"/>
+            <fileset id="cssFiles" dir="${artifactsdir}\css">
+                <include name="**/*.css" />
+            </fileset>
+        </apply>
+        <fileset id="cssFiles" dir="${artifactsdir}/css">
+            <include name="**/*.css" />
+        </fileset>
+        <pathconvert property="cssConcatenatedFiles" refid="cssFiles" pathsep=", ">
+        </pathconvert>
+        <echo>
+            Minimise css files using the yui compressor from Yahoo
+            ${cssConcatenatedFiles}
+        </echo>
+    </target>
+
+    <target name="buildwar">
+	    <war basedir="${artifactsdir}" destfile="EOBroker.war" webxml="war/WEB-INF/web.xml" excludes="**/sessions/**, **.log**, **/libraries.jar, **/gwt-user.jar, **/junit**">
+	    </war>
+	</target>
+	
+	<target name="deploy">
+		<scp file="EOBroker.war" sftp="true" trust="true" todir="root:Geocento@192.168.2.100:/root/Downloads/" />
+	</target>
+
+    <target name="apiDocs">
+
+        <delete dir="${artifactsdir}/docs/"/>
+
+        <property name="enunciate.home" value="C:\Users\thomas\java libraries\enunciate-2.5.0" />
+
+        <path id="project.classpath">
+            <fileset dir="C:\Users\thomas\IdeaProjects\EOBroker\out\artifacts\EOBroker_Web_exploded\WEB-INF\lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+
+        <path id="enunciate.classpath">
+            <fileset dir="${enunciate.home}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+        <taskdef name="enunciate" classname="com.webcohesion.enunciate.EnunciateTask">
+            <classpath refid="enunciate.classpath"/>
+        </taskdef>
+
+        <enunciate
+                basedir="${basedir}/src/com/geocento/webapps/eobroker/common/shared/feasibility"
+                buildDir="${artifactsdir}/docs/build"
+                configfile="${basedir}/docs/enunciate.xml"
+                >
+            <include name="**/*.java"/>
+            <classpath refid="project.classpath" />
+            <export artifactId="docs" destination="${artifactsdir}/docs/"/>
+        </enunciate>
+    </target>
+
+</project>

@@ -4,13 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by thomas on 03/03/2016.
+ *
+ * NOT AVAILABLE YET - a product order structure used once an order was made
  */
-public class ProductOrderDTO {
+public class ProductOrder {
 
     Long id;
 
-    boolean archiveProduct;
+    boolean isArchiveProduct;
 
     String productId;
 
@@ -28,23 +29,23 @@ public class ProductOrderDTO {
     String aoiWKT;
 
     // license option
-    OrderParameterDTO licenseOption;
+    OrderParameter licenseOption;
     // used when sending the order
-    List<OrderParameterDTO> orderingOptions;
+    List<OrderParameter> orderingOptions;
 
     // the latest price calculation
-    PriceDTO imagePrice;
-    PriceDTO timePrice;
-    PriceDTO totalPrice;
-    PriceDTO offeredPrice;
+    Price imagePrice;
+    Price timePrice;
+    Price totalPrice;
+    Price offeredPrice;
 
     String fetchUrl;
 
-    List<CommentDTO> comments;
+    List<Comment> comments;
     Date creationTime;
-    STATUS status;
+    Order.STATUS status;
 
-    public ProductOrderDTO() {
+    public ProductOrder() {
     }
 
     public Long getId() {
@@ -56,11 +57,11 @@ public class ProductOrderDTO {
     }
 
     public boolean isArchiveProduct() {
-        return archiveProduct;
+        return isArchiveProduct;
     }
 
     public void setArchiveProduct(boolean isArchiveProduct) {
-        this.archiveProduct = isArchiveProduct;
+        this.isArchiveProduct = isArchiveProduct;
     }
 
     public String getProductId() {
@@ -151,59 +152,59 @@ public class ProductOrderDTO {
         this.aoiWKT = aoiWKT;
     }
 
-    public OrderParameterDTO getLicenseOption() {
+    public OrderParameter getLicenseOption() {
         return licenseOption;
     }
 
-    public void setLicenseOption(OrderParameterDTO licenseOption) {
+    public void setLicenseOption(OrderParameter licenseOption) {
         this.licenseOption = licenseOption;
     }
 
-    public List<OrderParameterDTO> getOrderingOptions() {
+    public List<OrderParameter> getOrderingOptions() {
         return orderingOptions;
     }
 
-    public void setOrderingOptions(List<OrderParameterDTO> orderingOptions) {
+    public void setOrderingOptions(List<OrderParameter> orderingOptions) {
         this.orderingOptions = orderingOptions;
     }
 
-    public PriceDTO getImagePrice() {
+    public Price getImagePrice() {
         return imagePrice;
     }
 
-    public void setImagePrice(PriceDTO imagePrice) {
+    public void setImagePrice(Price imagePrice) {
         this.imagePrice = imagePrice;
     }
 
-    public PriceDTO getTimePrice() {
+    public Price getTimePrice() {
         return timePrice;
     }
 
-    public void setTimePrice(PriceDTO timePrice) {
+    public void setTimePrice(Price timePrice) {
         this.timePrice = timePrice;
     }
 
-    public PriceDTO getTotalPrice() {
+    public Price getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(PriceDTO totalPrice) {
+    public void setTotalPrice(Price totalPrice) {
         this.totalPrice = totalPrice;
     }
 
-    public PriceDTO getOfferedPrice() {
+    public Price getOfferedPrice() {
         return offeredPrice;
     }
 
-    public void setOfferedPrice(PriceDTO offeredPrice) {
+    public void setOfferedPrice(Price offeredPrice) {
         this.offeredPrice = offeredPrice;
     }
 
-    public List<CommentDTO> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<CommentDTO> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
@@ -215,11 +216,11 @@ public class ProductOrderDTO {
         this.creationTime = creationTime;
     }
 
-    public STATUS getStatus() {
+    public Order.STATUS getStatus() {
         return status;
     }
 
-    public void setStatus(STATUS status) {
+    public void setStatus(Order.STATUS status) {
         this.status = status;
     }
 }

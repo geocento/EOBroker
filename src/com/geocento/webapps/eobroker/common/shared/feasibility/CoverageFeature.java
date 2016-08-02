@@ -1,25 +1,21 @@
-package com.geocento.webapps.eobroker.common.shared.entities.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
 
-/**
- * Created by thomas on 12/07/2016.
- */
-public class Feature {
+public class CoverageFeature {
 
-    static public enum TYPE {BOOLEAN, NUMBER, TEXT, IMAGE, MAPVECTOR};
+    String wktValue;
 
-    TYPE type;
     String name;
     String description;
 
-    public Feature() {
+    public CoverageFeature() {
     }
 
-    public TYPE getType() {
-        return type;
+    public String getWktValue() {
+        return wktValue;
     }
 
-    public void setType(TYPE type) {
-        this.type = type;
+    public void setWktValue(String wktValue) {
+        this.wktValue = wktValue;
     }
 
     public String getName() {

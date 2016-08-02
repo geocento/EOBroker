@@ -1,7 +1,8 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
- * Created by thomas on 08/03/2016.
+ *
+ * NOT SUPPORTED YET - the response when creating an order
  */
 public class CreateOrderResponse extends StatusResponse {
 
@@ -10,6 +11,11 @@ public class CreateOrderResponse extends StatusResponse {
     public CreateOrderResponse() {
     }
 
+    /**
+     * the id of the order
+     *
+     * @return id
+     */
     public String getOrderId() {
         return orderId;
     }

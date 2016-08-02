@@ -1,9 +1,9 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
 /**
- * Created by thomas on 08/03/2016.
+ * NOT IMPLEMENTED YET - tasking request
  */
-public class TaskingDTO {
+public class Tasking {
 
     Long modeId;
     Long start;
@@ -16,7 +16,7 @@ public class TaskingDTO {
     private String coordinatesWKT;
     private int frameNumbers;
 
-    public TaskingDTO() {
+    public Tasking() {
     }
 
     public Long getModeId() {

@@ -3,14 +3,15 @@ package com.geocento.webapps.eobroker.common.shared.imageapi;
 import java.util.List;
 
 /**
- * Created by thomas on 03/03/2016.
+ *
+ * NOT IMPLEMENTED YET - order submission request
  */
 public class SubmitOrder {
 
     String emailAddress;
     String name;
     String password;
-    List<ProductRequestDTO> products;
+    List<ProductRequest> products;
     String comment;
 
     public SubmitOrder() {
@@ -40,11 +41,11 @@ public class SubmitOrder {
         this.password = password;
     }
 
-    public List<ProductRequestDTO> getProducts() {
+    public List<ProductRequest> getProducts() {
         return products;
     }
 
-    public void setProducts(List<ProductRequestDTO> products) {
+    public void setProducts(List<ProductRequest> products) {
         this.products = products;
     }
 

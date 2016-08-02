@@ -1,4 +1,7 @@
-package com.geocento.webapps.eobroker.common.shared.entities.feasibility;
+package com.geocento.webapps.eobroker.customer.shared;
+
+import com.geocento.webapps.eobroker.common.shared.feasibility.CoverageFeature;
+import com.geocento.webapps.eobroker.common.shared.feasibility.Feature;
 
 import java.util.List;
 
@@ -11,6 +14,8 @@ public class SupplierAPIResponse {
     String message;
 
     List<Feature> features;
+
+    List<CoverageFeature> coverages;
 
     public SupplierAPIResponse() {
     }
@@ -37,5 +42,13 @@ public class SupplierAPIResponse {
 
     public void setFeatures(List<Feature> features) {
         this.features = features;
+    }
+
+    public List<CoverageFeature> getCoverages() {
+        return coverages;
+    }
+
+    public void setCoverages(List<CoverageFeature> coverages) {
+        this.coverages = coverages;
     }
 }

@@ -1,12 +1,15 @@
 package com.geocento.webapps.eobroker.common.shared.imageapi;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
- * Created by thomas on 03/03/2016.
+ * The search constraints when running a search.
+ * These constraints are applied at run time when searching for suitable scenes, in addition to the sensor, AoI and period of interest
  */
+@JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
 public class ProductFilters {
 
     Double coverage;
-    Double usefulArea;
     Double cloud;
     Double[] elevation;
     Double[] ona;
@@ -19,6 +22,12 @@ public class ProductFilters {
     public ProductFilters() {
     }
 
+    /**
+     *
+     * minimum coverage of the AoI required in percent
+     *
+     * @return
+     */
     public Double getCoverage() {
         return coverage;
     }
@@ -27,14 +36,12 @@ public class ProductFilters {
         this.coverage = coverage;
     }
 
-    public Double getUsefulArea() {
-        return usefulArea;
-    }
-
-    public void setUsefulArea(Double usefulArea) {
-        this.usefulArea = usefulArea;
-    }
-
+    /**
+     *
+     * maximum cloud cover in percent
+     *
+     * @return
+     */
     public Double getCloud() {
         return cloud;
     }
@@ -43,6 +50,12 @@ public class ProductFilters {
         this.cloud = cloud;
     }
 
+    /**
+     *
+     * (optical only) min and max average Elevation Angle
+     *
+     * @return
+     */
     public Double[] getElevation() {
         return elevation;
     }
@@ -51,6 +64,12 @@ public class ProductFilters {
         this.elevation = elevation;
     }
 
+    /**
+     *
+     * (optical only) min and max average Off Nadir Angle
+     *
+     * @return
+     */
     public Double[] getOna() {
         return ona;
     }
@@ -59,22 +78,12 @@ public class ProductFilters {
         this.ona = ona;
     }
 
-    public String getDirection() {
-        return direction;
-    }
-
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
-    public Double[] getIncidence() {
-        return incidence;
-    }
-
-    public void setIncidence(Double[] incidence) {
-        this.incidence = incidence;
-    }
-
+    /**
+     *
+     * (optical only) min and max average Sun Zenith Angle in degrees
+     *
+     * @return
+     */
     public Double[] getSza() {
         return sza;
     }
@@ -83,6 +92,12 @@ public class ProductFilters {
         this.sza = sza;
     }
 
+    /**
+     *
+     * (optical only) min number of images in the stereo stack, currently limited to 2 or 3 (stereo or triplet)
+     *
+     * @return
+     */
     public Integer getStereo() {
         return stereo;
     }
@@ -91,6 +106,40 @@ public class ProductFilters {
         this.stereo = stereo;
     }
 
+    /**
+     *
+     * (SAR only) the required orbit direction, values are ASCENDING or DESCENDING
+     *
+     * @return
+     */
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    /**
+     *
+     * (SAR only) min and max average incidence angles in degrees
+     *
+     * @return
+     */
+    public Double[] getIncidence() {
+        return incidence;
+    }
+
+    public void setIncidence(Double[] incidence) {
+        this.incidence = incidence;
+    }
+
+    /**
+     *
+     * (SAR ARCHIVE only) polarisation mode filtering
+     *
+     * @return
+     */
     public String getPolarisation() {
         return polarisation;
     }
@@ -98,5 +147,21 @@ public class ProductFilters {
     public void setPolarisation(String polarisation) {
         this.polarisation = polarisation;
     }
+
+/*
+    */
+/** Deserializes an Object of class MyClass from its JSON representation *//*
+
+    public static ProductFilters valueOf(String jsonRepresentation) {
+        ObjectMapper mapper = new ObjectMapper(); //Jackson's JSON marshaller
+        ProductFilters productFilters = null;
+        try {
+            productFilters = mapper.readValue(jsonRepresentation, ProductFilters.class );
+        } catch (IOException e) {
+            throw new WebApplicationException();
+        }
+        return productFilters;
+    }
+*/
 
 }

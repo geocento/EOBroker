@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.server.imageapi;
 
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
-import com.geocento.webapps.eobroker.common.shared.imageapi.ImageProductDTO;
+import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchResponse;
 import com.google.gson.*;
@@ -33,9 +33,9 @@ public class EIAPIUtil {
 
     private static String token = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.eiToken);
 
-    static public List<ImageProductDTO> queryProducts(SearchRequest searchRequest) throws Exception {
-        String response = sendAPIRequest("/search/catalogue", new Gson().toJson(searchRequest));
-        return builder.create().fromJson(response, SearchResponse.class).getImageProductDTOs();
+    static public List<Product> queryProducts(SearchRequest searchRequest) throws Exception {
+        String response = sendAPIRequest("/search/", new Gson().toJson(searchRequest));
+        return builder.create().fromJson(response, SearchResponse.class).getProducts();
     }
 
     private static String sendAPIRequest(String endPoint, String payload) throws Exception {
@@ -52,7 +52,7 @@ public class EIAPIUtil {
         // add some debug log information
         try {
             //Send request
-            URL targetURL = new URL("http://192.168.2.100:8888/api" + endPoint);
+            URL targetURL = new URL("http://earthimages.geocento.com/api/" + endPoint);
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);
