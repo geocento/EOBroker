@@ -90,12 +90,12 @@
         <g:HTMLPanel addStyleNames="{style.panel}">
             <header>
                 <!-- NavBar -->
-                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" ui:field="navBar" backgroundColor="blue">
+                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" ui:field="navBar" backgroundColor="blue-grey">
                     <m:MaterialNavSection flex="NONE">
                         <m:MaterialImage height="64px" resource="{res.logoEOBroker}"></m:MaterialImage>
                     </m:MaterialNavSection>
                     <m:MaterialLink text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
-                    <widgets:MaterialSuggestion ui:field="textSearch" iconColor="white" backgroundColor="blue" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO"/>
+                    <widgets:MaterialSuggestion ui:field="textSearch" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO"/>
                     <m:MaterialNavSection flex="NONE" float="RIGHT">
                         <m:MaterialTooltip text="Orders" position="BOTTOM">
                             <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE">

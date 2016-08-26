@@ -10,13 +10,13 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJS
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.feasibility.Feature;
-import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.feasibility.Feature;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
+import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -208,16 +208,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         template.hideLoading();
         searchBar.show();
         tab.selectTab("results");
-    }
-
-    @Override
-    public void displayStartDate(Date date) {
-        this.startDate.setValue(date);
-    }
-
-    @Override
-    public void displayStopDate(Date date) {
-        this.stopDate.setValue(date);
     }
 
     @Override

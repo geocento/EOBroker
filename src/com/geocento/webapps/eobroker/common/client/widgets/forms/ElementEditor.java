@@ -22,6 +22,10 @@ import java.util.Iterator;
  */
 public abstract class ElementEditor<T extends FormElement> extends Composite implements HasWidgets {
 
+    public static interface ChangeListener {
+        void hasChanged();
+    }
+
     interface ElementContainerUiBinder extends UiBinder<HTMLPanel, ElementEditor> {
     }
 
@@ -34,6 +38,8 @@ public abstract class ElementEditor<T extends FormElement> extends Composite imp
     MaterialTooltip information;
     @UiField
     MaterialLabel label;
+    @UiField
+    MaterialIcon informationButton;
 
     protected T formElement;
 
@@ -52,6 +58,11 @@ public abstract class ElementEditor<T extends FormElement> extends Composite imp
     }
 
     public void setInformation(String information) {
+        if(information == null) {
+            informationButton.setVisible(false);
+            return;
+        }
+        informationButton.setVisible(true);
         this.information.setText(information);
     }
 
@@ -68,6 +79,8 @@ public abstract class ElementEditor<T extends FormElement> extends Composite imp
     public T getFormElement() {
         return formElement;
     }
+
+    public abstract void setChangeListener(ChangeListener changeListener);
 
     @Override
     public void add(Widget w) {

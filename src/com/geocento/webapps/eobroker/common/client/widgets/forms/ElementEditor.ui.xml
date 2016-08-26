@@ -20,7 +20,7 @@
     <g:HTMLPanel>
         <g:HTMLPanel addStyleNames="{style.buttons}" ui:field="buttons">
             <design:MaterialTooltip ui:field="information">
-                <design:MaterialIcon iconType="INFO"></design:MaterialIcon>
+                <design:MaterialIcon iconType="INFO" ui:field="informationButton"></design:MaterialIcon>
             </design:MaterialTooltip>
         </g:HTMLPanel>
         <design:MaterialLabel truncate="true" addStyleNames="{style.label}" ui:field="label"></design:MaterialLabel>

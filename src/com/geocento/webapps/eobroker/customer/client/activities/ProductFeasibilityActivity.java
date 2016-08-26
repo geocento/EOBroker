@@ -2,9 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -13,8 +11,10 @@ import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityView;
+import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
+import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -27,6 +27,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +96,11 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
             }
         }
         loadProduct(productServiceId);
+        setAoI(Customer.currentAoI);
+    }
+
+    private void setAoI(AoI aoi) {
+        this.aoi = aoi;
         productFeasibilityView.displayAoI(Customer.currentAoI);
     }
 
@@ -112,7 +118,9 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 public void onSuccess(Method method, ProductFeasibilityDTO response) {
                     productFeasibilityView.hideLoading();
                     productFeasibilityView.setServices(response.getProductServices());
-                    productFeasibilityView.setFormElements(response.getApiFormElements());
+                    List<FormElement> formElements = new ArrayList<FormElement>();
+                    formElements.addAll(response.getApiFormElements());
+                    productFeasibilityView.setFormElements(formElements);
                     if(productServiceId != null) {
                         selectService(ListUtil.findValue(response.getProductServices(), new ListUtil.CheckValue<ProductServiceFeasibilityDTO>() {
                             @Override
@@ -185,7 +193,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
     @Override
     public void aoiChanged(AoI aoi) {
-        this.aoi = aoi;
+        setAoI(aoi);
         enableUpdateMaybe();
     }
 

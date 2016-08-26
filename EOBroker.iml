@@ -9,7 +9,6 @@
         <setting name="webFacet" value="Web" />
         <packaging>
           <module name="com.geocento.webapps.eobroker.common.common" enabled="false" />
-          <module name="com.geocento.webapps.eobroker.supplier.supplier" path="/supplier" />
         </packaging>
       </configuration>
     </facet>
@@ -46,6 +45,7 @@
     <orderEntry type="library" name="gwt-user" level="project" />
     <orderEntry type="library" name="libraries" level="project" />
     <orderEntry type="library" name="client libraries" level="project" />
+    <orderEntry type="library" name="antlr-4.5.3-complete" level="project" />
   </component>
 </module>
 

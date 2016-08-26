@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
@@ -44,6 +45,8 @@ public interface ImageSearchView extends IsWidget {
     void enableUpdate(boolean enable);
 
     void clearMap();
+
+    void displaySensorSuggestions(List<Suggestion> response);
 
     public interface Presenter {
 

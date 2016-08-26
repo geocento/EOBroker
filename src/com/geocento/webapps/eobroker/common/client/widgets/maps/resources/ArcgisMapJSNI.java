@@ -45,7 +45,7 @@ public class ArcgisMapJSNI extends JavaScriptObject {
         return this.createFillSymbol(strokeColor, strokeWidth, fillColor);
     }-*/;
 
-    public final native GeometryJSNI createPolygon(String wktRings) /*-{
+    public final native PolygonJSNI createPolygon(String wktRings) /*-{
         return this.createPolygon(wktRings);
     }-*/;
 

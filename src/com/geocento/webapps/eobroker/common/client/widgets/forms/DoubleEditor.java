@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.DoubleFormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import gwt.material.design.client.ui.MaterialDoubleBox;
 
 /**
@@ -51,6 +53,16 @@ public class DoubleEditor extends ElementEditor<DoubleFormElement> {
 
     public void setValue(Double value) {
         doubleBox.setValue(value);
+    }
+
+    @Override
+    public void setChangeListener(final ChangeListener changeListener) {
+        doubleBox.addValueChangeHandler(new ValueChangeHandler<Double>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Double> event) {
+                changeListener.hasChanged();
+            }
+        });
     }
 
 }

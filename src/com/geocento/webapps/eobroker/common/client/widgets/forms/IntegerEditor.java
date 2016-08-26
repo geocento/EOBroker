@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import gwt.material.design.client.ui.MaterialIntegerBox;
 
 /**
@@ -47,6 +49,16 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
 
     public void setValue(Integer value) {
         integerBox.setValue(value);
+    }
+
+    @Override
+    public void setChangeListener(final ChangeListener changeListener) {
+        integerBox.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                changeListener.hasChanged();
+            }
+        });
     }
 
 }

@@ -96,7 +96,7 @@
                 <!-- NavBar -->
                 <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
                     <m:MaterialNavSection>
-                        <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}"></m:MaterialImage>
+                        <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
                         <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
                     </m:MaterialNavSection>
                     <m:MaterialNavSection float="RIGHT">

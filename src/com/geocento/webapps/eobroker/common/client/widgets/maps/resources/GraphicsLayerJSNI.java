@@ -18,4 +18,8 @@ public class GraphicsLayerJSNI extends JavaScriptObject {
         this.clear();
     }-*/;
 
+    public final native void remove(GraphicJSNI graphicJSNI) /*-{
+        this.remove(graphicJSNI);
+    }-*/;
+
 }

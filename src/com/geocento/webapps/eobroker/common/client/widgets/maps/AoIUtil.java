@@ -26,4 +26,16 @@ public class AoIUtil {
         }
         return null;
     }
+
+    public static AoI fromWKT(String aoiWKT) {
+        if(aoiWKT == null) {
+            return null;
+        }
+        if(aoiWKT.startsWith("POLYGON((")) {
+            AoIPolygon aoIPolygon = new AoIPolygon();
+            aoIPolygon.setWktRings(aoiWKT.replace("POLYGON((", "").replace("))", ""));
+            return aoIPolygon;
+        }
+        return null;
+    }
 }

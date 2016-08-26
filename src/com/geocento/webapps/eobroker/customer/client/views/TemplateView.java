@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.place.shared.PlaceChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiChild;
@@ -41,6 +42,8 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialLink signOut;
     @UiField
     MaterialLink signIn;
+    @UiField
+    MaterialImage logo;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -50,6 +53,13 @@ public class TemplateView extends Composite implements HasWidgets {
         this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        logo.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
+            }
+        });
     }
 
     public void setTitleText(String title) {

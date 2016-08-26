@@ -3,7 +3,8 @@
              xmlns:m="urn:import:gwt.material.design.client.ui"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
-             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views">
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:forms="urn:import:com.geocento.webapps.eobroker.common.client.widgets.forms">
 
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:style>
@@ -97,6 +98,9 @@
                     <m:MaterialRow padding="0" margin="0">
                         <m:MaterialColumn grid="s6">
                             <m:MaterialDatePicker ui:field="startDate" placeholder="Start Date" />
+<!--
+                            <forms:DateEditor ui:field="startDate"></forms:DateEditor>
+-->
                         </m:MaterialColumn>
                         <m:MaterialColumn grid="s6">
                             <m:MaterialDatePicker ui:field="stopDate" placeholder="Stop Date" />

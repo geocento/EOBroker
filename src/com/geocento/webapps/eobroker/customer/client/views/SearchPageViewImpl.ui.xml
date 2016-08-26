@@ -17,6 +17,7 @@
             bottom: 0px;
             width: 100%;
             overflow-y: auto;
+            margin: 10px;
         }
 
         .label {

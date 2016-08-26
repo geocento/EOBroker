@@ -21,7 +21,9 @@ public interface StyleResources extends ClientBundle {
     Style style();
 */
 
-    @Source("images/eobe-logo.jpg")
+    @Source("images/eobe-logo.png")
     ImageResource logoEOBroker();
 
+    @Source("images/informationIcon.png")
+    ImageResource info();
 }

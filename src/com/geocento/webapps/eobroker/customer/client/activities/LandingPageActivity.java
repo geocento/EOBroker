@@ -55,8 +55,6 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         activityEventBus.addHandler(SuggestionSelected.TYPE, new SuggestionSelectedHandler() {
             @Override
             public void onSuggestionSelected(SuggestionSelected event) {
-                // TODO - save or update current AoI
-                Customer.currentAoI = aoi;
                 // update the fields
                 Suggestion suggestion = event.getSuggestion();
                 //setCategory(suggestion.getCategory());
@@ -115,8 +113,6 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         activityEventBus.addHandler(TextSelected.TYPE, new TextSelectedHandler() {
             @Override
             public void onTextSelected(TextSelected event) {
-                // TODO - save or update current AoI
-                Customer.currentAoI = aoi;
                 text = event.getText();
                 if(text.trim().length() == 0) {
                     return;
@@ -240,6 +236,7 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
     public void aoiChanged(AoI aoi) {
         this.aoi = aoi;
         //updateSuggestions();
+        Customer.setAoI(aoi);
     }
 
     @Override

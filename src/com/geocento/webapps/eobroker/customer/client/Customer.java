@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMapper;
+import com.geocento.webapps.eobroker.customer.client.utils.Utils;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.activity.shared.FilteredActivityMapper;
@@ -71,10 +72,20 @@ public class Customer implements EntryPoint {
     private void initialise() {
         Defaults.setServiceRoot("/customer/api");
         Defaults.setDateFormat(null);
+        setAoI(Utils.getAoI());
     }
 
 
     public static void setLoginInfo(LoginInfo loginInfo) {
         Customer.loginInfo = loginInfo;
+    }
+
+    public static void setAoI(AoI aoi) {
+        currentAoI = aoi;
+        Utils.saveAoI(aoi);
+    }
+
+    public static AoI getAoI() {
+        return currentAoI;
     }
 }

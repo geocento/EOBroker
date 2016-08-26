@@ -1,11 +1,9 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.Product;
-import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
-import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
@@ -123,6 +121,32 @@ public class SearchResource implements SearchService {
             suggestions.add(new RankedSuggestion((String) result[0], Category.products, "product::" + ((Long) result[2]) + "", (double) ((float) result[1])));
         }
         return suggestions;
+    }
+
+    private List<RankedSuggestion> completeImagery(String keywordsString) {
+        // try to recreate a sensor query
+        SensorQuery sensorQuery = new SensorQuery(keywordsString);
+/*
+        boolean partialMatch = !keywordsString.endsWith(" ");
+        String[] keywords = keywordsString.split(" ");
+        for(int index = 0; index < (partialMatch ? keywords.length - 1 : keywords.length); index++) {
+            String keyword = keywords[index];
+            // find best match for remaining items
+            keyword = keyword.toLowerCase();
+            sensorQuery.ingestKeyword(keyword);
+        }
+        Gson gson = new Gson();
+        // now look for additional suggestions
+        HashMap<String, SensorFilters> suggestions = sensorQuery.getSuggestions(partialMatch ? keywords[keywords.length - 1] : "");
+*/
+        String baseQuery = sensorQuery.getQueryString();
+        String error = sensorQuery.getError();
+        String suggestions = sensorQuery.getSuggestions();
+        List<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
+        for(String suggestion : suggestions.split(";")) {
+            rankedSuggestions.add(new RankedSuggestion(baseQuery + " " + suggestion, Category.imagery, "image::" + baseQuery, 1.0));
+        }
+        return rankedSuggestions;
     }
 
     @Override
@@ -263,8 +287,16 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<com.geocento.webapps.eobroker.common.shared.imageapi.Product> queryImages(SearchRequest searchRequest) throws RequestException {
+    public List<com.geocento.webapps.eobroker.common.shared.imageapi.Product> queryImages(SearchQuery searchQuery) throws RequestException {
         try {
+            SearchRequest searchRequest = new SearchRequest();
+            searchRequest.setAoiWKT(searchQuery.getAoiWKT());
+            // check the sensor query
+            SensorQuery sensorQuery = new SensorQuery(searchQuery.getSensors());
+            searchRequest.setSensorFilters(sensorQuery.getSensorFilters());
+            searchRequest.setStart(searchQuery.getStart());
+            searchRequest.setStop(searchQuery.getStop());
+            searchRequest.setCurrency("EUR");
             return EIAPIUtil.queryProducts(searchRequest);
         } catch (Exception e) {
             throw new RequestException(e.getMessage());
@@ -354,6 +386,44 @@ public class SearchResource implements SearchService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public List<Suggestion> completeSensors(String sensors) {
+        ArrayList<Suggestion> suggestions = new ArrayList<Suggestion>();
+        ArrayList<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
+        // start working on sensors options
+        try {
+            rankedSuggestions.addAll(completeImagery(sensors));
+        } catch (Exception e) {
+
+        }
+        try {
+            // now look for matching products
+            // check if last character is a space
+            boolean partialMatch = !sensors.endsWith(" ");
+            sensors.trim();
+            // break down text into sub words
+            String[] words = sensors.split(" ");
+            String keywords = StringUtils.join(words, " | ");
+            if (partialMatch) {
+                keywords += ":*";
+            }
+            rankedSuggestions.addAll(completeProducts(keywords, null));
+        } catch (Exception e) {
+
+        }
+        // now sort and filter
+        Collections.sort(rankedSuggestions, new Comparator<RankedSuggestion>() {
+            @Override
+            public int compare(RankedSuggestion o1, RankedSuggestion o2) {
+                return new Double(o2.rank).compareTo(new Double(o1.rank));
+            }
+        });
+        for(RankedSuggestion rankedSuggestion : rankedSuggestions.subList(0, Math.min(rankedSuggestions.size(), 10))) {
+            suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
+        }
+        return suggestions;
     }
 
     private String convertGeoJsonRings(List<List<double[]>> rings) {

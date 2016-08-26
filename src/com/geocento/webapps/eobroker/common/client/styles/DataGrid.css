@@ -1,0 +1,182 @@
+/*
+ * Copyright 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+@external dataGridChildCell, ei-archiveProduct, ei-futureOpportunityProduct, ei-plannedAcqProduct, ei-imageColumn;
+
+@def selectionBorderWidth 1px;
+
+.dataGridWidget {
+  border-collapse: collapse;
+}
+
+.dataGridFirstColumn {
+  
+}
+
+.dataGridLastColumn {
+  
+}
+
+.dataGridHeader:first-child {
+	padding: 1px 3px !important;
+}
+
+td.dataGridHeader:first-child {
+	background-color: #eee;
+}
+
+.dataGridHeader:first-child, .dataGridCell:first-child {
+	border-left-color: white;
+}
+
+.dataGridFooter {
+  border-top: 2px solid #6f7277;
+  padding: 3px 15px;
+  text-align: left;
+  color: #4b4a4a;
+  text-shadow: #ddf 1px 1px 0;
+  overflow: hidden;
+}
+
+.dataGridHeader {
+  border: 1px solid #bbb;
+  border-top-color: white;
+  border-right-color: white;
+  padding: 3px 15px;
+  text-align: left;
+  vertical-align: middle;
+  color: #333;
+  overflow: hidden;
+  white-space: nowrap;
+  background: url('img/tablecellborder.png') repeat-x;
+}
+
+.dataGridCell {
+  padding: 2px 10px;
+  border: 1px solid #bbb;
+  border-top-color: white;
+  border-right-color: white;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dataGridCell img {
+    vertical-align: middle;
+}
+
+.dataGridCell:first-child {
+}
+
+.dataGridFirstColumnFooter {
+  
+}
+
+.dataGridFirstColumnHeader {
+  
+}
+
+.dataGridLastColumnFooter {
+  
+}
+
+.dataGridLastColumnHeader {
+  
+}
+
+.dataGridSortableHeader {
+  cursor: pointer;
+  cursor: hand;
+}
+
+.dataGridSortableHeader:hover {
+  color: #6c6b6b;
+}
+
+.dataGridSortedHeaderAscending {
+
+}
+
+.dataGridSortedHeaderDescending {
+
+}
+
+.dataGridEvenRow {
+  background: #ffffff;
+}
+
+.dataGridEvenRowCell {
+}
+
+.dataGridOddRow {
+  background: #f3f7fb;
+}
+
+.dataGridOddRowCell {
+}
+
+.dataGridHoveredRow {
+  background: #eee;
+}
+
+.dataGridHoveredRowCell {
+}
+
+.dataGridKeyboardSelectedRow {
+  background: #ffc;
+}
+
+.dataGridKeyboardSelectedRowCell {
+}
+
+.dataGridSelectedRow {
+  background: #93c022;
+  color: white;
+  height: auto;
+  overflow: auto;
+}
+
+.dataGridSelectedRowCell {
+}
+
+/**
+ * The keyboard selected cell is visible over selection.
+ */
+.dataGridKeyboardSelectedCell {
+}
+
+.dataGridChildCell {
+    padding: 10px;
+    background: #eee;
+    font-size: 0.8em;
+}
+
+.ei-archiveProduct {
+}
+
+.ei-futureOpportunityProduct {
+	font-style: italic;
+}
+
+.ei-plannedAcqProduct {
+	font-style: italic;
+	color: #338;
+}
+
+.ei-imageColumn {
+	padding-left: 1px !important;
+	padding-right: 1px !important;
+}

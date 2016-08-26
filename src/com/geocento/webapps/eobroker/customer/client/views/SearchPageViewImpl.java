@@ -122,7 +122,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         addTitle(productRow, "Selected product", style.productTitle());
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
         productRow.add(materialColumn);
         materialColumn.add(new ProductWidget(productDTO));
         addTitle(productRow, "EO Broker services offering this product", style.productServicesTitle());
@@ -161,7 +161,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         addTitle(productRow, "Products matching your request", style.productTitle());
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
         productRow.add(materialColumn);
         for(ProductDTO productDTO : suggestedProducts) {
             materialColumn.add(new ProductWidget(productDTO));
@@ -174,7 +174,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         container.add(productRow);
         addTitle(productRow, "EO Broker services matching your request", style.productServicesTitle());
         for(ProductServiceDTO productServiceDTO : productServices) {
-            MaterialColumn serviceColumn = new MaterialColumn(12, 12, 6);
+            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
             productRow.add(serviceColumn);
             serviceColumn.add(new ProductServiceWidget(productServiceDTO));
         }
@@ -182,13 +182,15 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
 
     @Override
     public void displayProductsList(List<ProductDTO> products, int start, int limit, String text) {
+/*
         HTMLPanel panel = new HTMLPanel("<span class='flow-text'>TODO - add controls to navigate through the list</span>");
         container.add(panel);
+*/
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
-        productRow.add(materialColumn);
         for(ProductDTO productDTO : products) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            productRow.add(materialColumn);
             materialColumn.add(new ProductWidget(productDTO));
         }
     }

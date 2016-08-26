@@ -36,7 +36,7 @@ public class ProductWidget extends Composite {
 
     public ProductWidget(ProductDTO productDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        image.setUrl(productDTO.getImageUrl());
+        image.setUrl(productDTO.getImageUrl() == null ? "./images/noImage.png" : productDTO.getImageUrl());
         title.setText(productDTO.getName());
         description.setText(productDTO.getDescription());
         quote.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDTO.getId())));

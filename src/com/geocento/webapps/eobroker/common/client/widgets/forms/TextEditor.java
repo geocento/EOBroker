@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFormElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import gwt.material.design.client.ui.MaterialTextBox;
 
 /**
@@ -46,6 +48,16 @@ public class TextEditor extends ElementEditor<TextFormElement> {
 
     public void setText(String text) {
         textBox.setText(text);
+    }
+
+    @Override
+    public void setChangeListener(final ChangeListener changeListener) {
+        textBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                changeListener.hasChanged();
+            }
+        });
     }
 
 }

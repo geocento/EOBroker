@@ -2,12 +2,12 @@ package com.geocento.webapps.eobroker.customer.client.services;
 
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
-import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
-import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
-import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
+import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
@@ -39,10 +39,15 @@ public interface SearchService extends DirectRestService {
     @POST
     @Path("/search/images/")
     @Produces("application/json")
-    public List<Product> queryImages(SearchRequest searchRequest) throws RequestException;
+    public List<Product> queryImages(SearchQuery searchQuery) throws RequestException;
 
     @POST
     @Path("/search/products/feasibility")
     @Produces("application/json")
     public SupplierAPIResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequestDTO) throws RequestException;
+
+    @GET
+    @Path("/search/sensors")
+    @Produces("application/json")
+    List<Suggestion> completeSensors(@QueryParam("text") String sensors);
 }

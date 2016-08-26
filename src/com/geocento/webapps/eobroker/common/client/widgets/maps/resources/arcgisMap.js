@@ -11,12 +11,14 @@ var arcgisMap = function(callback) {
         "esri/toolbars/draw",
         "esri/graphic",
         "esri/geometry/Polygon",
+        "esri/layers/WMSLayer",
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol",
         "esri/symbols/SimpleFillSymbol",
-        "esri/Color"
+        "esri/Color",
+        'esri/layers/WMSLayerInfo', 'esri/geometry/Extent'
     ], function(Map, Draw, Graphic,
-                Polygon,
+                Polygon, WMSLayer,
                 SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color) {
 
         self.createDraw = function(map) {

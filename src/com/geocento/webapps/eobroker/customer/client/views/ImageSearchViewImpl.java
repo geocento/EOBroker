@@ -1,51 +1,51 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawEventJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
+import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
+import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
+import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSensorsSuggestion;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.ProvidesKey;
-import com.google.gwt.view.client.SelectionModel;
-import gwt.material.design.client.base.MaterialCheckBoxCell;
 import gwt.material.design.client.base.MaterialImageCell;
 import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.ImageType;
 import gwt.material.design.client.ui.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -73,7 +73,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @UiField
     MaterialTab tab;
     @UiField
-    MaterialTextBox sensors;
+    MaterialSensorsSuggestion sensors;
     @UiField
     MaterialDatePicker startDate;
     @UiField
@@ -97,17 +97,30 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     private MapJSNI map;
 
+    private GraphicJSNI aoiRendering;
+
+    private Product outlinedProduct;
+
+    private GraphicJSNI outlinedProductGraphicJSNI;
+
     private boolean mapLoaded = false;
 
-    private CellTable<Product> resultsTable;
+    private DataGrid<Product> resultsTable;
 
-    private final ProvidesKey<Product> KEY_PROVIDER = new ProvidesKey<Product>() {
-        @Override
-        public Object getKey(Product item) {
-            return item.getProductId();
-        }
-    };
-    private final SelectionModel<Product> selectionModel = new MultiSelectionModel<Product>(KEY_PROVIDER);
+    private ListDataProvider<Product> imagesList;
+
+    private ColumnSortEvent.ListHandler<Product> sortDataHandler;
+
+    private HashSet<Product> selectedProducts = new HashSet<Product>();
+
+    private class ProductRendering {
+        GraphicJSNI footprint;
+        WMSLayerJSNI overlay;
+    }
+
+    private HashMap<Product, ProductRendering> renderedProducts = new HashMap<Product, ProductRendering>();
+
+    private static NumberFormat format = NumberFormat.getFormat("#.##");
 
     public ImageSearchViewImpl(ClientFactoryImpl clientFactory) {
         template = new TemplateView(clientFactory);
@@ -173,12 +186,13 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
                 presenter.onStopDateChanged(event.getValue());
             }
         });
-        sensors.addValueChangeHandler(new ValueChangeHandler<String>() {
+        sensors.setPresenter(new MaterialSensorsSuggestion.Presenter() {
             @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-                presenter.onSensorsChanged(event.getValue());
+            public void onTextChanged(String text) {
+                presenter.onSensorsChanged(text);
             }
         });
+        createResultsTable();
     }
 
     private void mapLoaded() {
@@ -198,15 +212,17 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     @Override
     public void displayAoI(AoI aoi) {
-        map.getGraphics().clear();
+        if(aoiRendering != null) {
+            map.getGraphics().remove(aoiRendering);
+        }
         if(aoi != null) {
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
+            aoiRendering = map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
         }
     }
 
     @Override
     public void setText(String text) {
-
+        sensors.setText(text);
     }
 
     @Override
@@ -222,37 +238,104 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         tab.selectTab("results");
     }
 
-    @Override
-    public void displayImageProducts(List<Product> imageProductDTOs) {
-        // add products to map
+    private void createResultsTable() {
+        // create table
+        resultsTable = new DataGrid<Product>(1000, MyDataGridResources.INSTANCE);
+        resultsTable.setSize("100%", "100%");
+        //resultsTable.setStyleName("striped");
 /*
-        map.getGraphics().clear();
+        SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
+        SimplePager pager = new SimplePager(SimplePager.TextLocation.CENTER, pagerResources, false, 0, true);
+        pager.setDisplay(resultsTable);
 */
-        for(Product imageProductDTO : imageProductDTOs) {
-            AoIPolygon aoiPolygon = new AoIPolygon();
-            aoiPolygon.setWktRings(imageProductDTO.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoiPolygon),
-                    mapContainer.arcgisMap.createFillSymbol(imageProductDTO.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff" , 2, "rgba(0,0,0,0.2)"));
-        }
+        // create the list data provider
+        imagesList = new ListDataProvider<Product>();
+        imagesList.setList(new ArrayList<Product>());
+        imagesList.addDataDisplay(resultsTable);
 
-        // add products to results table
-
-        // define columns
-        ColumnSortEvent.ListHandler<Product> sortDataHandler = new ColumnSortEvent.ListHandler<>(new ArrayList<Product>());
-        Column<Product, Boolean> checkColumn = new Column<Product, Boolean>(new MaterialCheckBoxCell()) {
+        resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<Product>() {
             @Override
-            public Boolean getValue(Product object) {
-                return true; //selectionModel.isSelected(object);
-            }
-        };
-/*
-        checkColumn.setFieldUpdater(new FieldUpdater<Product, Boolean>() {
-            @Override
-            public void update(int index, Product object, Boolean value) {
-                selectionModel.setSelected(object, value);
+            public void onCellPreview(CellPreviewEvent<Product> event) {
+                if (BrowserEvents.MOUSEOVER.equals(event.getNativeEvent().getType())) {
+                    outlineProduct(event.getValue());
+                } else if (BrowserEvents.MOUSEOUT.equals(event.getNativeEvent().getType())) {
+                    outlineProduct(null);
+                }
             }
         });
+        sortDataHandler = new ColumnSortEvent.ListHandler<>(imagesList.getList());
+        resultsTable.addColumnSortHandler(sortDataHandler);
+
+/*
+        resultsTable.setSelectionModel(selectionModel);
 */
+
+        // now add table to the results panel
+        resultsPanel.setWidget(resultsTable);
+
+        SubrowTableBuilder tableBuilder = new SubrowTableBuilder<Product>(resultsTable) {
+            @Override
+            protected String getInformation(Product product) {
+                String htmlContent = "";
+                htmlContent += addProperty("Resolution", formatNumber(product.getSensorResolution(), "m"));
+                htmlContent += addProperty("AoI Coverage", formatNumber(product.getAoiCoveragePercent() * 100, "%"));
+                if(product.getOrbit() != -1) {
+                    htmlContent += addProperty("Orbit", product.getOrbit());
+                }
+                if(product.getSensorType().startsWith("O")) {
+                    htmlContent += addProperty("Cloud cover", formatNumber(product.getCloudCoveragePercent() == -1 ? null : product.getCloudCoveragePercent() * 100, "%"));
+                    htmlContent += addProperty("Off-Nadir Angle", formatNumber(product.getOna(), "deg"));
+                    htmlContent += addProperty("Illum. Angle", formatNumber(product.getSza(), "deg"));
+                    if(product.getStereoStackName() != null) {
+                        htmlContent += addProperty("Stereo", "Stack" + product.getStereoStackName());
+                    }
+                } else {
+                    if(product.getOrbitDirection() != null) {
+                        htmlContent += addProperty("Orbit Dir.", formatString(product.getOrbitDirection() == Product.ORBITDIRECTION.ASCENDING ? "Ascending" : "Descending"));
+                    }
+                    htmlContent += addProperty("Polarisation Mode", formatString(product.getPolarisation()));
+                    htmlContent += addProperty("Incidence Angle", formatNumber(product.getOza(), "deg"));
+                }
+                return htmlContent;
+            }
+
+            private String formatString(String value) {
+                return value == null ?  "NA" : value;
+            }
+
+            private String formatNumber(Double value, String unitValue) {
+                return value == null || value == -1 ?  "NA" : (format.format(value) + " " + unitValue);
+            }
+
+            private String addProperty(String name, Object value) {
+                return "<span style='padding: 5px;'><b>" + name + ": </b>" + (value == null ? "NA" : value.toString()) + "</span>";
+            }
+
+        };
+        resultsTable.setTableBuilder(tableBuilder);
+
+        // define columns
+        Column<Product, Boolean> checkColumn = new Column<Product, Boolean>(new MaterialCheckBoxCell()) {
+            @Override
+            public Boolean getValue(Product product) {
+                return selectedProducts.contains(product);
+            }
+        };
+        checkColumn.setFieldUpdater(new FieldUpdater<Product, Boolean>() {
+            @Override
+            public void update(int index, Product product, Boolean value) {
+                if(selectedProducts.contains(product) != value) {
+                    if(value) {
+                        selectedProducts.add(product);
+                    } else {
+                        selectedProducts.remove(product);
+                    }
+                    resultsTable.redraw();
+                    refreshMap();
+                    enableQuotingMayBe();
+                }
+            }
+        });
 
         // IMAGE
         Column<Product, MaterialImage> thumbnailColumn = new Column<Product, MaterialImage>(new MaterialImageCell()) {
@@ -267,7 +350,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
                 return img;
             }
         };
-
         TextColumn<Product> sensorColumn = new TextColumn<Product>() {
             @Override
             public String getValue(Product object) {
@@ -275,6 +357,12 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
             }
         };
         sensorColumn.setSortable(true);
+        sortDataHandler.setComparator(sensorColumn, new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                return o1.getSatelliteName().compareTo(o2.getSatelliteName());
+            }
+        });
 
         // ITEM NAME
         TextColumn<Product> dateColumn = new TextColumn<Product>() {
@@ -293,34 +381,95 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
                 return o1.getStart().compareTo(o2.getStart());
             }
         });
-        // create table
-        resultsTable = new CellTable<Product>(100, KEY_PROVIDER);
-        resultsTable.setSize("100%", "40vh");
-        resultsTable.setStyleName("striped");
+
+/*
+        Column<Product, Boolean> actionColumn = new Column<Product, Boolean>(new ClickableImageCell<Boolean>() {
+            @Override
+            protected void performAction(String action, Boolean value, NativeEvent event) {
+
+            }
+
+            @Override
+            public void render(Context context, Boolean value, SafeHtmlBuilder sb) {
+                sb.append(templates.cell("Show information on this product", "Show information on this product", imgStyle, makeImage(StyleResources.INSTANCE.info())));
+            }
+        }) {
+            @Override
+            public Boolean getValue(Product object) {
+                return object != null;
+            }
+        };
+*/
+
         resultsTable.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
-        resultsTable.setColumnWidth(checkColumn, "40px");
-        resultsTable.addColumn(thumbnailColumn, "Thumb");
-        resultsTable.setColumnWidth(thumbnailColumn, "60px");
+        resultsTable.setColumnWidth(checkColumn, "30px");
+        resultsTable.addColumn(thumbnailColumn, "");
+        resultsTable.setColumnWidth(thumbnailColumn, "40px");
         resultsTable.addColumn(sensorColumn, "Sensor");
-        resultsTable.setColumnWidth(sensorColumn, "120px");
+        resultsTable.setColumnWidth(sensorColumn, "100px");
         resultsTable.addColumn(dateColumn, "Acq date");
-        resultsTable.setColumnWidth(dateColumn, "120px");
-        SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
-        SimplePager pager = new SimplePager(SimplePager.TextLocation.CENTER, pagerResources, false, 0, true);
-        pager.setDisplay(resultsTable);
-
-        // now add table to the results panel
-
-        resultsPanel.setWidget(resultsTable);
-        resultsPanel.getElement().getStyle().setProperty("maxHeight", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
+        resultsTable.setColumnWidth(dateColumn, "100px");
+        tableBuilder.addDeployableColumn(StyleResources.INSTANCE.info(), StyleResources.INSTANCE.info());
 
         // enable quote button
         enableQuotingMayBe();
 
-        // create the list data provider
-        ListDataProvider<Product> imagesList = new ListDataProvider<Product>(imageProductDTOs);
-        imagesList.addDataDisplay(resultsTable);
+    }
 
+    @Override
+    public void displayImageProducts(List<Product> imageProductDTOs) {
+        resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
+        imagesList.getList().clear();
+        imagesList.getList().addAll(imageProductDTOs == null ? new ArrayList<Product>() : imageProductDTOs);
+        imagesList.refresh();
+/*
+        resultsTable.setRowCount(imageProductDTOs.size());
+        resultsTable.setRowData(0, imageProductDTOs);
+*/
+        // refresh map
+        refreshMap();
+    }
+
+    private void refreshMap() {
+        // refresh products display on map
+        for(Product product : imagesList.getList()) {
+            boolean toRender = selectedProducts.contains(product);
+            boolean rendered = renderedProducts.containsKey(product);
+            if(toRender && !rendered) {
+                ProductRendering productRendering = new ProductRendering();
+                PolygonJSNI polygon = mapContainer.arcgisMap.createPolygon(product.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
+                productRendering.footprint = map.getGraphics().addGraphic(polygon,
+                        mapContainer.arcgisMap.createFillSymbol(product.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff", 2, "rgba(0,0,0,0.0)"));
+                // add wms layer
+                if (product.getType() == Product.TYPE.ARCHIVE && product.getQl() != null) {
+                    productRendering.overlay = map.addWMSLayer(product.getQl(), WMSLayerInfoJSNI.createInfo(product.getSatelliteName(), product.getSatelliteName()), polygon.getExtent());
+                }
+                renderedProducts.put(product, productRendering);
+            } else if(!toRender && rendered) {
+                ProductRendering productRendering = renderedProducts.get(product);
+                if(productRendering.footprint != null) {
+                    map.getGraphics().remove(productRendering.footprint);
+                }
+                if(productRendering.overlay != null) {
+                    map.removeWMSLayer(productRendering.overlay);
+                }
+                renderedProducts.remove(product);
+            }
+        }
+        // remove previous outline product
+        if(outlinedProductGraphicJSNI != null) {
+            map.getGraphics().remove(outlinedProductGraphicJSNI);
+        }
+        // add outlined product on top
+        if(outlinedProduct != null) {
+            outlinedProductGraphicJSNI = map.getGraphics().addGraphic(mapContainer.arcgisMap.createPolygon(outlinedProduct.getCoordinatesWKT().replace("POLYGON((", "").replace("))", "")),
+                    mapContainer.arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
+        }
+    }
+
+    private void outlineProduct(Product product) {
+        outlinedProduct = product;
+        refreshMap();
     }
 
     private void enableQuotingMayBe() {
@@ -389,6 +538,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @Override
     public void clearMap() {
         map.getGraphics().clear();
+    }
+
+    @Override
+    public void displaySensorSuggestions(List<Suggestion> response) {
+        sensors.displayListSearches(response);
     }
 
     @Override

@@ -26,4 +26,17 @@ public class MapJSNI extends JavaScriptObject {
         this.setZoom(zoom);
     }-*/;
 
+    public final native WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent) /*-{
+        var wmsLayer = new $wnd['esri'].layers.WMSLayer(wmsUrl, {
+            resourceInfo: {layerInfos: [info], extent: extent},
+            visibleLayers: [info.name]
+        });
+        this.addLayers([wmsLayer]);
+        return wmsLayer;
+    }-*/;
+
+    public final native void removeWMSLayer(WMSLayerJSNI layer) /*-{
+        this.removeLayer(layer);
+    }-*/;
+
 }

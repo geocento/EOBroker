@@ -18,4 +18,8 @@ public class PolygonJSNI extends GeometryJSNI {
         return wktString.slice(0, wktString.length - 1);
     }-*/;
 
+    public final native ExtentJSNI getExtent() /*-{
+        return this.getExtent();
+    }-*/;
+
 }

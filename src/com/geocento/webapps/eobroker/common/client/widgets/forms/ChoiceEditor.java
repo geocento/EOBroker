@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.forms;
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.ChoiceFormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import gwt.material.design.client.ui.MaterialListBox;
 
 import java.util.List;
@@ -48,6 +50,16 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
     @Override
     public void setFormElementValue(String value) {
         setValue(value.split(","));
+    }
+
+    @Override
+    public void setChangeListener(final ChangeListener changeListener) {
+        listBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                changeListener.hasChanged();
+            }
+        });
     }
 
     public void setValue(String[] values) {

@@ -1,14 +1,19 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
+import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
-import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
+import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelectedHandler;
+import com.geocento.webapps.eobroker.customer.client.events.TextSelected;
+import com.geocento.webapps.eobroker.customer.client.events.TextSelectedHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImageSearchView;
@@ -40,6 +45,9 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     private Date startDate;
     private Date stopDate;
     private String currency;
+    private long lastCall = 0;
+
+    public Suggestion selectedSuggestion;
 
     public ImageSearchActivity(ImageSearchPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -162,15 +170,53 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             }
         }));
 
+        activityEventBus.addHandler(TextSelected.TYPE, new TextSelectedHandler() {
+            @Override
+            public void onTextSelected(TextSelected event) {
+                // TODO - correct the input if needed
+                imageSearchView.setText(event.getText());
+            }
+        });
+        
+        activityEventBus.addHandler(SuggestionSelected.TYPE, new SuggestionSelectedHandler() {
+
+            @Override
+            public void onSuggestionSelected(SuggestionSelected event) {
+                imageSearchView.setText(event.getSuggestion().getName());
+                selectedSuggestion = event.getSuggestion();
+            }
+        });
+    }
+
+    private void updateSuggestions() {
+        this.lastCall++;
+        final long lastCall = this.lastCall;
+
+        if(sensors != null && sensors.length() > 0) {
+            REST.withCallback(new MethodCallback<List<Suggestion>>() {
+
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<Suggestion> response) {
+                    // show only if last one to be called
+                    if (lastCall == ImageSearchActivity.this.lastCall) {
+                        imageSearchView.displaySensorSuggestions(response);
+                    }
+                }
+            }).call(ServicesUtil.searchService).completeSensors(sensors);
+        }
     }
 
     private void updateSearch() {
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.setAoiWKT("POLYGON((" + ((AoIPolygon) aoi).getWktRings() + "))");
-        searchRequest.setSensors(getSensorsFilter(sensors));
-        searchRequest.setStart((long) (startDate.getTime() / 1000.0));
-        searchRequest.setStop((long) (stopDate.getTime() / 1000.0));
-        searchRequest.setCurrency("EUR");
+        SearchQuery searchQuery = new SearchQuery();
+        searchQuery.setAoiWKT("POLYGON((" + ((AoIPolygon) aoi).getWktRings() + "))");
+        searchQuery.setSensors(sensors);
+        searchQuery.setStart((long) (startDate.getTime() / 1000.0));
+        searchQuery.setStop((long) (stopDate.getTime() / 1000.0));
         imageSearchView.clearMap();
         imageSearchView.displayAoI(aoi);
         imageSearchView.displayLoadingResults("Searching products...");
@@ -188,7 +234,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                     // add all results to the interface
                     imageSearchView.displayImageProducts(imageProductDTOs);
                 }
-            }).call(ServicesUtil.searchService).queryImages(searchRequest);
+            }).call(ServicesUtil.searchService).queryImages(searchQuery);
         } catch (RequestException e) {
             e.printStackTrace();
         }
@@ -245,6 +291,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     @Override
     public void onSensorsChanged(String value) {
         sensors = value;
+        updateSuggestions();
         enableUpdateMaybe();
     }
 

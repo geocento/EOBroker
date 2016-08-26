@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.DateFormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import gwt.material.design.client.ui.MaterialDatePicker;
 
 import java.util.Date;
@@ -43,6 +45,16 @@ public class DateEditor extends ElementEditor<DateFormElement> {
 
     public void setValue(Date value) {
         datePicker.setValue(value);
+    }
+
+    @Override
+    public void setChangeListener(final ChangeListener changeListener) {
+        datePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Date> event) {
+                changeListener.hasChanged();
+            }
+        });
     }
 
 }

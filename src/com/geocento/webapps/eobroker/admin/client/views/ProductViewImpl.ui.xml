@@ -107,5 +107,11 @@
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
             <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
         </g:HTMLPanel>
+<!--
+        <design:MaterialDatePicker textColor="black" ui:field="startDate" placeholder="Start Date" />
+        <design:MaterialDatePicker textColor="black" ui:field="stopDate" placeholder="Stop Date" />
+        <design:MaterialTextBox placeholder="Sensors" textColor="black" ui:field="sensors"></design:MaterialTextBox>
+-->
+
     </views:TemplateView>
 </ui:UiBinder>

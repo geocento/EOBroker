@@ -29,10 +29,6 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayStartDate(Date date);
-
-    void displayStopDate(Date date);
-
     HasClickHandlers getUpdateButton();
 
     void enableUpdate(boolean enable);
