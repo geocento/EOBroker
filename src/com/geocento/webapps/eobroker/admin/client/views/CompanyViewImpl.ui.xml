@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
+             xmlns:c="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.admin.client.views"
+        >
+    <ui:style>
+        .buttonsPanel {
+            padding: 20px 0px;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
+    <views:TemplateView ui:field="template">
+        <design:MaterialTitle title="Edit this company's profile" ui:field="title"></design:MaterialTitle>
+        <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+        <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+        <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
+        <design:MaterialIcon text="Company logo" textColor="black" iconType="IMAGE"></design:MaterialIcon>
+        <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+        <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
+        <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
+        <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
+        <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+            <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

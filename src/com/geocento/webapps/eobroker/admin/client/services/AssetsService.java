@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.services;
 
 import com.geocento.webapps.eobroker.admin.shared.dtos.EditProductDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
@@ -73,9 +74,31 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public List<CompanyDTO> listCompanies() throws RequestException;
 
+/*
     @PUT
     @Path("/assets/companies/")
     @Produces("application/json")
     public void updateCompany(CompanyDTO product) throws RequestException;
+*/
+
+    @POST
+    @Path("/assets/companies/")
+    @Produces("application/json")
+    Long saveCompany(CompanyDTO companyDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/newsitem/")
+    @Produces("application/json")
+    List<NewsItem> listNewsItems(@QueryParam("start") int start, @QueryParam("limit") int limit, @QueryParam("orderby") String orderby) throws RequestException;
+
+    @GET
+    @Path("/assets/newsitem/{id}")
+    @Produces("application/json")
+    NewsItem getNewsItem(@PathParam("id") Long newsItemId) throws RequestException;
+
+    @POST
+    @Path("/assets/newsitem/")
+    @Produces("application/json")
+    void saveNewsItem(NewsItem newsItem) throws RequestException;
 
 }

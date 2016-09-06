@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AntConfiguration">
-    <buildFile url="file://$PROJECT_DIR$/antTasks.xml" />
+    <buildFile url="file://$PROJECT_DIR$/antTasks.xml">
+      <additionalClassPath>
+        <entry path="file://$USER_HOME$/java libraries/jsch-0.1.42.jar/jsch-0.1.42.jar" />
+        <entry path="file://$USER_HOME$/java libraries/apache/commons-net-3.3/commons-net-3.3.jar" />
+      </additionalClassPath>
+    </buildFile>
   </component>
 </project>
 

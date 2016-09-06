@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,25 +8,61 @@ import java.util.List;
  */
 public class ImageRequestDTO {
 
-    List<Long> supplierIds;
-    List<FormElementValue> values;
+    String aoiWKT;
+    String imageType;
+    Date start;
+    Date stop;
+    String additionalInformation;
+    List<Long> imageServiceIds;
 
     public ImageRequestDTO() {
     }
 
-    public List<Long> getSupplierIds() {
-        return supplierIds;
+    public String getAoiWKT() {
+        return aoiWKT;
     }
 
-    public void setSupplierIds(List<Long> supplierIds) {
-        this.supplierIds = supplierIds;
+    public void setAoiWKT(String aoiWKT) {
+        this.aoiWKT = aoiWKT;
     }
 
-    public List<FormElementValue> getValues() {
-        return values;
+    public String getImageType() {
+        return imageType;
     }
 
-    public void setValues(List<FormElementValue> values) {
-        this.values = values;
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }
+
+    public Date getStart() {
+        return start;
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    public Date getStop() {
+        return stop;
+    }
+
+    public void setStop(Date stop) {
+        this.stop = stop;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
+    }
+
+    public List<Long> getImageServiceIds() {
+        return imageServiceIds;
+    }
+
+    public void setImageServiceIds(List<Long> imageServiceIds) {
+        this.imageServiceIds = imageServiceIds;
     }
 }

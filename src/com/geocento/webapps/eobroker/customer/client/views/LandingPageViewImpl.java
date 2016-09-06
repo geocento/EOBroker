@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSuggestion;
 import com.google.gwt.animation.client.Animation;
@@ -20,6 +21,7 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -27,6 +29,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.ui.*;
 
 import java.util.List;
@@ -45,16 +48,10 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
 
     private static LandingPageUiBinder ourUiBinder = GWT.create(LandingPageUiBinder.class);
 
-    @UiField
-    MaterialLink signIn;
-    @UiField
-    MaterialNavBar navBar;
+    @UiField(provided = true)
+    TemplateView template;
     @UiField
     ArcGISMap mapContainer;
-/*
-    @UiField
-    MaterialAutoComplete searchBar;
-*/
     @UiField
     MaterialSuggestion textSearch;
     @UiField
@@ -71,6 +68,8 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     MaterialRow mapPanel;
     @UiField
     MaterialButton closeMap;
+    @UiField
+    com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -79,6 +78,9 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     private boolean mapLoaded = false;
 
     public LandingPageViewImpl(final ClientFactoryImpl clientFactory) {
+
+        template = new TemplateView(clientFactory);
+
         initWidget(ourUiBinder.createAndBindUi(this));
         mapContainer.setHeight((Window.getClientHeight() - 64) + "px");
         revealMap(false, false);
@@ -127,6 +129,7 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
                 });
             }
         });
+
         textSearch.addKeyUpHandler(new KeyUpHandler() {
 
             private Timer fetchTimer;
@@ -289,13 +292,33 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     }
 
     @Override
-    public void displayText(String text) {
+    public void setSearchText(String text) {
         textSearch.setText(text);
     }
 
     @Override
     public void displaySearchError(String message) {
         MaterialToast.fireToast(message);
+    }
+
+    @Override
+    public void setNewsItems(List<NewsItem> newsItems) {
+        slider.clear();
+        for(NewsItem newsItem : newsItems) {
+            MaterialSlideItem materialSlideItem = new MaterialSlideItem();
+            materialSlideItem.add(new MaterialImage(URL.encode(newsItem.getImageUrl())));
+            MaterialSlideCaption materialSlideCaption = new MaterialSlideCaption();
+            materialSlideCaption.setTextAlign(TextAlign.CENTER);
+            materialSlideCaption.add(new MaterialTitle(newsItem.getTitle(), newsItem.getDescription()));
+            materialSlideItem.add(materialSlideCaption);
+            slider.add(materialSlideItem);
+        }
+        slider.initialize();
+    }
+
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
     }
 
     @UiHandler("closeMap")

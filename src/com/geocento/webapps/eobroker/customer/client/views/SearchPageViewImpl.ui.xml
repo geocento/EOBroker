@@ -1,33 +1,16 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
-        .panel header {
-
-        }
-
-        .panel main, .panel footer {
-            padding-left: 280px;
-        }
-
-        .mainPanel {
-            position: fixed;
-            top: 64px;
-            bottom: 0px;
-            width: 100%;
-            overflow-y: auto;
-            margin: 10px;
-        }
-
-        .label {
-            margin: 24px;
-        }
 
         .currentSearch {
             margin: 20px 10px;
-            font-size: 1.5em;
+            font-size: 1.2em;
         }
+
         .currentSearch:hover {
             text-decoration: underline;
         }
@@ -37,7 +20,7 @@
         }
 
         .categories {
-            padding-left: 30px;
+            padding: 10px 10px 10px 30px;
             line-height: normal !important;
         }
 
@@ -76,40 +59,28 @@
             cursor: pointer;
         }
 
+        .navOpened main, .navOpened footer {
+            padding-left: 360px;
+        }
+
+        .mapPanel {
+            position: relative;
+            padding: 10px;
+            background: white;
+        }
+
+        .map {
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-    <g:HTMLPanel addStyleNames="{style.panel}">
-        <header>
-            <!-- NavBar -->
-            <design:MaterialNavBar activates="sideNav" paddingLeft="20" backgroundColor="blue" ui:field="navBar">
-                <design:MaterialNavSection flex="NONE">
-                    <design:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
-                    <design:MaterialLabel text="Search Results" paddingLeft="50" fontSize="1.5em"></design:MaterialLabel>
-                </design:MaterialNavSection>
-                <design:MaterialNavSection float="RIGHT">
-                    <design:MaterialTooltip text="Orders" position="BOTTOM">
-                        <design:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE"/>
-                    </design:MaterialTooltip>
-                    <design:MaterialTooltip text="Notifications" position="BOTTOM">
-                        <design:MaterialLink activates="sideNav" iconType="NOTIFICATIONS" iconPosition="NONE"/>
-                    </design:MaterialTooltip>
-                    <design:MaterialTooltip text="Sign-in" position="BOTTOM">
-                        <design:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
-                    </design:MaterialTooltip>
-                </design:MaterialNavSection>
-            </design:MaterialNavBar>
-
-            <!-- Search Bar -->
-            <design:MaterialNavBar ui:field="navBarSearch" backgroundColor="white" visible="false">
-                <design:MaterialSearch ui:field="textSearch" addStyleNames="{style.textSearch}" placeholder="Keyword" textColor="black" active="true"/>
-            </design:MaterialNavBar>
-
+    <views:TemplateView ui:field="template" titleText="Search">
+        <views:header>
             <!-- SideNav -->
-            <design:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="true" top="64" closeOnClick="true" width="280" ui:field="filtersPanel">
-                <design:MaterialLabel addStyleNames="{style.navBrand}">Show results for</design:MaterialLabel>
-                <design:MaterialCollapsible>
+            <design:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="1" ui:field="filtersPanel">
+                <design:MaterialCollapsible backgroundColor="white">
                     <design:MaterialCollapsibleItem ui:field="categoriesPanel">
-                        <design:MaterialCollapsibleHeader>
+                        <design:MaterialCollapsibleHeader backgroundColor="white">
                             <design:MaterialLink text="Categories" textColor="blue" iconType="LAYERS"/>
                         </design:MaterialCollapsibleHeader>
                         <design:MaterialCollapsibleBody>
@@ -118,8 +89,8 @@
                         </design:MaterialCollapsibleBody>
                     </design:MaterialCollapsibleItem>
                     <design:MaterialCollapsibleItem ui:field="options">
-                        <design:MaterialCollapsibleHeader>
-                            <design:MaterialLink text="Options" textColor="blue" iconType="SETTINGS"/>
+                        <design:MaterialCollapsibleHeader backgroundColor="white">
+                            <design:MaterialLink text="Filter by" textColor="blue" iconType="FILTER"/>
                         </design:MaterialCollapsibleHeader>
                         <design:MaterialCollapsibleBody>
                             <g:HTMLPanel addStyleNames="{style.categories}" ui:field="settings">
@@ -127,24 +98,17 @@
                         </design:MaterialCollapsibleBody>
                     </design:MaterialCollapsibleItem>
                 </design:MaterialCollapsible>
-            </design:MaterialSideNav>
-        </header>
-
-        <g:HTMLPanel addStyleNames="{style.mainPanel}">
-            <design:MaterialContainer fontSize="0.8em">
-                <g:HTMLPanel>
-                    <design:MaterialTooltip text="Click to change your search">
-                        <design:MaterialLink ui:field="currentSearch" addStyleNames="{style.currentSearch}, truncate" textColor="black" text="some search keywords" iconType="SEARCH"/>
-                    </design:MaterialTooltip>
+                <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                    <maps:ArcGISMap width="100%" height="250px" addStyleNames="{style.map}" ui:field="mapContainer">
+                    </maps:ArcGISMap>
                 </g:HTMLPanel>
-                <g:HTMLPanel ui:field="container"></g:HTMLPanel>
-            </design:MaterialContainer>
-            <design:MaterialFooter backgroundColor="blue">
-                <design:MaterialFooterCopyright>
-                    <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
-                </design:MaterialFooterCopyright>
-            </design:MaterialFooter>
+            </design:MaterialSideNav>
+        </views:header>
+        <g:HTMLPanel>
+            <design:MaterialTooltip text="Click to change your search">
+                <design:MaterialLink ui:field="currentSearch" addStyleNames="{style.currentSearch}, truncate" textColor="black" text="some search keywords" iconType="SEARCH"/>
+            </design:MaterialTooltip>
         </g:HTMLPanel>
-
-    </g:HTMLPanel>
+        <g:HTMLPanel ui:field="container"></g:HTMLPanel>
+    </views:TemplateView>
 </ui:UiBinder>

@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by thomas on 06/06/2016.
  */
 @Entity
-public class ImageProduct {
+public class ImageProcessingProduct {
 
     @Id
     @GeneratedValue
@@ -33,9 +33,9 @@ public class ImageProduct {
     List<FormElement> formFields;
 
     @OneToMany(mappedBy = "product")
-    Set<ImageryService> imageServices;
+    Set<ImageProcessingService> imageServices;
 
-    public ImageProduct() {
+    public ImageProcessingProduct() {
     }
 
     public Long getId() {
@@ -91,8 +91,8 @@ public class ImageProduct {
         if(imageServices == null) {
             return;
         }
-        for(ImageryService imageryService : imageServices) {
-            imageryService.setProduct(null);
+        for(ImageProcessingService imageProcessingService : imageServices) {
+            imageProcessingService.setProduct(null);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -31,6 +33,7 @@ public class Company {
     @Column(length = 1000)
     private String website;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
     Set<ProductService> services;
 

@@ -8,6 +8,7 @@ public class SearchQuery {
     private String sensors;
     private long start;
     private long stop;
+    private Long product;
 
     public void setAoiWKT(String aoiWKT) {
         this.aoiWKT = aoiWKT;
@@ -39,5 +40,13 @@ public class SearchQuery {
 
     public long getStop() {
         return stop;
+    }
+
+    public void setProduct(Long product) {
+        this.product = product;
+    }
+
+    public Long getProduct() {
+        return product;
     }
 }

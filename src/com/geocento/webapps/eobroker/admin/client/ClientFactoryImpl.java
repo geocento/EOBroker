@@ -21,7 +21,13 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private CompaniesViewImpl companiesView = null;
 
+    private CompanyViewImpl companyView = null;
+
     private ProductViewImpl productView = null;
+
+    private NewsItemsViewImpl newsItemsView = null;
+
+    private NewsItemViewImpl newsItemView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -71,11 +77,35 @@ public class ClientFactoryImpl implements ClientFactory {
     }
 
     @Override
+    public NewsItemsView getNewsItemsView() {
+        if(newsItemsView == null) {
+            newsItemsView = new NewsItemsViewImpl(this);
+        }
+        return newsItemsView;
+    }
+
+    @Override
+    public NewsItemView getNewsItemView() {
+        if(newsItemView == null) {
+            newsItemView = new NewsItemViewImpl(this);
+        }
+        return newsItemView;
+    }
+
+    @Override
     public CompaniesView getCompaniesView() {
         if(companiesView == null) {
             companiesView = new CompaniesViewImpl(this);
         }
         return companiesView;
+    }
+
+    @Override
+    public CompanyView getCompanyView() {
+        if(companyView == null) {
+            companyView = new CompanyViewImpl(this);
+        }
+        return companyView;
     }
 
 }

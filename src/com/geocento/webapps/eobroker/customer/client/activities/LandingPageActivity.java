@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
@@ -20,6 +22,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -44,8 +47,10 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         landingPageView = clientFactory.getLandingPageView();
         landingPageView.setPresenter(this);
         panel.setWidget(landingPageView.asWidget());
+        setTemplateView(landingPageView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        handleHistory();
     }
 
     @Override
@@ -62,48 +67,74 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
                 String uri = suggestion.getUri();
                 String action = uri.split("::")[0];
                 String parameters = uri.split("::")[1];
-                if(parameters == null) {
+                if (parameters == null) {
                     parameters = "";
                 }
                 EOBrokerPlace searchPlace = null;
-                switch(suggestion.getCategory()) {
-                    case imagery:
-                        if(action.contentEquals("search")) {
+                switch (suggestion.getCategory()) {
+                    case imagery: {
+                        if (action.contentEquals("search")) {
                             searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
                                     (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
                             //setText(parameters);
-                        } else if(action.contentEquals("request")) {
+                        } else if (action.contentEquals("request")) {
                             searchPlace = new RequestImageryPlace(parameters);
                             //setText("");
-                        };
-                        break;
-                    case products:
+                        }
+                        ;
+                    } break;
+                    case products: {
                         String token = "";
                         Category category = suggestion.getCategory();
-                        if(action.contentEquals("product")) {
+                        if (action.contentEquals("product")) {
                             searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
-                        } else if(action.contentEquals("browse")) {
+                        } else if (action.contentEquals("browse")) {
                             token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
-                            if(category != null) {
+                            if (category != null) {
                                 token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                             }
-                            if(aoi != null) {
+                            if (aoi != null) {
                                 token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
                             }
                             searchPlace = new SearchPagePlace(token);
                         } else {
                             token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
-                            if(category != null) {
+                            if (category != null) {
                                 token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                             }
-                            if(aoi != null) {
+                            if (aoi != null) {
                                 token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
                             }
                             searchPlace = new SearchPagePlace(token);
                         }
-                        break;
+                    } break;
+                    case companies: {
+                        String token = "";
+                        Category category = suggestion.getCategory();
+                        if (action.contentEquals("company")) {
+                            searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
+                        } else if (action.contentEquals("browse")) {
+                            token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                            if (category != null) {
+                                token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                            }
+                            if (aoi != null) {
+                                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                            }
+                            searchPlace = new SearchPagePlace(token);
+                        } else {
+                            token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                            if (category != null) {
+                                token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                            }
+                            if (aoi != null) {
+                                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                            }
+                            searchPlace = new SearchPagePlace(token);
+                        }
+                    } break;
                 }
-                if(searchPlace != null) {
+                if (searchPlace != null) {
                     clientFactory.getPlaceController().goTo(searchPlace);
                 } else {
                     landingPageView.displaySearchError("Sorry I could not understand your request...");
@@ -158,6 +189,40 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         });
     }
 
+    private void handleHistory() {
+        HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        // clean the search
+        landingPageView.setSearchText("");
+
+        // load the page's content
+        loadNewsItems();
+        loadRecommendations();
+    }
+
+    private void loadRecommendations() {
+
+    }
+
+    private void loadNewsItems() {
+        REST.withCallback(new MethodCallback<List<NewsItem>>() {
+            @Override
+            public void onFailure(Method method, Throwable exception) {
+                Window.alert("Error loading news items please reload");
+            }
+
+            @Override
+            public void onSuccess(Method method, List<NewsItem> newsItems) {
+                NewsItem newsItem = new NewsItem();
+                newsItem.setTitle("Welcome to the EO Broker portal");
+                newsItem.setDescription("The marketplace for images and services tailored to the Oil and Gas industry");
+                newsItem.setImageUrl("http://www.ogeo-portal.eu/images/1440.jpg");
+                newsItems.add(0, newsItem);
+                landingPageView.setNewsItems(newsItems);
+            }
+        }).call(ServicesUtil.assetsService).getNewsItems();
+    }
+
     private void setCategory(Category category) {
         this.category = category;
         landingPageView.displayCategory(category);
@@ -165,7 +230,7 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
 
     private void setText(String text) {
         this.text = text;
-        landingPageView.displayText(text);
+        landingPageView.setSearchText(text);
     }
 
     @Override

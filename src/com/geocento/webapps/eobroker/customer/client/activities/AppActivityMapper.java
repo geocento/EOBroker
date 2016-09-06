@@ -31,6 +31,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new FullViewActivity((FullViewPlace) place, clientFactory);
         } else if(place instanceof ProductFeasibilityPlace) {
             return new ProductFeasibilityActivity((ProductFeasibilityPlace) place, clientFactory);
+        } else if(place instanceof OrdersPlace) {
+            return new OrdersActivity((OrdersPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
         }

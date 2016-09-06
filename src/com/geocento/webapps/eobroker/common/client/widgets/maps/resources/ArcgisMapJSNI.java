@@ -49,6 +49,10 @@ public class ArcgisMapJSNI extends JavaScriptObject {
         return this.createPolygon(wktRings);
     }-*/;
 
+    public final native GeometryJSNI createGeometry(String wktString) /*-{
+        return this.createGeometry(wktString);
+    }-*/;
+
     public final GeometryJSNI createGeometryFromAoI(AoI aoi) {
         if(aoi instanceof AoIPolygon) {
             return createPolygon(((AoIPolygon) aoi).getWktRings());

@@ -4,10 +4,16 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.OrdersPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.place.shared.PlaceChangeEvent;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,6 +26,7 @@ import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -30,6 +37,15 @@ public class TemplateView extends Composite implements HasWidgets {
     }
 
     private static TemplateViewUiBinder ourUiBinder = GWT.create(TemplateViewUiBinder.class);
+
+    public static interface Style extends CssResource {
+
+        String navOpened();
+    }
+
+    @UiField
+    Style style;
+
     @UiField
     MaterialContainer mainPanel;
     @UiField
@@ -44,6 +60,16 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialLink signIn;
     @UiField
     MaterialImage logo;
+    @UiField
+    MaterialLink orders;
+    @UiField
+    MaterialBadge ordersBadge;
+    @UiField
+    MaterialLink notifications;
+    @UiField
+    HTMLPanel panel;
+    @UiField
+    HTMLPanel navbarElements;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -60,6 +86,8 @@ public class TemplateView extends Composite implements HasWidgets {
                 clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
             }
         });
+
+        orders.setHref("#" + PlaceHistoryHelper.convertPlace(new OrdersPlace()));
     }
 
     public void setTitleText(String title) {
@@ -93,6 +121,11 @@ public class TemplateView extends Composite implements HasWidgets {
         header.add(widget);
     }
 
+    @UiChild(tagname = "navBar")
+    public void addNavBarElement(Widget widget) {
+        navbarElements.add(widget);
+    }
+
     public void displayLoading() {
         navBar.showProgress(ProgressType.INDETERMINATE);
     }
@@ -107,6 +140,22 @@ public class TemplateView extends Composite implements HasWidgets {
 
     public void displaySuccess(String message) {
         MaterialToast.fireToast(message, "green darken-1");
+    }
+
+    public void setRequests(List<RequestDTO> orders) {
+        int count = orders == null ? 0 : orders.size();
+        ordersBadge.setText(count + "");
+    }
+
+    public void displaySignedIn(boolean signedIn) {
+        orders.setVisible(signedIn);
+        notifications.setVisible(signedIn);
+        signIn.setVisible(!signedIn);
+        signOut.setVisible(signedIn);
+    }
+
+    public void setPanelStyleName(String styleName, boolean added) {
+        panel.setStyleName(styleName, added);
     }
 
     @Override

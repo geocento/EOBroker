@@ -39,6 +39,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
         fullView = clientFactory.getFullView();
         fullView.setPresenter(this);
         panel.setWidget(fullView.asWidget());
+        setTemplateView(fullView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

@@ -28,4 +28,6 @@ public interface ClientFactory {
     FullView getFullView();
 
     ProductFeasibilityView getProductFeasibilityView();
+
+    OrdersView getOrdersView();
 }

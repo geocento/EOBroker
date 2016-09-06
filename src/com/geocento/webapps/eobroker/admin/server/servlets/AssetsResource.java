@@ -20,6 +20,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.util.Date;
 import java.util.List;
 
 @Path("/")
@@ -332,6 +333,7 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+/*
     @Override
     public void updateCompany(CompanyDTO companyDTO) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
@@ -366,4 +368,96 @@ public class AssetsResource implements AssetsService {
             em.close();
         }
     }
+*/
+
+    @Override
+    public Long saveCompany(CompanyDTO companyDTO) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Company dbCompany = null;
+            if(companyDTO.getId() == null) {
+                dbCompany = new Company();
+            } else {
+                dbCompany = em.find(Company.class, companyDTO.getId());
+                if (dbCompany == null) {
+                    throw new RequestException("Could not find news item to update");
+                }
+            }
+            dbCompany.setName(companyDTO.getName());
+            dbCompany.setDescription(companyDTO.getDescription());
+            dbCompany.setWebsite(companyDTO.getWebsite());
+            dbCompany.setIconURL(companyDTO.getIconURL());
+            dbCompany.setFullDescription(companyDTO.getFullDescription());
+            dbCompany.setContactEmail(companyDTO.getContactEmail());
+            if(companyDTO.getId() == null) {
+                em.persist(dbCompany);
+                // also create a new user
+                User companyUser = com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createUser(companyDTO.getName() + "User", "password", User.USER_ROLE.supplier, null, dbCompany);
+                em.persist(companyUser);
+            } else {
+                em.merge(dbCompany);
+            }
+            em.getTransaction().commit();
+            return dbCompany.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<NewsItem> listNewsItems(int start, int limit, String orderby) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate", NewsItem.class);
+        query.setFirstResult(start);
+        query.setMaxResults(limit);
+        return query.getResultList();
+    }
+
+    @Override
+    public NewsItem getNewsItem(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        return em.find(NewsItem.class, id);
+    }
+
+    @Override
+    public void saveNewsItem(NewsItem newsItem) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            if(newsItem.getId() == null) {
+                newsItem.setCreationDate(new Date());
+                em.persist(newsItem);
+            } else {
+                NewsItem dbNewsItem = em.find(NewsItem.class, newsItem.getId());
+                if(dbNewsItem == null) {
+                    throw new RequestException("Could not find news item to update");
+                }
+                dbNewsItem.setTitle(newsItem.getTitle());
+                dbNewsItem.setDescription(newsItem.getDescription());
+                dbNewsItem.setWebsiteUrl(newsItem.getWebsiteUrl());
+                em.merge(dbNewsItem);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
 }

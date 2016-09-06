@@ -6,10 +6,12 @@ package com.geocento.webapps.eobroker.common.shared.feasibility;
 public class Feature {
 
     static public enum TYPE {BOOLEAN, NUMBER, TEXT, IMAGE, MAPVECTOR};
+    static public enum AVAILABILITY {NOTAVAILABLE, PARTIAL, AVAILABLE};
 
     TYPE type;
     String name;
     String description;
+    AVAILABILITY availability;
 
     public Feature() {
     }
@@ -38,6 +40,14 @@ public class Feature {
 
     public String getDescription() {
         return description;
+    }
+
+    public AVAILABILITY getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(AVAILABILITY availability) {
+        this.availability = availability;
     }
 
     public void setDescription(String description) {

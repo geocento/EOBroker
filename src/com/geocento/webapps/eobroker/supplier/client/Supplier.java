@@ -91,7 +91,8 @@ public class Supplier implements EntryPoint {
     }
 
     private void initialise() {
-        Defaults.setServiceRoot("/supplier/api");
+        Defaults.setServiceRoot(GWT.getModuleBaseURL() + "api");
+        Defaults.setDateFormat(null);
     }
 
     public static void setLoginInfo(LoginInfo loginInfo) {

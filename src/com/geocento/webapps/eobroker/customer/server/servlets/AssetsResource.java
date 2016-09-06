@@ -1,9 +1,7 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.common.shared.entities.Company;
-import com.geocento.webapps.eobroker.common.shared.entities.Product;
-import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
@@ -16,6 +14,7 @@ import org.apache.log4j.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Path;
+import java.util.List;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
@@ -184,6 +183,21 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public List<ImageService> getImageServices() throws RequestException {
+        EntityManager em = EMF.get().createEntityManager();
+        TypedQuery<ImageService> query = em.createQuery("select i from ImageService i", ImageService.class);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<NewsItem> getNewsItems() {
+        EntityManager em = EMF.get().createEntityManager();
+        TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate", NewsItem.class);
+        query.setMaxResults(5);
+        return query.getResultList();
     }
 
     @Override

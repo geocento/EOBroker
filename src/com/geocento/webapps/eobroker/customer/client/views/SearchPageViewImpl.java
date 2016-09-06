@@ -1,19 +1,24 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
+import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
-import com.geocento.webapps.eobroker.customer.client.widgets.ImageRequestWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ImageSearchWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.*;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -29,7 +34,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class SearchPageViewImpl extends Composite implements SearchPageView {
+public class SearchPageViewImpl extends Composite implements SearchPageView, ResizeHandler {
 
     interface SearchPageUiBinder extends UiBinder<Widget, SearchPageViewImpl> {
     }
@@ -41,21 +46,17 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         String productTitle();
         String productServicesTitle();
         String alternativesTitle();
+
+        String navOpened();
     }
 
     @UiField
     Style style;
 
-    @UiField
-    MaterialLink signIn;
-    @UiField
-    MaterialSearch textSearch;
-    @UiField
-    MaterialNavBar navBarSearch;
+    @UiField(provided = true)
+    TemplateView template;
     @UiField
     MaterialLink currentSearch;
-    @UiField
-    MaterialNavBar navBar;
     @UiField
     HTMLPanel categories;
     @UiField
@@ -65,11 +66,26 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     @UiField
     HTMLPanel container;
     @UiField
-    MaterialImage logo;
+    ArcGISMap mapContainer;
+    @UiField
+    MaterialCollapsibleItem options;
+    @UiField
+    HTMLPanel settings;
+
+    private Callback<Void, Exception> mapLoadedHandler = null;
+
+    private boolean mapLoaded = false;
+
+    private MapJSNI map;
+
+    private GraphicJSNI aoiRendering;
 
     private Presenter presenter;
 
     public SearchPageViewImpl(ClientFactoryImpl clientFactory) {
+
+        template = new TemplateView(clientFactory);
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         // add categories controls
@@ -88,7 +104,44 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
         }
         categoriesPanel.expand();
 
+        mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(Exception reason) {
+
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                mapContainer.createMap("streets", new LatLng(40.0, -4.0), 3, new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<MapJSNI>() {
+
+                    @Override
+                    public void callback(final MapJSNI mapJSNI) {
+                        final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
+                        map = mapJSNI;
+                        mapLoaded();
+                    }
+                });
+            }
+        });
+
         filtersPanel.show();
+
+        onResize(null);
+    }
+
+    private void mapLoaded() {
+        mapLoaded = true;
+        if(mapLoadedHandler != null) {
+            mapLoadedHandler.onSuccess(null);
+        }
+    }
+
+    @Override
+    public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
+        this.mapLoadedHandler = mapLoadedHandler;
+        if(mapLoaded) {
+            mapLoadedHandler.onSuccess(null);
+        }
     }
 
     @Override
@@ -102,13 +155,23 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     }
 
     @Override
+    public void displayAoI(AoI aoi) {
+        if(aoiRendering != null) {
+            map.getGraphics().remove(aoiRendering);
+        }
+        if(aoi != null) {
+            aoiRendering = map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
+        }
+    }
+
+    @Override
     public void displayLoadingResults(String message) {
-        navBar.showProgress(ProgressType.INDETERMINATE);
+        template.displayLoading();
     }
 
     @Override
     public void hideLoadingResults() {
-        navBar.hideProgress();
+        template.hideLoading();
     }
 
     @Override
@@ -157,14 +220,23 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     }
 
     @Override
+    public void setTitleText(String title) {
+        template.setTitleText(title);
+    }
+
+    @Override
     public void setMatchingProducts(List<ProductDTO> suggestedProducts) {
+        categoriesPanel.setVisible(true);
+        options.setVisible(false);
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "Products matching your request", style.productTitle());
-        MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
-        productRow.add(materialColumn);
+        addTitle(productRow, suggestedProducts == null || suggestedProducts.size() == 0 ? "No product matching your request" :
+                                        "Products matching your request",
+                style.productTitle());
         for(ProductDTO productDTO : suggestedProducts) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
             materialColumn.add(new ProductWidget(productDTO));
+            productRow.add(materialColumn);
         }
     }
 
@@ -182,10 +254,30 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
 
     @Override
     public void displayProductsList(List<ProductDTO> products, int start, int limit, String text) {
-/*
-        HTMLPanel panel = new HTMLPanel("<span class='flow-text'>TODO - add controls to navigate through the list</span>");
-        container.add(panel);
-*/
+        categoriesPanel.setVisible(false);
+        options.setVisible(true);
+        settings.clear();
+        settings.add(new MaterialLabel("Sector"));
+        MaterialListBox sectorSelection = new MaterialListBox();
+        sectorSelection.addItem("All");
+        for(Sector option : Sector.values()) {
+            sectorSelection.addItem(option.toString());
+        }
+        settings.add(sectorSelection);
+        settings.add(new MaterialLabel("Thematic"));
+        for(Thematic option : Thematic.values()) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(option.toString());
+            materialCheckBox.setObject(option);
+            settings.add(materialCheckBox);
+            materialCheckBox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - update display
+                }
+            });
+        }
+        options.expand();
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         for(ProductDTO productDTO : products) {
@@ -209,18 +301,59 @@ public class SearchPageViewImpl extends Composite implements SearchPageView {
     }
 
     @Override
-    public HasClickHandlers getHomeButton() {
-        return logo;
+    public TemplateView getTemplateView() {
+        return template;
     }
 
-    @UiHandler("signIn")
-    void signIn(ClickEvent clickEvent) {
-        Customer.clientFactory.getPlaceController().goTo(new LoginPagePlace());
+    @Override
+    public void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text) {
+        categoriesPanel.setVisible(false);
+        options.setVisible(true);
+        settings.clear();
+        settings.add(new MaterialLabel("Company size"));
+        for(String option : new String[] {"Large corporation > 4000", "Large < 4000", "Medium-sized < 250", "Small < 50", "Micro < 10"}) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(option);
+            materialCheckBox.setObject(option);
+            settings.add(materialCheckBox);
+            materialCheckBox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - update display
+                }
+            });
+        }
+        settings.add(new MaterialLabel("Company certifications"));
+        for(String option : new String[] {"Certification 1", "Certification 2", "Certification 3"}) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(option);
+            materialCheckBox.setObject(option);
+            settings.add(materialCheckBox);
+            materialCheckBox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - update display
+                }
+            });
+        }
+        options.expand();
+        MaterialRow materialRow = new MaterialRow();
+        container.add(materialRow);
+        for(CompanyDTO companyDTO : companyDTOs) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            materialRow.add(materialColumn);
+            materialColumn.add(new CompanyWidget(companyDTO));
+        }
     }
 
     @Override
     public Widget asWidget() {
         return this;
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        template.setPanelStyleName(style.navOpened(), filtersPanel.isVisible());
     }
 
 }

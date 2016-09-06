@@ -67,4 +67,20 @@
         <servlet-name>ImageUploadServlet</servlet-name>
         <url-pattern>/upload/image/</url-pattern>
     </servlet-mapping>
+
+    <!-- Default page to serve -->
+    <welcome-file-list>
+        <welcome-file>eobroker.html</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/pages/PageNotFound.html</location>
+    </error-page>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/pages/PageError.html</location>
+    </error-page>
+
 </web-app>

@@ -47,6 +47,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         productFormView = clientFactory.getProductFormView();
         productFormView.setPresenter(this);
         panel.setWidget(productFormView.asWidget());
+        setTemplateView(productFormView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

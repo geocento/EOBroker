@@ -15,6 +15,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,19 +42,23 @@ public class ContextListener implements ServletContextListener {
         em.close();
 
         // reset the db content if needed
-        if(reset) {
-            try {
-                em = EMF.get().createEntityManager();
-                // add some data to database
+        try {
+            em = EMF.get().createEntityManager();
+            // add some data to database
+            TypedQuery<Product> query = em.createQuery("select p from Product p", Product.class);
+            List<Product> products = query.getResultList();
+            if(reset) {
                 em.getTransaction().begin();
-                TypedQuery<Product> query = em.createQuery("select p from Product p", Product.class);
-                for(Product product : query.getResultList()) {
+                for (Product product : query.getResultList()) {
                     em.remove(product);
                 }
                 em.getTransaction().commit();
+                products.clear();
+            }
+            if(products.size() == 0) {
                 em.getTransaction().begin();
                 CSVParser csvParser = new CSVParser(new FileReader(this.getClass().getResource("/products.csv").getFile()), CSVFormat.DEFAULT);
-                for(CSVRecord record : csvParser.getRecords()) {
+                for (CSVRecord record : csvParser.getRecords()) {
                     String sectorString = findNearest(ListUtil.mutate(ListUtil.toList(Sector.values()), new ListUtil.Mutate<Sector, String>() {
                         @Override
                         public String mutate(Sector sector) {
@@ -69,56 +74,70 @@ public class ContextListener implements ServletContextListener {
                     com.geocento.webapps.eobroker.admin.shared.dtos.ProductHelper.addProduct(em, record.get(0), record.get(4), Sector.valueOf(sectorString), Thematic.valueOf(thematicString));
                 }
                 em.getTransaction().commit();
-                // add companies and some users
-                em.getTransaction().begin();
-                TypedQuery<Company> companyQuery = em.createQuery("select c from Company c where c.name = :companyName", Company.class);
-                companyQuery.setParameter("companyName", "Geocento");
-                List<Company> companies = companyQuery.getResultList();
-                if(companies.size() == 0) {
-                    Company geocentoCompany = new Company();
-                    geocentoCompany.setName("Geocento");
-                    geocentoCompany.setDescription("Geocento company description");
-                    geocentoCompany.setIconURL("http://geocento.com/wp-content/uploads/2016/03/logo-geocento-global-earth-imaging.jpg");
-                    em.persist(geocentoCompany);
-                    // add a few users
-                    User geocentoUser = UserUtils.createUser("geocentoUser", "password", User.USER_ROLE.administrator, null, geocentoCompany);
-                    em.persist(geocentoUser);
-                }
-                companyQuery = em.createQuery("select c from Company c where c.name = :companyName", Company.class);
-                companyQuery.setParameter("companyName", "KSAT");
-                companies = companyQuery.getResultList();
-                if(companies.size() == 0) {
-                    Company ksatCompany = new Company();
-                    ksatCompany.setName("KSAT");
-                    ksatCompany.setDescription("KSAT company description");
-                    ksatCompany.setIconURL("https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQpRLyRdwnk5c9AolA9OtMb3ALjqxSG3CHyy2xx1TzzRvlclx9_");
-                    em.persist(ksatCompany);
-                    // add a few users
-                    User ksatUser = UserUtils.createUser("ksatUser", "password", User.USER_ROLE.supplier, null, ksatCompany);
-                    em.persist(ksatUser);
-                }
-                companyQuery = em.createQuery("select c from Company c where c.name = :companyName", Company.class);
-                companyQuery.setParameter("companyName", "EOMAP");
-                companies = companyQuery.getResultList();
-                if(companies.size() == 0) {
-                    Company eomapCompany = new Company();
-                    eomapCompany.setName("EOMAP");
-                    eomapCompany.setDescription("EOMAP company description");
-                    eomapCompany.setIconURL("images/eomapLogo.png");
-                    em.persist(eomapCompany);
-                    // add a few users
-                    User eomapUser = UserUtils.createUser("eomapUser", "password", User.USER_ROLE.supplier, null, eomapCompany);
-                    em.persist(eomapUser);
-                }
-                em.getTransaction().commit();
-            } catch (Exception e) {
-                if(em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                logger.error(e.getMessage(), e);
-            } finally {
-                em.close();
             }
+            // add companies and some users
+            em.getTransaction().begin();
+            TypedQuery<Company> companyQuery = em.createQuery("select c from Company c", Company.class);
+            List<Company> companies = companyQuery.getResultList();
+            if(companies.size() == 0) {
+                Company geocentoCompany = new Company();
+                geocentoCompany.setName("Geocento");
+                geocentoCompany.setDescription("Geocento company description");
+                geocentoCompany.setIconURL("http://geocento.com/wp-content/uploads/2016/03/logo-geocento-global-earth-imaging.jpg");
+                em.persist(geocentoCompany);
+                // add a few users
+                User geocentoUser = UserUtils.createUser("geocentoUser", "password", User.USER_ROLE.administrator, null, geocentoCompany);
+                em.persist(geocentoUser);
+                Company ksatCompany = new Company();
+                ksatCompany.setName("KSAT");
+                ksatCompany.setDescription("KSAT company description");
+                ksatCompany.setIconURL("https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQpRLyRdwnk5c9AolA9OtMb3ALjqxSG3CHyy2xx1TzzRvlclx9_");
+                em.persist(ksatCompany);
+                // add a few users
+                User ksatUser = UserUtils.createUser("ksatUser", "password", User.USER_ROLE.supplier, null, ksatCompany);
+                em.persist(ksatUser);
+                Company eomapCompany = new Company();
+                eomapCompany.setName("EOMAP");
+                eomapCompany.setDescription("EOMAP company description");
+                eomapCompany.setIconURL("images/eomapLogo.png");
+                em.persist(eomapCompany);
+                // add a few users
+                User eomapUser = UserUtils.createUser("eomapUser", "password", User.USER_ROLE.supplier, null, eomapCompany);
+                em.persist(eomapUser);
+                companies.addAll(Arrays.asList(geocentoCompany, ksatCompany, eomapCompany));
+            }
+            TypedQuery<ImageService> imageservicesQuery = em.createQuery("select i from ImageService i", ImageService.class);
+            List<ImageService> suppliers = imageservicesQuery.getResultList();
+            if(suppliers == null || suppliers.size() == 0) {
+                ImageService geocentoImageService = new ImageService();
+                geocentoImageService.setName("EarthImages");
+                geocentoImageService.setDescription("Geocento's image search and ordering service. EarthImages provides access to over 30 of the most popular satellite missions.");
+                geocentoImageService.setCompany(ListUtil.findValue(companies, new ListUtil.CheckValue<Company>() {
+                    @Override
+                    public boolean isValue(Company value) {
+                        return value.getName().contentEquals("Geocento");
+                    }
+                }));
+                em.persist(geocentoImageService);
+                ImageService ksatImageService = new ImageService();
+                ksatImageService.setName("KSAT MMO");
+                ksatImageService.setDescription("KSAT's image search and ordering service.");
+                ksatImageService.setCompany(ListUtil.findValue(companies, new ListUtil.CheckValue<Company>() {
+                    @Override
+                    public boolean isValue(Company value) {
+                        return value.getName().contentEquals("KSAT");
+                    }
+                }));
+                em.persist(ksatImageService);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+        } finally {
+            em.close();
         }
         // create resource handler for serving static files
 

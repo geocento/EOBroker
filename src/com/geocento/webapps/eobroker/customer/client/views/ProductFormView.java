@@ -50,6 +50,8 @@ public interface ProductFormView extends IsWidget {
 
     void displaySubmittedSuccess(String message);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

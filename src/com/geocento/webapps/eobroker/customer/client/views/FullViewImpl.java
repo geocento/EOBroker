@@ -168,6 +168,11 @@ public class FullViewImpl extends Composite implements FullView {
     }
 
     @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }

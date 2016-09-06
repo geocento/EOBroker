@@ -40,7 +40,7 @@ public class MaterialImageUploader extends Composite {
     public MaterialImageUploader() {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        final String uploadUrl = "/upload/image/";
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/image/";
         imageUploader.setUrl(uploadUrl);
         // Added the progress to card uploader
         imageUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {

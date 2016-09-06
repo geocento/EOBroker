@@ -20,11 +20,11 @@ package com.geocento.webapps.eobroker.customer.client.widgets;
  * #L%
  */
 
-import com.geocento.webapps.eobroker.common.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
+import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.GwtEvent;
@@ -80,7 +80,7 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
     class MaterialSearchResult extends MaterialWidget {
 
         public MaterialSearchResult() {
-            super(Document.get().createDivElement(), "");
+            super(Document.get().createDivElement(), StyleResources.INSTANCE.style().searchResult());
         }
 
     }
@@ -107,8 +107,12 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
         searchResult.setVisible(false);
         add(searchResult);
         addKeyUpHandler(new KeyUpHandler() {
+
+            String currentText = getText();
+
             @Override
             public void onKeyUp(KeyUpEvent event) {
+
                 // Apply selected search
                 switch (event.getNativeEvent().getKeyCode()) {
                     case KeyCodes.KEY_ENTER: {
@@ -155,11 +159,12 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
                     }
                     break;
                     default:
-                        if(presenter != null) {
+                        if(presenter != null && !getText().contentEquals(currentText)) {
                             presenter.onTextChanged(getText());
                         }
                         break;
                 }
+                currentText = getText();
             }
         });
     }
@@ -175,9 +180,9 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
 
     private void applyHighlightedItem(MaterialLink link){
         for(int index = 0; index < searchResult.getWidgetCount(); index++) {
-            searchResult.getWidget(index).setStyleName(StyleResources.INSTANCE.style().highlighted(), false);
+            searchResult.getWidget(index).setStyleName(com.geocento.webapps.eobroker.customer.client.styles.StyleResources.INSTANCE.style().highlighted(), false);
         }
-        link.addStyleName(StyleResources.INSTANCE.style().highlighted());
+        link.addStyleName(com.geocento.webapps.eobroker.customer.client.styles.StyleResources.INSTANCE.style().highlighted());
         setSelectedLink(link);
     }
 

@@ -32,6 +32,8 @@ public interface FullView extends IsWidget {
 
     void displayProduct(ProductDescriptionDTO productDescriptionDTO);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

@@ -4,8 +4,7 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets">
 
-        <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-        <ui:style>
+        <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.TemplateView.Style">
 
             @external nav-wrapper;
 
@@ -16,73 +15,13 @@
             }
 
             .panel header {
-                position: fixed;
-                top: 0px;
-                width: 100%;
-                z-index: 1000;
-            }
-
-            .mainPanel {
-                position: fixed;
-                top: 64px;
-                bottom: 0px;
-                width: 100%;
-                overflow-y: auto;
-                z-index: 500;
-            }
-
-            .mapPanel {
-                position: relative;
-            }
-
-            .label {
-                margin: 24px;
-            }
-
-            .footer {
-                position: fixed;
-                width: 100%;
-                bottom: 0px;
-                padding-top: 0px !important;
-            }
-
-            .currentSearch {
-                display: block;
-                top: 0px;
-                bottom: 0px;
-                margin-right: 300px;
-            }
-
-            .textSearch {
-                height: 100%;
-            }
-
-            .textSearch > input {
-                display: inline-block !important;
-                height: 100%;
-            }
-
-            .searchBar {
-                display: inline-block;
-                margin-right: 300px;
             }
 
             .navBar {
+                z-index: 1000;
             }
 
             .navBar > .nav-wrapper {
-            }
-
-            .categories {
-                padding-left: 20px;
-            }
-
-            .mainPanel {
-            }
-
-            .content {
-                margin: 30px auto;
-                max-width: 960px;
             }
 
             .logoImage {
@@ -90,36 +29,54 @@
                 cursor: pointer;
             }
 
+            .navOpened main, .navOpened footer {
+                padding-left: 300px;
+            }
+
+            .navbarElements {
+                display: flex;
+            }
+
+            .mainPanel {
+                min-height: 80%;
+            }
+
         </ui:style>
-        <g:HTMLPanel addStyleNames="{style.panel}">
+        <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+        <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
             <header>
-                <!-- NavBar -->
-                <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
-                    <m:MaterialNavSection>
-                        <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
-                        <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
-                    </m:MaterialNavSection>
-                    <m:MaterialNavSection float="RIGHT">
-                        <m:MaterialTooltip text="Orders" position="BOTTOM">
-                            <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE">
-                            </m:MaterialLink>
-                        </m:MaterialTooltip>
-                        <m:MaterialTooltip text="Notifications" position="BOTTOM">
-                            <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE">
-                                <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true"/>
-                            </m:MaterialLink>
-                        </m:MaterialTooltip>
-                        <m:MaterialTooltip text="Sign-in" position="BOTTOM">
-                            <m:MaterialLink ui:field="signIn" iconType="FACE" iconPosition="NONE"/>
-                        </m:MaterialTooltip>
-                        <m:MaterialTooltip text="Sign-out" position="BOTTOM">
-                            <m:MaterialLink visible="false" ui:field="signOut" iconType="FACE" iconPosition="NONE"/>
-                        </m:MaterialTooltip>
-                    </m:MaterialNavSection>
-                </m:MaterialNavBar>
-                <g:HTMLPanel ui:field="header"></g:HTMLPanel>
+                <g:HTMLPanel ui:field="header">
+                    <!-- NavBar -->
+                    <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
+                        <m:MaterialNavSection>
+                            <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                            <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                        </m:MaterialNavSection>
+                        <m:MaterialNavSection float="RIGHT">
+                            <m:MaterialTooltip text="Orders" position="BOTTOM">
+                                <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="orders">
+                                    <m:MaterialBadge text="" backgroundColor="blue" textColor="white" circle="true" ui:field="ordersBadge"/>
+                                </m:MaterialLink>
+                            </m:MaterialTooltip>
+                            <m:MaterialTooltip text="Notifications" position="BOTTOM">
+                                <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="notifications">
+                                    <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true"/>
+                                </m:MaterialLink>
+                            </m:MaterialTooltip>
+                            <m:MaterialTooltip text="Sign-in" position="BOTTOM">
+                                <m:MaterialLink iconType="FACE" iconPosition="NONE" ui:field="signIn"/>
+                            </m:MaterialTooltip>
+                            <m:MaterialTooltip text="Sign-out" position="BOTTOM">
+                                <m:MaterialLink visible="false" ui:field="signOut" iconType="FACE" iconPosition="NONE"/>
+                            </m:MaterialTooltip>
+                        </m:MaterialNavSection>
+                        <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
+
+                        </g:HTMLPanel>
+                    </m:MaterialNavBar>
+                </g:HTMLPanel>
             </header>
-            <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
+            <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">
             </m:MaterialContainer>
             <m:MaterialFooter backgroundColor="blue-grey">
                 <m:MaterialRow>

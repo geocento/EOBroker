@@ -4,6 +4,10 @@ import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMapper;
+import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.OrdersPlace;
+import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.utils.Utils;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -18,6 +22,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.EventBus;
 import org.fusesource.restygwt.client.Defaults;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
+import org.fusesource.restygwt.client.REST;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>
@@ -48,6 +55,9 @@ public class Customer implements EntryPoint {
 
             @Override
             public Place filter(Place place) {
+                if(!Customer.isLoggedIn() && place instanceof OrdersPlace) {
+                    return new LoginPagePlace(place);
+                }
                 return place;
             }
         }, activityMapper);
@@ -66,11 +76,25 @@ public class Customer implements EntryPoint {
 
         initialise();
 
-        historyHandler.handleCurrentHistory();
+        // check we have an active session
+        REST.withCallback(new MethodCallback<LoginInfo>() {
+            @Override
+            public void onFailure(Method method, Throwable exception) {
+                // TODO - decide what to do!
+            }
+
+            @Override
+            public void onSuccess(Method method, LoginInfo loginInfo) {
+                setLoginInfo(loginInfo);
+                historyHandler.handleCurrentHistory();
+            }
+        }).call(ServicesUtil.loginService).getSession();
     }
 
     private void initialise() {
-        Defaults.setServiceRoot("/customer/api");
+        com.geocento.webapps.eobroker.common.client.styles.StyleResources.INSTANCE.style().ensureInjected();
+        StyleResources.INSTANCE.style().ensureInjected();
+        Defaults.setServiceRoot(GWT.getModuleBaseURL() + "api");
         Defaults.setDateFormat(null);
         setAoI(Utils.getAoI());
     }
@@ -87,5 +111,9 @@ public class Customer implements EntryPoint {
 
     public static AoI getAoI() {
         return currentAoI;
+    }
+
+    public static boolean isLoggedIn() {
+        return loginInfo != null;
     }
 }

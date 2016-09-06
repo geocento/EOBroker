@@ -4,7 +4,7 @@
         <design:MaterialCardImage>
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent>
+        <design:MaterialCardContent textColor="white">
             <design:MaterialLabel fontSize="1.5em" ui:field="title"/>
             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>

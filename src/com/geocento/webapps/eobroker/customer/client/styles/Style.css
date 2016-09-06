@@ -1,0 +1,7 @@
+
+.searchResult {
+
+}
+.searchResult a:hover, .searchResult a.highlighted {
+    background: #ccc;
+ }

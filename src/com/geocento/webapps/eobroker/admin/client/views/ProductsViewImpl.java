@@ -26,8 +26,6 @@ public class ProductsViewImpl extends Composite implements ProductsView {
     private static DashboardViewUiBinder ourUiBinder = GWT.create(DashboardViewUiBinder.class);
 
     public static interface Style extends CssResource {
-
-        String navOpened();
     }
 
     @UiField

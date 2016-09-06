@@ -33,7 +33,7 @@ public class CompanyWidget extends Composite {
 
     public CompanyWidget(CompanyDTO companyDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        image.setUrl(companyDTO.getIconURL());
+        image.setUrl(companyDTO.getIconURL() == null ? "./images/noImage.png" : companyDTO.getIconURL());
         title.setText(companyDTO.getName());
         description.setText(companyDTO.getDescription());
         information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId())));

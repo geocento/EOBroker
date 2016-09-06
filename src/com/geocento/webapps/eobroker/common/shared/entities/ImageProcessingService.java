@@ -4,9 +4,12 @@ import javax.persistence.*;
 
 /**
  * Created by thomas on 06/06/2016.
+ *
+ * service providing automatic image processing in form of an image product
+ *
  */
 @Entity(name = "imageryservice")
-public class ImageryService {
+public class ImageProcessingService {
 
     @Id
     Long id;
@@ -24,9 +27,9 @@ public class ImageryService {
     Company company;
 
     @ManyToOne
-    ImageProduct product;
+    ImageProcessingProduct product;
 
-    public ImageryService() {
+    public ImageProcessingService() {
     }
 
     public Long getId() {
@@ -69,11 +72,11 @@ public class ImageryService {
         this.company = company;
     }
 
-    public void setProduct(ImageProduct product) {
+    public void setProduct(ImageProcessingProduct product) {
         this.product = product;
     }
 
-    public ImageProduct getProduct() {
+    public ImageProcessingProduct getProduct() {
         return product;
     }
 }

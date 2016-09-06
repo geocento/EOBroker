@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <g:HTMLPanel>
+        <design:MaterialLink float="RIGHT" width="auto" ui:field="indicator"></design:MaterialLink>
+        <design:MaterialLink ui:field="header"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

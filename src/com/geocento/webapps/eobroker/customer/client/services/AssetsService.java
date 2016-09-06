@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
+import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
@@ -9,6 +11,7 @@ import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.*;
+import java.util.List;
 
 public interface AssetsService extends DirectRestService {
 
@@ -87,4 +90,13 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     ProductDescriptionDTO getProductDescription(@PathParam("id") Long productId) throws RequestException;
 
+    @GET
+    @Path("/assets/imageservices")
+    @Produces("application/json")
+    List<ImageService> getImageServices() throws RequestException;
+
+    @GET
+    @Path("/assets/newsitems")
+    @Produces("application/json")
+    List<NewsItem> getNewsItems();
 }

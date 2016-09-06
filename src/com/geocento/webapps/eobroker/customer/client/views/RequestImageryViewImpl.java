@@ -8,21 +8,28 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJS
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProgressButton;
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -47,13 +54,21 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     @UiField
     MaterialAnchorButton clearAoIs;
     @UiField
-    MaterialRow mapPanel;
-    @UiField
-    MaterialButton closeMap;
-    @UiField
-    MaterialTitle title;
+    HTMLPanel mapPanel;
     @UiField
     HTMLPanel suppliers;
+    @UiField
+    MaterialTextBox imagetype;
+    @UiField
+    MaterialListBox application;
+    @UiField
+    ProgressButton submit;
+    @UiField
+    MaterialDatePicker start;
+    @UiField
+    MaterialDatePicker stop;
+    @UiField
+    MaterialTextArea information;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -65,7 +80,27 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
-        mapContainer.setHeight((Window.getClientHeight() - 64) + "px");
+
+        this.application.setPlaceholder("Select your application");
+        String[] applications = new String[] {
+                "agriculture",
+                "forestry",
+                "planning and development",
+                "natural resources and exploration",
+                "emergency response and crisis management",
+                "tourism",
+                "insurance",
+                "health",
+                "maritime and coastal",
+                "defence and homeland security",
+                "telecommunications",
+                "mapping and topography",
+                "other"
+        };
+        for(String application : applications) {
+            this.application.addItem(application);
+        }
+        mapContainer.setHeight("100%");
         revealMap(false, false);
         mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
             @Override
@@ -179,12 +214,77 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
 
     @Override
     public void setDescription(String description) {
-        this.title.setDescription(description);
     }
 
-    @UiHandler("closeMap")
-    void closeMap(ClickEvent clickEvent) {
-        revealMap(false, true);
+    @Override
+    public void setSuppliers(List<ImageService> imageServices) {
+        suppliers.clear();
+        for(ImageService imageService : imageServices) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(imageService.getName());
+            materialCheckBox.setObject(imageService);
+            suppliers.add(materialCheckBox);
+        }
+    }
+
+    @Override
+    public HasClickHandlers getSubmitButton() {
+        return submit;
+    }
+
+    @Override
+    public String getImageType() {
+        return imagetype.getText();
+    }
+
+    @Override
+    public Date getStartDate() {
+        return start.getDate();
+    }
+
+    @Override
+    public Date getStopDate() {
+        return stop.getDate();
+    }
+
+    @Override
+    public String getAdditionalInformation() {
+        return information.getText();
+    }
+
+    @Override
+    public List<ImageService> getSelectedServices() {
+        List<ImageService> selectedServices = new ArrayList<ImageService>();
+        for(int index = 0; index < suppliers.getWidgetCount(); index++) {
+            Widget widget = suppliers.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                if(((MaterialCheckBox) widget).getValue()) {
+                    selectedServices.add((ImageService) ((MaterialCheckBox) widget).getObject());
+                }
+            }
+        }
+        return selectedServices;
+    }
+
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
+    public void displaySubmitLoading(boolean display) {
+        if(display) {
+            template.displayLoading();
+            submit.showProgress(ProgressType.INDETERMINATE);
+        } else {
+            template.hideLoading();
+            submit.hideProgress();
+        }
+    }
+
+    @Override
+    public void displaySucces(String message) {
+        template.displaySuccess(message);
     }
 
     @Override

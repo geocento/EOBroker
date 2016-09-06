@@ -1,15 +1,16 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.admin.client.views.TemplateView;
 import com.geocento.webapps.eobroker.admin.client.widgets.CompaniesList;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialButton;
 
 import java.util.List;
 
@@ -24,8 +25,6 @@ public class CompaniesViewImpl extends Composite implements CompaniesView {
     private static CompaniesViewUiBinder ourUiBinder = GWT.create(CompaniesViewUiBinder.class);
 
     public static interface Style extends CssResource {
-
-        String navOpened();
     }
 
     @UiField
@@ -35,6 +34,8 @@ public class CompaniesViewImpl extends Composite implements CompaniesView {
     TemplateView template;
     @UiField
     CompaniesList companies;
+    @UiField
+    MaterialButton createNew;
 
     private Presenter presenter;
 
@@ -54,6 +55,11 @@ public class CompaniesViewImpl extends Composite implements CompaniesView {
     @Override
     public void setCompanies(List<CompanyDTO> companyDTOs) {
         this.companies.setRowData(0, companyDTOs);
+    }
+
+    @Override
+    public HasClickHandlers getCreateNewButton() {
+        return createNew;
     }
 
     @Override

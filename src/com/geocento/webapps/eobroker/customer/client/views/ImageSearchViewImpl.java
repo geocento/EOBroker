@@ -8,7 +8,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.Subro
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.ImageryService;
+import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
@@ -18,7 +18,9 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -28,10 +30,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.ColumnSortEvent;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -40,8 +39,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.base.MaterialImageCell;
-import gwt.material.design.client.constants.ButtonType;
-import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.ImageType;
 import gwt.material.design.client.ui.*;
 
@@ -123,6 +120,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     private static NumberFormat format = NumberFormat.getFormat("#.##");
 
     public ImageSearchViewImpl(ClientFactoryImpl clientFactory) {
+
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -279,7 +277,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
                 String htmlContent = "";
                 htmlContent += addProperty("Resolution", formatNumber(product.getSensorResolution(), "m"));
                 htmlContent += addProperty("AoI Coverage", formatNumber(product.getAoiCoveragePercent() * 100, "%"));
-                if(product.getOrbit() != -1) {
+                if(product.getOrbit() != null) {
                     htmlContent += addProperty("Orbit", product.getOrbit());
                 }
                 if(product.getSensorType().startsWith("O")) {
@@ -342,7 +340,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
             @Override
             public MaterialImage getValue(Product object) {
                 MaterialImage img = new MaterialImage();
-                img.setUrl(object.getThumbnail());
+                img.setUrl(object.getThumbnail() == null ?
+                                (object.getType() == Product.TYPE.ARCHIVE ? "./images/imageryNotAvailable.png" :
+                                        object.getType() == Product.TYPE.PLANNEDACQ ? "./images/imageryPlannedAcq.png" :
+                                        "./images/imageryFutureAcq.png") :
+                        object.getThumbnail());
                 img.setWidth("40px");
                 img.setHeight("40px");
                 //SET IMAGE TO CIRCLE
@@ -400,6 +402,16 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
             }
         };
 */
+
+        // set the row styles based on type of product
+        resultsTable.setRowStyles(new RowStyles<Product>() {
+            @Override
+            public String getStyleNames(Product product, int rowIndex) {
+                return product.getType() == Product.TYPE.ARCHIVE ? "eobroker-archiveProduct" :
+                        product.getType() == Product.TYPE.PLANNEDACQ ? "eobroker-plannedAcqProduct" :
+                        "eobroker-futureOpportunityProduct";
+            }
+        });
 
         resultsTable.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         resultsTable.setColumnWidth(checkColumn, "30px");
@@ -503,17 +515,17 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     }
 
     @Override
-    public void setSuppliers(List<ImageryService> imageryServices) {
+    public void setSuppliers(List<ImageService> imageServices) {
         providerDropdown.clear();
-        for(final ImageryService imageryService : imageryServices) {
-            MaterialLink materialLink = new MaterialLink(ButtonType.RAISED, imageryService.getName(), new MaterialIcon(IconType.ADD_A_PHOTO));
+        for(final ImageService imageService : imageServices) {
+            MaterialLink materialLink = new MaterialLink(imageService.getName());
             materialLink.setBackgroundColor("white");
             materialLink.setTextColor("black");
-            materialLink.setTooltip(imageryService.getDescription());
+            materialLink.setTooltip(imageService.getDescription());
             materialLink.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    presenter.onProviderChanged(imageryService);
+                    presenter.onProviderChanged(imageService);
                 }
             });
             providerDropdown.add(materialLink);
@@ -521,8 +533,8 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     }
 
     @Override
-    public void displaySupplier(ImageryService imageryService) {
-        providersLink.setText(imageryService.getName());
+    public void displayService(ImageService imageService) {
+        providersLink.setText(imageService.getName());
     }
 
     @Override
@@ -537,12 +549,58 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     @Override
     public void clearMap() {
-        map.getGraphics().clear();
+        if(map != null) {
+            if(map.getGraphics() != null) {
+                if(aoiRendering != null) {
+                    map.getGraphics().remove(aoiRendering);
+                }
+                clearProductsSelection();
+            }
+        }
     }
 
     @Override
     public void displaySensorSuggestions(List<Suggestion> response) {
         sensors.displayListSearches(response);
+    }
+
+    @Override
+    public HasClickHandlers getQuoteButton() {
+        return submitForQuote;
+    }
+
+    @Override
+    public List<Product> getSelectedProducts() {
+        return new ArrayList<Product>(selectedProducts);
+    }
+
+    @Override
+    public void clearProductsSelection() {
+        if(renderedProducts.size() > 0) {
+            for(ProductRendering productRendering : renderedProducts.values()) {
+                map.getGraphics().remove(productRendering.footprint);
+                map.removeWMSLayer(productRendering.overlay);
+            }
+            renderedProducts.clear();
+            selectedProducts.clear();
+        }
+        if(outlinedProduct != null) {
+            if(outlinedProductGraphicJSNI != null) {
+                map.getGraphics().remove(outlinedProductGraphicJSNI);
+            }
+            outlinedProduct = null;
+        }
+        imagesList.refresh();
+    }
+
+    @Override
+    public void displaySuccess(String message) {
+        template.displaySuccess(message);
+    }
+
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
     }
 
     @Override

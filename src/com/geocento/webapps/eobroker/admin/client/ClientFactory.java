@@ -22,4 +22,10 @@ public interface ClientFactory {
     CompaniesView getCompaniesView();
 
     ProductView getProductView();
+
+    NewsItemsView getNewsItemsView();
+
+    NewsItemView getNewsItemView();
+
+    CompanyView getCompanyView();
 }

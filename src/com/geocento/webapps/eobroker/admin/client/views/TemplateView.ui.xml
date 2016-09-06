@@ -14,14 +14,6 @@
             min-height: 80%;
         }
 
-        .mainPanel {
-            position: fixed;
-            top: 64px;
-            bottom: 0px;
-            width: 100%;
-            overflow-y: auto;
-        }
-
         .navBrand {
             color: grey;
             padding-left: 20px;
@@ -31,22 +23,6 @@
         .logoImage {
             display: block;
             cursor: pointer;
-        }
-
-        .section {
-            margin: 7px 0;
-            text-align: center;
-            line-height: 50px;
-            font-size: 28px;
-            color: grey;
-        }
-
-        .services {
-            margin: 20px 0px;
-        }
-
-        .companyWidget {
-            display: inline-block;
         }
 
         .navBar {
@@ -76,10 +52,11 @@
                     </design:MaterialTooltip>
                 </design:MaterialNavSection>
             </design:MaterialNavBar>
-            <design:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="true" allowBodyScroll="true" showOnAttach="true" backgroundColor="white" top="64" shadow="0" width="300" ui:field="sideNav">
+            <design:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="false" allowBodyScroll="true" backgroundColor="white" top="64" shadow="0" width="300" ui:field="sideNav">
                 <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
                 <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" ui:field="companies"></design:MaterialLink>
                 <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" ui:field="products"></design:MaterialLink>
+                <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="News Items" ui:field="newsItems"></design:MaterialLink>
             </design:MaterialSideNav>
         </header>
 

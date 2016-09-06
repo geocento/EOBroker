@@ -1,8 +1,11 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -13,9 +16,13 @@ import java.util.List;
  */
 public interface SearchPageView extends IsWidget {
 
+    void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
+
     void setPresenter(Presenter presenter);
 
     void setCurrentSearch(String search);
+
+    void displayAoI(AoI aoi);
 
     void displayLoadingResults(String message);
 
@@ -29,6 +36,8 @@ public interface SearchPageView extends IsWidget {
 
     HasClickHandlers getChangeSearch();
 
+    void setTitleText(String title);
+
     void setMatchingProducts(List<ProductDTO> suggestedProducts);
 
     void setMatchingServices(List<ProductServiceDTO> productServices);
@@ -37,7 +46,9 @@ public interface SearchPageView extends IsWidget {
 
     void setMatchingImagery(String text);
 
-    HasClickHandlers getHomeButton();
+    TemplateView getTemplateView();
+
+    void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text);
 
     public interface Presenter {
     }

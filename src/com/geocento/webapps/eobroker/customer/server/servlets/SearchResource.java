@@ -4,34 +4,35 @@ import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.entities.recommendation.SelectionRule;
+import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
-import com.geocento.webapps.eobroker.common.shared.feasibility.CoverageFeature;
-import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
-import com.google.gson.Gson;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
+import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
-import org.geojson.geometry.Geometry;
-import org.geojson.geometry.Polygon;
-import org.geojson.object.Feature;
 import org.json.JSONObject;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.ws.rs.Path;
 import java.io.DataOutputStream;
 import java.io.InputStream;
-import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
@@ -39,7 +40,16 @@ import java.util.*;
 @Path("/")
 public class SearchResource implements SearchService {
 
-    Logger logger = Logger.getLogger(AssetsResource.class);
+    static Logger logger = Logger.getLogger(AssetsResource.class);
+
+    static GsonBuilder builder = new GsonBuilder();
+    static {
+        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                return new Date(json.getAsJsonPrimitive().getAsLong());
+            }
+        });
+    }
 
     public SearchResource() {
         logger.info("Starting search service");
@@ -143,8 +153,10 @@ public class SearchResource implements SearchService {
         String error = sensorQuery.getError();
         String suggestions = sensorQuery.getSuggestions();
         List<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
-        for(String suggestion : suggestions.split(";")) {
-            rankedSuggestions.add(new RankedSuggestion(baseQuery + " " + suggestion, Category.imagery, "image::" + baseQuery, 1.0));
+        if(baseQuery != null && baseQuery.length() > 0) {
+            for (String suggestion : suggestions.split(";")) {
+                rankedSuggestions.add(new RankedSuggestion(baseQuery + " " + suggestion, Category.imagery, "image::" + baseQuery, 1.0));
+            }
         }
         return rankedSuggestions;
     }
@@ -171,38 +183,39 @@ public class SearchResource implements SearchService {
         try {
             Query q = em.createNativeQuery(sqlStatement);
             List<Object[]> results = q.getResultList();
-            List<Long> productIds = new ArrayList<Long>();
-            for (Object[] result : results) {
-                productIds.add((Long) result[0]);
-            }
-            TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
-            productQuery.setParameter("productIds", productIds);
-            List<Product> products = productQuery.getResultList();
-            List<ProductDTO> productDTOs = new ArrayList<ProductDTO>();
-            List<ProductServiceDTO> productServices = new ArrayList<ProductServiceDTO>();
-            for (Product product : products) {
-                ProductDTO productDTO = ProductHelper.createProductDTO(product);
-                productDTOs.add(productDTO);
-                for (ProductService productService : product.getProductServices()) {
-                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                    productServiceDTO.setId(productService.getId());
-                    productServiceDTO.setName(productService.getName());
-                    productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setServiceImage(productService.getImageUrl());
-                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                    productServiceDTO.setCompanyName(productService.getCompany().getName());
-                    productServiceDTO.setCompanyId(productService.getCompany().getId());
-                    productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-                    productServiceDTO.setProduct(productDTO);
-                    productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
-                            productServiceDTO
-                    }));
+            if(results.size() > 0) {
+                List<Long> productIds = new ArrayList<Long>();
+                for (Object[] result : results) {
+                    productIds.add((Long) result[0]);
                 }
+                TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
+                productQuery.setParameter("productIds", productIds);
+                List<Product> products = productQuery.getResultList();
+                List<ProductDTO> productDTOs = new ArrayList<ProductDTO>();
+                List<ProductServiceDTO> productServices = new ArrayList<ProductServiceDTO>();
+                for (Product product : products) {
+                    ProductDTO productDTO = ProductHelper.createProductDTO(product);
+                    productDTOs.add(productDTO);
+                    for (ProductService productService : product.getProductServices()) {
+                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                        productServiceDTO.setId(productService.getId());
+                        productServiceDTO.setName(productService.getName());
+                        productServiceDTO.setDescription(productService.getDescription());
+                        productServiceDTO.setServiceImage(productService.getImageUrl());
+                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                        productServiceDTO.setCompanyName(productService.getCompany().getName());
+                        productServiceDTO.setCompanyId(productService.getCompany().getId());
+                        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+                        productServiceDTO.setProduct(productDTO);
+                        productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
+                                productServiceDTO
+                        }));
+                    }
+                }
+                searchResult.setProducts(productDTOs);
+                searchResult.setProductServices(productServices);
+                // now get the product suppliers for each one of them
             }
-            searchResult.setProducts(productDTOs);
-            searchResult.setProductServices(productServices);
-            // now get the product suppliers for each one of them
-
             return searchResult;
         } finally {
             em.close();
@@ -292,8 +305,38 @@ public class SearchResource implements SearchService {
             SearchRequest searchRequest = new SearchRequest();
             searchRequest.setAoiWKT(searchQuery.getAoiWKT());
             // check the sensor query
-            SensorQuery sensorQuery = new SensorQuery(searchQuery.getSensors());
-            searchRequest.setSensorFilters(sensorQuery.getSensorFilters());
+            if(searchQuery.getSensors() != null) {
+                SensorQuery sensorQuery = new SensorQuery(searchQuery.getSensors());
+                searchRequest.setSensorFilters(sensorQuery.getSensorFilters());
+            } else {
+                // run the sensor selection for the product
+                Long productId = searchQuery.getProduct();
+                EntityManager em = EMF.get().createEntityManager();
+                Product product = em.find(Product.class, productId);
+                if(product == null) {
+                    throw new RequestException("Product with id " + productId + " does not exist");
+                }
+                String recommendationRule = product.getRecommendationRule();
+                if(recommendationRule == null) {
+                    throw new RequestException("No rule defined for this product");
+                }
+                ScriptEngineManager factory = new ScriptEngineManager();
+                ScriptEngine engine = factory.getEngineByName("JavaScript");
+                engine.put("aoiWKT", searchQuery.getAoiWKT());
+                SelectionRule selectionRule = null;
+                try {
+                    engine.eval(recommendationRule + " " +
+                                    "function getSelectionRule() {return '{sensorFilters:' + JSON.stringify(sensorFilters) + ', productFilters: ' + JSON.stringify(productFilters) + '}'};"
+                    );
+                    String selectionRuleString = (String) ((Invocable) engine).invokeFunction("getSelectionRule");
+                    selectionRule = new Gson().fromJson(selectionRuleString, SelectionRule.class);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    throw new RequestException("Failed to run the rule script");
+                }
+                searchRequest.setSensorFilters(selectionRule.getSensorFilters());
+                searchRequest.setFilters(selectionRule.getProductFilters());
+            }
             searchRequest.setStart(searchQuery.getStart());
             searchRequest.setStop(searchQuery.getStop());
             searchRequest.setCurrency("EUR");
@@ -304,7 +347,7 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public SupplierAPIResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequest) throws RequestException {
+    public ProductFeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequest) throws RequestException {
         if(feasibilityRequest == null) {
             throw new RequestException("Feasibility request cannot be null");
         }
@@ -352,12 +395,13 @@ public class SearchResource implements SearchService {
                     json.put(formElementValue.getFormid(), formElementValue.getValue());
                 }
                 String response = sendAPIRequest(productService.getApiUrl(), json.toString());
-                FeasibilityResponse feasibilityResponse = new Gson().fromJson(response, FeasibilityResponse.class);
-                SupplierAPIResponse supplierAPIResponse = new SupplierAPIResponse();
-                supplierAPIResponse.setFeasible(feasibilityResponse.isFeasible());
-                supplierAPIResponse.setMessage(feasibilityResponse.getMessage());
-                supplierAPIResponse.setFeatures(feasibilityResponse.getFeatures());
-                supplierAPIResponse.setCoverages(ListUtil.mutate(feasibilityResponse.getCoverages().getFeatures(), new ListUtil.Mutate<Feature, CoverageFeature>() {
+                ProductFeasibilityResponse productFeasibilityResponse = builder.create().fromJson(response, ProductFeasibilityResponse.class);
+/*
+                ProductFeasibilityResponse productFeasibilityResponse = new ProductFeasibilityResponse();
+                productFeasibilityResponse.setFeasible(feasibilityResponse.isFeasible());
+                productFeasibilityResponse.setMessage(feasibilityResponse.getMessage());
+                productFeasibilityResponse.setFeatures(feasibilityResponse.getFeatures());
+                productFeasibilityResponse.setCoverages(ListUtil.mutate(feasibilityResponse.getCoverages().getFeatures(), new ListUtil.Mutate<Feature, CoverageFeature>() {
                     @Override
                     public CoverageFeature mutate(Feature feature) {
                         CoverageFeature coverageFeature = new CoverageFeature();
@@ -377,7 +421,8 @@ public class SearchResource implements SearchService {
                         return coverageFeature;
                     }
                 }));
-                return supplierAPIResponse;
+*/
+                return productFeasibilityResponse;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw new RequestException("Failed to access supplier API");
@@ -424,6 +469,51 @@ public class SearchResource implements SearchService {
             suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
         }
         return suggestions;
+    }
+
+    @Override
+    public List<CompanyDTO> listCompanies(String textFilter, Integer start, Integer limit, Long aoiId) {
+        List<Company> companies = null;
+        EntityManager em = EMF.get().createEntityManager();
+        if(textFilter != null) {
+            // check if last character is a space
+            boolean partialMatch = !textFilter.endsWith(" ");
+            textFilter.trim();
+            // break down text into sub words
+            String[] words = textFilter.split(" ");
+            String keywords = StringUtils.join(words, " | ");
+            if (partialMatch) {
+                keywords += ":*";
+            }
+            // change the last word so that it allows for partial match
+            String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
+                    "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          WHERE tsv @@ keywords\n" +
+                    "          ORDER BY rank DESC;";
+            Query q = em.createNativeQuery(sqlStatement);
+            q.setFirstResult(start);
+            q.setMaxResults(limit);
+            List<Object[]> results = q.getResultList();
+            List<Long> companyIds = new ArrayList<Long>();
+            for (Object[] result : results) {
+                companyIds.add((Long) result[0]);
+            }
+            TypedQuery<Company> companyQuery = em.createQuery("select c from Company c where c.id IN :companyIds", Company.class);
+            companyQuery.setParameter("companyIds", companyIds);
+            companies = companyQuery.getResultList();
+        } else {
+            TypedQuery<Company> companyQuery = em.createQuery("select c from Company c order by c.name", Company.class);
+            companyQuery.setFirstResult(start);
+            companyQuery.setMaxResults(limit);
+            companies = companyQuery.getResultList();
+        }
+        em.close();
+        return ListUtil.mutate(companies, new ListUtil.Mutate<Company, CompanyDTO>() {
+            @Override
+            public CompanyDTO mutate(Company company) {
+                return CompanyHelper.createCompanyDTO(company);
+            }
+        });
     }
 
     private String convertGeoJsonRings(List<List<double[]>> rings) {

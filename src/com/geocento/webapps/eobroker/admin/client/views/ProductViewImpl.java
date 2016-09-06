@@ -34,8 +34,6 @@ public class ProductViewImpl extends Composite implements ProductView {
     private static ProductViewUiBinder ourUiBinder = GWT.create(ProductViewUiBinder.class);
 
     public static interface Style extends CssResource {
-
-        String navOpened();
     }
 
     @UiField

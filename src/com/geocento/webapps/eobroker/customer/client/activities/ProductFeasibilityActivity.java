@@ -13,8 +13,8 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityView;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.SupplierAPIResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -56,6 +56,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         productFeasibilityView = clientFactory.getProductFeasibilityView();
         productFeasibilityView.setPresenter(this);
         panel.setWidget(productFeasibilityView.asWidget());
+        setTemplateView(productFeasibilityView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         productFeasibilityView.setMapLoadedHandler(new Callback<Void, Exception>() {
@@ -95,13 +96,42 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
             }
         }
+        Long startDate = null;
+        if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.startDate.toString())) {
+            try {
+                startDate = Long.parseLong(tokens.get(ProductFeasibilityPlace.TOKENS.productservice.toString()));
+                setStart(new Date(startDate));
+            } catch (Exception e) {
+
+            }
+        }
+        if(startDate != null) {
+            setStart(new Date(startDate));
+        } else {
+            setStart(new Date(new Date().getTime() + 3 * 24 * 3600 * 1000));
+        }
+        Long stopDate = null;
+        if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.stopDate.toString())) {
+            try {
+                stopDate = Long.parseLong(tokens.get(ProductFeasibilityPlace.TOKENS.stopDate.toString()));
+            } catch (Exception e) {
+
+            }
+        }
+        if(stopDate != null) {
+            setStop(new Date(stopDate));
+        } else {
+            setStop(new Date(start.getTime() + 10 * 24 * 3600 * 1000L));
+        }
         loadProduct(productServiceId);
         setAoI(Customer.currentAoI);
+        enableUpdateMaybe();
     }
 
     private void setAoI(AoI aoi) {
         this.aoi = aoi;
-        productFeasibilityView.displayAoI(Customer.currentAoI);
+        Customer.setAoI(aoi);
+        productFeasibilityView.displayAoI(aoi);
     }
 
     private void loadProduct(final Long productServiceId) {
@@ -171,7 +201,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 feasibilityRequestDTO.setStop(stop);
                 feasibilityRequestDTO.setFormElementValues(formElementValues);
                 try {
-                    REST.withCallback(new MethodCallback<SupplierAPIResponse>() {
+                    REST.withCallback(new MethodCallback<ProductFeasibilityResponse>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             productFeasibilityView.hideLoadingResults();
@@ -179,7 +209,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                         }
 
                         @Override
-                        public void onSuccess(Method method, SupplierAPIResponse response) {
+                        public void onSuccess(Method method, ProductFeasibilityResponse response) {
                             productFeasibilityView.hideLoadingResults();
                             productFeasibilityView.displayResponse(response);
                         }

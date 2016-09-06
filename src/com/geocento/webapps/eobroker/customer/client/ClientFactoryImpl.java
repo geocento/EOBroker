@@ -29,6 +29,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ProductFeasibilityViewImpl productFeasibilityView = null;
 
+    private OrdersViewImpl ordersView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -106,6 +108,14 @@ public class ClientFactoryImpl implements ClientFactory {
             productFeasibilityView = new ProductFeasibilityViewImpl(this);
         }
         return productFeasibilityView;
+    }
+
+    @Override
+    public OrdersView getOrdersView() {
+        if(ordersView == null) {
+            ordersView = new OrdersViewImpl(this);
+        }
+        return ordersView;
     }
 
 }

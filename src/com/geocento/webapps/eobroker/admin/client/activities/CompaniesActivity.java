@@ -2,10 +2,13 @@ package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
 import com.geocento.webapps.eobroker.admin.client.places.CompaniesPlace;
+import com.geocento.webapps.eobroker.admin.client.places.CompanyPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.CompaniesView;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -62,6 +65,13 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
     @Override
     protected void bind() {
         super.bind();
+
+        handlers.add(companiesView.getCreateNewButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new CompanyPlace());
+            }
+        }));
     }
 
 }

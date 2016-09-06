@@ -1,10 +1,10 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui">
     <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL">
-        <design:MaterialCardImage waves="LIGHT">
+        <design:MaterialCardImage>
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent>
+        <design:MaterialCardContent textColor="white">
             <design:MaterialLabel fontSize="1.5em" ui:field="title"/>
             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>

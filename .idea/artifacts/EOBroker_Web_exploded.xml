@@ -6,9 +6,13 @@
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="javaee-facet-classes" facet="EOBroker/web/Web" />
+          <element id="module-output" name="EOBroker" />
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="libraries" />
+          <element id="library" level="project" name="antlr-4.5.3-complete" />
+          <element id="library" level="project" name="gwt-user" />
+          <element id="library" level="project" name="gwt-servlet" />
         </element>
       </element>
       <element id="gwt-compiler-output" facet="EOBroker/gwt/GWT" />

@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
+import com.geocento.webapps.eobroker.admin.client.Admin;
+import com.geocento.webapps.eobroker.admin.client.places.CompanyPlace;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
 import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -32,7 +34,7 @@ public class CompaniesList extends AsyncPagingCellTable<CompanyDTO> {
 
             @Override
             public void update(int index, final CompanyDTO companyDTO, String value) {
-
+                Admin.clientFactory.getPlaceController().goTo(new CompanyPlace(companyDTO));
             }
         });
 

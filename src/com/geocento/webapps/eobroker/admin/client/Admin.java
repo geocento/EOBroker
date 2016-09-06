@@ -26,6 +26,7 @@ import org.fusesource.restygwt.client.REST;
  * Created by thomas on 20/06/2016.
  */
 public class Admin implements EntryPoint {
+
     private static LoginInfo loginInfo;
 
     /*
@@ -90,7 +91,8 @@ public class Admin implements EntryPoint {
     }
 
     private void initialise() {
-        Defaults.setServiceRoot("/admin/api");
+        Defaults.setServiceRoot(GWT.getModuleBaseURL() + "api");
+        Defaults.setDateFormat(null);
     }
 
     public static void setLoginInfo(LoginInfo loginInfo) {

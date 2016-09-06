@@ -2,12 +2,11 @@ package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.events.LogOut;
-import com.geocento.webapps.eobroker.admin.client.places.CompaniesPlace;
-import com.geocento.webapps.eobroker.admin.client.places.EOBrokerPlace;
-import com.geocento.webapps.eobroker.admin.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
+import com.geocento.webapps.eobroker.admin.client.places.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,8 +16,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.ProgressType;
-import gwt.material.design.client.events.SideNavClosedEvent;
-import gwt.material.design.client.events.SideNavOpenedEvent;
 import gwt.material.design.client.ui.*;
 
 import java.util.Iterator;
@@ -26,7 +23,7 @@ import java.util.Iterator;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class TemplateView extends Composite implements HasWidgets {
+public class TemplateView extends Composite implements HasWidgets, ResizeHandler {
 
     interface TemplateViewUiBinder extends UiBinder<Widget, TemplateView> {
     }
@@ -55,6 +52,8 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialNavBar navBar;
     @UiField
     MaterialLink logOut;
+    @UiField
+    MaterialLink newsItems;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -64,6 +63,7 @@ public class TemplateView extends Composite implements HasWidgets {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+/*
         sideNav.addOpenedHandler(new SideNavOpenedEvent.SideNavOpenedHandler() {
             @Override
             public void onSideNavOpened(SideNavOpenedEvent event) {
@@ -76,8 +76,12 @@ public class TemplateView extends Composite implements HasWidgets {
                 panel.setStyleName(style.navOpened(), false);
             }
         });
+*/
         setLink(companies, new CompaniesPlace());
         setLink(products, new ProductsPlace());
+        setLink(newsItems, new NewsItemsPlace());
+
+        onResize(null);
     }
 
     private void setLink(MaterialLink link, EOBrokerPlace place) {
@@ -127,6 +131,15 @@ public class TemplateView extends Composite implements HasWidgets {
     @Override
     public boolean remove(Widget w) {
         return mainPanel.remove(w);
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        if(sideNav.isVisible()) {
+            panel.addStyleName(style.navOpened());
+        } else {
+            panel.setStyleName(style.navOpened(), false);
+        }
     }
 
 }

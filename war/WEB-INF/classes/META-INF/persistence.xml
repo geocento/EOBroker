@@ -23,6 +23,14 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ImageProcessingService</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ImageProcessingProduct</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ImageService</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageProductEntity</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageryRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageryFormRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageServiceFormRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.NewsItem</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

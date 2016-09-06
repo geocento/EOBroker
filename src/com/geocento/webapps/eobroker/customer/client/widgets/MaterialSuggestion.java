@@ -240,7 +240,7 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
             link.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    reset(suggestion.getName());
+                    //reset(suggestion.getName());
                     Customer.clientFactory.getEventBus().fireEvent(new SuggestionSelected(suggestion));
                 }
             });

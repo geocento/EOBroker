@@ -15,4 +15,7 @@ public interface MapResources extends ClientBundle {
     @Source("arcgisMap.js")
     TextResource arcgisMap();
 
+    @Source("wicket-arcgis.js")
+    TextResource wicket();
+
 }

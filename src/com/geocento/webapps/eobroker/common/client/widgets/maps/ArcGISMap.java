@@ -49,9 +49,6 @@ public class ArcGISMap extends Composite implements RequiresResize {
 
             ScriptInjector
                     .fromUrl("https://js.arcgis.com/3.16/")
-    /*
-                    .fromUrl("https://js.arcgis.com/4.0/")
-    */
                     .setWindow(ScriptInjector.TOP_WINDOW)
                     .setCallback(new Callback<Void, Exception>() {
                         @Override

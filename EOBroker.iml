@@ -46,6 +46,7 @@
     <orderEntry type="library" name="libraries" level="project" />
     <orderEntry type="library" name="client libraries" level="project" />
     <orderEntry type="library" name="antlr-4.5.3-complete" level="project" />
+    <orderEntry type="library" name="gwt-servlet" level="project" />
   </component>
 </module>
 

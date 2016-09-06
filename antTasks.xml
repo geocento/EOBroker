@@ -2,7 +2,7 @@
 	
 	<property name="src.dir" value="src" />
 	
-	<property name="artifactsdir" value="C:/Users/thomas/IdeaProjects/EOBroker/out/artifacts" />
+	<property name="artifactsdir" value="C:\Users\thomas\IdeaProjects\EOBroker\out\artifacts\EOBroker_Web_exploded" />
 
     <property name="prodfilesdir" value="C:/Users/thomas/IdeaProjects/EOBroker/data/" />
 
@@ -78,8 +78,12 @@
 	</target>
 	
 	<target name="deploy">
-		<scp file="EOBroker.war" sftp="true" trust="true" todir="root:Geocento@192.168.2.100:/root/Downloads/" />
+		<scp file="EOBroker.war" sftp="true" trust="true" todir="root:9eB!2Yt8@192.168.92.100:/root/Downloads/" />
 	</target>
+
+    <target name="uploadFile">
+        <scp file="C:\Users\thomas\Projects\GSTP\BT4EEO\sample files\ksat\RI1_SAR_L1GRD_MRS__VV_20160317T140623_KSAT-DEMO_oil_spill_report.pdf" sftp="true" trust="true" todir="root:9eB!2Yt8@192.168.92.100:/root/Downloads/" />
+    </target>
 
     <target name="apiDocs">
 

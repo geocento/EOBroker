@@ -14,7 +14,7 @@
  * the License.
  */
 
-@external dataGridChildCell, ei-archiveProduct, ei-futureOpportunityProduct, ei-plannedAcqProduct, ei-imageColumn;
+@external dataGridChildCell, eobroker-archiveProduct, eobroker-futureOpportunityProduct, eobroker-plannedAcqProduct;
 
 @def selectionBorderWidth 1px;
 
@@ -164,19 +164,14 @@ td.dataGridHeader:first-child {
     font-size: 0.8em;
 }
 
-.ei-archiveProduct {
+.eobroker-archiveProduct {
 }
 
-.ei-futureOpportunityProduct {
+.eobroker-futureOpportunityProduct {
 	font-style: italic;
 }
 
-.ei-plannedAcqProduct {
+.eobroker-plannedAcqProduct {
 	font-style: italic;
 	color: #338;
-}
-
-.ei-imageColumn {
-	padding-left: 1px !important;
-	padding-right: 1px !important;
 }

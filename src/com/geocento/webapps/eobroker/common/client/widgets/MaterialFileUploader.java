@@ -513,9 +513,26 @@ public class MaterialFileUploader extends MaterialWidget implements HasFileUploa
     }
 
     @Override
+    public void fireErrorEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage, String responseBody) {
+        ErrorEvent.fire(this, new UploadFile(fileName, new Date(lastModified), Double.parseDouble(size), type), new UploadResponse(responseCode, responseMessage));
+    }
+
+    @Override
+    public HandlerRegistration addUnauthorizedHandler(UnauthorizedEvent.UnauthorizedHandler<UploadFile> handler) {
+        return null;
+    }
+
+    @Override
+    public void fireUnauthorizedEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage, String responseBody) {
+
+    }
+
+/*
+    @Override
     public void fireErrorEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage) {
         ErrorEvent.fire(this, new UploadFile(fileName, new Date(lastModified), Double.parseDouble(size), type), new UploadResponse(responseCode, responseMessage));
     }
+*/
 
     @Override
     public HandlerRegistration addTotalUploadProgressHandler(final TotalUploadProgressEvent.TotalUploadProgressHandler handler) {
@@ -564,9 +581,16 @@ public class MaterialFileUploader extends MaterialWidget implements HasFileUploa
     }
 
     @Override
+    public void fireSuccessEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage, String responseBody) {
+        SuccessEvent.fire(this, new UploadFile(fileName, new Date(lastModified), Double.parseDouble(size), type), new UploadResponse(responseCode, responseMessage));
+    }
+
+/*
+    @Override
     public void fireSuccessEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage) {
         SuccessEvent.fire(this, new UploadFile(fileName, new Date(lastModified), Double.parseDouble(size), type), new UploadResponse(responseCode, responseMessage));
     }
+*/
 
     @Override
     public HandlerRegistration addCompleteHandler(final CompleteEvent.CompleteHandler<UploadFile> handler) {
@@ -581,9 +605,15 @@ public class MaterialFileUploader extends MaterialWidget implements HasFileUploa
     }
 
     @Override
-    public void fireCompleteEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage) {
+    public void fireCompleteEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage, String responseBody) {
         CompleteEvent.fire(this, new UploadFile(fileName, new Date(lastModified), Double.parseDouble(size), type), new UploadResponse(responseCode, responseMessage));
     }
+
+/*
+    @Override
+    public void fireCompleteEvent(String fileName, String lastModified, String size, String type, String responseCode, String responseMessage) {
+    }
+*/
 
     @Override
     public HandlerRegistration addCancelHandler(final CanceledEvent.CanceledHandler<UploadFile> handler) {

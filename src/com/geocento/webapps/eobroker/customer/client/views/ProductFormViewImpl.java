@@ -189,6 +189,11 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     }
 
     @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }

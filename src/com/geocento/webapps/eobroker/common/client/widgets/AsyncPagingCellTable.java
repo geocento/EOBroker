@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.common.client.widgets;
 
-import com.geocento.webapps.eobroker.common.client.widgets.ResizableHeader;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
