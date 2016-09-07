@@ -74,6 +74,17 @@ public class OrderResource implements OrderService {
                     }
                 }));
             }
+            {
+                TypedQuery<ProductServiceRequest> productFormQuery = em.createQuery("select p from ProductServiceRequest p where p.customer = :user", ProductServiceRequest.class);
+                productFormQuery.setParameter("user", user);
+                List<ProductServiceRequest> productServiceRequests = productFormQuery.getResultList();
+                requestDTOs.addAll(ListUtil.mutate(productServiceRequests, new ListUtil.Mutate<ProductServiceRequest, RequestDTO>() {
+                    @Override
+                    public RequestDTO mutate(ProductServiceRequest productServiceRequest) {
+                        return createRequestDTO(productServiceRequest);
+                    }
+                }));
+            }
             return requestDTOs;
         } catch (Exception e) {
             throw new RequestException("Issue when accessing list of requests");
@@ -93,6 +104,14 @@ public class OrderResource implements OrderService {
         requestDTO.setId(imageryRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.image);
         requestDTO.setDescription("Request for " + imageryRequest.getProductRequests().size() + " products");
+        return requestDTO;
+    }
+
+    private RequestDTO createRequestDTO(ProductServiceRequest productServiceRequest) {
+        RequestDTO requestDTO = new RequestDTO();
+        requestDTO.setId(productServiceRequest.getId());
+        requestDTO.setType(RequestDTO.TYPE.product);
+        requestDTO.setDescription("Request for product '" + productServiceRequest.getProduct().getName() + "'");
         return requestDTO;
     }
 
@@ -166,7 +185,7 @@ public class OrderResource implements OrderService {
     }
 
     @Override
-    public String submitProductRequest(ProductServiceRequestDTO productServiceRequestDTO) throws RequestException {
+    public RequestDTO submitProductRequest(ProductServiceRequestDTO productServiceRequestDTO) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         if(productServiceRequestDTO == null) {
             throw new RequestException("Product service request cannot be null");
@@ -221,7 +240,7 @@ public class OrderResource implements OrderService {
                 NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.REQUEST, "New request for quotation for service '" + productService.getName() + "' from user '" + user.getUsername() + "'", productServiceRequest.getId());
             }
             em.getTransaction().commit();
-            return productServiceRequest.getId();
+            return createRequestDTO(productServiceRequest);
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

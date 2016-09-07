@@ -1,11 +1,14 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
@@ -13,6 +16,8 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -22,7 +27,6 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
-import org.fusesource.restygwt.client.TextCallback;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +39,8 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
     private ProductFormView productFormView;
 
     private Long productId;
+
+    private AoI aoi;
 
     public ProductFormActivity(ProductFormPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -50,7 +56,18 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         setTemplateView(productFormView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
-        handleHistory();
+        productFormView.setMapLoadedHandler(new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(Exception reason) {
+                Window.alert("Error " + reason.getMessage());
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                setAoI(Customer.currentAoI);
+                handleHistory();
+            }
+        });
     }
 
     @Override
@@ -79,7 +96,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 productServiceRequestDTO.setProductId(productId);
                 productServiceRequestDTO.setProductServiceIds(productServiceIds);
                 productServiceRequestDTO.setValues(values);
-                REST.withCallback(new TextCallback() {
+                REST.withCallback(new MethodCallback<RequestDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
                         productFormView.hideLoading();
@@ -87,7 +104,8 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     }
 
                     @Override
-                    public void onSuccess(Method method, String response) {
+                    public void onSuccess(Method method, RequestDTO requestDTO) {
+                        activityEventBus.fireEvent(new RequestCreated(requestDTO));
                         productFormView.hideLoading();
                         productFormView.displaySubmittedSuccess("Your request has been successfully submitted");
                     }
@@ -122,7 +140,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     productFormView.hideLoading();
-                    productFormView.displayError("Could get product");
+                    productFormView.displayError("Could not retrieve product information");
                 }
 
                 @Override
@@ -145,6 +163,11 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         } catch (RequestException e) {
         }
 
+    }
+
+    private void setAoI(AoI aoi) {
+        this.aoi = aoi;
+        productFormView.displayAoI(aoi);
     }
 
 }

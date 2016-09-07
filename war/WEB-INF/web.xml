@@ -5,10 +5,36 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
            version="3.0">
 
+    <context-param>
+        <param-name>org.eclipse.jetty.servlet.SessionCookie</param-name>
+        <param-value>XSESSIONID</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.eclipse.jetty.servlet.SessionIdPathParameterName</param-name>
+        <param-value>xsessionid</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.eclipse.jetty.servlet.SessionPath</param-name>
+        <param-value>/</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>org.eclipse.jetty.servlet.MaxAge</param-name>
+        <param-value>864000</param-value>
+    </context-param>
+
     <listener>
         <listener-class>com.geocento.webapps.eobroker.common.server.ContextListener</listener-class>
     </listener>
 
+    <servlet>
+        <servlet-name>NoCacheServlet</servlet-name>
+        <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+        <init-param>
+            <param-name>cacheControl</param-name>
+            <param-value>public, max-age=0, must-revalidate</param-value>
+        </init-param>
+    </servlet>
     <servlet>
         <servlet-name>RestAPICustomer</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -47,6 +73,10 @@
         <servlet-name>ImageUploadServlet</servlet-name>
         <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.ImageUploadServlet</servlet-class>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>NoCacheServlet</servlet-name>
+        <url-pattern>*.nocache.js</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RestAPICustomer</servlet-name>
         <url-pattern>/customer/api/*</url-pattern>

@@ -30,7 +30,7 @@ public interface OrderService extends DirectRestService {
     @POST
     @Path("/orders/products/")
     @Produces("application/json")
-    String submitProductRequest(ProductServiceRequestDTO productServiceRequestDTO) throws RequestException;
+    RequestDTO submitProductRequest(ProductServiceRequestDTO productServiceRequestDTO) throws RequestException;
 
     @POST
     @Path("/orders/images/")
