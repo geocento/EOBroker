@@ -12,7 +12,7 @@
     </ui:style>
     <views:TemplateView titleText="Orders Management" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
-            <design:MaterialTitle description="Here are all your currently opened requests"></design:MaterialTitle>
+            <design:MaterialTitle textColor="blue-grey" title="Manage your requests" description="Here are all your currently opened requests"></design:MaterialTitle>
             <design:MaterialRow ui:field="requestsList"></design:MaterialRow>
         </g:HTMLPanel>
     </views:TemplateView>

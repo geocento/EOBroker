@@ -2,24 +2,35 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
+import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import java.util.List;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
 
     Logger logger = Logger.getLogger(AssetsResource.class);
+
+    // assumes service is not a singleton
+    @Context
+    HttpServletRequest request;
 
     public AssetsResource() {
         logger.info("Starting service...");
@@ -270,32 +281,32 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public ProductServiceDTO getProductService(Long id) {
-        return null;
+    public List<NotificationDTO> getNotifications() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Notification> query = em.createQuery("select s from Notification s where s.user = :user order by s.creationDate", Notification.class);
+            query.setParameter("user", user);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Notification, NotificationDTO>() {
+                @Override
+                public NotificationDTO mutate(Notification notification) {
+                    NotificationDTO notificationDTO = new NotificationDTO();
+                    notificationDTO.setType(notification.getType());
+                    notificationDTO.setMessage(notification.getMessage());
+                    notificationDTO.setLinkId(notification.getLinkId());
+                    return notificationDTO;
+                }
+            });
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
     }
 
-    @Override
-    public Long addProductService(ProductServiceDTO productService) {
-        return null;
-    }
-
-    @Override
-    public void updateProductService(ProductServiceDTO product) {
-
-    }
-
-    @Override
-    public CompanyDTO getCompany(Long id) {
-        return null;
-    }
-
-    @Override
-    public Long addCompany(CompanyDTO company) {
-        return null;
-    }
-
-    @Override
-    public void updateCompany(CompanyDTO product) {
-
-    }
 }

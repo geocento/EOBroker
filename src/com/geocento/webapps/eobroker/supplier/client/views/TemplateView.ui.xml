@@ -63,7 +63,9 @@
                 </m:MaterialNavSection>
                 <m:MaterialNavSection float="RIGHT">
                     <m:MaterialTooltip text="Orders" position="BOTTOM">
-                        <m:MaterialLink iconType="SHOP" iconPosition="NONE"/>
+                        <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="orders">
+                            <m:MaterialBadge text="" backgroundColor="blue" textColor="white" circle="true" ui:field="ordersBadge"/>
+                        </m:MaterialLink>
                     </m:MaterialTooltip>
                     <m:MaterialTooltip text="Notifications" position="BOTTOM">
                         <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" ui:field="notifications" layoutPosition="RELATIVE" activates="notifications">

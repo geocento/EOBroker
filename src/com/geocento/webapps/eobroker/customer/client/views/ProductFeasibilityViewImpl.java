@@ -66,6 +66,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         String section();
 
         String subsection();
+
+        String navOpened();
     }
 
     @UiField
@@ -109,6 +111,10 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     HTMLPanel chartsArea;
     @UiField
     MaterialLink resultsTab;
+/*
+    @UiField
+    MaterialImage image;
+*/
 
     private Presenter presenter;
 
@@ -266,7 +272,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     public void setServices(List<ProductServiceFeasibilityDTO> productServices) {
         serviceDropdown.clear();
         for(final ProductServiceFeasibilityDTO productServiceFeasibilityDTO : productServices) {
-            MaterialLink materialLink = new MaterialLink(ButtonType.RAISED, productServiceFeasibilityDTO.getName(), new MaterialIcon(IconType.ADD_A_PHOTO));
+            MaterialLink materialLink = new MaterialLink(productServiceFeasibilityDTO.getName());
             materialLink.setBackgroundColor("white");
             materialLink.setTextColor("black");
             materialLink.setTooltip("Service provided by " + productServiceFeasibilityDTO.getCompanyName());
@@ -304,6 +310,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
+/*
+        image.setUrl("http://b.vimeocdn.com/ps/339/488/3394886_300.jpg");
+*/
         servicesLink.setText(productServiceFeasibilityDTO.getName());
     }
 
@@ -578,6 +587,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void onResize(ResizeEvent event) {
         mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
+        template.setPanelStyleName(style.navOpened(), searchBar.isVisible());
     }
 
 }

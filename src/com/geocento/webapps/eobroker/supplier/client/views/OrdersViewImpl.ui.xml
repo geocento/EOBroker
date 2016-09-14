@@ -1,7 +1,18 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
+             xmlns:design="urn:import:gwt.material.design.client.ui"
         >
     <ui:style>
+        .panel {
+            max-width: 960px;
+            margin: 0px auto;
+            padding: 0px 20px;
+        }
     </ui:style>
-    <views:TemplateView ui:field="template"></views:TemplateView>
+    <views:TemplateView titleText="Orders Management" ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <design:MaterialTitle textColor="blue-grey" title="Manage your requests" description="Here are all your currently opened requests"></design:MaterialTitle>
+            <design:MaterialRow ui:field="requestsList"></design:MaterialRow>
+        </g:HTMLPanel>
+    </views:TemplateView>
 </ui:UiBinder>

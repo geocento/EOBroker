@@ -11,12 +11,11 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.*;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
-import com.geocento.webapps.eobroker.customer.client.services.OrderService;
+import com.geocento.webapps.eobroker.customer.client.services.OrdersService;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.ImageRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ImagesRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -30,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 @Path("/")
-public class OrderResource implements OrderService {
+public class OrdersResource implements OrdersService {
 
     static Logger logger = Logger.getLogger(AssetsResource.class);
 
@@ -40,7 +39,7 @@ public class OrderResource implements OrderService {
     @Context
     HttpServletRequest request;
 
-    public OrderResource() {
+    public OrdersResource() {
         logger.info("Starting order service");
     }
 
@@ -158,6 +157,7 @@ public class OrderResource implements OrderService {
             imageryFormRequest.setImageType(imageType);
             imageryFormRequest.setAdditionalInformation(additionalInformation);
             imageryFormRequest.setImageServiceRequests(new ArrayList<ImageServiceFormRequest>());
+            imageryFormRequest.setCreationDate(new Date());
             // store the request
             em.persist(imageryFormRequest);
             for(ImageService imageService : imageServices) {
@@ -165,9 +165,10 @@ public class OrderResource implements OrderService {
                 imageServiceFormRequest.setImageService(imageService);
                 imageServiceFormRequest.setImageryFormRequest(imageryFormRequest);
                 imageryFormRequest.getImageServiceRequests().add(imageServiceFormRequest);
+                imageryFormRequest.setCreationDate(new Date());
                 em.persist(imageServiceFormRequest);
                 // notify the supplier
-                NotificationHelper.notifySupplier(em, imageService.getCompany(), SupplierNotification.TYPE.REQUEST,
+                NotificationHelper.notifySupplier(em, imageService.getCompany(), SupplierNotification.TYPE.IMAGESERVICEREQUEST,
                         "New imagery request for service '" + imageService.getName() + "' from user '" + user.getUsername() + "'",
                         imageryFormRequest.getId());
             }
@@ -227,7 +228,9 @@ public class OrderResource implements OrderService {
             productServiceRequest.setProduct(product);
             productServiceRequest.setCustomer(user);
             // TODO - check values are legitimate and correct?
+            productServiceRequest.setAoIWKT(productServiceRequestDTO.getAoIWKT());
             productServiceRequest.setFormValues(values);
+            productServiceRequest.setCreationDate(new Date());
             productServiceRequest.setSupplierRequests(new ArrayList<ProductServiceSupplierRequest>());
             em.persist(productServiceRequest);
             for (ProductService productService : productServices) {
@@ -237,7 +240,7 @@ public class OrderResource implements OrderService {
                 productServiceRequest.getSupplierRequests().add(productServiceSupplierRequest);
                 em.persist(productServiceSupplierRequest);
                 // notify the supplier
-                NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.REQUEST, "New request for quotation for service '" + productService.getName() + "' from user '" + user.getUsername() + "'", productServiceRequest.getId());
+                NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.PRODUCTREQUEST, "New request for quotation for service '" + productService.getName() + "' from user '" + user.getUsername() + "'", productServiceRequest.getId());
             }
             em.getTransaction().commit();
             return createRequestDTO(productServiceRequest);
@@ -271,6 +274,7 @@ public class OrderResource implements OrderService {
             ImageryRequest imageryRequest = new ImageryRequest();
             imageryRequest.setId(keyGenerator.CreateKey());
             imageryRequest.setCustomer(user);
+            imageryRequest.setCreationDate(new Date());
             ImageService imageService = em.find(ImageService.class, imageServiceId);
             if(imageService == null) {
                 throw new RequestException("Could not find matching service");
@@ -292,7 +296,7 @@ public class OrderResource implements OrderService {
             em.getTransaction().begin();
             em.persist(imageryRequest);
             // notify the supplier
-            NotificationHelper.notifySupplier(em, imageService.getCompany(), SupplierNotification.TYPE.REQUEST, "New request for quotation for imagery from user '" + user.getUsername() + "'", imageryRequest.getId());
+            NotificationHelper.notifySupplier(em, imageService.getCompany(), SupplierNotification.TYPE.IMAGEREQUEST, "New request for quotation for imagery from user '" + user.getUsername() + "'", imageryRequest.getId());
             em.getTransaction().commit();
             return createRequestDTO(imageryRequest);
         } catch (Exception e) {
@@ -305,4 +309,5 @@ public class OrderResource implements OrderService {
             em.close();
         }
     }
+
 }

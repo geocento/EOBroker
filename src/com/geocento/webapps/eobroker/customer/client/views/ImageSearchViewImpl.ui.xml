@@ -6,9 +6,7 @@
              xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
              xmlns:cellview="urn:import:com.google.gwt.user.cellview.client"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views">
-
-    <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-    <ui:style>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ImageSearchViewImpl.Style">
 
         @external nav-wrapper;
 
@@ -56,10 +54,15 @@
             line-height: 100%;
         }
 
+        .navOpened main, .navOpened footer {
+            padding-left: 450px;
+        }
+
     </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template" titleText="Image Search">
         <views:header>
-            <m:MaterialSideNav width="450" m:id="sideNav" type="CARD" closeOnClick="false" allowBodyScroll="true" ui:field="searchBar">
+            <m:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
                 <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
                     <m:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
                     <m:MaterialDropDown activator="provider" ui:field="providerDropdown">
@@ -77,7 +80,7 @@
                         </m:MaterialTab>
                     </m:MaterialColumn>
                     <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="white">
-                        <m:MaterialRow padding="0" margin="0">
+                        <m:MaterialRow marginTop="20">
                             <m:MaterialColumn grid="s6">
                                 <m:MaterialDatePicker textColor="black" ui:field="startDate" placeholder="Start Date" />
                             </m:MaterialColumn>

@@ -35,9 +35,9 @@
     </ui:style>
     <views:TemplateView ui:field="template">
         <g:HTMLPanel addStyleNames="{style.formPanel}">
-            <design:MaterialTitle title="Request quotation for the following product" ui:field="title"></design:MaterialTitle>
+            <design:MaterialTitle textColor="blue-grey" marginBottom="20" title="Request quotation for the following product" ui:field="title"></design:MaterialTitle>
             <design:MaterialCard backgroundColor="white" axis="HORIZONTAL" shadow="0">
-                <design:MaterialCardImage waves="LIGHT">
+                <design:MaterialCardImage>
                     <design:MaterialImage ui:field="image"></design:MaterialImage>
                 </design:MaterialCardImage>
                 <design:MaterialCardContent>
@@ -49,7 +49,7 @@
                 </design:MaterialCardAction>
             </design:MaterialCard>
             <g:HTMLPanel>
-                <design:MaterialLabel text="Please fill in the form" fontSize="1.5em"/>
+                <design:MaterialLabel text="Please fill in the form" textColor="blue-grey" marginTop="20" marginBottom="20" fontSize="1.4em"/>
                 <design:MaterialRow>
                     <design:MaterialColumn grid="s12 m12 l6">
                         <g:HTMLPanel addStyleNames="{style.container}" ui:field="formContainer"></g:HTMLPanel>
@@ -78,7 +78,7 @@
                 </design:MaterialRow>
             </g:HTMLPanel>
             <g:HTMLPanel>
-                <design:MaterialLabel text="Select your suppliers" fontSize="1.5em"/>
+                <design:MaterialLabel text="Select your suppliers" textColor="blue-grey" marginTop="20" marginBottom="20" fontSize="1.4em"/>
                 <g:HTMLPanel addStyleNames="{style.container}" ui:field="productServices">
                 </g:HTMLPanel>
             </g:HTMLPanel>

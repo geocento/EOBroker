@@ -31,6 +31,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private OrdersViewImpl ordersView = null;
 
+    private OrderViewImpl orderView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -116,6 +118,14 @@ public class ClientFactoryImpl implements ClientFactory {
             ordersView = new OrdersViewImpl(this);
         }
         return ordersView;
+    }
+
+    @Override
+    public OrderView getOrderView() {
+        if(orderView == null) {
+            orderView = new OrderViewImpl(this);
+        }
+        return orderView;
     }
 
 }

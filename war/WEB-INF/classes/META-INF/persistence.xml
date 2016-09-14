@@ -30,6 +30,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageryRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageryFormRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageServiceFormRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Message</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.NewsItem</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />

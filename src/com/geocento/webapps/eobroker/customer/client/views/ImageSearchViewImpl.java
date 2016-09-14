@@ -21,12 +21,10 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -54,9 +52,15 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     private static SearchPageUiBinder ourUiBinder = GWT.create(SearchPageUiBinder.class);
 
+    static public interface Style extends CssResource {
+        String navOpened();
+    }
+
+    @UiField
+    Style style;
+
     @UiField(provided = true)
     TemplateView template;
-
     @UiField
     MaterialDropDown providerDropdown;
     @UiField
@@ -124,7 +128,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
-        onResize(null);
+
         mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -191,6 +195,8 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
             }
         });
         createResultsTable();
+
+        onResize(null);
     }
 
     private void mapLoaded() {
@@ -611,6 +617,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @Override
     public void onResize(ResizeEvent event) {
         mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
+        template.setPanelStyleName(style.navOpened(), searchBar.isVisible());
     }
 
 }

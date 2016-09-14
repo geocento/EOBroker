@@ -1,0 +1,36 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:bubble="urn:import:gwt.material.design.addins.client.bubble"
+        >
+    <ui:style>
+        .panel {
+            max-width: 960px;
+            margin: 0px auto;
+            padding: 0px 20px;
+        }
+    </ui:style>
+    <views:TemplateView titleText="Order Management" ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <design:MaterialTitle textColor="blue-grey" title="Manage your request" description="Here is the history of your request"></design:MaterialTitle>
+            <design:MaterialRow ui:field="requestInformation"></design:MaterialRow>
+            <design:MaterialRow ui:field="requestThread">
+                <design:MaterialRow marginBottom="0">
+                    <design:MaterialImage backgroundColor="blue accent-1" marginRight="12" marginTop="8" float="LEFT" width="40px" height="40px" shadow="1" circle="true" url="https://mir-s3-cdn-cf.behance.net/project_modules/disp/70e0a922433737.5631e83fc9429.png"/>
+                    <bubble:MaterialBubble backgroundColor="blue accent-1" position="LEFT" float="LEFT">
+                        <design:MaterialLabel text="Would you want to go to Philippines?"/>
+                        <design:MaterialLabel text="1/2/2016" fontSize="0.6em" float="RIGHT"/>
+                    </bubble:MaterialBubble>
+                </design:MaterialRow>
+                <design:MaterialRow marginBottom="0">
+                    <design:MaterialImage backgroundColor="blue accent-1" marginRight="12" marginTop="8" float="LEFT" width="40px" height="40px" shadow="1" circle="true" url="https://mir-s3-cdn-cf.behance.net/project_modules/disp/70e0a922433737.5631e83fc9429.png"/>
+                    <bubble:MaterialBubble backgroundColor="blue accent-1" position="LEFT" float="LEFT">
+                        <design:MaterialLabel text="Would you want to go to Philippines?"/>
+                        <design:MaterialLabel text="1/2/2016" fontSize="0.6em" float="RIGHT"/>
+                    </bubble:MaterialBubble>
+                </design:MaterialRow>
+            </design:MaterialRow>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

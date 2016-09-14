@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOutHandler;
@@ -9,6 +11,7 @@ import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.utils.NotificationMonitoring;
 import com.geocento.webapps.eobroker.supplier.client.views.TemplateView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import org.fusesource.restygwt.client.Method;
@@ -24,15 +27,20 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
 
     private TemplateView templateView;
 
+    private List<SupplierNotificationDTO> notifications = null;
+
     public TemplateActivity(ClientFactory clientFactory) {
         super(clientFactory);
-        NotificationMonitoring.start(clientFactory);
     }
 
     public void setTemplateView(TemplateView templateView) {
         this.templateView = templateView;
-        // update notifications if any
-        displayNotifications(NotificationMonitoring.getNotifications());
+        // load notifications
+        if(notifications == null) {
+            loadUserNotifications();
+        } else {
+            templateView.setNotifications(notifications);
+        }
     }
 
     @Override
@@ -54,18 +62,24 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
                 }).call(ServicesUtil.loginService).signout();
             }
         });
-
-        activityEventBus.addHandler(SupplierNotifications.TYPE, new SupplierNotificationsHandler() {
-            @Override
-            public void onSupplierNotifications(SupplierNotifications event) {
-                displayNotifications(event.getSupplierNotifications());
-            }
-        });
     }
 
-    private void displayNotifications(List<SupplierNotificationDTO> supplierNotifications) {
-        if(templateView != null) {
-            templateView.displayNotifications(supplierNotifications);
+    private void loadUserNotifications() {
+        try {
+            REST.withCallback(new MethodCallback<List<SupplierNotificationDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<SupplierNotificationDTO> notificationDTOs) {
+                    notifications = notificationDTOs;
+                    templateView.setNotifications(notificationDTOs);
+                }
+            }).call(ServicesUtil.assetsService).getNotifications();
+        } catch (RequestException e) {
         }
     }
+
 }

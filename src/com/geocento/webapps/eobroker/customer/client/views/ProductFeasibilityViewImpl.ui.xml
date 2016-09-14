@@ -11,11 +11,11 @@
         .providers {
             padding-left: 20px;
             font-size: 1.2em !important;
-            line-height: normal !important;
+            line-height: 1.2em !important;
         }
 
         .providers > i {
-            line-height: normal !important;
+            line-height: 1.2em !important;
         }
 
         .queryPanel {
@@ -58,11 +58,22 @@
             line-height: 2em !important;
         }
 
+        .navOpened main, .navOpened footer {
+            padding-left: 450px;
+        }
+
+        .panel {
+            overflow-y: auto;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <views:TemplateView titleText="Service Feasibility" ui:field="template">
-        <m:MaterialSideNav width="400" m:id="sideNav" type="CARD" closeOnClick="false" allowBodyScroll="true" ui:field="searchBar">
+        <m:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
             <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
+<!--
+                <m:MaterialImage visible="false" type="CIRCLE" width="40" display="INLINE_BLOCK" addStyleNames="z-depth-1" ui:field="image"></m:MaterialImage>
+-->
                 <m:MaterialLink text="Services" activates="service" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="servicesLink"></m:MaterialLink>
                 <m:MaterialDropDown activator="service" ui:field="serviceDropdown">
                 </m:MaterialDropDown>
@@ -78,8 +89,8 @@
                         </m:MaterialTabItem>
                     </m:MaterialTab>
                 </m:MaterialColumn>
-                <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="white">
-                    <m:MaterialRow padding="0" margin="0">
+                <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" paddingTop="20" backgroundColor="white">
+                    <m:MaterialRow padding="0" margin="0" addStyleNames="{style.panel}">
                         <m:MaterialColumn grid="s6">
                             <m:MaterialDatePicker ui:field="startDate" placeholder="Start Date" />
 <!--

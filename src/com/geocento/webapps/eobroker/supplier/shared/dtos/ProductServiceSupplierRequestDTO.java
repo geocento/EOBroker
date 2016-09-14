@@ -15,6 +15,8 @@ public class ProductServiceSupplierRequestDTO {
     ProductDTO product;
     List<FormElementValue> formValues;
     private String supplierResponse;
+    private String aoIWKT;
+    private List<MessageDTO> messages;
 
     public ProductServiceSupplierRequestDTO() {
     }
@@ -57,5 +59,21 @@ public class ProductServiceSupplierRequestDTO {
 
     public String getSupplierResponse() {
         return supplierResponse;
+    }
+
+    public void setAoIWKT(String aoIWKT) {
+        this.aoIWKT = aoIWKT;
+    }
+
+    public String getAoIWKT() {
+        return aoIWKT;
+    }
+
+    public void setMessages(List<MessageDTO> messages) {
+        this.messages = messages;
+    }
+
+    public List<MessageDTO> getMessages() {
+        return messages;
     }
 }

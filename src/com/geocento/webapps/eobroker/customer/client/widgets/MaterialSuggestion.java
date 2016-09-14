@@ -21,15 +21,13 @@ package com.geocento.webapps.eobroker.customer.client.widgets;
  */
 
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.events.SuggestionSelected;
-import com.geocento.webapps.eobroker.customer.client.events.TextSelected;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextBox;
 import gwt.material.design.client.base.HasActive;
 import gwt.material.design.client.constants.IconType;
@@ -78,6 +76,12 @@ import java.util.List;
 //@formatter:on
 public class MaterialSuggestion extends MaterialValueBox<String> implements HasCloseHandlers<String>, HasActive {
 
+    public interface Presenter {
+        void textChanged(String text);
+        void suggestionSelected(Suggestion suggestion);
+        void textSelected(String text);
+    }
+
     private Label label = new Label();
     private MaterialIcon iconSearch = new MaterialIcon(IconType.SEARCH);
     private MaterialIcon iconClose = new MaterialIcon(IconType.CLOSE);
@@ -100,6 +104,8 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
      */
     private int curSel = -1;
 
+    private Presenter presenter;
+
     public MaterialSuggestion() {
         super(new TextBox());
         setType(InputType.SEARCH);
@@ -117,13 +123,21 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
         searchResult = new MaterialSearchResult();
         add(searchResult);
         addKeyUpHandler(new KeyUpHandler() {
+
+            private Timer fetchTimer;
+            private String currentText = "";
+
             @Override
             public void onKeyUp(KeyUpEvent event) {
                 // Apply selected search
                 switch (event.getNativeEvent().getKeyCode()) {
                     case KeyCodes.KEY_ENTER: {
                         if (getCurSel() == -1) {
+                            hideListSearches();
+                            presenter.textSelected(getText());
+/*
                             Customer.clientFactory.getEventBus().fireEvent(new TextSelected(getText()));
+*/
                         }
                         MaterialLink selLink = getSelectedLink();
                         reset(selLink.getText());
@@ -165,15 +179,73 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
                     }
                     break;
                     default:
+                        if (fetchTimer != null) {
+                            fetchTimer.cancel();
+                            fetchTimer = null;
+                        }
+                        // create a timer to make sure we don't query too soon
+                        fetchTimer = new Timer() {
+
+                            @Override
+                            public void run() {
+                                // make sure we don't refresh options if the text hasn't changed
+                                String text = getText();
+                                if (text.contentEquals(currentText)) {
+                                    return;
+                                }
+                                currentText = text;
+                                presenter.textChanged(currentText);
+                                fetchTimer = null;
+                            }
+                        };
+                        // start the timer to make sure we waited long enough
+                        fetchTimer.schedule(300);
                         break;
                 }
             }
         });
+        addCloseHandler(new CloseHandler<String>() {
+            @Override
+            public void onClose(CloseEvent<String> event) {
+                setText("");
+                presenter.textChanged("");
+                setFocus(true);
+            }
+        });
+        addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event) {
+                new Timer() {
+
+                    @Override
+                    public void run() {
+                        hideListSearches();
+                    }
+                }.schedule(300);
+            }
+        });
+        addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                new Timer() {
+
+                    @Override
+                    public void run() {
+                        presenter.textChanged("");
+                    }
+                }.schedule(300);
+            }
+        });
+        hideListSearches();
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
+    }
+
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
     }
 
     private void applyHighlightedItem(MaterialLink link){
@@ -241,7 +313,10 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
                 @Override
                 public void onClick(ClickEvent event) {
                     //reset(suggestion.getName());
+/*
                     Customer.clientFactory.getEventBus().fireEvent(new SuggestionSelected(suggestion));
+*/
+                    presenter.suggestionSelected(suggestion);
                 }
             });
             searchResult.add(link);

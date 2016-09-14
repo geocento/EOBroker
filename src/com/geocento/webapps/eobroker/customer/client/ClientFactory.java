@@ -30,4 +30,6 @@ public interface ClientFactory {
     ProductFeasibilityView getProductFeasibilityView();
 
     OrdersView getOrdersView();
+
+    OrderView getOrderView();
 }

@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.common.shared.entities.notifications;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by thomas on 06/07/2016.
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Entity
 public class SupplierNotification {
 
-    static public enum TYPE {MESSAGE, REQUEST, ORDER};
+    static public enum TYPE {MESSAGE, IMAGEREQUEST, IMAGESERVICEREQUEST, PRODUCTREQUEST, ORDER};
 
     @Id
     @GeneratedValue
@@ -27,6 +28,12 @@ public class SupplierNotification {
 
     @Column(length = 100)
     String linkId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date creationDate;
+
+    public SupplierNotification() {
+    }
 
     public Long getId() {
         return id;
@@ -68,4 +75,11 @@ public class SupplierNotification {
         this.linkId = linkId;
     }
 
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
 }

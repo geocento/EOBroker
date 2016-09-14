@@ -1,6 +1,9 @@
 package com.geocento.webapps.eobroker.common.shared.entities.notifications;
 
+import com.geocento.webapps.eobroker.common.shared.entities.User;
+
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by thomas on 06/07/2016.
@@ -8,7 +11,7 @@ import javax.persistence.*;
 @Entity
 public class Notification {
 
-    static public enum TYPE {MESSAGE, ORDER};
+    static public enum TYPE {MESSAGE, IMAGEREQUEST, IMAGESERVICEREQUEST, PRODUCTREQUEST, ORDER};
 
     @Id
     @GeneratedValue
@@ -18,7 +21,16 @@ public class Notification {
     TYPE type;
 
     @Column(length = 1000)
-    String text;
+    String message;
+
+    @ManyToOne
+    User user;
+
+    @Column(length = 100)
+    String linkId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date creationDate;
 
     public Long getId() {
         return id;
@@ -36,11 +48,35 @@ public class Notification {
         this.type = type;
     }
 
-    public String getText() {
-        return text;
+    public String getMessage() {
+        return message;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setMessage(String text) {
+        this.message = text;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(String linkId) {
+        this.linkId = linkId;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

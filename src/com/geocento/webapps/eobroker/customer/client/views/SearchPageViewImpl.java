@@ -48,6 +48,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         String alternativesTitle();
 
         String navOpened();
+
+        String option();
+
+        String optionTitle();
     }
 
     @UiField
@@ -60,17 +64,15 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @UiField
     HTMLPanel categories;
     @UiField
-    MaterialCollapsibleItem categoriesPanel;
-    @UiField
     MaterialSideNav filtersPanel;
     @UiField
     HTMLPanel container;
     @UiField
     ArcGISMap mapContainer;
     @UiField
-    MaterialCollapsibleItem options;
-    @UiField
     HTMLPanel settings;
+    @UiField
+    MaterialCheckBox filterByAoI;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -89,11 +91,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         initWidget(ourUiBinder.createAndBindUi(this));
 
         // add categories controls
-        categories.clear();
         for(Category category : Category.values()) {
             MaterialCheckBox materialCheckBox = new MaterialCheckBox();
             materialCheckBox.setText(category.getName());
             materialCheckBox.setObject(category);
+            materialCheckBox.addStyleName(style.option());
             categories.add(materialCheckBox);
             materialCheckBox.addClickHandler(new ClickHandler() {
                 @Override
@@ -102,7 +104,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 }
             });
         }
-        categoriesPanel.expand();
 
         mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
             @Override
@@ -185,12 +186,12 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         addTitle(productRow, "Selected product", style.productTitle());
-        MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+        MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
         productRow.add(materialColumn);
         materialColumn.add(new ProductWidget(productDTO));
         addTitle(productRow, "EO Broker services offering this product", style.productServicesTitle());
         for(ProductServiceDTO productServiceDTO : services) {
-            MaterialColumn serviceColumn = new MaterialColumn(12, 12, 6);
+            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
             productRow.add(serviceColumn);
             serviceColumn.add(new ProductServiceWidget(productServiceDTO));
         }
@@ -226,15 +227,15 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void setMatchingProducts(List<ProductDTO> suggestedProducts) {
-        categoriesPanel.setVisible(true);
-        options.setVisible(false);
+        categories.setVisible(true);
+        settings.setVisible(false);
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         addTitle(productRow, suggestedProducts == null || suggestedProducts.size() == 0 ? "No product matching your request" :
                                         "Products matching your request",
                 style.productTitle());
         for(ProductDTO productDTO : suggestedProducts) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
             materialColumn.add(new ProductWidget(productDTO));
             productRow.add(materialColumn);
         }
@@ -246,7 +247,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         container.add(productRow);
         addTitle(productRow, "EO Broker services matching your request", style.productServicesTitle());
         for(ProductServiceDTO productServiceDTO : productServices) {
-            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
+            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
             productRow.add(serviceColumn);
             serviceColumn.add(new ProductServiceWidget(productServiceDTO));
         }
@@ -254,21 +255,27 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void displayProductsList(List<ProductDTO> products, int start, int limit, String text) {
-        categoriesPanel.setVisible(false);
-        options.setVisible(true);
+        categories.setVisible(false);
+        settings.setVisible(true);
         settings.clear();
-        settings.add(new MaterialLabel("Sector"));
+        MaterialLabel materialLabel = new MaterialLabel("Sector");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
         MaterialListBox sectorSelection = new MaterialListBox();
+        sectorSelection.addStyleName(style.option());
         sectorSelection.addItem("All");
         for(Sector option : Sector.values()) {
             sectorSelection.addItem(option.toString());
         }
         settings.add(sectorSelection);
-        settings.add(new MaterialLabel("Thematic"));
+        materialLabel = new MaterialLabel("Thematic");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
         for(Thematic option : Thematic.values()) {
             MaterialCheckBox materialCheckBox = new MaterialCheckBox();
             materialCheckBox.setText(option.toString());
             materialCheckBox.setObject(option);
+            materialCheckBox.addStyleName(style.option());
             settings.add(materialCheckBox);
             materialCheckBox.addClickHandler(new ClickHandler() {
                 @Override
@@ -277,11 +284,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 }
             });
         }
-        options.expand();
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         for(ProductDTO productDTO : products) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
             productRow.add(materialColumn);
             materialColumn.add(new ProductWidget(productDTO));
         }
@@ -307,14 +313,17 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text) {
-        categoriesPanel.setVisible(false);
-        options.setVisible(true);
+        categories.setVisible(false);
+        settings.setVisible(true);
         settings.clear();
-        settings.add(new MaterialLabel("Company size"));
+        MaterialLabel materialLabel = new MaterialLabel("Company size");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
         for(String option : new String[] {"Large corporation > 4000", "Large < 4000", "Medium-sized < 250", "Small < 50", "Micro < 10"}) {
             MaterialCheckBox materialCheckBox = new MaterialCheckBox();
             materialCheckBox.setText(option);
             materialCheckBox.setObject(option);
+            materialCheckBox.addStyleName(style.option());
             settings.add(materialCheckBox);
             materialCheckBox.addClickHandler(new ClickHandler() {
                 @Override
@@ -323,11 +332,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 }
             });
         }
-        settings.add(new MaterialLabel("Company certifications"));
+        materialLabel = new MaterialLabel("Company certifications");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
         for(String option : new String[] {"Certification 1", "Certification 2", "Certification 3"}) {
             MaterialCheckBox materialCheckBox = new MaterialCheckBox();
             materialCheckBox.setText(option);
             materialCheckBox.setObject(option);
+            materialCheckBox.addStyleName(style.option());
             settings.add(materialCheckBox);
             materialCheckBox.addClickHandler(new ClickHandler() {
                 @Override
@@ -336,11 +348,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 }
             });
         }
-        options.expand();
         MaterialRow materialRow = new MaterialRow();
         container.add(materialRow);
         for(CompanyDTO companyDTO : companyDTOs) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
             materialRow.add(materialColumn);
             materialColumn.add(new CompanyWidget(companyDTO));
         }

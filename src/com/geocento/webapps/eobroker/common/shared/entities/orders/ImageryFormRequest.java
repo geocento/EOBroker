@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
+import com.geocento.webapps.eobroker.common.shared.entities.Message;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 
 import javax.persistence.*;
@@ -34,6 +35,18 @@ public class ImageryFormRequest {
 
     @OneToMany(mappedBy = "imageryFormRequest", cascade = CascadeType.ALL)
     List<ImageServiceFormRequest> imageServiceRequests;
+
+    @Column(length = 10000)
+    String response;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creationDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedDate;
+
+    @OneToMany
+    List<Message> messages;
 
     public ImageryFormRequest() {
     }
@@ -94,11 +107,43 @@ public class ImageryFormRequest {
         this.additionalInformation = additionalInformation;
     }
 
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public List<ImageServiceFormRequest> getImageServiceRequests() {
         return imageServiceRequests;
     }
 
     public void setImageServiceRequests(List<ImageServiceFormRequest> imageServiceRequests) {
         this.imageServiceRequests = imageServiceRequests;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 }

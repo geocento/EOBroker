@@ -4,7 +4,8 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
              xmlns:h="urn:import:com.google.gwt.user.client.ui"
-             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views">
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
 
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:style>
@@ -38,13 +39,22 @@
         .title {
             margin-top: 50px;
             margin-bottom: 20px;
-            font-size: 1.4em;
+            font-size: 1.5em;
+        }
+
+        .subsection {
+            margin-bottom: 20px;
+            font-size: 1.2em;
         }
 
     </ui:style>
     <views:TemplateView titleText="Request imagery quotation" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
-            <m:MaterialLabel addStyleNames="{style.title}">Please fill in the form below</m:MaterialLabel>
+            <m:MaterialTitle textColor="blue-grey" title="Request quotation for imagery" description="Please fill in the form below"></m:MaterialTitle>
+<!--
+            <m:MaterialLabel addStyleNames="{style.title}">Request quotation for imagery</m:MaterialLabel>
+            <m:MaterialLabel textColor="blue-grey" addStyleNames="{style.subsection}">Please fill in the form below</m:MaterialLabel>
+-->
             <m:MaterialRow>
                 <m:MaterialColumn grid="s12 m12 l6">
                     <m:MaterialTextBox placeholder="Specify type of imagery you request" ui:field="imagetype"></m:MaterialTextBox>
@@ -87,8 +97,8 @@
                 </m:MaterialColumn>
                 <m:MaterialColumn grid="s12 m12 l12">
                     <h:HTMLPanel addStyleNames="{style.buttonPanel}">
-                        <widgets:ProgressButton text="SUBMIT" ui:field="submit">
-                        </widgets:ProgressButton>
+                        <cwidgets:ProgressButton text="SUBMIT" ui:field="submit">
+                        </cwidgets:ProgressButton>
                     </h:HTMLPanel>
                 </m:MaterialColumn>
             </m:MaterialRow>

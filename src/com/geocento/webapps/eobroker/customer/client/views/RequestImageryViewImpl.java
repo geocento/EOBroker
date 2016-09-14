@@ -10,7 +10,7 @@ import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProgressButton;
+import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;

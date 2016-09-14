@@ -12,6 +12,7 @@ public class ProductServiceRequestDTO {
     Long productId;
     List<Long> productServiceIds;
     List<FormElementValue> values;
+    private String aoIWKT;
 
     public ProductServiceRequestDTO() {
     }
@@ -38,5 +39,13 @@ public class ProductServiceRequestDTO {
 
     public void setValues(List<FormElementValue> values) {
         this.values = values;
+    }
+
+    public void setAoIWKT(String aoIWKT) {
+        this.aoIWKT = aoIWKT;
+    }
+
+    public String getAoIWKT() {
+        return aoIWKT;
     }
 }

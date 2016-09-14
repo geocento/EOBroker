@@ -1,9 +1,12 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
 import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.OrdersPlace;
 import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.core.client.GWT;
@@ -48,6 +51,10 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialBadge notificationsBadge;
     @UiField
     MaterialDropDown notificationsPanel;
+    @UiField
+    MaterialLink orders;
+    @UiField
+    MaterialBadge ordersBadge;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -64,23 +71,9 @@ public class TemplateView extends Composite implements HasWidgets {
             }
         });
 
-/*
-        final MaterialBubble bubble = new MaterialBubble();
-        bubble.add(new MaterialLabel("Test"));
-        bubble.setPosition(Position.BOTTOM);
-        bubble.setLayoutPosition(Style.Position.FIXED);
-        RootPanel.get().add(bubble);
-        bubble.setVisible(false);
+        orders.setHref("#" + PlaceHistoryHelper.convertPlace(new OrdersPlace()));
 
-        notifications.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                bubble.setVisible(true);
-                bubble.setTop(notifications.getAbsoluteTop() + notifications.getOffsetHeight());
-                bubble.setLeft(notifications.getAbsoluteLeft() + bubble.getOffsetWidth() / 2 - notifications.getOffsetWidth() / 2);
-            }
-        });
-*/
+        ordersBadge.setVisible(false);
     }
 
     public void setTitleText(String title) {
@@ -109,7 +102,7 @@ public class TemplateView extends Composite implements HasWidgets {
         clientFactory.getEventBus().fireEvent(new LogOut());
     }
 
-    public void displayNotifications(List<SupplierNotificationDTO> notifications) {
+    public void setNotifications(List<SupplierNotificationDTO> notifications) {
         notificationsBadge.setText(notifications.size() + "");
         notificationsPanel.clear();
         boolean hasNotifications = notifications != null && notifications.size() > 0;
@@ -118,7 +111,13 @@ public class TemplateView extends Composite implements HasWidgets {
             for (SupplierNotificationDTO supplierNotificationDTO : notifications) {
                 MaterialLink message = new MaterialLink(supplierNotificationDTO.getMessage(), new MaterialIcon(IconType.SHOP));
                 message.getElement().getStyle().setFontSize(0.8, Style.Unit.EM);
-                message.setHref("#" + PlaceHistoryHelper.convertPlace(new OrderPlace(OrderPlace.TOKENS.id.toString() + "=" + supplierNotificationDTO.getLinkId())));
+                message.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new OrderPlace(
+                                supplierNotificationDTO.getLinkId(),
+                                supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGEREQUEST ? RequestDTO.TYPE.image :
+                                        supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGESERVICEREQUEST ? RequestDTO.TYPE.imageservice :
+                                                supplierNotificationDTO.getType() == SupplierNotification.TYPE.PRODUCTREQUEST ? RequestDTO.TYPE.product : null
+                                )));
                 notificationsPanel.add(message);
             }
         } else {

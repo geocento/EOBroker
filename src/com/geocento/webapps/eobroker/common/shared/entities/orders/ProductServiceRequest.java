@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,14 +20,23 @@ public class ProductServiceRequest {
     @ManyToOne
     User customer;
 
-    @ElementCollection
-    List<FormElementValue> formValues;
-
     @ManyToOne
     Product product;
 
+    @Column(length = 10000)
+    private String aoIWKT;
+
+    @ElementCollection
+    List<FormElementValue> formValues;
+
     @OneToMany(mappedBy = "productServiceRequest", cascade = CascadeType.ALL)
     List<ProductServiceSupplierRequest> supplierRequests;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creationDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedDate;
 
     public ProductServiceRequest() {
     }
@@ -69,5 +79,29 @@ public class ProductServiceRequest {
 
     public void setSupplierRequests(List<ProductServiceSupplierRequest> supplierRequests) {
         this.supplierRequests = supplierRequests;
+    }
+
+    public void setAoIWKT(String aoIWKT) {
+        this.aoIWKT = aoIWKT;
+    }
+
+    public String getAoIWKT() {
+        return aoIWKT;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 }

@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
@@ -16,7 +17,7 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -94,6 +95,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 productFormView.displayLoading("Submitting requests");
                 ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
                 productServiceRequestDTO.setProductId(productId);
+                productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(aoi));
                 productServiceRequestDTO.setProductServiceIds(productServiceIds);
                 productServiceRequestDTO.setValues(values);
                 REST.withCallback(new MethodCallback<RequestDTO>() {
@@ -109,7 +111,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                         productFormView.hideLoading();
                         productFormView.displaySubmittedSuccess("Your request has been successfully submitted");
                     }
-                }).call(ServicesUtil.orderService).submitProductRequest(productServiceRequestDTO);
+                }).call(ServicesUtil.ordersService).submitProductRequest(productServiceRequestDTO);
             } catch (Exception e) {
 
             }

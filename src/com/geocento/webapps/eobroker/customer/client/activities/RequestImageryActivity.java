@@ -11,7 +11,7 @@ import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.RequestImageryView;
 import com.geocento.webapps.eobroker.customer.shared.ImageRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -131,7 +131,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
                     requestImageryView.displaySucces("Request submitted");
                     clientFactory.getEventBus().fireEvent(new RequestCreated(requestDTO));
                 }
-            }).call(ServicesUtil.orderService).submitImageRequest(imageRequestDTO);
+            }).call(ServicesUtil.ordersService).submitImageRequest(imageRequestDTO);
         } catch (RequestException e) {
         }
     }

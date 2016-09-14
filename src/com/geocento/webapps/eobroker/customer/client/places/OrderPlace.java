@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.supplier.client.places;
+package com.geocento.webapps.eobroker.customer.client.places;
 
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.place.shared.PlaceTokenizer;
@@ -9,7 +9,7 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class OrderPlace extends EOBrokerPlace {
 
-    public static enum TOKENS {id, type};
+    public enum TOKENS {id, type};
 
     public OrderPlace() {
     }

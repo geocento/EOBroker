@@ -335,7 +335,7 @@ public class AssetsResource implements AssetsService {
                 em.getTransaction().rollback();
             }
             logger.error(e.getMessage(), e);
-            throw new RequestException("Error updating company");
+            throw new RequestException("Error loading notifications");
         } finally {
             em.close();
         }

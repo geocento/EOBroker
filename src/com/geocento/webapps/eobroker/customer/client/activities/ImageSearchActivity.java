@@ -13,7 +13,7 @@ import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImageSearchView;
 import com.geocento.webapps.eobroker.customer.shared.ImagesRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -200,7 +200,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                             imageSearchView.clearProductsSelection();
                             imageSearchView.displaySuccess("Quotation request submitted");
                         }
-                    }).call(ServicesUtil.orderService).submitImagesRequest(imagesRequestDTO);
+                    }).call(ServicesUtil.ordersService).submitImagesRequest(imagesRequestDTO);
                 } catch (RequestException e) {
                 }
             }
@@ -314,8 +314,11 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
 
     @Override
     public void onProviderChanged(ImageService imageService) {
-        this.selectedImageService = imageService;
+        selectService(imageService);
+/*
         updateSearch();
+*/
+        enableUpdateMaybe();
     }
 
     @Override

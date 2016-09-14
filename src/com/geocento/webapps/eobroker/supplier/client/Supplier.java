@@ -98,4 +98,8 @@ public class Supplier implements EntryPoint {
     public static void setLoginInfo(LoginInfo loginInfo) {
         Supplier.loginInfo = loginInfo;
     }
+
+    public static LoginInfo getLoginInfo() {
+        return Supplier.loginInfo;
+    }
 }

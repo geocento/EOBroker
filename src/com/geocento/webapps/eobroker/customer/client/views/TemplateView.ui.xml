@@ -41,6 +41,19 @@
                 min-height: 80%;
             }
 
+            .textSearch {
+                flex: 1 1 auto;
+                height: 100%;
+            }
+
+            .textSearch > input {
+                display: inline-block !important;
+            }
+
+            .categories {
+                padding-left: 20px;
+            }
+
         </ui:style>
         <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
         <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
@@ -50,7 +63,8 @@
                     <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
                         <m:MaterialNavSection>
                             <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
-                            <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                            <m:MaterialLabel visible="false" text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                            <m:MaterialLink visible="false" text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
                         </m:MaterialNavSection>
                         <m:MaterialNavSection float="RIGHT">
                             <m:MaterialTooltip text="Orders" position="BOTTOM">
@@ -60,7 +74,7 @@
                             </m:MaterialTooltip>
                             <m:MaterialTooltip text="Notifications" position="BOTTOM">
                                 <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="notifications">
-                                    <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true"/>
+                                    <m:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true" ui:field="notificationsBadge"/>
                                 </m:MaterialLink>
                             </m:MaterialTooltip>
                             <m:MaterialTooltip text="Sign-in" position="BOTTOM">
@@ -71,9 +85,12 @@
                             </m:MaterialTooltip>
                         </m:MaterialNavSection>
                         <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
-
+                            <widgets:MaterialSuggestion height="60px" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO" ui:field="textSearch"/>
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
+                    <m:MaterialDropDown activator="categories" constrainWidth="true" ui:field="categoriesDropdown">
+                        <m:MaterialLink waves="DEFAULT" textColor="black" text="All categories" ui:field="allCategories"/>
+                    </m:MaterialDropDown>
                 </g:HTMLPanel>
             </header>
             <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">

@@ -1,16 +1,29 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+    </ui:style>
     <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL" shadow="1">
         <design:MaterialCardImage>
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="white">
-            <design:MaterialLabel fontSize="1.5em" ui:field="title"/>
-            <design:MaterialLabel ui:field="description"></design:MaterialLabel>
+            <design:MaterialLabel truncate="true" fontSize="1.4em" ui:field="title"/>
+            <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action">
-            <design:MaterialLink iconType="ASSESSMENT" text="REQUEST QUOTE" textColor="white" ui:field="quote"></design:MaterialLink>
-            <design:MaterialLink iconType="INFO" text="MORE INFORMATION" textColor="white" ui:field="information"></design:MaterialLink>
+            <design:MaterialLink iconType="ASSESSMENT" text="QUOTE" textColor="white" ui:field="quote"></design:MaterialLink>
+            <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

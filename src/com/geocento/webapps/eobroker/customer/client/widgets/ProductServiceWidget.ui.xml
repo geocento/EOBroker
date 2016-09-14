@@ -3,10 +3,21 @@
              xmlns:cutout="urn:import:gwt.material.design.addins.client.cutout">
     <ui:style>
 
-        .shortDescription, .title {
+        .title {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+        }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
         }
 
         .companyLogo {
@@ -37,10 +48,10 @@
         <design:MaterialCardContent textColor="white">
             <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
             <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
-            <design:MaterialLabel addStyleNames="{style.shortDescription}" ui:field="shortDescription"></design:MaterialLabel>
+            <design:MaterialLabel addStyleNames="{style.description}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardReveal>
-            <design:MaterialLabel fontSize="1.5em" text="Description"/>
+            <design:MaterialLabel fontSize="1.4em" text="Description"/>
             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
         </design:MaterialCardReveal>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">

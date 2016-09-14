@@ -41,6 +41,7 @@
 
     </ui:style>
     <views:TemplateView ui:field="template">
+<!--
         <views:navBar>
             <m:MaterialLink text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
         </views:navBar>
@@ -52,6 +53,7 @@
                 <m:MaterialLink waves="DEFAULT" textColor="black" text="All categories" ui:field="allCategories"/>
             </m:MaterialDropDown>
         </views:header>
+-->
         <g:HTMLPanel addStyleNames="{style.mainPanel}">
             <m:MaterialRow addStyleNames="{style.mapPanel}" ui:field="mapPanel">
                 <maps:ArcGISMap width="100%" ui:field="mapContainer">

@@ -1,36 +1,34 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.widgets.RequestWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialRow;
-
-import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
  */
-public class OrdersViewImpl extends Composite implements OrdersView {
+public class OrderViewImpl extends Composite implements OrderView {
 
     private Presenter presenter;
 
-    interface OrdersViewUiBinder extends UiBinder<Widget, OrdersViewImpl> {
+    interface OrderViewUiBinder extends UiBinder<Widget, OrderViewImpl> {
     }
 
-    private static OrdersViewUiBinder ourUiBinder = GWT.create(OrdersViewUiBinder.class);
+    private static OrderViewUiBinder ourUiBinder = GWT.create(OrderViewUiBinder.class);
 
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    MaterialRow requestsList;
+    MaterialRow requestThread;
+    @UiField
+    MaterialRow requestInformation;
 
-    public OrdersViewImpl(ClientFactoryImpl clientFactory) {
+    public OrderViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
 
@@ -49,13 +47,8 @@ public class OrdersViewImpl extends Composite implements OrdersView {
     }
 
     @Override
-    public void setRequests(List<RequestDTO> requestDTOs) {
-        requestsList.clear();
-        for(RequestDTO requestDTO : requestDTOs) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
-            materialColumn.add(new RequestWidget(requestDTO));
-            requestsList.add(materialColumn);
-        }
+    public void setRequest(RequestDTO requestDTO) {
+        requestInformation.clear();
     }
 
     @Override

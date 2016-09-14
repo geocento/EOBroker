@@ -1,16 +1,17 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ImageRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ImagesRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.*;
 import java.util.List;
 
-public interface OrderService extends DirectRestService {
+public interface OrdersService extends DirectRestService {
 
     @GET
     @Path("/requests/")
@@ -20,7 +21,7 @@ public interface OrderService extends DirectRestService {
     @GET
     @Path("/requests/{id}")
     @Produces("application/json")
-    public RequestDTO getRequest(@PathParam("id") String id);
+    public RequestDTO getRequest(@PathParam("id") String id) throws RequestException;
 
     @POST
     @Path("/orders/image/")

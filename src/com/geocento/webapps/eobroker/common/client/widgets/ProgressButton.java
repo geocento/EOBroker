@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.client.widgets;
+package com.geocento.webapps.eobroker.common.client.widgets;
 
 import gwt.material.design.client.base.HasProgress;
 import gwt.material.design.client.base.mixin.ProgressMixin;

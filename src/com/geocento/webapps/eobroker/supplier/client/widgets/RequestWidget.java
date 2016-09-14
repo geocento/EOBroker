@@ -1,8 +1,8 @@
-package com.geocento.webapps.eobroker.customer.client.widgets;
+package com.geocento.webapps.eobroker.supplier.client.widgets;
 
-import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.places.OrderPlace;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.supplier.client.Supplier;
+import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -57,7 +57,7 @@ public class RequestWidget extends Composite {
         request.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Customer.clientFactory.getPlaceController().goTo(new OrderPlace(requestDTO.getId(), requestDTO.getType()));
+                Supplier.clientFactory.getPlaceController().goTo(new OrderPlace(requestDTO.getId(), requestDTO.getType()));
             }
         });
     }

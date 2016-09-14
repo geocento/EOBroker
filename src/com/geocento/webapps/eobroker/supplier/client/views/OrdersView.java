@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.UserDTO;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -14,6 +15,8 @@ public interface OrdersView extends IsWidget {
     void setPresenter(Presenter presenter);
 
     TemplateView getTemplateView();
+
+    void setRequests(List<RequestDTO> requestDTOs);
 
     public interface Presenter {
     }

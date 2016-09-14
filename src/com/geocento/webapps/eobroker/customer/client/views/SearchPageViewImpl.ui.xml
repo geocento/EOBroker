@@ -19,8 +19,8 @@
             display: inline !important;
         }
 
-        .categories {
-            padding: 10px 10px 10px 30px;
+        .filters {
+            padding: 0px 10px 0px 30px;
             line-height: normal !important;
         }
 
@@ -72,43 +72,47 @@
         .map {
         }
 
+        .container {
+            max-width: 960px;
+        }
+
+        .option {
+            padding-left: 30px;
+        }
+
+        .optionTitle {
+            margin: 20px 0px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template" titleText="Search">
         <views:header>
             <!-- SideNav -->
             <design:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="1" ui:field="filtersPanel">
-                <design:MaterialCollapsible backgroundColor="white">
-                    <design:MaterialCollapsibleItem ui:field="categoriesPanel">
-                        <design:MaterialCollapsibleHeader backgroundColor="white">
-                            <design:MaterialLink text="Categories" textColor="blue" iconType="LAYERS"/>
-                        </design:MaterialCollapsibleHeader>
-                        <design:MaterialCollapsibleBody>
-                            <g:HTMLPanel addStyleNames="{style.categories}" ui:field="categories">
-                            </g:HTMLPanel>
-                        </design:MaterialCollapsibleBody>
-                    </design:MaterialCollapsibleItem>
-                    <design:MaterialCollapsibleItem ui:field="options">
-                        <design:MaterialCollapsibleHeader backgroundColor="white">
-                            <design:MaterialLink text="Filter by" textColor="blue" iconType="FILTER"/>
-                        </design:MaterialCollapsibleHeader>
-                        <design:MaterialCollapsibleBody>
-                            <g:HTMLPanel addStyleNames="{style.categories}" ui:field="settings">
-                            </g:HTMLPanel>
-                        </design:MaterialCollapsibleBody>
-                    </design:MaterialCollapsibleItem>
-                </design:MaterialCollapsible>
-                <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                    <maps:ArcGISMap width="100%" height="250px" addStyleNames="{style.map}" ui:field="mapContainer">
-                    </maps:ArcGISMap>
+                <g:HTMLPanel>
+                    <design:MaterialLink text="Filter by" fontSize="1em" textColor="blue-grey" iconType="SEARCH"/>
+                    <g:HTMLPanel addStyleNames="{style.filters}">
+                        <g:HTMLPanel ui:field="categories">
+                            <design:MaterialLabel addStyleNames="{style.optionTitle}">Categories</design:MaterialLabel>
+                        </g:HTMLPanel>
+                        <g:HTMLPanel ui:field="settings">
+                        </g:HTMLPanel>
+                        <design:MaterialLabel addStyleNames="{style.optionTitle}">Area of interest</design:MaterialLabel>
+                        <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                            <maps:ArcGISMap width="100%" height="250px" addStyleNames="{style.map}" ui:field="mapContainer">
+                            </maps:ArcGISMap>
+                        </g:HTMLPanel>
+                        <design:MaterialCheckBox text="limit to AoI" addStyleNames="{style.optionTitle}" ui:field="filterByAoI"></design:MaterialCheckBox>
+                    </g:HTMLPanel>
                 </g:HTMLPanel>
             </design:MaterialSideNav>
         </views:header>
         <g:HTMLPanel>
             <design:MaterialTooltip text="Click to change your search">
-                <design:MaterialLink ui:field="currentSearch" addStyleNames="{style.currentSearch}, truncate" textColor="black" text="some search keywords" iconType="SEARCH"/>
+                <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="blue-grey" text="some search keywords" ui:field="currentSearch"/>
             </design:MaterialTooltip>
         </g:HTMLPanel>
-        <g:HTMLPanel ui:field="container"></g:HTMLPanel>
+        <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

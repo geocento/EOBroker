@@ -2,17 +2,84 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
         >
     <ui:style>
 
         .formValues {
-            margin: 2rem;
+            margin: 0;
+            padding-bottom: 20px;
+        }
+
+        .section {
+            padding: 10px 0px 10px 10px;
+            font-size: 1rem;
+            color: #9e9e9e;
+        }
+
+        .buttonPanel {
+            padding: 50px 10px;
+        }
+
+        .mapPanel {
+            position: relative;
         }
 
     </ui:style>
     <views:TemplateView ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
-        <design:MaterialRow ui:field="formValues" addStyleNames="{style.formValues}">
+        <design:MaterialCollapsible accordion="false" active="1" shadow="0">
+            <design:MaterialCollapsibleItem shadow="0">
+                <design:MaterialCollapsibleHeader shadow="0">
+                    <design:MaterialLabel fontSize="1.2em">Request details</design:MaterialLabel>
+                </design:MaterialCollapsibleHeader>
+                <design:MaterialCollapsibleBody margin="0" padding="0" shadow="0">
+                    <design:MaterialRow  addStyleNames="{style.formValues}">
+                        <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12 m12 l6">
+                            <design:MaterialLabel text="" addStyleNames="{style.section}"></design:MaterialLabel>
+                            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                                <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
+                                </maps:ArcGISMap>
+                            </g:HTMLPanel>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
+                </design:MaterialCollapsibleBody>
+            </design:MaterialCollapsibleItem>
+            <design:MaterialCollapsibleItem>
+                <design:MaterialCollapsibleHeader>
+                    <design:MaterialLabel fontSize="1.2em">Your offer</design:MaterialLabel>
+                </design:MaterialCollapsibleHeader>
+                <design:MaterialCollapsibleBody>
+                    <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
+                        <richeditor:MaterialRichEditor placeholder="Enter your response" ui:field="responseEditor"></richeditor:MaterialRichEditor>
+                        <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                            <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
+                            </widgets:ProgressButton>
+                        </g:HTMLPanel>
+                    </g:HTMLPanel>
+                </design:MaterialCollapsibleBody>
+            </design:MaterialCollapsibleItem>
+        </design:MaterialCollapsible>
+        <design:MaterialLabel fontSize="1.2em" marginTop="20" marginBottom="20">Conversation</design:MaterialLabel>
+        <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
+        </design:MaterialRow>
+        <design:MaterialRow addStyleNames="{style.formValues}">
+            <design:MaterialColumn grid="s3 m3 l2">
+                <design:MaterialImage ui:field="userImage"></design:MaterialImage>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s9 m9 l10">
+                <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12 m12 l12">
+                <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                    <widgets:ProgressButton text="SUBMIT" ui:field="submit">
+                    </widgets:ProgressButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
         </design:MaterialRow>
     </views:TemplateView>
 </ui:UiBinder>

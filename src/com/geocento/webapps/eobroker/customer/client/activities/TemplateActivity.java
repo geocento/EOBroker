@@ -1,30 +1,43 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.events.ImageOrderCreatedHandler;
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.events.LogOutHandler;
+import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.TemplateView;
-import com.geocento.webapps.eobroker.customer.shared.RequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by thomas on 29/06/2016.
  */
-public abstract class TemplateActivity extends AbstractApplicationActivity {
+public abstract class TemplateActivity extends AbstractApplicationActivity implements TemplateView.Presenter {
 
     private List<RequestDTO> userRequests = null;
+    private List<NotificationDTO> userNotifications = null;
 
     private TemplateView templateView;
+
+    private String text;
+
+    private int lastCall = 0;
+    private Category category = null;
+    protected AoI aoi;
 
     public TemplateActivity(ClientFactory clientFactory) {
         super(clientFactory);
@@ -36,14 +49,22 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
         if(Customer.isLoggedIn()) {
             templateView.displaySignedIn(true);
             // load notifications and orders
-            if (userRequests == null) {
+            if(userRequests == null) {
                 loadUserOrders();
             } else {
                 templateView.setRequests(userRequests);
             }
+            if(userNotifications == null) {
+                loadUserNotifications();
+            } else {
+                templateView.setNotifications(userNotifications);
+            }
         } else {
             templateView.displaySignedIn(false);
         }
+        templateView.setPresenter(this);
+        // reset some values
+        templateView.setSearchText(null);
     }
 
     private void loadUserOrders() {
@@ -59,7 +80,25 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
                     userRequests = requestDTOs;
                     templateView.setRequests(requestDTOs);
                 }
-            }).call(ServicesUtil.orderService).getRequests();
+            }).call(ServicesUtil.ordersService).getRequests();
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadUserNotifications() {
+        try {
+            REST.withCallback(new MethodCallback<List<NotificationDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<NotificationDTO> notificationDTOs) {
+                    userNotifications = notificationDTOs;
+                    templateView.setNotifications(notificationDTOs);
+                }
+            }).call(ServicesUtil.assetsService).getNotifications();
         } catch (RequestException e) {
         }
     }
@@ -90,4 +129,204 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
             }
         });
     }
+
+    @Override
+    public void categoryChanged(Category category) {
+
+    }
+
+    @Override
+    public void aoiChanged(AoI aoi) {
+
+    }
+
+    @Override
+    public void textChanged(String text) {
+        this.text = text;
+        updateSuggestions();
+    }
+
+    private void updateSuggestions() {
+        this.lastCall++;
+        final long lastCall = this.lastCall;
+
+        if(text != null && text.length() > 0) {
+            REST.withCallback(new MethodCallback<List<Suggestion>>() {
+
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<Suggestion> response) {
+                    // show only if last one to be called
+                    if (lastCall == TemplateActivity.this.lastCall) {
+                        templateView.displayListSuggestions(response);
+                    }
+                }
+            }).call(ServicesUtil.searchService).complete(text, category, toWkt(aoi));
+        } else {
+            // TODO - move to the server side
+            List<Suggestion> suggestions = new ArrayList<Suggestion>();
+            if(category == null) {
+                for(Category suggestionCategory : Category.values()) {
+                    suggestions.addAll(getSuggestion(suggestionCategory));
+                }
+            } else {
+                suggestions.addAll(getSuggestion(category));
+            }
+            templateView.displayListSuggestions(suggestions);
+        }
+    }
+
+    private String toWkt(AoI aoi) {
+        return null;
+    }
+
+    private List<Suggestion> getSuggestion(Category category) {
+        List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        switch (category) {
+            case products:
+                suggestions.add(new Suggestion("Browse products", Category.products, "browse::"));
+                break;
+            case imagery:
+                suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
+                suggestions.add(new Suggestion("Request quotation for imagery", Category.imagery, "request::"));
+                break;
+            case companies:
+                suggestions.add(new Suggestion("Browse companies", Category.companies, "browse::"));
+                break;
+            case datasets:
+                suggestions.add(new Suggestion("Browse datasets", Category.datasets, "browse::"));
+                break;
+        }
+        return suggestions;
+    }
+
+    @Override
+    public void suggestionSelected(Suggestion suggestion) {
+        // TODO - move to a helper class
+        String uri = suggestion.getUri();
+        String action = uri.split("::")[0];
+        String parameters = uri.split("::")[1];
+        if (parameters == null) {
+            parameters = "";
+        }
+        EOBrokerPlace searchPlace = null;
+        switch (suggestion.getCategory()) {
+            case imagery: {
+                if (action.contentEquals("search")) {
+                    searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
+                            (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                    //setText(parameters);
+                } else if (action.contentEquals("request")) {
+                    searchPlace = new RequestImageryPlace(parameters);
+                    //setText("");
+                }
+                ;
+            } break;
+            case products: {
+                String token = "";
+                Category category = suggestion.getCategory();
+                if (action.contentEquals("product")) {
+                    searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
+                } else if (action.contentEquals("browse")) {
+                    token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+                    if (aoi != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    }
+                    searchPlace = new SearchPagePlace(token);
+                } else {
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+                    if (aoi != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    }
+                    searchPlace = new SearchPagePlace(token);
+                }
+            } break;
+            case companies: {
+                String token = "";
+                Category category = suggestion.getCategory();
+                if (action.contentEquals("company")) {
+                    searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
+                } else if (action.contentEquals("browse")) {
+                    token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+                    if (aoi != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    }
+                    searchPlace = new SearchPagePlace(token);
+                } else {
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+                    if (aoi != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    }
+                    searchPlace = new SearchPagePlace(token);
+                }
+            } break;
+        }
+        if (searchPlace != null) {
+            clientFactory.getPlaceController().goTo(searchPlace);
+        } else {
+            templateView.displaySearchError("Sorry I could not understand your request...");
+        }
+    }
+
+    @Override
+    public void textSelected(String text) {
+        this.text = text;
+        if(text.trim().length() == 0) {
+            return;
+        }
+        EOBrokerPlace eoBrokerPlace = null;
+        if(category == null) {
+            // go to general search results page
+            String token = "";
+            token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+            if(category != null) {
+                token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+            }
+            if(aoi != null) {
+                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+            }
+            eoBrokerPlace = new SearchPagePlace(token);
+        } else {
+            switch (category) {
+                case imagery:
+                    eoBrokerPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + text +
+                            (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                    break;
+                case products:
+                case companies:
+                case datasets:
+                case software:
+                    // go to general search results page
+                    String token = "";
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    if(aoi != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    }
+                    eoBrokerPlace = new SearchPagePlace(token);
+            }
+        }
+        if(eoBrokerPlace != null) {
+            clientFactory.getPlaceController().goTo(eoBrokerPlace);
+        } else {
+            templateView.displaySearchError("Sorry I could not understand your request...");
+        }
+    }
+
 }

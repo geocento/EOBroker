@@ -63,7 +63,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         handlers.add(searchPageView.getChangeSearch().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+/*
                 clientFactory.getPlaceController().goTo(new LandingPagePlace(""));
+*/
             }
         }));
 
