@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.services;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.http.client.RequestException;
@@ -44,9 +45,14 @@ public interface AssetsService extends DirectRestService {
     ProductFormDTO getProductForm(@PathParam("id") Long productId) throws RequestException;
 
     @GET
-    @Path("/assets/companies/description/{id}")
+    @Path("/assets/company/description/{id}")
     @Produces("application/json")
     CompanyDescriptionDTO getCompanyDescription(@PathParam("id") Long companyId) throws RequestException;
+
+    @GET
+    @Path("/assets/company/{id}")
+    @Produces("application/json")
+    CompanyDTO getCompany(@PathParam("id") Long companyId) throws RequestException;
 
     @GET
     @Path("/assets/productservices/description/{id}")
@@ -69,7 +75,7 @@ public interface AssetsService extends DirectRestService {
     List<NewsItem> getNewsItems();
 
     @GET
-    @Path("/orders/notifications/")
+    @Path("/assets/notifications/")
     @Produces("application/json")
     List<NotificationDTO> getNotifications() throws RequestException;
 }

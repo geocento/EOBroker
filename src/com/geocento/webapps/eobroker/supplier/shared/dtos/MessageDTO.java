@@ -6,7 +6,6 @@ public class MessageDTO {
 
     Long id;
     String from;
-    String recipient;
     String message;
     Date creationDate;
 
@@ -27,14 +26,6 @@ public class MessageDTO {
 
     public void setFrom(String from) {
         this.from = from;
-    }
-
-    public String getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
     }
 
     public String getMessage() {

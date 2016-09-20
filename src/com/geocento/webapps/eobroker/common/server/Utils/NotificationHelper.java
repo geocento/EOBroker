@@ -1,9 +1,12 @@
 package com.geocento.webapps.eobroker.common.server.Utils;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
+import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 
 import javax.persistence.EntityManager;
+import java.util.Date;
 
 /**
  * Created by thomas on 06/07/2016.
@@ -17,5 +20,15 @@ public class NotificationHelper {
         supplierNotification.setMessage(message);
         supplierNotification.setLinkId(linkId);
         em.persist(supplierNotification);
+    }
+
+    public static void notifyCustomer(EntityManager em, User user, Notification.TYPE type, String message, String linkId) {
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setType(type);
+        notification.setMessage(message);
+        notification.setLinkId(linkId);
+        notification.setCreationDate(new Date());
+        em.persist(notification);
     }
 }

@@ -17,6 +17,7 @@ public class ProductServiceDescriptionDTO {
     String website;
     String fullDescription;
     CompanyDTO company;
+    boolean hasFeasibility;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -91,5 +92,13 @@ public class ProductServiceDescriptionDTO {
 
     public void setCompany(CompanyDTO company) {
         this.company = company;
+    }
+
+    public boolean isHasFeasibility() {
+        return hasFeasibility;
+    }
+
+    public void setHasFeasibility(boolean hasFeasibility) {
+        this.hasFeasibility = hasFeasibility;
     }
 }

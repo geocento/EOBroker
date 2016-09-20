@@ -61,6 +61,8 @@ public interface ProductFeasibilityView extends IsWidget {
 
     TemplateView getTemplateView();
 
+    void showQuery();
+
     public interface Presenter {
 
         void aoiChanged(AoI aoi);

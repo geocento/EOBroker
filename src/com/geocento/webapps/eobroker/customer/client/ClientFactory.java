@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client;
 
 import com.geocento.webapps.eobroker.customer.client.views.*;
+import com.geocento.webapps.eobroker.customer.client.views.ProductResponseView;
+import com.geocento.webapps.eobroker.customer.client.views.ImagesResponseView;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.web.bindery.event.shared.EventBus;
@@ -29,7 +31,13 @@ public interface ClientFactory {
 
     ProductFeasibilityView getProductFeasibilityView();
 
-    OrdersView getOrdersView();
+    RequestsView getOrdersView();
 
-    OrderView getOrderView();
+    ProductResponseView getProductResponseView();
+
+    ImageryResponseView getImageryResponseView();
+
+    ImagesResponseView getImagesResponseView();
+
+    ConversationView getConversationView();
 }

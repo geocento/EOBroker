@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
-import com.geocento.webapps.eobroker.common.shared.entities.Message;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 
 import javax.persistence.*;
@@ -30,23 +29,17 @@ public class ImageryFormRequest {
     @Temporal(TemporalType.TIMESTAMP)
     Date stop;
 
+    @Column(length = 100)
+    String application;
+
     @Column(length = 1000)
     String additionalInformation;
 
     @OneToMany(mappedBy = "imageryFormRequest", cascade = CascadeType.ALL)
-    List<ImageServiceFormRequest> imageServiceRequests;
-
-    @Column(length = 10000)
-    String response;
+    List<ImageryFormSupplierRequest> imageServiceRequests;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastModifiedDate;
-
-    @OneToMany
-    List<Message> messages;
 
     public ImageryFormRequest() {
     }
@@ -115,35 +108,19 @@ public class ImageryFormRequest {
         this.creationDate = creationDate;
     }
 
-    public List<ImageServiceFormRequest> getImageServiceRequests() {
+    public List<ImageryFormSupplierRequest> getImageServiceRequests() {
         return imageServiceRequests;
     }
 
-    public void setImageServiceRequests(List<ImageServiceFormRequest> imageServiceRequests) {
+    public void setImageServiceRequests(List<ImageryFormSupplierRequest> imageServiceRequests) {
         this.imageServiceRequests = imageServiceRequests;
     }
 
-    public String getResponse() {
-        return response;
+    public void setApplication(String application) {
+        this.application = application;
     }
 
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public List<Message> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
+    public String getApplication() {
+        return application;
     }
 }

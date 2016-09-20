@@ -102,6 +102,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
         String imageType = requestImageryView.getImageType();
         Date start = requestImageryView.getStartDate();
         Date stop = requestImageryView.getStopDate();
+        String application = requestImageryView.getApplication();
         String additionalInformation = requestImageryView.getAdditionalInformation();
         List<ImageService> imageServices = requestImageryView.getSelectedServices();
         ImageRequestDTO imageRequestDTO = new ImageRequestDTO();
@@ -109,6 +110,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
         imageRequestDTO.setImageType(imageType);
         imageRequestDTO.setStart(start);
         imageRequestDTO.setStop(stop);
+        imageRequestDTO.setApplication(application);
         imageRequestDTO.setAdditionalInformation(additionalInformation);
         imageRequestDTO.setImageServiceIds(ListUtil.mutate(imageServices, new ListUtil.Mutate<ImageService, Long>() {
             @Override

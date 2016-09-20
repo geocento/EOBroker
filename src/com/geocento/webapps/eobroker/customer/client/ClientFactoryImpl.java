@@ -2,6 +2,10 @@ package com.geocento.webapps.eobroker.customer.client;
 
 import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.customer.client.views.*;
+import com.geocento.webapps.eobroker.customer.client.views.ProductResponseView;
+import com.geocento.webapps.eobroker.customer.client.views.ProductResponseViewImpl;
+import com.geocento.webapps.eobroker.customer.client.views.ImagesResponseView;
+import com.geocento.webapps.eobroker.customer.client.views.ImagesResponseViewImpl;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.web.bindery.event.shared.EventBus;
@@ -29,9 +33,15 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ProductFeasibilityViewImpl productFeasibilityView = null;
 
-    private OrdersViewImpl ordersView = null;
+    private RequestsViewImpl ordersView = null;
 
-    private OrderViewImpl orderView = null;
+    private ProductResponseViewImpl productResponseView = null;
+
+    private ImageryResponseViewImpl imageryResponseView = null;
+
+    private ImagesResponseView imagesResponseView = null;
+
+    private ConversationViewImpl conversationView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -113,19 +123,43 @@ public class ClientFactoryImpl implements ClientFactory {
     }
 
     @Override
-    public OrdersView getOrdersView() {
+    public RequestsView getOrdersView() {
         if(ordersView == null) {
-            ordersView = new OrdersViewImpl(this);
+            ordersView = new RequestsViewImpl(this);
         }
         return ordersView;
     }
 
     @Override
-    public OrderView getOrderView() {
-        if(orderView == null) {
-            orderView = new OrderViewImpl(this);
+    public ProductResponseView getProductResponseView() {
+        if(productResponseView == null) {
+            productResponseView = new ProductResponseViewImpl(this);
         }
-        return orderView;
+        return productResponseView;
+    }
+
+    @Override
+    public ImageryResponseView getImageryResponseView() {
+        if(imageryResponseView == null) {
+            imageryResponseView = new ImageryResponseViewImpl(this);
+        }
+        return imageryResponseView;
+    }
+
+    @Override
+    public ImagesResponseView getImagesResponseView() {
+        if(imagesResponseView == null) {
+            imagesResponseView = new ImagesResponseViewImpl(this);
+        }
+        return imagesResponseView;
+    }
+
+    @Override
+    public ConversationView getConversationView() {
+        if(conversationView == null) {
+            conversationView = new ConversationViewImpl(this);
+        }
+        return conversationView;
     }
 
 }

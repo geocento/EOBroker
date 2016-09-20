@@ -1,0 +1,75 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+        >
+    <ui:style>
+
+        .formValues {
+            margin: 0;
+            padding-bottom: 20px;
+        }
+
+        .section {
+            padding: 10px 0px 10px 10px;
+            font-size: 1rem;
+            color: #9e9e9e;
+        }
+
+        .buttonPanel {
+            padding: 20px 10px;
+        }
+
+        .mapPanel {
+            position: relative;
+        }
+
+        .panel {
+            margin: 0px auto    ;
+            max-width: 960px;
+        }
+
+    </ui:style>
+    <views:TemplateView titleText="Request Management" ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+            <design:MaterialLabel fontSize="1.2em">Request details</design:MaterialLabel>
+            <design:MaterialRow  addStyleNames="{style.formValues}">
+                <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialLabel text="" addStyleNames="{style.section}"></design:MaterialLabel>
+                    <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                        <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
+                        </maps:ArcGISMap>
+                    </g:HTMLPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialRow ui:field="tabs">
+            </design:MaterialRow>
+            <g:HTMLPanel>
+                <design:MaterialLabel fontSize="1.2em" ui:field="responseTitle">Supplier offer</design:MaterialLabel>
+                <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
+                </g:HTMLPanel>
+                <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
+                <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
+                </design:MaterialRow>
+                <design:MaterialRow addStyleNames="{style.formValues}">
+                    <design:MaterialColumn grid="s2 m2 l2" ui:field="userImage">
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s10 m10 l10">
+                        <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m12 l12">
+                        <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                            <widgets:ProgressButton text="SUBMIT" ui:field="submitMessage">
+                            </widgets:ProgressButton>
+                        </g:HTMLPanel>
+                    </design:MaterialColumn>
+                </design:MaterialRow>
+            </g:HTMLPanel>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

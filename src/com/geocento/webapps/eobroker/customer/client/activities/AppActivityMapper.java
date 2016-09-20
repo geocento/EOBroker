@@ -31,10 +31,16 @@ public class AppActivityMapper implements ActivityMapper {
             return new FullViewActivity((FullViewPlace) place, clientFactory);
         } else if(place instanceof ProductFeasibilityPlace) {
             return new ProductFeasibilityActivity((ProductFeasibilityPlace) place, clientFactory);
-        } else if(place instanceof OrdersPlace) {
-            return new OrdersActivity((OrdersPlace) place, clientFactory);
-        } else if(place instanceof OrderPlace) {
-            return new OrderActivity((OrderPlace) place, clientFactory);
+        } else if(place instanceof RequestsPlace) {
+            return new RequestsActivity((RequestsPlace) place, clientFactory);
+        } else if(place instanceof ProductResponsePlace) {
+            return new ProductResponseActivity((ProductResponsePlace) place, clientFactory);
+        } else if(place instanceof ImageryResponsePlace) {
+            return new ImageryResponseActivity((ImageryResponsePlace) place, clientFactory);
+        } else if(place instanceof ImagesResponsePlace) {
+            return new ImagesResponseActivity((ImagesResponsePlace) place, clientFactory);
+        } else if(place instanceof ConversationPlace) {
+            return new ConversationActivity((ConversationPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
         }

@@ -59,6 +59,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         setTemplateView(productFeasibilityView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        productFeasibilityView.showQuery();
         productFeasibilityView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {

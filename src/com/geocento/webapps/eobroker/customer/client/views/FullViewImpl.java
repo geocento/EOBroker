@@ -1,7 +1,12 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
@@ -15,10 +20,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.masonry.MaterialMasonry;
-import gwt.material.design.client.ui.MaterialColumn;
-import gwt.material.design.client.ui.MaterialImage;
-import gwt.material.design.client.ui.MaterialRow;
-import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.ui.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -88,13 +90,32 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(companyDescriptionDTO.getIconURL());
         title.setTitle(companyDescriptionDTO.getName());
         title.setDescription(companyDescriptionDTO.getDescription());
-        details.add(new HTMLPanel(companyDescriptionDTO.getFullDescription()));
-        details.add(new HTMLPanel("<dl>" +
-                "<dt><b>Contact</b>:</dt><dd><a>Message</a> or direct email at <a href='mailto:" + companyDescriptionDTO.getContactEmail() + "'>" + companyDescriptionDTO.getContactEmail() + "</a></dd>" +
-                "<dt><b>Company website</b>:</dt><dd><a href='" + companyDescriptionDTO.getWebsite() + "' target='_blank'>" + companyDescriptionDTO.getWebsite() + "</a></dd>" +
-                "</dl>"));
-        details.add(new HTML("<p class='" + style.section() + "'>Services provided</p>"));
         MaterialRow materialRow = new MaterialRow();
+        {
+            MaterialAnchorButton materialLink = new MaterialAnchorButton("Contact");
+            materialLink.setBackgroundColor("blue");
+            materialLink.setTextColor("white");
+            materialLink.setMargin(4);
+            materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(
+                    new ConversationPlace(
+                            ConversationPlace.TOKENS.companyid.toString() + "=" + companyDescriptionDTO.getId() + "&" +
+                                    ConversationPlace.TOKENS.topic.toString() + "=" + "Information on your company")));
+            materialRow.add(materialLink);
+        }
+        {
+            MaterialAnchorButton materialLink = new MaterialAnchorButton("Website");
+            materialLink.setBackgroundColor("blue");
+            materialLink.setTextColor("white");
+            materialLink.setMargin(4);
+            materialLink.setHref(companyDescriptionDTO.getWebsite());
+            materialLink.setTarget("_blank;");
+            materialRow.add(materialLink);
+        }
+        details.add(materialRow);
+        details.add(new HTML("<p class='" + style.section() + "'>Full description</p>"));
+        details.add(new HTMLPanel(companyDescriptionDTO.getFullDescription()));
+        details.add(new HTML("<p class='" + style.section() + "'>Services provided</p>"));
+        materialRow = new MaterialRow();
         details.add(materialRow);
         for(ProductServiceDTO productServiceDTO : companyDescriptionDTO.getProductServices()) {
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
@@ -119,22 +140,63 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(productServiceDescriptionDTO.getServiceImage());
         title.setTitle(productServiceDescriptionDTO.getName());
         title.setDescription(productServiceDescriptionDTO.getDescription());
+        CompanyDTO companyDTO = productServiceDescriptionDTO.getCompany();
+        details.add(new HTMLPanel("<p style='line-height: 40px; font-style: italic;'>This service is provided by <img style='vertical-align: middle; margin: 0px 10px;' src='" + companyDTO.getIconURL() + "' height='40px'/><a href='#" +
+                PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()))
+        + "' target='_blank;'>" + companyDTO.getName() + "</a></p>"));
+        MaterialRow materialRow = new MaterialRow();
+        {
+            MaterialAnchorButton materialLink = new MaterialAnchorButton("Contact");
+            materialLink.setBackgroundColor("blue");
+            materialLink.setTextColor("white");
+            materialLink.setMargin(4);
+            materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(
+                    new ConversationPlace(
+                            ConversationPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId() + "&" +
+                            ConversationPlace.TOKENS.topic.toString() + "=" + "Information on product service '" + productServiceDescriptionDTO.getName() + "'")));
+            materialRow.add(materialLink);
+        }
+        {
+            MaterialAnchorButton materialLink = new MaterialAnchorButton("Website");
+            materialLink.setBackgroundColor("blue");
+            materialLink.setTextColor("white");
+            materialLink.setMargin(4);
+            materialLink.setHref(productServiceDescriptionDTO.getWebsite());
+            materialLink.setTarget("_blank;");
+            materialRow.add(materialLink);
+        }
+        if(productServiceDescriptionDTO.isHasFeasibility()) {
+            MaterialAnchorButton materialLink = new MaterialAnchorButton("Simulate");
+            materialLink.setBackgroundColor("blue");
+            materialLink.setTextColor("white");
+            materialLink.setMargin(4);
+            materialLink.setHref("#" +
+                    PlaceHistoryHelper.convertPlace(
+                            new ProductFeasibilityPlace(ProductFeasibilityPlace.TOKENS.productservice.toString() + "=" + productServiceDescriptionDTO.getId())));
+            materialRow.add(materialLink);
+        }
+        details.add(materialRow);
+        details.add(new HTML("<p class='" + style.section() + "'>Full description</p>"));
         details.add(new HTMLPanel(productServiceDescriptionDTO.getFullDescription()));
+/*
         details.add(new HTMLPanel("<dl>" +
                 "<dt><b>More Information</b>:</dt><dd>go to <a href='" + productServiceDescriptionDTO.getWebsite() + "' target='_blank'>service website</a></dd>" +
                 "</dl>"));
+*/
         details.add(new HTML("<p class='" + style.section() + "'>This service provides the following standard product</p>"));
         MaterialMasonry materialMasonry = new MaterialMasonry();
         details.add(materialMasonry);
         MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
         materialColumn.add(new ProductWidget(productServiceDescriptionDTO.getProduct()));
         materialMasonry.add(materialColumn);
+/*
         details.add(new HTML("<p class='" + style.section() + "'>This service is provided by the following company</p>"));
         materialMasonry = new MaterialMasonry();
         details.add(materialMasonry);
         materialColumn = new MaterialColumn(12, 6, 4);
         materialColumn.add(new CompanyWidget(productServiceDescriptionDTO.getCompany()));
         materialMasonry.add(materialColumn);
+*/
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSensorsSugg
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -29,6 +30,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -38,6 +40,8 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.base.MaterialImageCell;
 import gwt.material.design.client.constants.ImageType;
+import gwt.material.design.client.events.SideNavClosedEvent;
+import gwt.material.design.client.events.SideNavOpenedEvent;
 import gwt.material.design.client.ui.*;
 
 import java.util.*;
@@ -196,7 +200,14 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         });
         createResultsTable();
 
-        onResize(null);
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                searchBar.show();
+                tab.selectTab("query");
+                onResize(null);
+            }
+        });
     }
 
     private void mapLoaded() {
@@ -233,6 +244,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     public void displayLoadingResults(String message) {
         template.setLoading(message);
         searchBar.hide();
+        onResize(null);
     }
 
     @Override
@@ -240,6 +252,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         template.hideLoading();
         searchBar.show();
         tab.selectTab("results");
+        onResize(null);
     }
 
     private void createResultsTable() {
@@ -610,6 +623,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     }
 
     @Override
+    public void showQuery() {
+        tab.selectTab("query");
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }
@@ -617,7 +635,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @Override
     public void onResize(ResizeEvent event) {
         mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
-        template.setPanelStyleName(style.navOpened(), searchBar.isVisible());
+        template.setPanelStyleName(style.navOpened(), searchBar.isOpen());
     }
 
 }

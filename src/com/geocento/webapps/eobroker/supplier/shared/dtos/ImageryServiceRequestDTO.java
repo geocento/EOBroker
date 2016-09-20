@@ -1,41 +1,22 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by thomas on 11/07/2016.
  */
-public class ImageryServiceRequestDTO {
+public class ImageryServiceRequestDTO extends BaseRequestDTO {
 
-    String id;
-    UserDTO customer;
     String aoiWKT;
     String imageType;
     Date start;
     Date stop;
     String additionalInformation;
-    private String supplierResponse;
-    private Date creationDate;
-    private List<MessageDTO> messages;
+    String supplierResponse;
+    Date creationDate;
+    String application;
 
     public ImageryServiceRequestDTO() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public UserDTO getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(UserDTO customer) {
-        this.customer = customer;
     }
 
     public String getAoiWKT() {
@@ -94,11 +75,11 @@ public class ImageryServiceRequestDTO {
         this.creationDate = creationDate;
     }
 
-    public void setMessages(List<MessageDTO> messages) {
-        this.messages = messages;
+    public void setApplication(String application) {
+        this.application = application;
     }
 
-    public List<MessageDTO> getMessages() {
-        return messages;
+    public String getApplication() {
+        return application;
     }
 }

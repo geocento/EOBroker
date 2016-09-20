@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public interface OrdersView extends IsWidget {
+public interface RequestsView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 

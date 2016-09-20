@@ -6,27 +6,27 @@ import com.google.gwt.place.shared.Prefix;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class OrdersPlace extends EOBrokerPlace {
+public class RequestsPlace extends EOBrokerPlace {
 
-    public OrdersPlace() {
+    public RequestsPlace() {
     }
 
-    public OrdersPlace(String token) {
+    public RequestsPlace(String token) {
         super(token);
     }
 
     public enum TOKENS {};
 
     @Prefix("orders")
-    public static class Tokenizer implements PlaceTokenizer<OrdersPlace> {
+    public static class Tokenizer implements PlaceTokenizer<RequestsPlace> {
         @Override
-        public String getToken(OrdersPlace place) {
+        public String getToken(RequestsPlace place) {
             return place.getToken();
         }
 
         @Override
-        public OrdersPlace getPlace(String token) {
-            return new OrdersPlace(token);
+        public RequestsPlace getPlace(String token) {
+            return new RequestsPlace(token);
         }
     }
 }

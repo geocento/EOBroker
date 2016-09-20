@@ -3,14 +3,16 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.OrderView;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ImageryServiceRequestDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ImagesRequestDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceSupplierRequestDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -26,6 +28,8 @@ import java.util.HashMap;
 public class OrderActivity extends TemplateActivity implements OrderView.Presenter {
 
     private OrderView orderView;
+    private RequestDTO.TYPE type;
+    private BaseRequestDTO request;
 
     public OrderActivity(OrderPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -65,7 +69,7 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
         }
 
         try {
-            RequestDTO.TYPE type = RequestDTO.TYPE.valueOf(typeString);
+            type = RequestDTO.TYPE.valueOf(typeString);
             switch(type) {
                 case product:
                     REST.withCallback(new MethodCallback<ProductServiceSupplierRequestDTO>() {
@@ -75,10 +79,11 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         }
 
                         @Override
-                        public void onSuccess(Method method, ProductServiceSupplierRequestDTO response) {
-                            orderView.displayTitle("Viewing product request '" + response.getId() + "'");
-                            orderView.displayUser(response.getCustomer());
-                            orderView.displayProductRequest(response);
+                        public void onSuccess(Method method, ProductServiceSupplierRequestDTO productServiceSupplierRequestDTO) {
+                            request = productServiceSupplierRequestDTO;
+                            orderView.displayTitle("Viewing product request '" + productServiceSupplierRequestDTO.getId() + "'");
+                            orderView.displayUser(productServiceSupplierRequestDTO.getCustomer());
+                            orderView.displayProductRequest(productServiceSupplierRequestDTO);
                         }
                     }).call(ServicesUtil.ordersService).getProductRequest(orderId);
                     break;
@@ -90,10 +95,11 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         }
 
                         @Override
-                        public void onSuccess(Method method, ImageryServiceRequestDTO response) {
-                            orderView.displayTitle("Viewing product request '" + response.getId() + "'");
-                            orderView.displayUser(response.getCustomer());
-                            orderView.displayImageryRequest(response);
+                        public void onSuccess(Method method, ImageryServiceRequestDTO imageryServiceRequestDTO) {
+                            request = imageryServiceRequestDTO;
+                            orderView.displayTitle("Viewing imagery request '" + imageryServiceRequestDTO.getId() + "'");
+                            orderView.displayUser(imageryServiceRequestDTO.getCustomer());
+                            orderView.displayImageryRequest(imageryServiceRequestDTO);
                         }
                     }).call(ServicesUtil.ordersService).getImageryRequest(orderId);
                     break;
@@ -105,10 +111,11 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         }
 
                         @Override
-                        public void onSuccess(Method method, ImagesRequestDTO response) {
-                            orderView.displayTitle("Viewing product request '" + response.getId() + "'");
-                            orderView.displayUser(response.getCustomer());
-                            orderView.displayImagesRequest(response);
+                        public void onSuccess(Method method, ImagesRequestDTO imagesRequestDTO) {
+                            request = imagesRequestDTO;
+                            orderView.displayTitle("Viewing images request '" + imagesRequestDTO.getId() + "'");
+                            orderView.displayUser(imagesRequestDTO.getCustomer());
+                            orderView.displayImagesRequest(imagesRequestDTO);
                         }
                     }).call(ServicesUtil.ordersService).getImagesRequest(orderId);
                     break;
@@ -121,6 +128,62 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
     @Override
     protected void bind() {
         super.bind();
+
+        handlers.add(orderView.getSubmitMessage().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                displayLoading("Saving message");
+                try {
+                    REST.withCallback(new MethodCallback<MessageDTO>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            hideLoading();
+                            displayError(exception.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, MessageDTO response) {
+                            hideLoading();
+                            addMessage(response);
+                        }
+                    }).call(ServicesUtil.ordersService).addRequestMessage(type, request.getId(), orderView.getMessageText().getText());
+                } catch (RequestException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
+
+        handlers.add(orderView.getSubmitResponse().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                displayLoading("Saving response");
+                try {
+                    final String response = orderView.getResponse();
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            hideLoading();
+                            displayError(exception.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void result) {
+                            hideLoading();
+                            orderView.displayResponse(response);
+                        }
+                    }).call(ServicesUtil.ordersService).submitRequestResponse(type, request.getId(), response);
+                } catch (RequestException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
+    }
+
+    private void addMessage(MessageDTO messageDTO) {
+        String userName = Supplier.getLoginInfo().getUserName();
+        boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());
+        orderView.addMessage(messageDTO.getFrom(),
+                isCustomer, messageDTO.getMessage(), messageDTO.getCreationDate());
     }
 
 }

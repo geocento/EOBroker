@@ -1,13 +1,12 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
-import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.OrdersPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.supplier.client.places.*;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -17,9 +16,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.constants.IconType;
+import gwt.material.design.addins.client.avatar.MaterialAvatar;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 
@@ -55,6 +55,8 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialLink orders;
     @UiField
     MaterialBadge ordersBadge;
+    @UiField
+    MaterialAvatar userIcon;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -74,6 +76,8 @@ public class TemplateView extends Composite implements HasWidgets {
         orders.setHref("#" + PlaceHistoryHelper.convertPlace(new OrdersPlace()));
 
         ordersBadge.setVisible(false);
+
+        userIcon.setName(Supplier.getLoginInfo().getUserName());
     }
 
     public void setTitleText(String title) {
@@ -109,15 +113,27 @@ public class TemplateView extends Composite implements HasWidgets {
         notificationsBadge.setVisible(hasNotifications);
         if(hasNotifications) {
             for (SupplierNotificationDTO supplierNotificationDTO : notifications) {
-                MaterialLink message = new MaterialLink(supplierNotificationDTO.getMessage(), new MaterialIcon(IconType.SHOP));
+                MaterialLink message = new MaterialLink(supplierNotificationDTO.getMessage());
+                message.setTruncate(true);
                 message.getElement().getStyle().setFontSize(0.8, Style.Unit.EM);
-                message.setHref("#" + PlaceHistoryHelper.convertPlace(
-                        new OrderPlace(
+                message.add(new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(supplierNotificationDTO.getCreationDate()) + "</span>"));
+                EOBrokerPlace place = null;
+                switch(supplierNotificationDTO.getType()) {
+                    case MESSAGE:
+                        place = new ConversationPlace(ConversationPlace.TOKENS.id.toString() + "=" + supplierNotificationDTO.getLinkId());
+                        break;
+                    case PRODUCTREQUEST:
+                    case IMAGESERVICEREQUEST:
+                    case IMAGEREQUEST:
+                        place = new OrderPlace(
                                 supplierNotificationDTO.getLinkId(),
                                 supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGEREQUEST ? RequestDTO.TYPE.image :
                                         supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGESERVICEREQUEST ? RequestDTO.TYPE.imageservice :
                                                 supplierNotificationDTO.getType() == SupplierNotification.TYPE.PRODUCTREQUEST ? RequestDTO.TYPE.product : null
-                                )));
+                        );
+                        break;
+                }
+                message.setHref("#" + PlaceHistoryHelper.convertPlace(place));
                 notificationsPanel.add(message);
             }
         } else {

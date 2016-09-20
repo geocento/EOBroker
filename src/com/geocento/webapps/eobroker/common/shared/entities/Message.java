@@ -16,9 +16,6 @@ public class Message {
     @ManyToOne
     User from;
 
-    @ManyToOne
-    User recipient;
-
     @Column(length = 1000)
     private String message;
 
@@ -42,14 +39,6 @@ public class Message {
 
     public void setFrom(User from) {
         this.from = from;
-    }
-
-    public User getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
     }
 
     public String getMessage() {

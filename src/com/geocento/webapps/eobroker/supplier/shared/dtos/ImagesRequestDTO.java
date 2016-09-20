@@ -8,36 +8,17 @@ import java.util.List;
 /**
  * Created by thomas on 29/08/2016.
  */
-public class ImagesRequestDTO {
+public class ImagesRequestDTO extends BaseRequestDTO {
 
-    String id;
-    UserDTO customer;
     String aoiWKT;
     List<Product> products;
     String response;
-    List<MessageDTO> messages;
 
     Date creationDate;
     Date responseDate;
     Date lastModified;
 
     public ImagesRequestDTO() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public UserDTO getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(UserDTO customer) {
-        this.customer = customer;
     }
 
     public String getAoiWKT() {
@@ -88,11 +69,4 @@ public class ImagesRequestDTO {
         this.lastModified = lastModified;
     }
 
-    public void setMessages(List<MessageDTO> messages) {
-        this.messages = messages;
-    }
-
-    public List<MessageDTO> getMessages() {
-        return messages;
-    }
 }

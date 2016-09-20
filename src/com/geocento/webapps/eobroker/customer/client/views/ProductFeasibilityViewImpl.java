@@ -19,6 +19,7 @@ import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibil
 import com.geocento.webapps.eobroker.customer.shared.feasibility.Sensor;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -32,6 +33,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -137,10 +139,11 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     private GraphicJSNI coverageGraphics = null;
 
     public ProductFeasibilityViewImpl(ClientFactoryImpl clientFactory) {
+
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
-        onResize(null);
+
         mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -200,6 +203,15 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                 presenter.onStopDateChanged(event.getValue());
             }
         });
+
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                searchBar.show();
+                tab.selectTab("query");
+                onResize(null);
+            }
+        });
     }
 
     private void mapLoaded() {
@@ -234,6 +246,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     public void displayLoadingResults(String message) {
         template.setLoading(message);
         searchBar.hide();
+        onResize(null);
     }
 
     @Override
@@ -241,6 +254,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         template.hideLoading();
         searchBar.show();
         tab.selectTab("results");
+        onResize(null);
     }
 
     @Override
@@ -585,9 +599,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
+    public void showQuery() {
+        tab.selectTab("query");
+    }
+
+    @Override
     public void onResize(ResizeEvent event) {
         mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
-        template.setPanelStyleName(style.navOpened(), searchBar.isVisible());
+        template.setPanelStyleName(style.navOpened(), searchBar.isOpen());
     }
 
 }

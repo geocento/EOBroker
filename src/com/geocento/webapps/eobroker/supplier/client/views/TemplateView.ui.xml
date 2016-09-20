@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:avatar="urn:import:gwt.material.design.addins.client.avatar"
         >
     <ui:style>
         .panel header {
@@ -51,6 +52,10 @@
             z-index: 1000;
         }
 
+        .userIcon {
+            vertical-align: middle;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.panel}">
@@ -73,7 +78,9 @@
                         </m:MaterialLink>
                     </m:MaterialTooltip>
                     <m:MaterialTooltip text="Log out" position="BOTTOM">
-                        <m:MaterialLink ui:field="logOut" iconType="FACE" iconPosition="NONE"/>
+                        <m:MaterialLink ui:field="logOut">
+                            <avatar:MaterialAvatar width="40px" height="40px" addStyleNames="{style.userIcon}" ui:field="userIcon"></avatar:MaterialAvatar>
+                        </m:MaterialLink>
                     </m:MaterialTooltip>
                 </m:MaterialNavSection>
             </m:MaterialNavBar>

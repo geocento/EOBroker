@@ -20,7 +20,7 @@
         }
 
         .buttonPanel {
-            padding: 50px 10px;
+            padding: 20px 10px;
         }
 
         .mapPanel {
@@ -28,10 +28,10 @@
         }
 
     </ui:style>
-    <views:TemplateView ui:field="template">
+    <views:TemplateView titleText="Manage user requests" ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
-        <design:MaterialCollapsible accordion="false" active="1" shadow="0">
-            <design:MaterialCollapsibleItem shadow="0">
+        <design:MaterialCollapsible accordion="false" shadow="0">
+            <design:MaterialCollapsibleItem shadow="0" active="true">
                 <design:MaterialCollapsibleHeader shadow="0">
                     <design:MaterialLabel fontSize="1.2em">Request details</design:MaterialLabel>
                 </design:MaterialCollapsibleHeader>
@@ -49,13 +49,13 @@
                     </design:MaterialRow>
                 </design:MaterialCollapsibleBody>
             </design:MaterialCollapsibleItem>
-            <design:MaterialCollapsibleItem>
+            <design:MaterialCollapsibleItem active="true">
                 <design:MaterialCollapsibleHeader>
                     <design:MaterialLabel fontSize="1.2em">Your offer</design:MaterialLabel>
                 </design:MaterialCollapsibleHeader>
                 <design:MaterialCollapsibleBody>
                     <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
-                        <richeditor:MaterialRichEditor placeholder="Enter your response" ui:field="responseEditor"></richeditor:MaterialRichEditor>
+                        <richeditor:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></richeditor:MaterialRichEditor>
                         <g:HTMLPanel addStyleNames="{style.buttonPanel}">
                             <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
                             </widgets:ProgressButton>
@@ -63,23 +63,28 @@
                     </g:HTMLPanel>
                 </design:MaterialCollapsibleBody>
             </design:MaterialCollapsibleItem>
+            <design:MaterialCollapsibleItem active="true">
+                <design:MaterialCollapsibleHeader>
+                    <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
+                </design:MaterialCollapsibleHeader>
+                <design:MaterialCollapsibleBody>
+                    <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
+                    </design:MaterialRow>
+                    <design:MaterialRow addStyleNames="{style.formValues}">
+                        <design:MaterialColumn grid="s2 m2 l2" ui:field="userImage">
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s10 m10 l10">
+                            <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12 m12 l12">
+                            <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                                <widgets:ProgressButton text="SUBMIT" ui:field="submitMessage">
+                                </widgets:ProgressButton>
+                            </g:HTMLPanel>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
+                </design:MaterialCollapsibleBody>
+            </design:MaterialCollapsibleItem>
         </design:MaterialCollapsible>
-        <design:MaterialLabel fontSize="1.2em" marginTop="20" marginBottom="20">Conversation</design:MaterialLabel>
-        <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
-        </design:MaterialRow>
-        <design:MaterialRow addStyleNames="{style.formValues}">
-            <design:MaterialColumn grid="s3 m3 l2">
-                <design:MaterialImage ui:field="userImage"></design:MaterialImage>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s9 m9 l10">
-                <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12 m12 l12">
-                <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                    <widgets:ProgressButton text="SUBMIT" ui:field="submit">
-                    </widgets:ProgressButton>
-                </g:HTMLPanel>
-            </design:MaterialColumn>
-        </design:MaterialRow>
     </views:TemplateView>
 </ui:UiBinder>

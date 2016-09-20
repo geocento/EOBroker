@@ -14,6 +14,7 @@ public class ImageRequestDTO {
     Date stop;
     String additionalInformation;
     List<Long> imageServiceIds;
+    private String application;
 
     public ImageRequestDTO() {
     }
@@ -64,5 +65,13 @@ public class ImageRequestDTO {
 
     public void setImageServiceIds(List<Long> imageServiceIds) {
         this.imageServiceIds = imageServiceIds;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public String getApplication() {
+        return application;
     }
 }

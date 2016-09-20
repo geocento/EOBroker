@@ -44,6 +44,8 @@ public interface RequestImageryView extends IsWidget {
 
     void displaySucces(String message);
 
+    String getApplication();
+
     public interface Presenter {
 
         void aoiChanged(AoI aoi);

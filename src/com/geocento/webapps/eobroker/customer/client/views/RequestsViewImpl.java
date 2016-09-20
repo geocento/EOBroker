@@ -16,11 +16,11 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class OrdersViewImpl extends Composite implements OrdersView {
+public class RequestsViewImpl extends Composite implements RequestsView {
 
     private Presenter presenter;
 
-    interface OrdersViewUiBinder extends UiBinder<Widget, OrdersViewImpl> {
+    interface OrdersViewUiBinder extends UiBinder<Widget, RequestsViewImpl> {
     }
 
     private static OrdersViewUiBinder ourUiBinder = GWT.create(OrdersViewUiBinder.class);
@@ -30,7 +30,7 @@ public class OrdersViewImpl extends Composite implements OrdersView {
     @UiField
     MaterialRow requestsList;
 
-    public OrdersViewImpl(ClientFactoryImpl clientFactory) {
+    public RequestsViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
 

@@ -3,9 +3,7 @@ package com.geocento.webapps.eobroker.customer.client;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.activities.AppActivityMapper;
-import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMapper;
-import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
-import com.geocento.webapps.eobroker.customer.client.places.OrdersPlace;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.utils.Utils;
@@ -55,7 +53,7 @@ public class Customer implements EntryPoint {
 
             @Override
             public Place filter(Place place) {
-                if(!Customer.isLoggedIn() && place instanceof OrdersPlace) {
+                if(!Customer.isLoggedIn() && requiresLogin(place)) {
                     return new LoginPagePlace(place);
                 }
                 return place;
@@ -91,6 +89,15 @@ public class Customer implements EntryPoint {
         }).call(ServicesUtil.loginService).getSession();
     }
 
+    private boolean requiresLogin(Place place) {
+        return place instanceof RequestsPlace ||
+                place instanceof ImagesResponsePlace ||
+                place instanceof ImageryResponsePlace ||
+                place instanceof ProductResponsePlace ||
+                place instanceof ConversationPlace
+                ;
+    }
+
     private void initialise() {
         com.geocento.webapps.eobroker.common.client.styles.StyleResources.INSTANCE.style().ensureInjected();
         StyleResources.INSTANCE.style().ensureInjected();
@@ -116,4 +123,9 @@ public class Customer implements EntryPoint {
     public static boolean isLoggedIn() {
         return loginInfo != null;
     }
+
+    public static LoginInfo getLoginInfo() {
+        return loginInfo;
+    }
+
 }

@@ -136,19 +136,6 @@ public class SearchResource implements SearchService {
     private List<RankedSuggestion> completeImagery(String keywordsString) {
         // try to recreate a sensor query
         SensorQuery sensorQuery = new SensorQuery(keywordsString);
-/*
-        boolean partialMatch = !keywordsString.endsWith(" ");
-        String[] keywords = keywordsString.split(" ");
-        for(int index = 0; index < (partialMatch ? keywords.length - 1 : keywords.length); index++) {
-            String keyword = keywords[index];
-            // find best match for remaining items
-            keyword = keyword.toLowerCase();
-            sensorQuery.ingestKeyword(keyword);
-        }
-        Gson gson = new Gson();
-        // now look for additional suggestions
-        HashMap<String, SensorFilters> suggestions = sensorQuery.getSuggestions(partialMatch ? keywords[keywords.length - 1] : "");
-*/
         String baseQuery = sensorQuery.getQueryString();
         String error = sensorQuery.getError();
         String suggestions = sensorQuery.getSuggestions();
@@ -156,6 +143,10 @@ public class SearchResource implements SearchService {
         if(baseQuery != null && baseQuery.length() > 0) {
             for (String suggestion : suggestions.split(";")) {
                 rankedSuggestions.add(new RankedSuggestion(baseQuery + " " + suggestion, Category.imagery, "image::" + baseQuery, 1.0));
+            }
+        } else {
+            for (String suggestion : suggestions.split(";")) {
+                rankedSuggestions.add(new RankedSuggestion(suggestion, Category.imagery, "image::" + baseQuery, 1.0));
             }
         }
         return rankedSuggestions;

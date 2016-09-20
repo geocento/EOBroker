@@ -63,6 +63,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         setTemplateView(imageSearchView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        imageSearchView.showQuery();
         imageSearchView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -295,6 +296,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     @Override
     public void aoiChanged(AoI aoi) {
         this.aoi = aoi;
+        Customer.setAoI(aoi);
         enableUpdateMaybe();
     }
 

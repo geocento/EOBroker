@@ -8,33 +8,14 @@ import java.util.List;
 /**
  * Created by thomas on 11/07/2016.
  */
-public class ProductServiceSupplierRequestDTO {
+public class ProductServiceSupplierRequestDTO extends BaseRequestDTO {
 
-    String id;
-    UserDTO customer;
     ProductDTO product;
     List<FormElementValue> formValues;
     private String supplierResponse;
     private String aoIWKT;
-    private List<MessageDTO> messages;
 
     public ProductServiceSupplierRequestDTO() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public UserDTO getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(UserDTO customer) {
-        this.customer = customer;
     }
 
     public ProductDTO getProduct() {
@@ -69,11 +50,4 @@ public class ProductServiceSupplierRequestDTO {
         return aoIWKT;
     }
 
-    public void setMessages(List<MessageDTO> messages) {
-        this.messages = messages;
-    }
-
-    public List<MessageDTO> getMessages() {
-        return messages;
-    }
 }

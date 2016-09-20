@@ -23,6 +23,9 @@ public class User {
     @Column(length = 1000)
     String email;
 
+    @Column(length = 1000)
+    String userIcon;
+
     @Enumerated(EnumType.STRING)
     USER_ROLE role;
 
@@ -44,6 +47,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUserIcon() {
+        return userIcon;
+    }
+
+    public void setUserIcon(String userIcon) {
+        this.userIcon = userIcon;
     }
 
     public String getPassword() {

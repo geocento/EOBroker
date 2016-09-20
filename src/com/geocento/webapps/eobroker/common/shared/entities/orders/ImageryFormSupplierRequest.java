@@ -11,7 +11,7 @@ import java.util.List;
  * Created by thomas on 06/07/2016.
  */
 @Entity
-public class ImageServiceFormRequest {
+public class ImageryFormSupplierRequest {
 
     @Id
     @GeneratedValue
@@ -35,7 +35,7 @@ public class ImageServiceFormRequest {
     @OneToMany
     List<Message> messages;
 
-    public ImageServiceFormRequest() {
+    public ImageryFormSupplierRequest() {
     }
 
     public Long getId() {

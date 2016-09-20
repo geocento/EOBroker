@@ -131,7 +131,7 @@ public class SensorQuery {
                 }
                 for(String keyword : keywords) {
                     if(keyword.startsWith(lastkeywords)) {
-                        suggestions += keyword;
+                        suggestions += keyword + ";";
                     }
                 }
             }

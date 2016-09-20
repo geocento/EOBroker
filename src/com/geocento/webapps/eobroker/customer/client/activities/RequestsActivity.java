@@ -1,9 +1,9 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.places.OrdersPlace;
+import com.geocento.webapps.eobroker.customer.client.places.RequestsPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.customer.client.views.OrdersView;
+import com.geocento.webapps.eobroker.customer.client.views.RequestsView;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
@@ -18,11 +18,11 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class OrdersActivity extends TemplateActivity implements OrdersView.Presenter {
+public class RequestsActivity extends TemplateActivity implements RequestsView.Presenter {
 
-    private OrdersView ordersView;
+    private RequestsView ordersView;
 
-    public OrdersActivity(OrdersPlace place, ClientFactory clientFactory) {
+    public RequestsActivity(RequestsPlace place, ClientFactory clientFactory) {
         super(clientFactory);
         this.place = place;
     }

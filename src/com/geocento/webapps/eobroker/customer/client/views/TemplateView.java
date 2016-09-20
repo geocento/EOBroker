@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
@@ -7,9 +8,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
-import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
-import com.geocento.webapps.eobroker.customer.client.places.OrdersPlace;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSuggestion;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
@@ -21,10 +20,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 
@@ -98,6 +94,8 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialLink categories;
     @UiField
     MaterialBadge notificationsBadge;
+    @UiField
+    MaterialDropDown notificationsPanel;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -117,7 +115,7 @@ public class TemplateView extends Composite implements HasWidgets {
             }
         });
 
-        orders.setHref("#" + PlaceHistoryHelper.convertPlace(new OrdersPlace()));
+        orders.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
 
         textSearch.setPresenter(new MaterialSuggestion.Presenter() {
             @Override
@@ -226,8 +224,36 @@ public class TemplateView extends Composite implements HasWidgets {
     }
 
     public void setNotifications(List<NotificationDTO> notifications) {
-        int count = notifications == null ? 0 : notifications.size();
-        notificationsBadge.setText(count + "");
+        notificationsBadge.setText(notifications.size() + "");
+        notificationsPanel.clear();
+        boolean hasNotifications = notifications != null && notifications.size() > 0;
+        notificationsBadge.setVisible(hasNotifications);
+        if(hasNotifications) {
+            for(NotificationDTO notificationDTO : notifications) {
+                MaterialLink message = new MaterialLink(notificationDTO.getMessage());
+                message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
+                message.add(new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(notificationDTO.getCreationDate()) + "</span>"));
+                EOBrokerPlace place = null;
+                switch(notificationDTO.getType()) {
+                    case MESSAGE:
+                        place = new ConversationPlace(ConversationPlace.TOKENS.conversationid.toString() + "=" + notificationDTO.getLinkId());
+                        break;
+                    case PRODUCTREQUEST:
+                        place = new ProductResponsePlace(ProductResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
+                        break;
+                    case IMAGESERVICEREQUEST:
+                        place = new ImageryResponsePlace(ImageryResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
+                        break;
+                    case IMAGEREQUEST:
+                        place = new ImagesResponsePlace(ImageryResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
+                        break;
+                }
+                message.setHref("#" + PlaceHistoryHelper.convertPlace(place));
+                notificationsPanel.add(message);
+            }
+        } else {
+            notificationsPanel.add(new MaterialLabel("No new notification"));
+        }
     }
 
     public void displaySignedIn(boolean signedIn) {

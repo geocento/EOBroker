@@ -327,6 +327,7 @@ public class AssetsResource implements AssetsService {
                     supplierNotificationDTO.setType(supplierNotification.getType());
                     supplierNotificationDTO.setMessage(supplierNotification.getMessage());
                     supplierNotificationDTO.setLinkId(supplierNotification.getLinkId());
+                    supplierNotificationDTO.setCreationDate(supplierNotification.getCreationDate());
                     return supplierNotificationDTO;
                 }
             });

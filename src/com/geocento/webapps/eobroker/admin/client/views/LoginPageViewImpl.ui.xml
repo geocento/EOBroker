@@ -26,7 +26,7 @@
         }
     </ui:style>
         <design:MaterialRow backgroundColor="grey lighten-4" addStyleNames="{style.login_demo}">
-            <design:MaterialColumn grid="s12 m8 l6" offset="l4" >
+            <design:MaterialColumn grid="s12 m8 l6" offset="m2 l3" >
                 <design:MaterialPanel shadow="1" addStyleNames="{style.panel}">
                     <design:MaterialPanel addStyleNames="{style.fieldPanel}">
                         <design:MaterialImage addStyleNames="{style.imgProfile} z-depth-1" ui:field="logo"/>

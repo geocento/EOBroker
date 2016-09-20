@@ -10,8 +10,11 @@ import com.google.gwt.place.shared.WithTokenizers;
         ProductFormPlace.Tokenizer.class,
         FullViewPlace.Tokenizer.class,
         ProductFeasibilityPlace.Tokenizer.class,
-        OrdersPlace.Tokenizer.class,
-        OrderPlace.Tokenizer.class,
+        RequestsPlace.Tokenizer.class,
+        ProductResponsePlace.Tokenizer.class,
+        ImageryResponsePlace.Tokenizer.class,
+        ImagesResponsePlace.Tokenizer.class,
+        ConversationPlace.Tokenizer.class,
         LoginPagePlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

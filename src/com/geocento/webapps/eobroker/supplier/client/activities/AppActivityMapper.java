@@ -29,6 +29,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new OrdersActivity((OrdersPlace) place, clientFactory);
         } else if(place instanceof OrderPlace) {
             return new OrderActivity((OrderPlace) place, clientFactory);
+        } else if(place instanceof ConversationPlace) {
+            return new ConversationActivity((ConversationPlace) place, clientFactory);
         }
         return null;
     }

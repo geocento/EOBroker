@@ -2,10 +2,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
@@ -254,6 +251,25 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public CompanyDTO getCompany(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Company company = em.find(Company.class, id);
+            if (company == null) {
+                throw new RequestException("Company does not exist");
+            }
+            return CompanyHelper.createCompanyDTO(company);
+        } catch (Exception e) {
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ProductServiceDescriptionDTO getProductServiceDescription(Long id) throws RequestException {
         if(id == null) {
             throw new RequestException("Id cannot be null");
@@ -272,6 +288,7 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setWebsite(productService.getWebsite());
             productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
             productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+            productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
             return productServiceDescriptionDTO;
         } catch (Exception e) {
             throw new RequestException("Server error");
@@ -295,6 +312,7 @@ public class AssetsResource implements AssetsService {
                     notificationDTO.setType(notification.getType());
                     notificationDTO.setMessage(notification.getMessage());
                     notificationDTO.setLinkId(notification.getLinkId());
+                    notificationDTO.setCreationDate(notification.getCreationDate());
                     return notificationDTO;
                 }
             });

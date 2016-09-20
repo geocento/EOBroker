@@ -25,21 +25,21 @@
             padding: 5%;
         }
     </ui:style>
-        <design:MaterialRow backgroundColor="grey lighten-4" addStyleNames="{style.login_demo}">
-            <design:MaterialColumn grid="s12 m8 l6" offset="l4" >
-                <design:MaterialPanel shadow="1" addStyleNames="{style.panel}">
-                    <design:MaterialPanel addStyleNames="{style.fieldPanel}">
-                        <design:MaterialImage addStyleNames="{style.imgProfile} z-depth-1" ui:field="logo"/>
-                        <design:MaterialTextBox type="TEXT" placeholder="User name" ui:field="userName"/>
-                        <design:MaterialTextBox type="PASSWORD" placeholder="Password" ui:field="password"/>
-                        <design:MaterialButton backgroundColor="blue" waves="LIGHT" text="Log In" width="100%" ui:field="login"/>
-                        <design:MaterialRow addStyleNames="{style.rowAction}">
-                            <design:MaterialColumn grid="s12 m12 l6">
-                                <design:MaterialCheckBox text="Keep me logged in" ui:field="keepLoggedIn"/>
-                            </design:MaterialColumn>
-                        </design:MaterialRow>
-                    </design:MaterialPanel>
+    <design:MaterialRow backgroundColor="grey lighten-4" addStyleNames="{style.login_demo}">
+        <design:MaterialColumn grid="s12 m8 l6" offset="m2 l3" >
+            <design:MaterialPanel shadow="1" addStyleNames="{style.panel}">
+                <design:MaterialPanel addStyleNames="{style.fieldPanel}">
+                    <design:MaterialImage addStyleNames="{style.imgProfile} z-depth-1" ui:field="logo"/>
+                    <design:MaterialTextBox type="TEXT" placeholder="User name" ui:field="userName"/>
+                    <design:MaterialTextBox type="PASSWORD" placeholder="Password" ui:field="password"/>
+                    <design:MaterialButton backgroundColor="blue" waves="LIGHT" text="Log In" width="100%" ui:field="login"/>
+                    <design:MaterialRow addStyleNames="{style.rowAction}">
+                        <design:MaterialColumn grid="s12 m12 l6">
+                            <design:MaterialCheckBox text="Keep me logged in" ui:field="keepLoggedIn"/>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
                 </design:MaterialPanel>
-            </design:MaterialColumn>
-        </design:MaterialRow>
+            </design:MaterialPanel>
+        </design:MaterialColumn>
+    </design:MaterialRow>
 </ui:UiBinder>

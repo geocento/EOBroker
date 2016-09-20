@@ -12,7 +12,7 @@ import java.util.List;
  * Created by thomas on 06/07/2016.
  */
 @Entity
-public class ImageryRequest {
+public class ImagesRequest {
 
     @Id
     String id;
@@ -41,7 +41,7 @@ public class ImageryRequest {
     @OneToMany
     List<Message> messages;
 
-    public ImageryRequest() {
+    public ImagesRequest() {
     }
 
     public String getId() {

@@ -58,6 +58,8 @@ public interface ImageSearchView extends IsWidget {
 
     TemplateView getTemplateView();
 
+    void showQuery();
+
     public interface Presenter {
 
         void aoiChanged(AoI aoi);

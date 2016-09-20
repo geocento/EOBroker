@@ -19,11 +19,10 @@ public class MessageHelper {
         });
     }
 
-    private static MessageDTO convertToDTO(Message message) {
+    public static MessageDTO convertToDTO(Message message) {
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setId(message.getId());
         messageDTO.setFrom(message.getFrom().getUsername());
-        messageDTO.setRecipient(message.getRecipient().getUsername());
         messageDTO.setMessage(message.getMessage());
         messageDTO.setCreationDate(message.getCreationDate());
         return messageDTO;

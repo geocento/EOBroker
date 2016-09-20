@@ -288,6 +288,11 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     }
 
     @Override
+    public String getApplication() {
+        return application.getSelectedItemText();
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }

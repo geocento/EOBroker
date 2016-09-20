@@ -7,12 +7,16 @@ import com.geocento.webapps.eobroker.common.shared.imageapi.SearchResponse;
 import com.google.gson.*;
 import org.apache.log4j.Logger;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,9 +37,40 @@ public class EIAPIUtil {
 
     private static String token = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.eiToken);
 
+    static String baseUrl = "http://earthimages.geocento.com/api/";
+
     static public List<Product> queryProducts(SearchRequest searchRequest) throws Exception {
+        javax.ws.rs.client.Client client = javax.ws.rs.client.ClientBuilder.newClient();
+
+        String token = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.eiToken);
+
+        Invocation invocation = client.target(baseUrl + "search")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Token " + token)
+                .buildPost(Entity.json(searchRequest));
+        return invocation.submit(SearchResponse.class).get().getProducts();
+/*
         String response = sendAPIRequest("/search/", new Gson().toJson(searchRequest));
         return builder.create().fromJson(response, SearchResponse.class).getProducts();
+*/
+    }
+
+    public static List<Product> queryProductsById(String productIds) throws Exception {
+        javax.ws.rs.client.Client client = javax.ws.rs.client.ClientBuilder.newClient();
+
+        String token = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.eiToken);
+
+        HashMap<String, String> value = new HashMap<String, String>();
+        value.put("ids", productIds);
+        Invocation invocation = client.target(baseUrl + "search/products")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Token " + token)
+                .buildPost(Entity.json(value));
+        return invocation.submit(SearchResponse.class).get().getProducts();
+/*
+        String response = sendAPIRequest("/search/products", "ids=" + productIds);
+        return builder.create().fromJson(response, new TypeToken<ArrayList<Product>>(){}.getType());
+*/
     }
 
     private static String sendAPIRequest(String endPoint, String payload) throws Exception {
@@ -85,5 +120,4 @@ public class EIAPIUtil {
         }
         return response;
     }
-
 }
