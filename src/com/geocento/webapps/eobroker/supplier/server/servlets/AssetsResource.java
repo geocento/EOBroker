@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.Product;
 import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
@@ -14,6 +15,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.http.client.RequestException;
@@ -337,6 +339,99 @@ public class AssetsResource implements AssetsService {
             }
             logger.error(e.getMessage(), e);
             throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    private DatasetProviderDTO createDatasetProviderDTO(DatasetProvider datasetProvider) {
+        DatasetProviderDTO datasetProviderDTO = new DatasetProviderDTO();
+        datasetProviderDTO.setId(datasetProvider.getId());
+        datasetProviderDTO.setName(datasetProvider.getName());
+        datasetProviderDTO.setIconURL(datasetProvider.getIconUrl());
+        datasetProviderDTO.setUri(datasetProvider.getUri());
+        datasetProviderDTO.setExtent(datasetProvider.getExtent());
+        return datasetProviderDTO;
+    }
+
+    @Override
+    public List<DatasetProviderDTO> listDatasets() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<DatasetProvider> query = em.createQuery("select d from DatasetProvider d where d.company = :company", DatasetProvider.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<DatasetProvider, DatasetProviderDTO>() {
+                @Override
+                public DatasetProviderDTO mutate(DatasetProvider datasetProvider) {
+                    return createDatasetProviderDTO(datasetProvider);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public DatasetProviderDTO getDatasetProvider(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            DatasetProvider datasetProvider = em.find(DatasetProvider.class, id);
+            User user = em.find(User.class, userName);
+            if(datasetProvider == null) {
+                throw new RequestException("Dataset does not exist");
+            }
+            if(datasetProvider.getCompany() != user.getCompany()) {
+                throw new RequestException("Not allowed");
+            }
+            return createDatasetProviderDTO(datasetProvider);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Long saveDatasetProvider(DatasetProviderDTO datasetProviderDTO) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            DatasetProvider datasetProvider = null;
+            if(datasetProviderDTO.getId() == null) {
+                datasetProvider = new DatasetProvider();
+                datasetProvider.setName(datasetProviderDTO.getName());
+                datasetProvider.setUri(datasetProviderDTO.getUri());
+                datasetProvider.setIconUrl(datasetProviderDTO.getIconURL());
+                datasetProvider.setExtent(datasetProviderDTO.getExtent());
+                datasetProvider.setCompany(user.getCompany());
+                em.persist(datasetProvider);
+            } else {
+                datasetProvider = em.find(DatasetProvider.class, datasetProviderDTO.getId());
+                if(datasetProvider == null) {
+                    throw new RequestException("Could not find the dataset");
+                }
+                if(user.getCompany() != datasetProvider.getCompany()) {
+                    throw new RequestException("Not allowed");
+                }
+                datasetProvider.setName(datasetProviderDTO.getName());
+                datasetProvider.setUri(datasetProviderDTO.getUri());
+                datasetProvider.setIconUrl(datasetProviderDTO.getIconURL());
+                datasetProvider.setExtent(datasetProviderDTO.getExtent());
+            }
+            em.getTransaction().commit();
+            return datasetProvider.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving dataset");
         } finally {
             em.close();
         }

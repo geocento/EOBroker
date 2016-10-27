@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:m="urn:import:gwt.material.design.client.ui"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
              xmlns:h="urn:import:com.google.gwt.user.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
@@ -76,24 +75,7 @@
                 </m:MaterialColumn>
                 <m:MaterialColumn grid="s12 m12 l6">
                     <m:MaterialLabel text="Draw or upload AoI" addStyleNames="{style.section}"></m:MaterialLabel>
-                    <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                        <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
-                        </maps:ArcGISMap>
-                        <!-- FAB -->
-                        <m:MaterialFAB layoutPosition="ABSOLUTE" bottom="60">
-                            <m:MaterialTooltip text="Create" position="LEFT">
-                                <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
-                            </m:MaterialTooltip>
-                            <m:MaterialFABList>
-                                <m:MaterialTooltip text="Theme" position="LEFT">
-                                    <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
-                                </m:MaterialTooltip>
-                                <m:MaterialTooltip text="Mail " position="LEFT">
-                                    <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
-                                </m:MaterialTooltip>
-                            </m:MaterialFABList>
-                        </m:MaterialFAB>
-                    </g:HTMLPanel>
+                    <maps:MapContainer height="300px" width="100%" addStyleNames="{style.mapPanel}" ui:field="mapContainer"></maps:MapContainer>
                 </m:MaterialColumn>
                 <m:MaterialColumn grid="s12 m12 l12">
                     <h:HTMLPanel addStyleNames="{style.buttonPanel}">

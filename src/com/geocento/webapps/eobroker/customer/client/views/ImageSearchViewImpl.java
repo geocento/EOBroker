@@ -22,7 +22,10 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
@@ -40,8 +43,6 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.base.MaterialImageCell;
 import gwt.material.design.client.constants.ImageType;
-import gwt.material.design.client.events.SideNavClosedEvent;
-import gwt.material.design.client.events.SideNavOpenedEvent;
 import gwt.material.design.client.ui.*;
 
 import java.util.*;
@@ -625,6 +626,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @Override
     public void showQuery() {
         tab.selectTab("query");
+    }
+
+    @Override
+    public void setSearchTextValid(boolean valid) {
+        sensors.setSearchTextValid(valid);
     }
 
     @Override

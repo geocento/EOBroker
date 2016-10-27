@@ -4,8 +4,8 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
-             xmlns:forms="urn:import:com.geocento.webapps.eobroker.common.client.widgets.forms"
-             xmlns:cutout="urn:import:gwt.material.design.addins.client.cutout">
+             xmlns:cutout="urn:import:gwt.material.design.addins.client.cutout"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityViewImpl.Style">
 
         .providers {
@@ -69,7 +69,7 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <views:TemplateView titleText="Service Feasibility" ui:field="template">
-        <m:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
+        <widgets:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
             <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
 <!--
                 <m:MaterialImage visible="false" type="CIRCLE" width="40" display="INLINE_BLOCK" addStyleNames="z-depth-1" ui:field="image"></m:MaterialImage>
@@ -167,7 +167,7 @@
                     </m:MaterialRow>
                 </m:MaterialColumn>
             </m:MaterialRow>
-        </m:MaterialSideNav>
+        </widgets:MaterialSideNav>
         <cutout:MaterialCutOut circle="true" padding="50" ui:field="cutOut">
             <m:MaterialTitle title="Sensors" description="List of sensors which will potentially be used to fulfill the service" textColor="white"/>
             <g:HTMLPanel ui:field="chartsArea"></g:HTMLPanel>

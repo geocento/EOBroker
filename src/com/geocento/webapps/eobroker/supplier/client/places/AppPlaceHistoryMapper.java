@@ -9,6 +9,7 @@ import com.google.gwt.place.shared.WithTokenizers;
         ServicesPlace.Tokenizer.class,
         OrdersPlace.Tokenizer.class,
         OrderPlace.Tokenizer.class,
+        DatasetProviderPlace.Tokenizer.class,
         ConversationPlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

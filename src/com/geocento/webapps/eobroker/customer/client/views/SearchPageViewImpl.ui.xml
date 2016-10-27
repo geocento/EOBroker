@@ -3,6 +3,7 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
 
@@ -34,7 +35,7 @@
             margin: 7px 0;
             padding-left: 10px;
             line-height: 50px;
-            font-size: 28px;
+            font-size: 1.6em;
             color: white;
         }
 
@@ -64,8 +65,6 @@
         }
 
         .mapPanel {
-            position: relative;
-            padding: 10px;
             background: white;
         }
 
@@ -84,14 +83,38 @@
             margin: 20px 0px;
         }
 
+        .sidenavPanel {
+            height: 100%;
+            background: white;
+        }
+
+        .sideNav {
+            height: auto !important;
+            bottom: 0px !important;
+        }
+
+        .subTitle {
+            margin: 7px 0;
+            padding-left: 20px;
+            line-height: 40px;
+            font-size: 1.2em;
+        }
+
+        .subtext {
+            margin: 7px 0;
+            padding-left: 30px;
+            line-height: 30px;
+            font-size: 1em;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template" titleText="Search">
         <views:header>
             <!-- SideNav -->
-            <design:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="1" ui:field="filtersPanel">
-                <g:HTMLPanel>
-                    <design:MaterialLink text="Filter by" fontSize="1em" textColor="blue-grey" iconType="SEARCH"/>
+            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="1" backgroundColor="white" addStyleNames="{style.sideNav}" ui:field="filtersPanel">
+                <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
+                    <design:MaterialLink visible="false" text="Filter by" fontSize="1em" textColor="blue-grey" iconType="SEARCH"/>
                     <g:HTMLPanel addStyleNames="{style.filters}">
                         <g:HTMLPanel ui:field="categories">
                             <design:MaterialLabel addStyleNames="{style.optionTitle}">Categories</design:MaterialLabel>
@@ -99,14 +122,11 @@
                         <g:HTMLPanel ui:field="settings">
                         </g:HTMLPanel>
                         <design:MaterialLabel addStyleNames="{style.optionTitle}">Area of interest</design:MaterialLabel>
-                        <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                            <maps:ArcGISMap width="100%" height="250px" addStyleNames="{style.map}" ui:field="mapContainer">
-                            </maps:ArcGISMap>
-                        </g:HTMLPanel>
+                        <maps:MapContainer addStyleNames="{style.mapPanel}" height="250px" ui:field="mapContainer"></maps:MapContainer>
                         <design:MaterialCheckBox text="limit to AoI" addStyleNames="{style.optionTitle}" ui:field="filterByAoI"></design:MaterialCheckBox>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
-            </design:MaterialSideNav>
+            </widgets:MaterialSideNav>
         </views:header>
         <g:HTMLPanel>
             <design:MaterialTooltip text="Click to change your search">

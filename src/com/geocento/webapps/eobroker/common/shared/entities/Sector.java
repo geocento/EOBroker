@@ -5,6 +5,7 @@ package com.geocento.webapps.eobroker.common.shared.entities;
  */
 public enum Sector {
 
+    all("All"),
     ecosystems("Ecosystems"),
     infrastructure("Infrastructure"),
     coastal("Coastal"),

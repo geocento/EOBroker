@@ -25,6 +25,11 @@ import java.util.List;
  */
 public class NewsItemsActivity extends TemplateActivity implements NewsItemsView.Presenter {
 
+    private int start = 0;
+    private int limit = 10;
+    private String orderby = "";
+    private String filter;
+
     private NewsItemsView newsItemsView;
 
     public NewsItemsActivity(NewsItemsPlace place, ClientFactory clientFactory) {
@@ -47,41 +52,9 @@ public class NewsItemsActivity extends TemplateActivity implements NewsItemsView
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
 
         String orderby = null;
-        int start = 0;
-        int limit = 25;
-        if(tokens.containsKey(NewsItemsPlace.TOKENS.start.toString())) {
-            try {
-                start = Integer.parseInt(tokens.get(NewsItemsPlace.TOKENS.start.toString()));
-            } catch (Exception e) {
-
-            }
-        }
-        if(tokens.containsKey(NewsItemsPlace.TOKENS.limit.toString())) {
-            try {
-                limit = Integer.parseInt(tokens.get(NewsItemsPlace.TOKENS.limit.toString()));
-            } catch (Exception e) {
-
-            }
-        }
         orderby = tokens.get(NewsItemsPlace.TOKENS.orderby.toString());
-        // load all newsItems
-        try {
-            final int finalStart = start;
-            final int finalLimit = limit;
-            final String finalOrderby = orderby;
-            REST.withCallback(new MethodCallback<List<NewsItem>>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error loading news items please try again");
-                }
-
-                @Override
-                public void onSuccess(Method method, List<NewsItem> response) {
-                        newsItemsView.setNewsItems(finalStart, finalLimit, finalOrderby, response);
-                }
-            }).call(ServicesUtil.assetsService).listNewsItems(start, limit, orderby);
-        } catch (RequestException e) {
-        }
+        // load news items
+        loadNewsItems();
     }
 
     @Override
@@ -95,6 +68,42 @@ public class NewsItemsActivity extends TemplateActivity implements NewsItemsView
                 clientFactory.getPlaceController().goTo(new NewsItemPlace());
             }
         }));
+    }
+
+
+    private void loadNewsItems() {
+        if(start == 0) {
+            newsItemsView.clearNewsItems();
+        }
+        try {
+            newsItemsView.setNewsItemsLoading(true);
+            REST.withCallback(new MethodCallback<List<NewsItem>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    newsItemsView.setNewsItemsLoading(false);
+                }
+
+                @Override
+                public void onSuccess(Method method, List<NewsItem> response) {
+                    newsItemsView.setNewsItemsLoading(false);
+                    start += response.size();
+                    newsItemsView.addNewsItems(response.size() == limit, response);
+                }
+            }).call(ServicesUtil.assetsService).listNewsItems(start, limit, orderby, filter);
+        } catch (RequestException e) {
+        }
+    }
+
+    @Override
+    public void loadMore() {
+        loadNewsItems();
+    }
+
+    @Override
+    public void changeFilter(String value) {
+        start = 0;
+        filter = value;
+        loadNewsItems();
     }
 
 }

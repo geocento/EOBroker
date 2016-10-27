@@ -1,20 +1,15 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
-import com.geocento.webapps.eobroker.admin.client.Admin;
-import com.geocento.webapps.eobroker.admin.client.events.RemoveNewsItem;
-import com.geocento.webapps.eobroker.admin.client.places.NewsItemPlace;
+import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Created by thomas on 31/08/2016.
  */
-public class NewsItemList extends ElementList<NewsItem> {
+public class NewsItemList extends AsyncPagingWidgetList<NewsItem> {
 
+/*
     @Override
     protected Column<NewsItem, NewsItem> createElementCell() {
         return new Column<NewsItem, NewsItem>(new AbstractCell<NewsItem>() {
@@ -56,5 +51,11 @@ public class NewsItemList extends ElementList<NewsItem> {
     @Override
     protected void editElement(NewsItem element) {
         Admin.clientFactory.getPlaceController().goTo(new NewsItemPlace(element));
+    }
+*/
+
+    @Override
+    protected Widget getItemWidget(NewsItem value) {
+        return new NewsItemWidget(value);
     }
 }

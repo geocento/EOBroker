@@ -2,7 +2,6 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -18,6 +17,7 @@ import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.SearchPageView;
+import com.geocento.webapps.eobroker.customer.shared.SearchResult;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -192,7 +192,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         } else if(text != null) {
             searchPageView.setTitleText("Search Results");
             searchPageView.displayLoadingResults("Searching matching results...");
-            searchPageView.setCurrentSearch("You searched for '" + text + "'");
+            searchPageView.setCurrentSearch(text);
             try {
                 REST.withCallback(new MethodCallback<SearchResult>() {
                     @Override
@@ -208,6 +208,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                         searchPageView.setMatchingProducts(suggestedProducts);
                         searchPageView.setMatchingServices(searchResult.getProductServices());
                         searchPageView.setMatchingImagery(text);
+                        // search for datasets
+                        // TODO - move to server to locally cache? could be issue with timing...
+                        searchPageView.setDatasetProviders(searchResult.getDatasetsProviders(), text, aoi);
                     }
                 }).call(ServicesUtil.searchService).getMatchingServices(text, category, null);
             } catch (RequestException e) {

@@ -3,11 +3,13 @@ package com.geocento.webapps.eobroker.customer.client.services;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
-import com.geocento.webapps.eobroker.common.shared.entities.SearchResult;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
+import com.geocento.webapps.eobroker.customer.shared.CSWGetRecordsRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.SearchResult;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
@@ -57,4 +59,8 @@ public interface SearchService extends DirectRestService {
     @Produces("application/json")
     List<CompanyDTO> listCompanies(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId);
 
+    @POST
+    @Path("/search/datasets/proxy")
+    @Produces("application/json")
+    CSWGetRecordsResponse getRecordsResponse(CSWGetRecordsRequestDTO request) throws RequestException;
 }

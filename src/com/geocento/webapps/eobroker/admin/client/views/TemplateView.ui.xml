@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.TemplateView.Style">
         .panel header {
@@ -30,7 +31,7 @@
         }
 
         .navOpened main, .navOpened footer {
-            padding-left: 300px;
+            padding-left: 250px;
         }
 
     </ui:style>
@@ -52,12 +53,12 @@
                     </design:MaterialTooltip>
                 </design:MaterialNavSection>
             </design:MaterialNavBar>
-            <design:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="false" allowBodyScroll="true" backgroundColor="white" top="64" shadow="0" width="300" ui:field="sideNav">
+            <widgets:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="false" allowBodyScroll="true" backgroundColor="white" top="64" shadow="0" width="250" ui:field="sideNav">
                 <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
                 <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" ui:field="companies"></design:MaterialLink>
                 <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" ui:field="products"></design:MaterialLink>
                 <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="News Items" ui:field="newsItems"></design:MaterialLink>
-            </design:MaterialSideNav>
+            </widgets:MaterialSideNav>
         </header>
 
         <design:MaterialContainer fontSize="0.8em" paddingTop="64" ui:field="mainPanel">

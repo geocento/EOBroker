@@ -43,7 +43,7 @@ public class SensorQuery {
             switch(tokenName) {
                 case "SENSORTYPE":
                     sensor_type = token.getText();
-                    queryString += token.getText() + " imagery ";
+                    queryString += token.getText() + " imagery";
                     break;
                 case "VHR":
                     minResolution = 0.0;

@@ -1,17 +1,22 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
-import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.Sector;
+import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
+import com.geocento.webapps.eobroker.customer.shared.CSWGetRecordsRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,15 +24,18 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
+import org.fusesource.restygwt.client.REST;
 
 import java.util.List;
 
@@ -52,6 +60,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         String option();
 
         String optionTitle();
+
+        String subTitle();
+
+        String subtext();
     }
 
     @UiField
@@ -68,19 +80,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @UiField
     HTMLPanel container;
     @UiField
-    ArcGISMap mapContainer;
+    MapContainer mapContainer;
     @UiField
     HTMLPanel settings;
     @UiField
     MaterialCheckBox filterByAoI;
-
-    private Callback<Void, Exception> mapLoadedHandler = null;
-
-    private boolean mapLoaded = false;
-
-    private MapJSNI map;
-
-    private GraphicJSNI aoiRendering;
 
     private Presenter presenter;
 
@@ -105,44 +109,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             });
         }
 
-        mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
-            @Override
-            public void onFailure(Exception reason) {
-
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                mapContainer.createMap("streets", new LatLng(40.0, -4.0), 3, new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<MapJSNI>() {
-
-                    @Override
-                    public void callback(final MapJSNI mapJSNI) {
-                        final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
-                        map = mapJSNI;
-                        mapLoaded();
-                    }
-                });
-            }
-        });
-
         filtersPanel.show();
 
         onResize(null);
     }
 
-    private void mapLoaded() {
-        mapLoaded = true;
-        if(mapLoadedHandler != null) {
-            mapLoadedHandler.onSuccess(null);
-        }
-    }
-
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
-        this.mapLoadedHandler = mapLoadedHandler;
-        if(mapLoaded) {
-            mapLoadedHandler.onSuccess(null);
-        }
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
     @Override
@@ -152,17 +126,13 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void setCurrentSearch(String search) {
-        currentSearch.setText(search);
+        currentSearch.setText("Results for '" + search + "'");
+        template.setSearchText(search);
     }
 
     @Override
     public void displayAoI(AoI aoi) {
-        if(aoiRendering != null) {
-            map.getGraphics().remove(aoiRendering);
-        }
-        if(aoi != null) {
-            aoiRendering = map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
-        }
+        mapContainer.displayAoI(aoi);
     }
 
     @Override
@@ -246,10 +216,16 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         addTitle(productRow, "EO Broker services matching your request", style.productServicesTitle());
-        for(ProductServiceDTO productServiceDTO : productServices) {
-            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
-            productRow.add(serviceColumn);
-            serviceColumn.add(new ProductServiceWidget(productServiceDTO));
+        if(productServices.size() > 0) {
+            for (ProductServiceDTO productServiceDTO : productServices) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new ProductServiceWidget(productServiceDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No services found...");
+            label.addStyleName(style.subtext());
+            productRow.add(label);
         }
     }
 
@@ -354,6 +330,91 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
             materialRow.add(materialColumn);
             materialColumn.add(new CompanyWidget(companyDTO));
+        }
+    }
+
+    @Override
+    public void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi) {
+        MaterialRow datasetsRow = new MaterialRow();
+        container.add(datasetsRow);
+        addTitle(datasetsRow, "Matching datasets", style.productServicesTitle());
+        for(final DatasetProviderDTO datasetProviderDTO : datasetProviderDTOs) {
+            final MaterialRow datasetRow = new MaterialRow();
+            container.add(datasetRow);
+            MaterialLabelIcon labelIcon = new MaterialLabelIcon(datasetProviderDTO.getIconURL(), datasetProviderDTO.getName());
+            labelIcon.setImageHeight("35px");
+            labelIcon.addStyleName(style.subTitle());
+            datasetRow.add(labelIcon);
+            final LoadingWidget loadingWidget = new LoadingWidget("Loading datasets...");
+            loadingWidget.addStyleName(style.subTitle());
+            datasetRow.add(loadingWidget);
+            // get the protocol part
+            String uri = datasetProviderDTO.getUri();
+            String protocol = uri.substring(0, uri.indexOf(":")).toLowerCase();
+            uri = uri.substring(uri.indexOf(":") + 1);
+            switch(protocol) {
+                case "csw":
+/*
+                    CSWUtils.getRecordsResponse(uri, text, AoIUtil.getExtent(aoi), new AsyncCallback<CSWGetRecordsResponse>() {
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            Window.alert(caught.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(CSWGetRecordsResponse result) {
+                            datasetsRow.remove(loadingWidget);
+                            datasetsRow.add(new MaterialLabel("Datasets for " + datasetProviderDTO.getName()));
+                            for(CSWBriefRecord cswBriefRecord : result.getRecords()) {
+                                MaterialColumn datasetColumn = new MaterialColumn(12, 6, 4);
+                                datasetsRow.add(datasetColumn);
+                                datasetColumn.add(new DatasetWidget(cswBriefRecord));
+                            }
+                            if(result.getNextRecord() != 0) {
+                                datasetsRow.add(new MaterialLabel("View all datasets (" + result.getNumberOfRecordsMatched() + " found)"));
+                            }
+                        }
+                    });
+*/
+                    try {
+                        CSWGetRecordsRequestDTO request = new CSWGetRecordsRequestDTO(uri, text, AoIUtil.getExtent(aoi));
+                        REST.withCallback(new MethodCallback<CSWGetRecordsResponse>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                datasetRow.remove(loadingWidget);
+                                MaterialLabel label = new MaterialLabel("Failed to load datasets for " + datasetProviderDTO.getName());
+                                label.addStyleName(style.subtext());
+                                datasetRow.add(label);
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, CSWGetRecordsResponse response) {
+                                datasetRow.remove(loadingWidget);
+                                if(response.getRecords().size() > 0) {
+                                    MaterialLabel label = new MaterialLabel("Found " + response.getNumberOfRecordsMatched() + " relevant datasets");
+                                    label.addStyleName(style.subtext());
+                                    datasetRow.add(label);
+                                    for (CSWBriefRecord cswBriefRecord : response.getRecords()) {
+                                        MaterialColumn datasetColumn = new MaterialColumn(6, 4, 3);
+                                        datasetRow.add(datasetColumn);
+                                        datasetColumn.add(new DatasetWidget(cswBriefRecord));
+                                    }
+                                    if (response.getNextRecord() != 0) {
+                                        MaterialLink viewMore = new MaterialLink("View more...");
+                                        viewMore.addStyleName(style.subtext());
+                                        datasetRow.add(viewMore);
+                                    }
+                                } else {
+                                    MaterialLabel label = new MaterialLabel("No datasets found");
+                                    label.addStyleName(style.subtext());
+                                    datasetRow.add(label);
+                                }
+                            }
+                        }).call(ServicesUtil.searchService).getRecordsResponse(request);
+                    } catch (RequestException e) {
+                    }
+                    break;
+            }
         }
     }
 

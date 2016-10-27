@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Geomet
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.PolygonJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
+import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 
 /**
  * Created by thomas on 03/06/2016.
@@ -36,6 +37,10 @@ public class AoIUtil {
             aoIPolygon.setWktRings(aoiWKT.replace("POLYGON((", "").replace("))", ""));
             return aoIPolygon;
         }
+        return null;
+    }
+
+    public static Extent getExtent(AoI aoi) {
         return null;
     }
 }

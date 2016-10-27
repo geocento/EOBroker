@@ -4,7 +4,9 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.DatasetProviderWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductServiceWidget;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -39,6 +41,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialButton addService;
     @UiField(provided = true)
     TemplateView template;
+    @UiField
+    MaterialButton addDataset;
+    @UiField
+    HTMLPanel datasets;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -65,6 +71,18 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
+    public void setDatasets(List<DatasetProviderDTO> datasetProviderDTOs) {
+        datasets.clear();
+        if(datasetProviderDTOs == null || datasetProviderDTOs.size() == 0) {
+            datasets.add(new MaterialLabel("No datasets, click on the button below to add a new dataset"));
+            return;
+        }
+        for(DatasetProviderDTO datasetProviderDTO : datasetProviderDTOs) {
+            datasets.add(new DatasetProviderWidget(datasetProviderDTO));
+        }
+    }
+
+    @Override
     public void setCompany(CompanyDTO companyDTO) {
         companyWidget.setCompany(companyDTO);
     }
@@ -77,6 +95,11 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public HasClickHandlers getAddService() {
         return addService;
+    }
+
+    @Override
+    public HasClickHandlers getAddDataset() {
+        return addDataset;
     }
 
     @Override

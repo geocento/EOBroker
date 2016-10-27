@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities;
+package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
@@ -12,6 +12,7 @@ public class SearchResult {
 
     List<ProductDTO> products;
     List<ProductServiceDTO> productServices;
+    private List<DatasetProviderDTO> datasetsProviders;
 
     public SearchResult() {
     }
@@ -30,5 +31,13 @@ public class SearchResult {
 
     public void setProductServices(List<ProductServiceDTO> productServices) {
         this.productServices = productServices;
+    }
+
+    public List<DatasetProviderDTO> getDatasetsProviders() {
+        return datasetsProviders;
+    }
+
+    public void setDatasetsProviders(List<DatasetProviderDTO> datasetsProviders) {
+        this.datasetsProviders = datasetsProviders;
     }
 }

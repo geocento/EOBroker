@@ -20,6 +20,7 @@ public class ClientFactoryImpl implements ClientFactory {
     private OrdersView ordersView = null;
     private OrderView orderView = null;
     private ConversationView conversationView = null;
+    private DatasetProviderView datasetProviderView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -90,6 +91,14 @@ public class ClientFactoryImpl implements ClientFactory {
             conversationView = new ConversationViewImpl(this);
         }
         return conversationView;
+    }
+
+    @Override
+    public DatasetProviderView getDatasetProviderView() {
+        if(datasetProviderView == null) {
+            datasetProviderView = new DatasetProviderViewImpl(this);
+        }
+        return datasetProviderView;
     }
 
 }

@@ -212,6 +212,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             public void onTextSelected(TextSelected event) {
                 // TODO - correct the input if needed
                 imageSearchView.setText(event.getText());
+                enableUpdateMaybe();
             }
         });
         
@@ -221,6 +222,8 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             public void onSuggestionSelected(SuggestionSelected event) {
                 imageSearchView.setText(event.getSuggestion().getName());
                 selectedSuggestion = event.getSuggestion();
+                imageSearchView.setSearchTextValid(true);
+                enableUpdateMaybe();
             }
         });
     }
@@ -286,13 +289,6 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         }
     }
 
-    private String getSensorsFilter(String sensors) {
-        return sensors.startsWith("free") ? "SENTI*;LANDSAT*" :
-                sensors.startsWith("optical") ? "SPOT*;WV*;Plei*" :
-                sensors.startsWith("Suitable") ? "SPOT-6_*;TerraSAR*" :
-                sensors;
-    }
-
     @Override
     public void aoiChanged(AoI aoi) {
         this.aoi = aoi;
@@ -311,6 +307,12 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             enableUpdate(false);
             return;
         }
+/*
+        if(selectedSuggestion == null) {
+            enableUpdate(false);
+            return;
+        }
+*/
         enableUpdate(true);
     }
 
@@ -342,6 +344,8 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     @Override
     public void onSensorsChanged(String value) {
         sensors = value;
+        selectedSuggestion = null;
+        imageSearchView.setSearchTextValid(false);
         updateSuggestions();
         enableUpdateMaybe();
     }

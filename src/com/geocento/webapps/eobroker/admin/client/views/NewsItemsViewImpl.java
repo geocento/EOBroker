@@ -6,9 +6,13 @@ import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
 import com.geocento.webapps.eobroker.admin.client.widgets.NewsItemList;
 import com.geocento.webapps.eobroker.admin.client.widgets.ProductsList;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
+import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,6 +20,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialTextBox;
 
 import java.util.List;
 
@@ -41,6 +46,8 @@ public class NewsItemsViewImpl extends Composite implements NewsItemsView {
     NewsItemList newsItems;
     @UiField
     MaterialButton createNew;
+    @UiField
+    MaterialTextBox filter;
 
     private Presenter presenter;
 
@@ -50,10 +57,17 @@ public class NewsItemsViewImpl extends Composite implements NewsItemsView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        newsItems.setPresenter(new AsyncPagingCellTable.Presenter() {
+        newsItems.setPresenter(new AsyncPagingWidgetList.Presenter() {
             @Override
-            public void rangeChanged(int start, int length, Column<?, ?> column, boolean isAscending) {
-                clientFactory.getPlaceController().goTo(new NewsItemsPlace(start, length, null));
+            public void loadMore() {
+                presenter.loadMore();
+            }
+        });
+
+        filter.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                presenter.changeFilter(event.getValue());
             }
         });
     }
@@ -64,15 +78,23 @@ public class NewsItemsViewImpl extends Composite implements NewsItemsView {
     }
 
     @Override
-    public void setNewsItems(int start, int limit, String orderby, List<NewsItem> newsItemList) {
-        this.newsItems.setPagerSize(limit);
-        //this.newsItems.setOrderBy(orderby);
-        this.newsItems.setRowData(start, newsItemList);
+    public void addNewsItems(boolean hasMore, List<NewsItem> newsItems) {
+        this.newsItems.addData(newsItems, hasMore);
     }
 
     @Override
     public HasClickHandlers getCreateNewsItemButton() {
         return createNew;
+    }
+
+    @Override
+    public void clearNewsItems() {
+        newsItems.clearData();
+    }
+
+    @Override
+    public void setNewsItemsLoading(boolean loading) {
+        newsItems.setLoading(loading);
     }
 
     @Override

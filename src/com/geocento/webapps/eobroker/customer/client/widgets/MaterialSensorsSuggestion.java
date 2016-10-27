@@ -117,9 +117,12 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
                 switch (event.getNativeEvent().getKeyCode()) {
                     case KeyCodes.KEY_ENTER: {
                         if (getCurSel() == -1) {
-                            return;
+                            selectLink(0);
                         }
                         MaterialLink selLink = getSelectedLink();
+                        if(selLink == null) {
+                            return;
+                        }
                         reset(selLink.getText());
                         selLink.fireEvent(new GwtEvent<ClickHandler>() {
                             @Override
@@ -167,6 +170,11 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
                 currentText = getText();
             }
         });
+    }
+
+    private void selectLink(int selectionIndex) {
+        curSel = selectionIndex;
+        applyHighlightedItem((MaterialLink) searchResult.getWidget(selectionIndex));
     }
 
     @Override
@@ -240,20 +248,10 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
         searchResult.setVisible(false);
     }
 
-/*
-    @Override
-    public HandlerRegistration addBlurHandler(final BlurHandler handler) {
-        return super.addBlurHandler(new BlurHandler() {
-            @Override
-            public void onBlur(BlurEvent event) {
-                EventTarget nextFocus = event.getNativeEvent().getRelatedEventTarget();
-                if(!Element.is(nextFocus) || Element.as(nextFocus) != searchResult.getElement()) {
-                    handler.onBlur(event);
-                }
-            }
-        });
+    public void setSearchTextValid(boolean valid) {
+        asTextBox().getElement().getStyle().setColor(valid ? "#383" : "#833");
     }
-*/
+
 }
 
 

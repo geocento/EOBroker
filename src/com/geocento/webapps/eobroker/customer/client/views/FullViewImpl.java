@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.masonry.MaterialMasonry;
+import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.ui.*;
 
 /**
@@ -206,27 +207,43 @@ public class FullViewImpl extends Composite implements FullView {
         title.setTitle(productDescriptionDTO.getName());
         title.setDescription(productDescriptionDTO.getShortDescription());
         details.add(new HTMLPanel(productDescriptionDTO.getDescription()));
-        details.add(new HTMLPanel("<dl>" +
-                "<dt><b>Thematic</b>:</dt><dd>" + productDescriptionDTO.getThematic().toString() + "</dd>" +
-                "<dt><b>Sector</b>:</dt><dd>" + productDescriptionDTO.getSector().toString() + "</dd>" +
-                "</dl>"));
-        details.add(new HTML("<p class='" + style.section() + "'>This product can be provided by the following services</p>"));
-        MaterialRow materialRow = new MaterialRow();
-        details.add(materialRow);
-        for(ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
-            materialColumn.add(new ProductServiceWidget(productServiceDTO));
-            materialRow.add(materialColumn);
+        MaterialPanel badges = new MaterialPanel();
+        badges.setPadding(10);
+/*
+        MaterialLabel materialLabel = new MaterialLabel("Thematic");
+        badges.add(materialLabel);
+*/
+        MaterialButton thematic = new MaterialButton(ButtonType.RAISED, "Thematic: " + productDescriptionDTO.getThematic().toString(), null);
+        thematic.setMarginRight(20);
+        badges.add(thematic);
+        MaterialButton sector = new MaterialButton(ButtonType.RAISED, "Sector: " + productDescriptionDTO.getSector().toString(), null);
+        badges.add(sector);
+        //badges.add(new MaterialBadge("Sector: " + productDescriptionDTO.getSector().toString(), "white", "blue"));
+        details.add(badges);
+        if(productDescriptionDTO.getProductServices().size() == 0) {
+            details.add(new HTML("<p class='" + style.section() + "'>No on-demand services are available for this product</p>"));
+            details.add(new HTML("<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>"));
+        } else {
+            details.add(new HTML("<p class='" + style.section() + "'>This product can be provided by the following on-demand services</p>"));
+            MaterialRow materialRow = new MaterialRow();
+            details.add(materialRow);
+            for (ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+                materialColumn.add(new ProductServiceWidget(productServiceDTO));
+                materialRow.add(materialColumn);
+            }
         }
         details.add(new HTML("<p class='" + style.section() + "'>You might also be interested in...</p>"));
         MaterialRow otherItemsRow = new MaterialRow();
         details.add(otherItemsRow);
-        MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
-        otherItemsRow.add(serviceColumn);
-        serviceColumn.add(new ImageSearchWidget(productDescriptionDTO.getName()));
-        serviceColumn = new MaterialColumn(12, 6, 4);
-        otherItemsRow.add(serviceColumn);
-        serviceColumn.add(new ImageRequestWidget(productDescriptionDTO.getName()));
+        if(productDescriptionDTO.hasImageRule()) {
+            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
+            otherItemsRow.add(serviceColumn);
+            serviceColumn.add(new ImageSearchWidget(productDescriptionDTO.getName()));
+            serviceColumn = new MaterialColumn(12, 6, 4);
+            otherItemsRow.add(serviceColumn);
+            serviceColumn.add(new ImageRequestWidget(productDescriptionDTO.getName()));
+        }
     }
 
     @Override

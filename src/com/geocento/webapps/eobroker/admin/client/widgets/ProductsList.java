@@ -1,27 +1,51 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
-import com.geocento.webapps.eobroker.admin.client.Admin;
-import com.geocento.webapps.eobroker.admin.client.places.ProductPlace;
-import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
-import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
+import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.google.gwt.cell.client.ButtonCell;
-import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Created by thomas on 21/06/2016.
  */
-public class ProductsList extends AsyncPagingCellTable<ProductDTO> {
+public class ProductsList extends AsyncPagingWidgetList<ProductDTO> {
 
+    private int pagerSize;
+    private String orderBy;
+
+/*
     private Column<ProductDTO, String> editColumn;
     private TextColumn<ProductDTO> nameColumn;
     private Column<ProductDTO, String> thumbnailColumn;
     private TextColumn<ProductDTO> themeColumn;
     private TextColumn<ProductDTO> sectorColumn;
+*/
 
+/*
+    @Override
+    protected Cell<ProductDTO> getCell() {
+        return new AbstractCell<ProductDTO>() {
+            @Override
+            public void render(Context context, ProductDTO value, SafeHtmlBuilder sb) {
+                new ProductWidget(value).getElement().getInnerHTML();
+            }
+        };
+    }
+*/
+
+    public ProductsList() {
+        this(10);
+    }
+
+    public ProductsList(int pageSize) {
+        super(pageSize, 12, 4, 3);
+    }
+
+    @Override
+    protected Widget getItemWidget(ProductDTO value) {
+        return new ProductWidget(value);
+    }
+
+/*
     @Override
     public void initTableColumns(CellTable<ProductDTO> dataGrid) {
 
@@ -93,4 +117,5 @@ public class ProductsList extends AsyncPagingCellTable<ProductDTO> {
                 break;
         }
     }
+*/
 }

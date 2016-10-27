@@ -48,6 +48,10 @@
 
             .textSearch > input {
                 display: inline-block !important;
+                color: white;
+            }
+            .textSearch > input:focus {
+                color: black;
             }
 
             .categories {
@@ -85,7 +89,7 @@
                             </m:MaterialTooltip>
                         </m:MaterialNavSection>
                         <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
-                            <widgets:MaterialSuggestion height="60px" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO" ui:field="textSearch"/>
+                            <widgets:MaterialSuggestion height="60px" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
                     <m:MaterialDropDown activator="categories" constrainWidth="true" ui:field="categoriesDropdown">

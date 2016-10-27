@@ -29,6 +29,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private NewsItemViewImpl newsItemView = null;
 
+    private DatasetProvidersView datasetProvidersView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -106,6 +108,14 @@ public class ClientFactoryImpl implements ClientFactory {
             companyView = new CompanyViewImpl(this);
         }
         return companyView;
+    }
+
+    @Override
+    public DatasetProvidersView getDatasetProvidersView() {
+        if(datasetProvidersView == null) {
+            datasetProvidersView = new DatasetProvidersViewImpl(this);
+        }
+        return datasetProvidersView;
     }
 
 }

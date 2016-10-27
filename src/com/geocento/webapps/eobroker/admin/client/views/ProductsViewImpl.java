@@ -1,17 +1,20 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
 import com.geocento.webapps.eobroker.admin.client.widgets.ProductsList;
-import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
+import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialTextBox;
 
 import java.util.List;
 
@@ -35,6 +38,10 @@ public class ProductsViewImpl extends Composite implements ProductsView {
     TemplateView template;
     @UiField
     ProductsList products;
+    @UiField
+    MaterialButton createNew;
+    @UiField
+    MaterialTextBox filter;
 
     private Presenter presenter;
 
@@ -44,10 +51,17 @@ public class ProductsViewImpl extends Composite implements ProductsView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        products.setPresenter(new AsyncPagingCellTable.Presenter() {
+        products.setPresenter(new AsyncPagingWidgetList.Presenter() {
             @Override
-            public void rangeChanged(int start, int length, Column<?, ?> column, boolean isAscending) {
-                clientFactory.getPlaceController().goTo(new ProductsPlace(start, length, null));
+            public void loadMore() {
+                presenter.loadMore();
+            }
+        });
+
+        filter.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                presenter.changeFilter(event.getValue());
             }
         });
     }
@@ -58,10 +72,13 @@ public class ProductsViewImpl extends Composite implements ProductsView {
     }
 
     @Override
-    public void setProducts(int start, int limit, String orderby, List<ProductDTO> productDTOs) {
-        this.products.setPagerSize(limit);
-        this.products.setOrderBy(orderby);
-        this.products.setRowData(start, productDTOs);
+    public void clearProducts() {
+        products.clearData();
+    }
+
+    @Override
+    public void addProducts(boolean hasMore, List<ProductDTO> productDTOs) {
+        products.addData(productDTOs, hasMore);
     }
 
     @Override
@@ -69,4 +86,13 @@ public class ProductsViewImpl extends Composite implements ProductsView {
         return this;
     }
 
+    @Override
+    public HasClickHandlers getCreateNew() {
+        return createNew;
+    }
+
+    @Override
+    public void setProductsLoading(boolean loading) {
+        products.setLoading(loading);
+    }
 }

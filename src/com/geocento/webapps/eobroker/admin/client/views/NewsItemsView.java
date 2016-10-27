@@ -13,11 +13,18 @@ public interface NewsItemsView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void setNewsItems(int finalStart, int finalLimit, String finalOrderby, List<NewsItem> response);
+    void addNewsItems(boolean hasMore, List<NewsItem> newsItems);
 
     HasClickHandlers getCreateNewsItemButton();
 
+    void clearNewsItems();
+
+    void setNewsItemsLoading(boolean loading);
+
     public interface Presenter {
+        void loadMore();
+
+        void changeFilter(String value);
     }
 
 }

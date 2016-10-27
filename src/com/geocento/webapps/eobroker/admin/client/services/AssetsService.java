@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
@@ -42,7 +43,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/products/")
     @Produces("application/json")
-    public List<ProductDTO> listProducts(@QueryParam("start") int start, @QueryParam("limit") int limit, @QueryParam("orderby") String orderBy) throws RequestException;
+    public List<ProductDTO> listProducts(@QueryParam("start") int start, @QueryParam("limit") int limit, @QueryParam("orderby") String orderBy, @QueryParam("filter") String filter) throws RequestException;
 
     @GET
     @Path("/assets/productservices/{id}")
@@ -89,7 +90,10 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/newsitem/")
     @Produces("application/json")
-    List<NewsItem> listNewsItems(@QueryParam("start") int start, @QueryParam("limit") int limit, @QueryParam("orderby") String orderby) throws RequestException;
+    List<NewsItem> listNewsItems(@QueryParam("start") int start,
+                                 @QueryParam("limit") int limit,
+                                 @QueryParam("orderby") String orderby,
+                                 @QueryParam("filterby") String filter) throws RequestException;
 
     @GET
     @Path("/assets/newsitem/{id}")
@@ -100,5 +104,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/newsitem/")
     @Produces("application/json")
     void saveNewsItem(NewsItem newsItem) throws RequestException;
+
+    @GET
+    @Path("/assets/dataset/")
+    @Produces("application/json")
+    List<DatasetProviderDTO> listDatasets() throws RequestException;
 
 }

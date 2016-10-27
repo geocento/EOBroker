@@ -1,9 +1,14 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.XMLUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWRecordType;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
@@ -15,13 +20,26 @@ import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
+import com.geocento.webapps.eobroker.customer.client.utils.CSWUtils;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
+import com.geocento.webapps.eobroker.customer.shared.CSWGetRecordsRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.SearchResult;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -205,12 +223,75 @@ public class SearchResource implements SearchService {
                 }
                 searchResult.setProducts(productDTOs);
                 searchResult.setProductServices(productServices);
-                // now get the product suppliers for each one of them
             }
+            // now get the relevant dataset providers
+            // TODO - need to add AoI too
+            TypedQuery<DatasetProvider> datasetProviderTypedQuery = em.createQuery("select d from DatasetProvider d", DatasetProvider.class);
+            List<DatasetProvider> datasetProviders = datasetProviderTypedQuery.getResultList();
+            searchResult.setDatasetsProviders(ListUtil.mutate(datasetProviders, new ListUtil.Mutate<DatasetProvider, DatasetProviderDTO>() {
+                @Override
+                public DatasetProviderDTO mutate(DatasetProvider datasetProvider) {
+                    return createDatasetProviderDTO(datasetProvider);
+                }
+            }));
             return searchResult;
         } finally {
             em.close();
         }
+    }
+
+    private List<DatasetProviderDTO> getDatasetProviders(String textFilter, int start, int limit) {
+        List<DatasetProvider> datasetProviders = null;
+        EntityManager em = EMF.get().createEntityManager();
+        if(textFilter != null) {
+            // check if last character is a space
+            boolean partialMatch = !textFilter.endsWith(" ");
+            textFilter.trim();
+            // break down text into sub words
+            String[] words = textFilter.split(" ");
+            String keywords = StringUtils.join(words, " | ");
+            if (partialMatch) {
+                keywords += ":*";
+            }
+            // change the last word so that it allows for partial match
+            String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
+                    "          FROM datasetprovider, to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          WHERE tsv @@ keywords\n" +
+                    "          ORDER BY rank DESC;";
+            Query q = em.createNativeQuery(sqlStatement);
+            q.setFirstResult(start);
+            q.setMaxResults(limit);
+            List<Object[]> results = q.getResultList();
+            List<Long> datasetIds = new ArrayList<Long>();
+            for (Object[] result : results) {
+                datasetIds.add((Long) result[0]);
+            }
+            TypedQuery<DatasetProvider> datasetProviderTypedQuery = em.createQuery("select d from DatasetProvider d where d.id IN :datasetIds", DatasetProvider.class);
+            datasetProviderTypedQuery.setParameter("datasetIds", datasetIds);
+            datasetProviders = datasetProviderTypedQuery.getResultList();
+        } else {
+            TypedQuery<DatasetProvider> datasetProviderTypedQuery = em.createQuery("select d from DatasetProvider d order by d.name", DatasetProvider.class);
+            datasetProviderTypedQuery.setFirstResult(start);
+            datasetProviderTypedQuery.setMaxResults(limit);
+            datasetProviders = datasetProviderTypedQuery.getResultList();
+        }
+        em.close();
+        return ListUtil.mutate(datasetProviders, new ListUtil.Mutate<DatasetProvider, DatasetProviderDTO>() {
+            @Override
+            public DatasetProviderDTO mutate(DatasetProvider datasetProvider) {
+                return createDatasetProviderDTO(datasetProvider);
+            }
+        });
+    }
+
+    private DatasetProviderDTO createDatasetProviderDTO(DatasetProvider datasetProvider) {
+        DatasetProviderDTO datasetProviderDTO = new DatasetProviderDTO();
+        datasetProviderDTO.setName(datasetProvider.getName());
+        datasetProviderDTO.setIconURL(datasetProvider.getIconUrl());
+        datasetProviderDTO.setUri(datasetProvider.getUri());
+        datasetProviderDTO.setExtent(datasetProvider.getExtent());
+        datasetProviderDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(datasetProvider.getCompany()));
+        return datasetProviderDTO;
     }
 
     @Override
@@ -505,6 +586,68 @@ public class SearchResource implements SearchService {
                 return CompanyHelper.createCompanyDTO(company);
             }
         });
+    }
+
+    @Override
+    public CSWGetRecordsResponse getRecordsResponse(CSWGetRecordsRequestDTO requestDTO) throws RequestException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(requestDTO.getUri());
+        StringEntity params = null;
+        String encoding = "UTF-8";
+        try {
+            params = new StringEntity(CSWUtils.getRequestData(requestDTO.getText(), requestDTO.getExtent()), encoding);
+            params.setContentType("application/xml");
+            httpPost.setEntity(params);
+            HttpResponse response = httpClient.execute(httpPost);
+            int responseCode = response.getStatusLine().getStatusCode();
+            if(responseCode == 200 || responseCode == 204) {
+                String responseValue = EntityUtils.toString(response.getEntity(), encoding);
+                CSWGetRecordsResponse records = new CSWGetRecordsResponse();
+                try {
+                    Document doc = XMLUtil.getDocument(responseValue);
+                    Node rootNode = doc.getDocumentElement();
+                    Node searchResultsNode = XMLUtil.getUniqueNode((Element) rootNode, "csw:SearchResults");
+                    List<CSWBriefRecord> briefRecords = new ArrayList<CSWBriefRecord>();
+                    for(Node node : XMLUtil.getNodes(searchResultsNode, "csw:BriefRecord")) {
+                        CSWBriefRecord briefRecord = new CSWBriefRecord();
+                        briefRecord.setId(XMLUtil.getUniqueValue(node, "dc:identifier"));
+                        briefRecord.setTitle(XMLUtil.getUniqueValue(node, "dc:title"));
+                        briefRecord.setType(CSWRecordType.valueOf(XMLUtil.getUniqueValue(node, "dc:type")));
+                        String[] ll = XMLUtil.getUniqueValue(node, "ows:LowerCorner").split(" ");
+                        String[] ur = XMLUtil.getUniqueValue(node, "ows:UpperCorner").split(" ");
+                        Extent extent = new Extent();
+                        extent.setNorth(Double.parseDouble(ur[1]));
+/*
+                        extent.setWest(((Double.parseDouble(ur[0]) % 180) + 180.0) % 180.0);
+*/
+                        extent.setWest(Double.parseDouble(ur[0]));
+                        extent.setSouth(Double.parseDouble(ll[1]));
+                        extent.setEast(Double.parseDouble(ll[0]));
+                        briefRecord.setExtent(extent);
+                        briefRecords.add(briefRecord);
+                    }
+                    records.setRecords(briefRecords);
+                    records.setNextRecord(Integer.parseInt(((Element) searchResultsNode).getAttribute("nextRecord")));
+                    records.setNumberOfRecordsMatched(Integer.parseInt(((Element) searchResultsNode).getAttribute("numberOfRecordsMatched")));
+                    records.setNumberOfRecordsReturned(Integer.parseInt(((Element) searchResultsNode).getAttribute("numberOfRecordsReturned")));
+                    return records;
+                } catch (Exception e) {
+                    throw new RequestException("Error parsing response");
+                }
+
+            }
+            else{
+                logger.error(response.getStatusLine().getStatusCode());
+
+                throw new RequestException("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
+        } finally {
+
+        }
     }
 
     private String convertGeoJsonRings(List<List<double[]>> rings) {

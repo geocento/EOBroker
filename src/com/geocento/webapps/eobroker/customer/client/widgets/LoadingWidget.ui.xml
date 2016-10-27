@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+
+    <g:HTMLPanel>
+        <design:MaterialPreLoader size="SMALL">
+            <design:MaterialSpinner color="blue-only"/>
+        </design:MaterialPreLoader>
+        <design:MaterialLabel display="INLINE_BLOCK" ui:field="text"></design:MaterialLabel>
+    </g:HTMLPanel>
+</ui:UiBinder>

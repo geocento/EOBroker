@@ -1,11 +1,14 @@
 package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
+import com.geocento.webapps.eobroker.admin.client.places.ProductPlace;
 import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.ProductsView;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -23,6 +26,11 @@ import java.util.List;
 public class ProductsActivity extends TemplateActivity implements ProductsView.Presenter {
 
     private ProductsView productsView;
+
+    private int start = 0;
+    private int limit = 10;
+    private String orderby = "";
+    private String filter;
 
     public ProductsActivity(ProductsPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -44,39 +52,30 @@ public class ProductsActivity extends TemplateActivity implements ProductsView.P
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
 
         String orderby = null;
-        int start = 0;
-        int limit = 25;
-        if(tokens.containsKey(ProductsPlace.TOKENS.start.toString())) {
-            try {
-                start = Integer.parseInt(tokens.get(ProductsPlace.TOKENS.start.toString()));
-            } catch (Exception e) {
-
-            }
-        }
-        if(tokens.containsKey(ProductsPlace.TOKENS.limit.toString())) {
-            try {
-                limit = Integer.parseInt(tokens.get(ProductsPlace.TOKENS.limit.toString()));
-            } catch (Exception e) {
-
-            }
-        }
         orderby = tokens.get(ProductsPlace.TOKENS.orderby.toString());
         // load all products
+        loadProducts();
+    }
+
+    private void loadProducts() {
+        if(start == 0) {
+            productsView.clearProducts();
+        }
         try {
-            final int finalStart = start;
-            final int finalLimit = limit;
-            final String finalOrderby = orderby;
+            productsView.setProductsLoading(true);
             REST.withCallback(new MethodCallback<List<ProductDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    productsView.setProductsLoading(false);
                 }
 
                 @Override
                 public void onSuccess(Method method, List<ProductDTO> response) {
-                        productsView.setProducts(finalStart, finalLimit, finalOrderby, response);
+                    productsView.setProductsLoading(false);
+                    start += response.size();
+                    productsView.addProducts(response.size() == limit, response);
                 }
-            }).call(ServicesUtil.assetsService).listProducts(start, limit, orderby);
+            }).call(ServicesUtil.assetsService).listProducts(start, limit, orderby, filter);
         } catch (RequestException e) {
         }
     }
@@ -84,6 +83,24 @@ public class ProductsActivity extends TemplateActivity implements ProductsView.P
     @Override
     protected void bind() {
         super.bind();
+
+        handlers.add(productsView.getCreateNew().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ProductPlace());
+            }
+        }));
     }
 
+    @Override
+    public void loadMore() {
+        loadProducts();
+    }
+
+    @Override
+    public void changeFilter(String value) {
+        start = 0;
+        filter = value;
+        loadProducts();
+    }
 }

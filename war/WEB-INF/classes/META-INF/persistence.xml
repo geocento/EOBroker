@@ -33,6 +33,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.Message</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.NewsItem</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Conversation</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

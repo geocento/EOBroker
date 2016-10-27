@@ -4,13 +4,17 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveDataset;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveDatasetHandler;
 import com.geocento.webapps.eobroker.supplier.client.events.RemoveService;
 import com.geocento.webapps.eobroker.supplier.client.events.RemoveServiceHandler;
 import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
 import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.DatasetProviderPlace;
 import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -88,6 +92,22 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
             e.printStackTrace();
         }
 
+        try {
+            REST.withCallback(new MethodCallback<List<DatasetProviderDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<DatasetProviderDTO> response) {
+                    dashboardView.setDatasets(response);
+                }
+
+            }).call(ServicesUtil.assetsService).listDatasets();
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -97,6 +117,15 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
             @Override
             public void onRemoveService(RemoveService event) {
                 if(Window.confirm("Are you sure you want to remove this service?")) {
+                    MaterialToast.fireToast("Not implemented yet");
+                }
+            }
+        });
+
+        activityEventBus.addHandler(RemoveDataset.TYPE, new RemoveDatasetHandler() {
+            @Override
+            public void onRemoveDataset(RemoveDataset event) {
+                if(Window.confirm("Are you sure you want to remove this dataset?")) {
                     MaterialToast.fireToast("Not implemented yet");
                 }
             }
@@ -113,6 +142,13 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
             @Override
             public void onClick(ClickEvent event) {
                 clientFactory.getPlaceController().goTo(new ServicesPlace());
+            }
+        }));
+
+        handlers.add(dashboardView.getAddDataset().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new DatasetProviderPlace());
             }
         }));
     }

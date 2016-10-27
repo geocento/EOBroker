@@ -31,6 +31,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new OrderActivity((OrderPlace) place, clientFactory);
         } else if(place instanceof ConversationPlace) {
             return new ConversationActivity((ConversationPlace) place, clientFactory);
+        } else if(place instanceof DatasetProviderPlace) {
+            return new DatasetProviderActivity((DatasetProviderPlace) place, clientFactory);
         }
         return null;
     }

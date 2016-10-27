@@ -5,6 +5,7 @@ package com.geocento.webapps.eobroker.common.shared.entities;
  */
 public enum Thematic {
 
+    all("All"),
     land("Land"),
     builtenvironment("Built environment"),
     marine("Marine"),

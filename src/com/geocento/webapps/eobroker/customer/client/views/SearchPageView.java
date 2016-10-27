@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -49,6 +50,8 @@ public interface SearchPageView extends IsWidget {
     TemplateView getTemplateView();
 
     void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text);
+
+    void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi);
 
     public interface Presenter {
     }

@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps">
+    <ui:style>
+
+        .fabPanel li, .fabPanel a {
+            line-height: normal !important;
+            height: auto;
+        }
+    </ui:style>
+    <g:HTMLPanel>
+        <maps:ArcGISMap ui:field="mapContainer">
+        </maps:ArcGISMap>
+        <!-- FAB -->
+        <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="60" addStyleNames="{style.fabPanel}">
+            <design:MaterialTooltip text="Create" position="LEFT">
+                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE"/>
+            </design:MaterialTooltip>
+            <design:MaterialFABList>
+                <design:MaterialTooltip text="Draw polygon" position="LEFT">
+                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
+                </design:MaterialTooltip>
+                <design:MaterialTooltip text="Mail " position="LEFT">
+                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
+                </design:MaterialTooltip>
+            </design:MaterialFABList>
+        </design:MaterialFAB>
+    </g:HTMLPanel>
+</ui:UiBinder>

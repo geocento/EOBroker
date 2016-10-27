@@ -3,9 +3,11 @@ package com.geocento.webapps.eobroker.admin.server.servlets;
 import com.geocento.webapps.eobroker.admin.client.services.AssetsService;
 import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
 import com.geocento.webapps.eobroker.admin.shared.dtos.EditProductDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
@@ -152,7 +154,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<ProductDTO> listProducts(int start, int limit, String orderBy) throws RequestException {
+    public List<ProductDTO> listProducts(int start, int limit, String orderBy, String filter) throws RequestException {
         UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -167,7 +169,13 @@ public class AssetsResource implements AssetsService {
                         orderBy = "p.name";
                 }
             }
-            TypedQuery<Product> query = em.createQuery("select p from Product p order by " + orderBy, Product.class);
+            boolean hasFilter = filter != null && filter.length() > 0;
+            TypedQuery<Product> query = em.createQuery("select p from Product p" +
+                            (hasFilter ?  "  where p.name LIKE :filter" : "") +
+                            " order by " + orderBy, Product.class);
+            if(hasFilter) {
+                query.setParameter("filter", "%" + filter + "%");
+            }
             query.setFirstResult(start);
             query.setMaxResults(limit);
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Product, ProductDTO>() {
@@ -413,10 +421,27 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<NewsItem> listNewsItems(int start, int limit, String orderby) throws RequestException {
+    public List<NewsItem> listNewsItems(int start, int limit, String orderby, String filter) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
-        TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate", NewsItem.class);
+        boolean hasFilter = filter != null && filter.length() > 0;
+        // force orderby if null
+        if(orderby == null) {
+            orderby = "creationDate";
+        }
+        switch(orderby) {
+            case "creationDate":
+                orderby = "n.creationDate";
+                break;
+            default:
+                orderby = "n.creationDate";
+        }
+        TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n" +
+                (hasFilter ?  "  where n.title LIKE :filter" : "") +
+                " order by " + orderby, NewsItem.class);
+        if(hasFilter) {
+            query.setParameter("filter", "%" + filter + "%");
+        }
         query.setFirstResult(start);
         query.setMaxResults(limit);
         return query.getResultList();
@@ -455,6 +480,39 @@ public class AssetsResource implements AssetsService {
                 em.getTransaction().rollback();
             }
             throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private DatasetProviderDTO createDatasetProviderDTO(DatasetProvider datasetProvider) {
+        DatasetProviderDTO datasetProviderDTO = new DatasetProviderDTO();
+        datasetProviderDTO.setId(datasetProvider.getId());
+        datasetProviderDTO.setName(datasetProvider.getName());
+        datasetProviderDTO.setIconURL(datasetProvider.getIconUrl());
+        datasetProviderDTO.setUri(datasetProvider.getUri());
+        datasetProviderDTO.setExtent(datasetProvider.getExtent());
+        datasetProviderDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(datasetProvider.getCompany()));
+        return datasetProviderDTO;
+    }
+
+    @Override
+    public List<DatasetProviderDTO> listDatasets() throws RequestException {
+        String userName = com.geocento.webapps.eobroker.supplier.server.util.UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<DatasetProvider> query = em.createQuery("select d from DatasetProvider d where d.company = :company", DatasetProvider.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<DatasetProvider, DatasetProviderDTO>() {
+                @Override
+                public DatasetProviderDTO mutate(DatasetProvider datasetProvider) {
+                    return createDatasetProviderDTO(datasetProvider);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading notifications");
         } finally {
             em.close();
         }

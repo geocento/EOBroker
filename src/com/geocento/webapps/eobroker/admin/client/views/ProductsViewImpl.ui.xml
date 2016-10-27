@@ -9,12 +9,30 @@
             margin: 20px 0px;
         }
 
+        .content {
+            padding: 20px;
+        }
+
+        .filter {
+            margin: 10px;
+            float: right;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template">
-        <design:MaterialTitle title="Browse registered products"></design:MaterialTitle>
-        <g:HTMLPanel addStyleNames="{style.services}">
-            <widgets:ProductsList ui:field="products"></widgets:ProductsList>
+        <g:HTMLPanel addStyleNames="{style.content}">
+            <g:HTMLPanel>
+                <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" ui:field="createNew"></design:MaterialButton>
+                <design:MaterialTitle title="Browse registered products"></design:MaterialTitle>
+            </g:HTMLPanel>
+            <g:HTMLPanel addStyleNames="{style.services}">
+                <g:HTMLPanel>
+                    <design:MaterialTextBox addStyleNames="{style.filter}" placeholder="Search by product name" ui:field="filter"></design:MaterialTextBox>
+                    <div style="clear: both;"></div>
+                </g:HTMLPanel>
+                <widgets:ProductsList ui:field="products"></widgets:ProductsList>
+            </g:HTMLPanel>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

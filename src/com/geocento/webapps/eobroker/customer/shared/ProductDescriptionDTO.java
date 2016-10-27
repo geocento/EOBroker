@@ -19,6 +19,7 @@ public class ProductDescriptionDTO {
     Sector sector;
     Thematic thematic;
     List<ProductServiceDTO> productServices;
+    boolean imageRule;
 
     public ProductDescriptionDTO() {
     }
@@ -87,4 +88,7 @@ public class ProductDescriptionDTO {
         return productServices;
     }
 
+    public boolean hasImageRule() {
+        return imageRule;
+    }
 }

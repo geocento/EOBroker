@@ -28,4 +28,6 @@ public interface ClientFactory {
     NewsItemView getNewsItemView();
 
     CompanyView getCompanyView();
+
+    DatasetProvidersView getDatasetProvidersView();
 }

@@ -129,7 +129,11 @@ public class ProductViewImpl extends Composite implements ProductView {
 
     @Override
     public void setSector(Sector sector) {
-        this.sector.setSelectedValue(sector.name());
+        if(sector == null) {
+            this.sector.setSelectedIndex(0);
+        } else {
+            this.sector.setSelectedValue(sector.name());
+        }
     }
 
     @Override
@@ -139,7 +143,11 @@ public class ProductViewImpl extends Composite implements ProductView {
 
     @Override
     public void setThematic(Thematic thematic) {
-        this.thematic.setSelectedValue(thematic.name());
+        if(thematic == null) {
+            this.thematic.setSelectedIndex(0);
+        } else {
+            this.thematic.setSelectedValue(thematic.name());
+        }
     }
 
     @Override
@@ -174,7 +182,7 @@ public class ProductViewImpl extends Composite implements ProductView {
 
     @Override
     public void setRecommendationRule(String recommendationRule) {
-        this.recommendationRule.startEditing(recommendationRule);
+        this.recommendationRule.startEditing(recommendationRule == null ? "" : recommendationRule);
     }
 
     @Override
