@@ -4,8 +4,8 @@ import com.geocento.webapps.eobroker.admin.shared.dtos.EditProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
@@ -43,7 +43,10 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/products/")
     @Produces("application/json")
-    public List<ProductDTO> listProducts(@QueryParam("start") int start, @QueryParam("limit") int limit, @QueryParam("orderby") String orderBy, @QueryParam("filter") String filter) throws RequestException;
+    public List<ProductDTO> listProducts(@QueryParam("start") int start,
+                                         @QueryParam("limit") int limit,
+                                         @QueryParam("orderby") String orderBy,
+                                         @QueryParam("filter") String filter) throws RequestException;
 
     @GET
     @Path("/assets/productservices/{id}")
@@ -73,7 +76,10 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/companies/")
     @Produces("application/json")
-    public List<CompanyDTO> listCompanies() throws RequestException;
+    public List<CompanyDTO> listCompanies(@QueryParam("start") int start,
+                                          @QueryParam("limit") int limit,
+                                          @QueryParam("orderby") String orderby,
+                                          @QueryParam("filter") String filter) throws RequestException;
 
 /*
     @PUT
@@ -93,7 +99,7 @@ public interface AssetsService extends DirectRestService {
     List<NewsItem> listNewsItems(@QueryParam("start") int start,
                                  @QueryParam("limit") int limit,
                                  @QueryParam("orderby") String orderby,
-                                 @QueryParam("filterby") String filter) throws RequestException;
+                                 @QueryParam("filter") String filter) throws RequestException;
 
     @GET
     @Path("/assets/newsitem/{id}")

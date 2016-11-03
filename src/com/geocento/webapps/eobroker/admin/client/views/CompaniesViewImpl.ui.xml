@@ -10,6 +10,11 @@
             margin: 20px 0px;
         }
 
+        .filter {
+            margin: 10px;
+            float: right;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template">
@@ -18,6 +23,10 @@
             <design:MaterialTitle title="View companies"></design:MaterialTitle>
         </g:HTMLPanel>
         <g:HTMLPanel addStyleNames="{style.services}">
+            <g:HTMLPanel>
+                <design:MaterialTextBox addStyleNames="{style.filter}" placeholder="Search by company name" ui:field="filter"></design:MaterialTextBox>
+                <div style="clear: both;"></div>
+            </g:HTMLPanel>
             <widgets:CompaniesList ui:field="companies"></widgets:CompaniesList>
         </g:HTMLPanel>
     </views:TemplateView>

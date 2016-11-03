@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared.requests;
 
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 
 import java.util.List;

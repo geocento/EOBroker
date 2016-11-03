@@ -134,5 +134,8 @@
             </design:MaterialTooltip>
         </g:HTMLPanel>
         <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
+        <g:HTMLPanel>
+            <p>Can't find what you are looking for? Please <g:Anchor ui:field="sendRequirements">send us</g:Anchor> your requirements!</p>
+        </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

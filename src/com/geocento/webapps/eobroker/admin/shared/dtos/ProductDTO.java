@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities.dtos;
+package com.geocento.webapps.eobroker.admin.shared.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;

@@ -25,6 +25,11 @@ import java.util.List;
  */
 public class CompaniesActivity extends TemplateActivity implements CompaniesView.Presenter {
 
+    private int start = 0;
+    private int limit = 10;
+    private String orderby = "";
+    private String filter;
+
     private CompaniesView companiesView;
 
     public CompaniesActivity(CompaniesPlace place, ClientFactory clientFactory) {
@@ -45,21 +50,8 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        // load all products
-        try {
-            REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-
-                }
-
-                @Override
-                public void onSuccess(Method method, List<CompanyDTO> response) {
-                    companiesView.setCompanies(response);
-                }
-            }).call(ServicesUtil.assetsService).listCompanies();
-        } catch (RequestException e) {
-        }
+        // load companies
+        loadCompanies();
     }
 
     @Override
@@ -72,6 +64,41 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
                 clientFactory.getPlaceController().goTo(new CompanyPlace());
             }
         }));
+    }
+
+    private void loadCompanies() {
+        if(start == 0) {
+            companiesView.clearCompanies();
+        }
+        try {
+            companiesView.setCompaniesLoading(true);
+            REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    companiesView.setCompaniesLoading(false);
+                }
+
+                @Override
+                public void onSuccess(Method method, List<CompanyDTO> response) {
+                    companiesView.setCompaniesLoading(false);
+                    start += response.size();
+                    companiesView.addCompanies(response.size() == limit, response);
+                }
+            }).call(ServicesUtil.assetsService).listCompanies(start, limit, orderby, filter);
+        } catch (RequestException e) {
+        }
+    }
+
+    @Override
+    public void loadMore() {
+        loadCompanies();
+    }
+
+    @Override
+    public void changeFilter(String value) {
+        start = 0;
+        filter = value;
+        loadCompanies();
     }
 
 }

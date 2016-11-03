@@ -108,7 +108,7 @@
                     </m:MaterialColumn>
                     <m:MaterialColumn grid="s12 m6 l6">
                         <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
-                        <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                        <m:MaterialAnchorButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT" href="http://eobroker.com/"/>
                     </m:MaterialColumn>
                 </m:MaterialRow>
                 <m:MaterialFooterCopyright>

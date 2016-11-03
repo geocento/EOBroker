@@ -5,7 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
@@ -185,6 +185,23 @@ public class AssetsResource implements AssetsService {
                     productDTO.setId(productDescriptionDTO.getId());
                     productServiceDTO.setProduct(productDTO);
                     return productServiceDTO;
+                }
+            }));
+            TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.product = :product", ProductDataset.class);
+            query.setParameter("product", product);
+            productDescriptionDTO.setProductDatasets(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+                @Override
+                public ProductDatasetDTO mutate(ProductDataset productDataset) {
+                    ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+                    productDatasetDTO.setId(productDatasetDTO.getId());
+                    productDatasetDTO.setName(productDatasetDTO.getName());
+                    productDatasetDTO.setDescription(productDatasetDTO.getDescription());
+                    productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+                    // initiate the services with product dto
+                    ProductDTO productDTO = new ProductDTO();
+                    productDTO.setId(productDescriptionDTO.getId());
+                    productDatasetDTO.setProduct(productDTO);
+                    return productDatasetDTO;
                 }
             }));
             return productDescriptionDTO;

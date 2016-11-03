@@ -6,10 +6,13 @@
 
     <persistence-unit name="eobroker">
     	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.Product</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Company</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.User</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Product</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductService</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ProductDataset</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.software.Software</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.project.Project</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.AoIFormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.ChoiceFormElement</class>

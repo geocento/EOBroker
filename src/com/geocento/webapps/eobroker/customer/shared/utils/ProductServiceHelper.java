@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities.utils;
+package com.geocento.webapps.eobroker.customer.shared.utils;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.entities.Product;

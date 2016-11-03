@@ -1,8 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -21,6 +22,8 @@ public interface DashboardView extends IsWidget {
 
     HasClickHandlers getAddService();
 
+    HasClickHandlers getAddProductDataset();
+
     HasClickHandlers getAddDataset();
 
     HasClickHandlers editCompany();
@@ -28,6 +31,8 @@ public interface DashboardView extends IsWidget {
     TemplateView getTemplateView();
 
     void setDatasets(List<DatasetProviderDTO> response);
+
+    void setProductDatasets(List<ProductDatasetDTO> response);
 
     public interface Presenter {
     }

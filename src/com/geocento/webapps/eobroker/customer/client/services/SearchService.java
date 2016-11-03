@@ -5,11 +5,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
-import com.geocento.webapps.eobroker.customer.shared.CSWGetRecordsRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.SearchResult;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
@@ -23,6 +20,11 @@ public interface SearchService extends DirectRestService {
     @Path("/search/complete")
     @Produces("application/json")
     public List<Suggestion> complete(@QueryParam("text") String text, @QueryParam("category") Category category, @QueryParam("aoi") String aoi);
+
+    @GET
+    @Path("/search/offer")
+    @Produces("application/json")
+    List<Offer> getMatchingOffer(@QueryParam("text") String text, @QueryParam("category") Category category, @QueryParam("aoi") Long aoiId) throws RequestException;
 
     @GET
     @Path("/search/services")

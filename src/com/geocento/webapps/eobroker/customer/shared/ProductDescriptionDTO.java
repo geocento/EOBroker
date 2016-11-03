@@ -2,7 +2,7 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import sun.security.jca.ProviderList;
 
 import java.util.List;
 
@@ -19,6 +19,7 @@ public class ProductDescriptionDTO {
     Sector sector;
     Thematic thematic;
     List<ProductServiceDTO> productServices;
+    List<ProductDatasetDTO> productDatasets;
     boolean imageRule;
 
     public ProductDescriptionDTO() {
@@ -90,5 +91,13 @@ public class ProductDescriptionDTO {
 
     public boolean hasImageRule() {
         return imageRule;
+    }
+
+    public List<ProductDatasetDTO> getProductDatasets() {
+        return productDatasets;
+    }
+
+    public void setProductDatasets(List<ProductDatasetDTO> productDatasets) {
+        this.productDatasets = productDatasets;
     }
 }

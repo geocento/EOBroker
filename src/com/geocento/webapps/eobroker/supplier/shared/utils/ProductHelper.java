@@ -1,7 +1,7 @@
-package com.geocento.webapps.eobroker.common.shared.entities.utils;
+package com.geocento.webapps.eobroker.supplier.shared.utils;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Product;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 
 /**
  * Created by thomas on 08/06/2016.

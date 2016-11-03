@@ -13,11 +13,18 @@ public interface CompaniesView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void setCompanies(List<CompanyDTO> response);
-
     HasClickHandlers getCreateNewButton();
 
+    void clearCompanies();
+
+    void setCompaniesLoading(boolean loading);
+
+    void addCompanies(boolean hasMore, List<CompanyDTO> response);
+
     public interface Presenter {
+        void loadMore();
+
+        void changeFilter(String value);
     }
 
 }

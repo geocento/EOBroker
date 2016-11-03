@@ -10,13 +10,11 @@ import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
-import com.geocento.webapps.eobroker.customer.shared.CSWGetRecordsRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,7 +26,6 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -126,8 +123,12 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void setCurrentSearch(String search) {
-        currentSearch.setText("Results for '" + search + "'");
         template.setSearchText(search);
+    }
+
+    @Override
+    public void setSearchResults(String message) {
+        currentSearch.setText(message);
     }
 
     @Override
@@ -266,6 +267,48 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
             productRow.add(materialColumn);
             materialColumn.add(new ProductWidget(productDTO));
+        }
+    }
+
+    @Override
+    public void displayOffer(List<Offer> offers, int start, int limit, String text) {
+        categories.setVisible(false);
+        settings.setVisible(true);
+        settings.clear();
+        MaterialLabel materialLabel = new MaterialLabel("Sector");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
+        MaterialListBox sectorSelection = new MaterialListBox();
+        sectorSelection.addStyleName(style.option());
+        sectorSelection.addItem("All");
+        for(Sector option : Sector.values()) {
+            sectorSelection.addItem(option.toString());
+        }
+        settings.add(sectorSelection);
+        materialLabel = new MaterialLabel("Thematic");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
+        for(Thematic option : Thematic.values()) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(option.toString());
+            materialCheckBox.setObject(option);
+            materialCheckBox.addStyleName(style.option());
+            settings.add(materialCheckBox);
+            materialCheckBox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - update display
+                }
+            });
+        }
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        for(Offer offer : offers) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+            productRow.add(materialColumn);
+            if(offer instanceof ProductDTO) {
+                materialColumn.add(new ProductWidget((ProductDTO) offer));
+            }
         }
     }
 

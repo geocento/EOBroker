@@ -10,22 +10,19 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecor
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWRecordType;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.recommendation.SelectionRule;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.client.utils.CSWUtils;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
-import com.geocento.webapps.eobroker.customer.shared.CSWGetRecordsRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.SearchResult;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
@@ -206,15 +203,7 @@ public class SearchResource implements SearchService {
                     ProductDTO productDTO = ProductHelper.createProductDTO(product);
                     productDTOs.add(productDTO);
                     for (ProductService productService : product.getProductServices()) {
-                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                        productServiceDTO.setId(productService.getId());
-                        productServiceDTO.setName(productService.getName());
-                        productServiceDTO.setDescription(productService.getDescription());
-                        productServiceDTO.setServiceImage(productService.getImageUrl());
-                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                        productServiceDTO.setCompanyName(productService.getCompany().getName());
-                        productServiceDTO.setCompanyId(productService.getCompany().getId());
-                        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+                        ProductServiceDTO productServiceDTO = createProductServiceDTO(productService);
                         productServiceDTO.setProduct(productDTO);
                         productServices.addAll(ListUtil.toList(new ProductServiceDTO[]{
                                 productServiceDTO
@@ -238,6 +227,140 @@ public class SearchResource implements SearchService {
         } finally {
             em.close();
         }
+    }
+
+    private ProductServiceDTO createProductServiceDTO(ProductService productService) {
+        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+        productServiceDTO.setId(productService.getId());
+        productServiceDTO.setName(productService.getName());
+        productServiceDTO.setDescription(productService.getDescription());
+        productServiceDTO.setServiceImage(productService.getImageUrl());
+        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+        productServiceDTO.setCompanyName(productService.getCompany().getName());
+        productServiceDTO.setCompanyId(productService.getCompany().getId());
+        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+        productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+        return productServiceDTO;
+    }
+
+    private static class RankedOffer {
+
+        double rank;
+        Offer offer;
+
+        private RankedOffer(double rank, Offer offer) {
+            this.rank = rank;
+            this.offer = offer;
+        }
+
+        public double getRank() {
+            return rank;
+        }
+
+        public void setRank(double rank) {
+            this.rank = rank;
+        }
+
+        public Offer getOffer() {
+            return offer;
+        }
+
+        public void setOffer(Offer offer) {
+            this.offer = offer;
+        }
+    }
+
+    @Override
+    public List<Offer> getMatchingOffer(String text, Category category, Long aoiId) throws RequestException {
+        ArrayList<RankedOffer> offers = new ArrayList<RankedOffer>();
+        // check if last character is a space
+        boolean partialMatch = !text.endsWith(" ");
+        text.trim();
+        // break down text into sub words
+        String[] words = text.split(" ");
+        String keywords = StringUtils.join(words, " | ");
+        if(partialMatch) {
+            keywords += ":*";
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // change the last word so that it allows for partial match
+            Query q = em.createNativeQuery("SELECT id, category, ts_rank(tsvname, keywords, 8) AS rank\n" +
+                    "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          WHERE tsvname @@ keywords\n" +
+                    "          ORDER BY rank DESC\n" +
+                    "          LIMIT 50;");
+            List<Object[]> results = q.getResultList();
+            if(results.size() > 0) {
+                final HashMap<Long, Double> rankings = new HashMap<Long, Double>();
+                List<Long> productIds = new ArrayList<Long>();
+                List<Long> productServiceIds = new ArrayList<Long>();
+                List<Long> productDatasetIds = new ArrayList<Long>();
+                for (Object[] result : results) {
+                    Long id = (Long) result[0];
+                    Double ranking = (Double) result[2];
+                    rankings.put(id, ranking);
+                    switch((String) result[1]) {
+                        case "product":
+                            productIds.add(id);
+                            break;
+                        case "productservice":
+                            productServiceIds.add(id);
+                            break;
+                        case "productdatasets":
+                            productDatasetIds.add(id);
+                            break;
+                    }
+                }
+                // now fetch the actual entities
+                // start with product
+                if(productIds.size() > 0) {
+                    TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
+                    productQuery.setParameter("productIds", productIds);
+                    List<Product> products = productQuery.getResultList();
+                    offers.addAll(ListUtil.mutate(products, new ListUtil.Mutate<Product, RankedOffer>() {
+                        @Override
+                        public RankedOffer mutate(Product product) {
+                            return new RankedOffer(rankings.get(product.getId()), ProductHelper.createProductDTO(product));
+                        }
+                    }));
+                }
+                // then product services
+                if(productDatasetIds.size() > 0) {
+                    TypedQuery<ProductService> productServiceQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
+                    productServiceQuery.setParameter("productIds", productServiceIds);
+                    offers.addAll(ListUtil.mutate(productServiceQuery.getResultList(), new ListUtil.Mutate<ProductService, RankedOffer>() {
+                        @Override
+                        public RankedOffer mutate(ProductService productService) {
+                            return new RankedOffer(rankings.get(productService.getId()), createProductServiceDTO(productService));
+                        }
+                    }));
+                }
+                // then product datasets
+                if(productDatasetIds.size() > 0) {
+                    TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
+                    productDatasetQuery.setParameter("productIds", productServiceIds);
+                    offers.addAll(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, RankedOffer>() {
+                        @Override
+                        public RankedOffer mutate(ProductDataset productDataset) {
+                            return new RankedOffer(rankings.get(productDataset.getId()), createProductDatasetDTO(productDataset));
+                        }
+                    }));
+                }
+            }
+            return ListUtil.mutate(offers, new ListUtil.Mutate<RankedOffer, Offer>() {
+                @Override
+                public Offer mutate(RankedOffer object) {
+                    return object.getOffer();
+                }
+            });
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductDatasetDTO createProductDatasetDTO(ProductDataset productDataset) {
+        return null;
     }
 
     private List<DatasetProviderDTO> getDatasetProviders(String textFilter, int start, int limit) {

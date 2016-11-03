@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
+import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.google.gwt.user.client.ui.Widget;
 
 /**

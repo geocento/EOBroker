@@ -4,7 +4,7 @@ import com.geocento.webapps.eobroker.admin.client.Admin;
 import com.geocento.webapps.eobroker.admin.client.events.RemoveProduct;
 import com.geocento.webapps.eobroker.admin.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.admin.client.places.ProductPlace;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

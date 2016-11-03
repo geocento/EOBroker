@@ -1,8 +1,5 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
-
 import java.util.List;
 
 /**

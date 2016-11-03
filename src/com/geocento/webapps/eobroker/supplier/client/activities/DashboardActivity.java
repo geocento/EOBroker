@@ -2,19 +2,14 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
-import com.geocento.webapps.eobroker.supplier.client.events.RemoveDataset;
-import com.geocento.webapps.eobroker.supplier.client.events.RemoveDatasetHandler;
-import com.geocento.webapps.eobroker.supplier.client.events.RemoveService;
-import com.geocento.webapps.eobroker.supplier.client.events.RemoveServiceHandler;
-import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.DatasetProviderPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
+import com.geocento.webapps.eobroker.supplier.client.events.*;
+import com.geocento.webapps.eobroker.supplier.client.places.*;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -108,6 +103,23 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
         } catch (RequestException e) {
             e.printStackTrace();
         }
+
+        try {
+            REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ProductDatasetDTO> response) {
+                    dashboardView.setProductDatasets(response);
+                }
+
+            }).call(ServicesUtil.assetsService).listProductDatasets();
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -131,6 +143,15 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
             }
         });
 
+        activityEventBus.addHandler(RemoveProductDataset.TYPE, new RemoveProductDatasetHandler() {
+            @Override
+            public void onRemoveProductDataset(RemoveProductDataset event) {
+                if(Window.confirm("Are you sure you want to remove this product dataset?")) {
+                    MaterialToast.fireToast("Not implemented yet");
+                }
+            }
+        });
+
         handlers.add(dashboardView.editCompany().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -142,6 +163,13 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
             @Override
             public void onClick(ClickEvent event) {
                 clientFactory.getPlaceController().goTo(new ServicesPlace());
+            }
+        }));
+
+        handlers.add(dashboardView.getAddProductDataset().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ProductDatasetPlace());
             }
         }));
 

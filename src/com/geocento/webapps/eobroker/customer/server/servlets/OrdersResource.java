@@ -8,7 +8,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.OrdersService;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;

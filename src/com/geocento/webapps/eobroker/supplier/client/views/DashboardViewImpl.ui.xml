@@ -60,10 +60,12 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template">
+<!--
         <design:MaterialTitle title="Messages"></design:MaterialTitle>
         <g:HTMLPanel addStyleNames="{style.services}">
             List of notifications and messages...
         </g:HTMLPanel>
+-->
 
         <design:MaterialTitle title="Your company"></design:MaterialTitle>
         <widgets:CompanyWidget addStyleNames="{style.companyWidget}" ui:field="companyWidget"></widgets:CompanyWidget>
@@ -75,6 +77,11 @@
         <g:HTMLPanel addStyleNames="{style.services}" ui:field="services">
         </g:HTMLPanel>
         <design:MaterialButton backgroundColor="blue" text="Add new service" ui:field="addService"></design:MaterialButton>
+
+        <design:MaterialTitle title="Off the shelf data"></design:MaterialTitle>
+        <g:HTMLPanel addStyleNames="{style.services}" ui:field="productdatasets">
+        </g:HTMLPanel>
+        <design:MaterialButton backgroundColor="blue" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
 
         <design:MaterialTitle title="Your datasets"></design:MaterialTitle>
         <g:HTMLPanel addStyleNames="{style.services}" ui:field="datasets">

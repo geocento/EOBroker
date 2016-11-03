@@ -1,12 +1,14 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DatasetProviderWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.ProductDatasetWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductServiceWidget;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -15,7 +17,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialRow;
 
 import java.util.List;
 
@@ -45,6 +49,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialButton addDataset;
     @UiField
     HTMLPanel datasets;
+    @UiField
+    MaterialButton addProductDataset;
+    @UiField
+    HTMLPanel productdatasets;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -77,8 +85,28 @@ public class DashboardViewImpl extends Composite implements DashboardView {
             datasets.add(new MaterialLabel("No datasets, click on the button below to add a new dataset"));
             return;
         }
+        MaterialRow materialRow = new MaterialRow();
+        datasets.add(materialRow);
         for(DatasetProviderDTO datasetProviderDTO : datasetProviderDTOs) {
-            datasets.add(new DatasetProviderWidget(datasetProviderDTO));
+            MaterialColumn materialColumn = new MaterialColumn(12, 4, 3);
+            materialColumn.add(new DatasetProviderWidget(datasetProviderDTO));
+            materialRow.add(materialColumn);
+        }
+    }
+
+    @Override
+    public void setProductDatasets(List<ProductDatasetDTO> productDatasetDTOs) {
+        productdatasets.clear();
+        if(productDatasetDTOs == null || productDatasetDTOs.size() == 0) {
+            productdatasets.add(new MaterialLabel("No off the shelf data, click on the button below to add a new offer"));
+            return;
+        }
+        MaterialRow materialRow = new MaterialRow();
+        productdatasets.add(materialRow);
+        for(ProductDatasetDTO productDatasetDTO : productDatasetDTOs) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 4, 3);
+            materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
+            materialRow.add(materialColumn);
         }
     }
 
@@ -95,6 +123,11 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public HasClickHandlers getAddService() {
         return addService;
+    }
+
+    @Override
+    public HasClickHandlers getAddProductDataset() {
+        return addProductDataset;
     }
 
     @Override

@@ -29,7 +29,7 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="indigo lighten-1" axis="HORIZONTAL">
+    <design:MaterialCard backgroundColor="indigo lighten-1" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>

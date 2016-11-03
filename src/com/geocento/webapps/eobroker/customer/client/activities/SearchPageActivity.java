@@ -3,7 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -123,8 +123,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         if(browse != null) {
             switch (category) {
                 case products: {
-                    searchPageView.setTitleText("Search products");
-                    searchPageView.setCurrentSearch("Browsing existing products");
+                    searchPageView.setTitleText("Browse products");
+                    searchPageView.setCurrentSearch("");
                     searchPageView.displayLoadingResults("Loading products...");
                     try {
                         final int start = 0, limit = 200;
@@ -136,7 +136,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
                             @Override
                             public void onSuccess(Method method, List<ProductDTO> products) {
-                                searchPageView.setCurrentSearch("Found " + products.size() + " matching products");
+                                searchPageView.setSearchResults("Found " + products.size() + " matching products");
                                 searchPageView.hideLoadingResults();
                                 // add all results to the interface
                                 searchPageView.displayProductsList(products, start, limit, text);
@@ -146,8 +146,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     }
                 } break;
                 case companies: {
-                    searchPageView.setTitleText("Search companies");
-                    searchPageView.setCurrentSearch("Browsing existing companies");
+                    searchPageView.setTitleText("Browse companies");
+                    searchPageView.setCurrentSearch("");
                     searchPageView.displayLoadingResults("Loading companies...");
                     final int start = 0, limit = 10;
                     REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
@@ -158,7 +158,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
                         @Override
                         public void onSuccess(Method method, List<CompanyDTO> companyDTOs) {
-                            searchPageView.setCurrentSearch("Found " + companyDTOs.size() + " matching companies");
+                            searchPageView.setSearchResults("Found " + companyDTOs.size() + " matching companies");
                             searchPageView.hideLoadingResults();
                             // add all results to the interface
                             searchPageView.displayCompaniesList(companyDTOs, start, limit, text);
@@ -182,7 +182,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                         // add all results to the interface
                         List<ProductDTO> suggestedProducts = searchResult.getProducts();
                         ProductDTO product = suggestedProducts.get(0);
-                        searchPageView.setCurrentSearch("You selected '" + product.getName() + "'");
+                        searchPageView.setSearchResults("You selected '" + product.getName() + "'");
                         searchPageView.setProductSelection(product, searchResult.getProductServices(), suggestedProducts.subList(0, Math.min(1, suggestedProducts.size() - 1)));
                         searchPageView.setMatchingImagery(product.getName());
                     }
@@ -203,6 +203,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     @Override
                     public void onSuccess(Method method, SearchResult searchResult) {
                         searchPageView.hideLoadingResults();
+                        searchPageView.setSearchResults("Results for '" + text + "'");
                         // add all results to the interface
                         List<ProductDTO> suggestedProducts = searchResult.getProducts();
                         searchPageView.setMatchingProducts(suggestedProducts);

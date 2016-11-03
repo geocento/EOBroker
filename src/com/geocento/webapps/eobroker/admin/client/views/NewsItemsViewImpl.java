@@ -1,14 +1,9 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.admin.client.places.NewsItemsPlace;
-import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
 import com.geocento.webapps.eobroker.admin.client.widgets.NewsItemList;
-import com.geocento.webapps.eobroker.admin.client.widgets.ProductsList;
-import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -16,7 +11,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;

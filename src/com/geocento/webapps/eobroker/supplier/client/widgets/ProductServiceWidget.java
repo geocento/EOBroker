@@ -1,9 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.RemoveService;
 import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

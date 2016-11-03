@@ -2,22 +2,19 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
-import com.geocento.webapps.eobroker.common.shared.entities.Company;
-import com.geocento.webapps.eobroker.common.shared.entities.Product;
-import com.geocento.webapps.eobroker.common.shared.entities.ProductService;
-import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
+import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -200,6 +197,11 @@ public class AssetsResource implements AssetsService {
             productService.getCompany().getServices().add(productService);
             productService.setApiUrl(productServiceDTO.getApiURL());
             productService.setSampleWmsUrl(productServiceDTO.getSampleWmsUrl());
+            // update the keyphrases
+            Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + getProductServiceTSV(productService) +
+                    ", tsvname = " + getProductServiceNameTSV(productService) + " where id = " + productService.getId() +
+                    ";");
+            query.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
@@ -210,6 +212,15 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private static String getProductServiceNameTSV(ProductService productService) {
+        return "setweight(to_tsvector('english','service on-demand'), 'A') || setweight(to_tsvector('english','" + productService.getName() + "'), 'B')";
+    }
+
+    private static String getProductServiceTSV(ProductService productService) {
+        return "setweight(to_tsvector('english','service on-demand " + productService.getName() + "'), 'A') " +
+                "|| setweight(to_tsvector('english','" + productService.getDescription() + "'), 'B')";
     }
 
     @Override
@@ -435,6 +446,119 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private ProductDatasetDTO createProductDatasetDTO(ProductDataset productDataset) {
+        ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+        productDatasetDTO.setId(productDataset.getId());
+        productDatasetDTO.setName(productDataset.getName());
+        productDatasetDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetDTO.setDescription(productDataset.getDescription());
+        productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        return productDatasetDTO;
+    }
+
+    @Override
+    public List<ProductDatasetDTO> listProductDatasets() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<ProductDataset> query = em.createQuery("select p from ProductDataset p where p.company = :company", ProductDataset.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+                @Override
+                public ProductDatasetDTO mutate(ProductDataset productDataset) {
+                    return createProductDatasetDTO(productDataset);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading product datasets");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProductDatasetDTO getProductDataset(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductDataset productDataset = em.find(ProductDataset.class, id);
+            User user = em.find(User.class, userName);
+            if(productDataset == null) {
+                throw new RequestException("Dataset does not exist");
+            }
+            if(productDataset.getCompany() != user.getCompany()) {
+                throw new RequestException("Not allowed");
+            }
+            ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
+            productDatasetDTO.setFullDescription(productDataset.getFullDescription());
+            productDatasetDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            return productDatasetDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Long saveProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            ProductDataset productDataset = null;
+            if(productDatasetDTO.getId() == null) {
+                productDataset = new ProductDataset();
+                productDataset.setCompany(user.getCompany());
+                em.persist(productDataset);
+            } else {
+                productDataset = em.find(ProductDataset.class, productDatasetDTO.getId());
+                if(productDataset == null) {
+                    throw new RequestException("Could not find the dataset");
+                }
+                if(user.getCompany() != productDataset.getCompany()) {
+                    throw new RequestException("Not allowed");
+                }
+            }
+            // update values
+            productDataset.setName(productDatasetDTO.getName());
+            productDataset.setDescription(productDatasetDTO.getDescription());
+            productDataset.setFullDescription(productDatasetDTO.getFullDescription());
+            Product product = em.find(Product.class, productDatasetDTO.getProduct().getId());
+            if(product == null) {
+                throw new RequestException("Product does not exist");
+            }
+            productDataset.setProduct(product);
+            productDataset.setImageUrl(productDatasetDTO.getImageUrl());
+            productDataset.setExtent(productDatasetDTO.getExtent());
+            // update the keyphrases
+            Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + getProductDatasetTSV(productDataset) +
+                    ", tsvname = " + getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +
+                    ";");
+            query.executeUpdate();
+            em.getTransaction().commit();
+            return productDataset.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving dataset");
+        } finally {
+            em.close();
+        }
+    }
+
+    private static String getProductDatasetNameTSV(ProductDataset productDataset) {
+        return "setweight(to_tsvector('english','dataset off the shelf'), 'A') || setweight(to_tsvector('english','" + productDataset.getName() + "'), 'B')";
+    }
+
+    private static String getProductDatasetTSV(ProductDataset productDataset) {
+        return "setweight(to_tsvector('english','dataset off the shelf " + productDataset.getName() + "'), 'A') " +
+                "|| setweight(to_tsvector('english','" + productDataset.getDescription() + "'), 'B')";
     }
 
 }

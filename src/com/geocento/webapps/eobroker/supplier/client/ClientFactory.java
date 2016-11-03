@@ -28,4 +28,6 @@ public interface ClientFactory {
     ConversationView getConversationView();
 
     DatasetProviderView getDatasetProviderView();
+
+    ProductDatasetView getProductDatasetView();
 }

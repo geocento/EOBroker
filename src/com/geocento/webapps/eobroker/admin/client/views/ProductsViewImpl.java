@@ -2,8 +2,8 @@ package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.widgets.ProductsList;
+import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;

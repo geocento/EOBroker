@@ -1,16 +1,13 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
-import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -20,7 +17,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.masonry.MaterialMasonry;
-import gwt.material.design.client.constants.ButtonType;
+import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.*;
 
 /**
@@ -50,6 +47,8 @@ public class FullViewImpl extends Composite implements FullView {
     MaterialTitle title;
     @UiField
     MaterialImage image;
+    @UiField
+    HTMLPanel tags;
 
     public FullViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -206,33 +205,66 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(productDescriptionDTO.getImageUrl());
         title.setTitle(productDescriptionDTO.getName());
         title.setDescription(productDescriptionDTO.getShortDescription());
-        details.add(new HTMLPanel(productDescriptionDTO.getDescription()));
+        tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
-/*
-        MaterialLabel materialLabel = new MaterialLabel("Thematic");
-        badges.add(materialLabel);
-*/
-        MaterialButton thematic = new MaterialButton(ButtonType.RAISED, "Thematic: " + productDescriptionDTO.getThematic().toString(), null);
+        MaterialChip thematic = new MaterialChip();
+        thematic.setText(productDescriptionDTO.getThematic().toString());
+        thematic.setBackgroundColor("grey");
+        thematic.setTextColor("white");
+        thematic.setLetterBackgroundColor("blue");
+        thematic.setLetterColor("white");
+        thematic.setLetter("T");
         thematic.setMarginRight(20);
         badges.add(thematic);
-        MaterialButton sector = new MaterialButton(ButtonType.RAISED, "Sector: " + productDescriptionDTO.getSector().toString(), null);
+        MaterialChip sector = new MaterialChip();
+        sector.setText(productDescriptionDTO.getSector().toString());
+        sector.setBackgroundColor("grey");
+        sector.setTextColor("white");
+        sector.setLetterBackgroundColor("green");
+        sector.setLetterColor("white");
+        sector.setLetter("S");
         badges.add(sector);
-        //badges.add(new MaterialBadge("Sector: " + productDescriptionDTO.getSector().toString(), "white", "blue"));
-        details.add(badges);
+        tags.add(badges);
+        MaterialTab materialTab = createTabs();
+        int numTabs = 4;
+        int size = (int) Math.floor(12 / numTabs);
+        addTab(materialTab, "Description", new HTMLPanel(productDescriptionDTO.getDescription()), size);
+        // create tab panel for services
+        HTMLPanel servicesPanel = null;
         if(productDescriptionDTO.getProductServices().size() == 0) {
-            details.add(new HTML("<p class='" + style.section() + "'>No on-demand services are available for this product</p>"));
-            details.add(new HTML("<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>"));
+            servicesPanel = new HTMLPanel("<p class='" + style.section() + "'>No on-demand services are available for this product</p>" +
+                    "<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>");
         } else {
-            details.add(new HTML("<p class='" + style.section() + "'>This product can be provided by the following on-demand services</p>"));
+            servicesPanel = new HTMLPanel("<p class='" + style.section() + "'>This product can be provided by the following on-demand services</p>");
             MaterialRow materialRow = new MaterialRow();
-            details.add(materialRow);
+            servicesPanel.add(materialRow);
             for (ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
                 materialColumn.add(new ProductServiceWidget(productServiceDTO));
                 materialRow.add(materialColumn);
             }
         }
+        addTab(materialTab, "On-demand (" + productDescriptionDTO.getProductServices().size() + ")", servicesPanel, size);
+        // create tab panel for services
+        HTMLPanel productDatasetPanel = null;
+        if(productDescriptionDTO.getProductDatasets().size() == 0) {
+            productDatasetPanel = new HTMLPanel("<p class='" + style.section() + "'>No off the shelf data is available for this product</p>" +
+                    "<p>We are sorry but we do not have any supplier currently providing off the shelf data for this product</p>");
+        } else {
+            productDatasetPanel = new HTMLPanel("<p class='" + style.section() + "'>This product is available in the following off the shelf data items</p>");
+            MaterialRow materialRow = new MaterialRow();
+            productDatasetPanel.add(materialRow);
+            for (ProductDatasetDTO productDatasetDTO : productDescriptionDTO.getProductDatasets()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+                materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
+                materialRow.add(materialColumn);
+            }
+        }
+        addTab(materialTab, "Off-the-shelf (" + productDescriptionDTO.getProductDatasets().size() + ")", productDatasetPanel, size);
+        addTab(materialTab, "Others", new HTMLPanel(""), size);
+        materialTab.selectTab("fullViewTab0");
+        details.add(materialTab.getParent().getParent());
         details.add(new HTML("<p class='" + style.section() + "'>You might also be interested in...</p>"));
         MaterialRow otherItemsRow = new MaterialRow();
         details.add(otherItemsRow);
@@ -244,6 +276,31 @@ public class FullViewImpl extends Composite implements FullView {
             otherItemsRow.add(serviceColumn);
             serviceColumn.add(new ImageRequestWidget(productDescriptionDTO.getName()));
         }
+    }
+
+    private void addTab(MaterialTab materialTab, String name, HTMLPanel panel, int size) {
+        String tabId = "fullViewTab" + materialTab.getWidgetCount();
+        MaterialTabItem materialTabItem = new MaterialTabItem();
+        materialTabItem.setWaves(WavesType.GREEN);
+        materialTabItem.setGrid("s" + size + " m" + size + " l" + size);
+        MaterialLink materialLink = new MaterialLink(name);
+        materialLink.setHref("#" + tabId);
+        materialTabItem.add(materialLink);
+        materialTab.add(materialTabItem);
+        MaterialRow materialRow = (MaterialRow) materialTab.getParent().getParent();
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        materialRow.add(materialColumn);
+        materialColumn.add(panel);
+        materialColumn.setId(tabId);
+    }
+
+    private MaterialTab createTabs() {
+        MaterialRow materialRow = new MaterialRow();
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        materialRow.add(materialColumn);
+        MaterialTab materialTab = new MaterialTab();
+        materialColumn.add(materialTab);
+        return materialTab;
     }
 
     @Override

@@ -3,8 +3,9 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.Offer;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -45,6 +46,8 @@ public interface SearchPageView extends IsWidget {
 
     void displayProductsList(List<ProductDTO> products, int start, int limit, String text);
 
+    void displayOffer(List<Offer> offers, int start, int limit, String text);
+
     void setMatchingImagery(String text);
 
     TemplateView getTemplateView();
@@ -52,6 +55,8 @@ public interface SearchPageView extends IsWidget {
     void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text);
 
     void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi);
+
+    void setSearchResults(String message);
 
     public interface Presenter {
     }

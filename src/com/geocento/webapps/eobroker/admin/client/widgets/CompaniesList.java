@@ -1,21 +1,19 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
-import com.geocento.webapps.eobroker.admin.client.Admin;
-import com.geocento.webapps.eobroker.admin.client.places.CompanyPlace;
-import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
-import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
+import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.google.gwt.cell.client.ButtonCell;
-import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Created by thomas on 21/06/2016.
  */
-public class CompaniesList extends AsyncPagingCellTable<CompanyDTO> {
+public class CompaniesList extends AsyncPagingWidgetList<CompanyDTO> {
 
+    public CompaniesList() {
+        super(10, 12, 4, 3);
+    }
+
+    /*
     private Column<CompanyDTO, String> editColumn;
     private TextColumn<CompanyDTO> nameColumn;
     private Column<CompanyDTO, String> thumbnailColumn;
@@ -56,5 +54,11 @@ public class CompaniesList extends AsyncPagingCellTable<CompanyDTO> {
         addResizableColumn(nameColumn, "User Name", "100px");
         nameColumn.setSortable(true);
 
+    }
+*/
+
+    @Override
+    protected Widget getItemWidget(CompanyDTO value) {
+        return new CompanyWidget(value);
     }
 }

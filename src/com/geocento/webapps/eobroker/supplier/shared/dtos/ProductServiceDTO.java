@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities.dtos;
+package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
 /**
  * Created by thomas on 06/06/2016.

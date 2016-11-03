@@ -11,8 +11,10 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProv
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.ProductHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -323,11 +325,28 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<CompanyDTO> listCompanies() throws RequestException {
+    public List<CompanyDTO> listCompanies(int start, int limit, String orderby, String filter) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
-            TypedQuery<Company> query = em.createQuery("select c from Company c", Company.class);
+            boolean hasFilter = filter != null && filter.length() > 0;
+            // force orderby if null
+            if(orderby == null) {
+                orderby = "creationDate";
+            }
+            switch(orderby) {
+                case "creationDate":
+                    orderby = "c.name";
+                    break;
+                default:
+                    orderby = "c.name";
+            }
+            TypedQuery<Company> query = em.createQuery("select c from Company c" +
+                    (hasFilter ?  "  where c.name LIKE :filter" : "") +
+                    " order by " + orderby, Company.class);
+            if(hasFilter) {
+                query.setParameter("filter", "%" + filter + "%");
+            }
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Company, CompanyDTO>() {
                 @Override
                 public CompanyDTO mutate(Company company) {
@@ -335,6 +354,7 @@ public class AssetsResource implements AssetsService {
                 }
             });
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new RequestException("Server error");
         } finally {
             em.close();

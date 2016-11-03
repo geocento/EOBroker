@@ -16,7 +16,7 @@
 
         .image {
             max-width: 200px;
-            max-height: 150px;
+            height: 150px !important;
             margin-right: 30px;
         }
 
@@ -25,12 +25,20 @@
             padding: 10px 0px;
         }
 
+        .tags {
+            font-size: 1em;
+            padding: 10px 0px;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
         <g:HTMLPanel addStyleNames="{style.formPanel}">
             <g:HTMLPanel>
                 <design:MaterialImage float="LEFT" addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
-                <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+                <g:HTMLPanel>
+                    <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+                    <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
+                </g:HTMLPanel>
             </g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.details}" ui:field="details"></g:HTMLPanel>
         </g:HTMLPanel>

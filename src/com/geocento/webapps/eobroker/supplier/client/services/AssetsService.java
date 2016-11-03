@@ -2,11 +2,7 @@ package com.geocento.webapps.eobroker.supplier.client.services;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.ProductServiceDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
@@ -94,5 +90,20 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/dataset/")
     @Produces("application/json")
     Long saveDatasetProvider(DatasetProviderDTO datasetProviderDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/productdataset/")
+    @Produces("application/json")
+    List<ProductDatasetDTO> listProductDatasets() throws RequestException;
+
+    @GET
+    @Path("/assets/productdataset/{id}")
+    @Produces("application/json")
+    ProductDatasetDTO getProductDataset(@PathParam("id") Long id) throws RequestException;
+
+    @POST
+    @Path("/assets/productdataset/")
+    @Produces("application/json")
+    Long saveProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException;
 
 }
