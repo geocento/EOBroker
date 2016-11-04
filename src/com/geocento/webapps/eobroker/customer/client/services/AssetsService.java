@@ -65,6 +65,11 @@ public interface AssetsService extends DirectRestService {
     ProductDescriptionDTO getProductDescription(@PathParam("id") Long productId) throws RequestException;
 
     @GET
+    @Path("/assets/productdataset/description/{id}")
+    @Produces("application/json")
+    ProductDatasetDescriptionDTO getProductDatasetDescription(@PathParam("id") Long productDatasetId) throws RequestException;
+
+    @GET
     @Path("/assets/imageservices")
     @Produces("application/json")
     List<ImageService> getImageServices() throws RequestException;
@@ -78,4 +83,5 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/notifications/")
     @Produces("application/json")
     List<NotificationDTO> getNotifications() throws RequestException;
+
 }

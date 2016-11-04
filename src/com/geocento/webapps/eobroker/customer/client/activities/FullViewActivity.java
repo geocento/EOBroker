@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.FullView;
 import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDescriptionDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
 import com.google.gwt.event.shared.EventBus;
@@ -80,6 +81,13 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             } catch (Exception e) {
 
             }
+        } else if(tokens.containsKey(FullViewPlace.TOKENS.productdatasetid.toString())) {
+            try {
+                Long productDatasetId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productdatasetid.toString()));
+                loadProductDatasetDetails(productDatasetId);
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -148,6 +156,29 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     fullView.displayProductService(productServiceDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductServiceDescription(productServiceId);
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadProductDatasetDetails(Long productDatasetId) {
+        fullView.setTitle("Loading off the shelf data details...");
+        fullView.clearDetails();
+        fullView.displayLoading();
+        try {
+            REST.withCallback(new MethodCallback<ProductDatasetDescriptionDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    fullView.hideLoading();
+                    fullView.displayError("Could not find company");
+                }
+
+                @Override
+                public void onSuccess(Method method, ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
+                    fullView.hideLoading();
+                    fullView.displayTitle("Off the shelf data information");
+                    fullView.displayProductDataset(productDatasetDescriptionDTO);
+                }
+            }).call(ServicesUtil.assetsService).getProductDatasetDescription(productDatasetId);
         } catch (RequestException e) {
         }
     }

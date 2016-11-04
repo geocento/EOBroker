@@ -1,13 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
-import com.geocento.webapps.eobroker.supplier.client.events.RemoveDataset;
-import com.geocento.webapps.eobroker.supplier.client.events.RemoveDatasetHandler;
 import com.geocento.webapps.eobroker.supplier.client.places.DatasetProviderPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.supplier.client.views.DatasetProviderView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -25,7 +23,7 @@ import java.util.HashMap;
  */
 public class DatasetProviderActivity extends TemplateActivity implements DatasetProviderView.Presenter {
 
-    private DatasetProviderView companyView;
+    private DatasetProviderView datasetProviderView;
 
     private DatasetProviderDTO datasetProviderDTO;
 
@@ -37,9 +35,10 @@ public class DatasetProviderActivity extends TemplateActivity implements Dataset
     @Override
     public void start(AcceptsOneWidget panel, EventBus eventBus) {
         super.start(panel, eventBus);
-        companyView = clientFactory.getDatasetProviderView();
-        companyView.setPresenter(this);
-        panel.setWidget(companyView.asWidget());
+        datasetProviderView = clientFactory.getDatasetProviderView();
+        datasetProviderView.setPresenter(this);
+        setTemplateView(datasetProviderView.getTemplateView());
+        panel.setWidget(datasetProviderView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -76,33 +75,33 @@ public class DatasetProviderActivity extends TemplateActivity implements Dataset
 
     private void setDatasetProvider(DatasetProviderDTO datasetProviderDTO) {
         this.datasetProviderDTO = datasetProviderDTO;
-        companyView.setTitleLine(datasetProviderDTO.getId() == null ? "Create dataset" : "Edit dataset");
-        companyView.getName().setText(datasetProviderDTO.getName());
-        companyView.setIconUrl(datasetProviderDTO.getIconURL());
-        companyView.getUri().setText(datasetProviderDTO.getUri());
+        datasetProviderView.setTitleLine(datasetProviderDTO.getId() == null ? "Create dataset" : "Edit dataset");
+        datasetProviderView.getName().setText(datasetProviderDTO.getName());
+        datasetProviderView.setIconUrl(datasetProviderDTO.getIconURL());
+        datasetProviderView.getUri().setText(datasetProviderDTO.getUri());
     }
 
     @Override
     protected void bind() {
         super.bind();
 
-        handlers.add(companyView.getSubmit().addClickHandler(new ClickHandler() {
+        handlers.add(datasetProviderView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                datasetProviderDTO.setName(companyView.getName().getText());
-                datasetProviderDTO.setIconURL(companyView.getIconUrl());
-                datasetProviderDTO.setUri(companyView.getUri().getText());
-                companyView.setLoading("Saving dataset...");
+                datasetProviderDTO.setName(datasetProviderView.getName().getText());
+                datasetProviderDTO.setIconURL(datasetProviderView.getIconUrl());
+                datasetProviderDTO.setUri(datasetProviderView.getUri().getText());
+                datasetProviderView.setLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            companyView.setLoadingError("Error saving company");
+                            datasetProviderView.setLoadingError("Error saving company");
                         }
 
                         @Override
                         public void onSuccess(Method method, Long companyId) {
-                            companyView.hideLoading("DatasetProvider saved");
+                            datasetProviderView.hideLoading("DatasetProvider saved");
                             datasetProviderDTO.setId(companyId);
                         }
                     }).call(ServicesUtil.assetsService).saveDatasetProvider(datasetProviderDTO);

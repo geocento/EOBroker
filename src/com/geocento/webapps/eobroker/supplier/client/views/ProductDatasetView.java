@@ -1,7 +1,8 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.supplier.client.views.TemplateView;
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -42,6 +43,12 @@ public interface ProductDatasetView extends IsWidget {
     void setLoadingError(String message);
 
     void hideLoading(String message);
+
+    void setExtent(AoI aoi);
+
+    void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
+
+    AoI getExtent();
 
     public interface Presenter {
     }

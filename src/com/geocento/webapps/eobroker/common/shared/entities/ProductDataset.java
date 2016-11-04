@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
+import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
+
 import javax.persistence.*;
 
 /**
@@ -30,8 +32,8 @@ public class ProductDataset {
     @Column(length = 100000)
     String fullDescription;
 
-    @Embedded
-    Extent extent;
+    @Convert(converter = GeometryConverter.class)
+    String extent;
 
     @Column(length = 1000)
     String email;
@@ -120,11 +122,11 @@ public class ProductDataset {
         this.fullDescription = fullDescription;
     }
 
-    public Extent getExtent() {
+    public String getExtent() {
         return extent;
     }
 
-    public void setExtent(Extent extent) {
+    public void setExtent(String extent) {
         this.extent = extent;
     }
 

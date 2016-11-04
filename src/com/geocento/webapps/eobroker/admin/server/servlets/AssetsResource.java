@@ -2,19 +2,17 @@ package com.geocento.webapps.eobroker.admin.server.servlets;
 
 import com.geocento.webapps.eobroker.admin.client.services.AssetsService;
 import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
-import com.geocento.webapps.eobroker.admin.shared.dtos.EditProductDTO;
-import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 

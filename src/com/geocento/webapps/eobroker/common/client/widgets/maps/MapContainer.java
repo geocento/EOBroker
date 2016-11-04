@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialAnchorButton;
+import gwt.material.design.client.ui.MaterialFAB;
 
 /**
  * Created by thomas on 21/09/2016.
@@ -33,6 +34,8 @@ public class MapContainer extends Composite {
     MaterialAnchorButton drawPolygon;
     @UiField
     MaterialAnchorButton clearAoIs;
+    @UiField
+    MaterialFAB editButton;
 
     private Presenter presenter;
 
@@ -43,6 +46,8 @@ public class MapContainer extends Composite {
     private boolean mapLoaded = false;
 
     private GraphicJSNI aoiRendering;
+
+    private AoI aoi;
 
     public MapContainer() {
 
@@ -129,5 +134,15 @@ public class MapContainer extends Composite {
         if(aoi != null) {
             aoiRendering = map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
         }
+        this.aoi = aoi;
     }
+
+    public AoI getAoi() {
+        return aoi;
+    }
+
+    public void displayEdit(boolean display) {
+        editButton.setVisible(display);
+    }
+
 }

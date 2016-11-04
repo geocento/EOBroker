@@ -10,12 +10,9 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecor
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWRecordType;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.recommendation.SelectionRule;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
@@ -24,6 +21,7 @@ import com.geocento.webapps.eobroker.customer.client.utils.CSWUtils;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.http.HttpResponse;
@@ -360,7 +358,13 @@ public class SearchResource implements SearchService {
     }
 
     private ProductDatasetDTO createProductDatasetDTO(ProductDataset productDataset) {
-        return null;
+        ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+        productDatasetDTO.setId(productDataset.getId());
+        productDatasetDTO.setName(productDataset.getName());
+        productDatasetDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetDTO.setDescription(productDataset.getDescription());
+        productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        return productDatasetDTO;
     }
 
     private List<DatasetProviderDTO> getDatasetProviders(String textFilter, int start, int limit) {

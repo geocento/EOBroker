@@ -17,4 +17,15 @@ public class AoIRectangle extends AoI {
     public AoIRectangle() {
     }
 
+    public AoIRectangle(Extent extent) {
+        this.extent = extent;
+    }
+
+    public Extent getExtent() {
+        return extent;
+    }
+
+    public void setExtent(Extent extent) {
+        this.extent = extent;
+    }
 }

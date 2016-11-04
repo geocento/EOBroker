@@ -1,8 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -43,6 +46,8 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialTextArea description;
     @UiField
     MaterialRichEditor fullDescription;
+    @UiField
+    MapContainer mapContainer;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -136,6 +141,33 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @Override
     public void hideLoading(String message) {
         template.hideLoading();
+    }
+
+    @Override
+    public void setExtent(AoI extent) {
+/*
+        mapContainer.displayAoI(new AoIRectangle(extent));
+*/
+/*
+        mapContainer.displayAoI(AoIUtil.fromWKT("POLYGON((" +
+                extent.getEast() + " " + extent.getNorth() + "," +
+                extent.getWest() + " " + extent.getNorth() + "," +
+                extent.getWest() + " " + extent.getSouth() + "," +
+                extent.getEast() + " " + extent.getSouth() + "," +
+                extent.getEast() + " " + extent.getNorth() +
+                "))"));
+*/
+        mapContainer.displayAoI(extent);
+    }
+
+    @Override
+    public AoI getExtent() {
+        return mapContainer.getAoi();
+    }
+
+    @Override
+    public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
 }

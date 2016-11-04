@@ -177,6 +177,10 @@ public class TemplateView extends Composite implements HasWidgets {
         this.loginInfo = loginInfo;
     }
 
+    public ClientFactoryImpl getClientFactory() {
+        return clientFactory;
+    }
+
     @UiHandler("signIn")
     void signIn(ClickEvent clickEvent) {
         clientFactory.getEventBus().fireEvent(new PlaceChangeEvent(new LoginPagePlace(clientFactory.getPlaceController().getWhere())));

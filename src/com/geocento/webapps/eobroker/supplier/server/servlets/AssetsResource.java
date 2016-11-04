@@ -8,13 +8,14 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
+import com.geocento.webapps.eobroker.common.shared.entities.utils.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
-import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
+import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -496,6 +497,7 @@ public class AssetsResource implements AssetsService {
             ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
             productDatasetDTO.setFullDescription(productDataset.getFullDescription());
             productDatasetDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            productDatasetDTO.setExtent(productDataset.getExtent());
             return productDatasetDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -536,7 +538,16 @@ public class AssetsResource implements AssetsService {
             }
             productDataset.setProduct(product);
             productDataset.setImageUrl(productDatasetDTO.getImageUrl());
-            productDataset.setExtent(productDatasetDTO.getExtent());
+            String extentWKT = productDatasetDTO.getExtent();
+            if(extentWKT == null) {
+                Extent extent = new Extent();
+                extent.setSouth(-90.0);
+                extent.setNorth(90.0);
+                extent.setEast(180.0);
+                extent.setWest(-180.0);
+                extentWKT = AoIUtil.toWKT(new AoIRectangle(extent));
+            }
+            productDataset.setExtent(extentWKT);
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + getProductDatasetTSV(productDataset) +
                     ", tsvname = " + getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +

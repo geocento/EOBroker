@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps.resources;
 
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
+import com.geocento.webapps.eobroker.common.shared.entities.AoIRectangle;
+import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
@@ -53,9 +55,16 @@ public class ArcgisMapJSNI extends JavaScriptObject {
         return this.createGeometry(wktString);
     }-*/;
 
+    public final native GeometryJSNI createExtent(double xmin, double ymin, double xmax, double ymax) /*-{
+        return this.createExtent(xmin, ymin, xmax, ymax);
+    }-*/;
+
     public final GeometryJSNI createGeometryFromAoI(AoI aoi) {
         if(aoi instanceof AoIPolygon) {
             return createPolygon(((AoIPolygon) aoi).getWktRings());
+        } else if(aoi instanceof AoIRectangle) {
+            Extent extent = ((AoIRectangle) aoi).getExtent();
+            return createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
         }
         return null;
     }

@@ -5,7 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 /**
  * Created by thomas on 06/06/2016.
  */
-public class ProductDatasetDTO extends Offer {
+public class ProductDatasetDescriptionDTO {
 
     Long id;
     CompanyDTO company;
@@ -20,7 +20,7 @@ public class ProductDatasetDTO extends Offer {
     String apiUrl;
     String sampleWmsUrl;
 
-    public ProductDatasetDTO() {
+    public ProductDatasetDescriptionDTO() {
     }
 
     public Long getId() {

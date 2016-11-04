@@ -6,6 +6,9 @@
 
     <persistence-unit name="eobroker">
     	<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <!-- Converters -->
+        <class>com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter</class>
+        <!-- Entities -->
         <class>com.geocento.webapps.eobroker.common.shared.entities.Company</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.User</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Product</class>

@@ -1,8 +1,9 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.AoIUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -11,7 +12,6 @@ import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.RequestImageryView;
 import com.geocento.webapps.eobroker.customer.shared.ImageRequestDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

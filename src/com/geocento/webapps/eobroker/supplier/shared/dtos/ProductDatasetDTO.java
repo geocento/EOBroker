@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
-import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 /**
@@ -15,7 +14,7 @@ public class ProductDatasetDTO {
     String imageUrl;
     String description;
     String fullDescription;
-    Extent extent;
+    String extent;
     String email;
     String website;
     String apiUrl;
@@ -96,11 +95,11 @@ public class ProductDatasetDTO {
         this.fullDescription = fullDescription;
     }
 
-    public Extent getExtent() {
+    public String getExtent() {
         return extent;
     }
 
-    public void setExtent(Extent extent) {
+    public void setExtent(String extent) {
         this.extent = extent;
     }
 

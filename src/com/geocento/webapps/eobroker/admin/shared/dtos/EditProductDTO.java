@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.admin.shared.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 
 import java.util.List;
 

@@ -11,14 +11,15 @@ var arcgisMap = function(callback) {
         "esri/toolbars/draw",
         "esri/graphic",
         "esri/geometry/Polygon",
+        "esri/geometry/Extent",
         "esri/layers/WMSLayer",
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol",
         "esri/symbols/SimpleFillSymbol",
         "esri/Color",
-        'esri/layers/WMSLayerInfo', 'esri/geometry/Extent'
+        'esri/layers/WMSLayerInfo'
     ], function(Map, Draw, Graphic,
-                Polygon, WMSLayer,
+                Polygon, Extent, WMSLayer,
                 SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color) {
 
         self.createDraw = function(map) {
@@ -54,6 +55,10 @@ var arcgisMap = function(callback) {
                 rings[index] = [parseFloat(latLngArray[0]), parseFloat(latLngArray[1])];
             }
             return new Polygon(rings);
+        }
+
+        self.createExtent = function(xmin, ymin, xmax, ymax) {
+            return new Extent(xmin, ymin, xmax, ymax, "EPSG:4326");
         }
 
         self.createGeometry = function(wktString) {

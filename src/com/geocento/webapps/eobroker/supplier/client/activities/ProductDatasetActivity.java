@@ -1,11 +1,13 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.ProductDatasetPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductDatasetView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -37,10 +39,21 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         super.start(panel, eventBus);
         productDatasetView = clientFactory.getProductDatasetView();
         productDatasetView.setPresenter(this);
+        setTemplateView(productDatasetView.getTemplateView());
         panel.setWidget(productDatasetView.asWidget());
         Window.setTitle("Earth Observation Broker");
-        bind();
-        handleHistory();
+        productDatasetView.setMapLoadedHandler(new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(Exception reason) {
+                Window.alert("Error " + reason.getMessage());
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                bind();
+                handleHistory();
+            }
+        });
     }
 
     private void handleHistory() {
@@ -80,6 +93,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         productDatasetView.getDescription().setText(productDatasetDTO.getDescription());
         productDatasetView.setFullDescription(productDatasetDTO.getFullDescription());
         productDatasetView.setSelectedProduct(productDatasetDTO.getProduct());
+        productDatasetView.setExtent(AoIUtil.fromWKT(productDatasetDTO.getExtent()));
     }
 
     @Override
@@ -94,6 +108,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setDescription(productDatasetView.getDescription().getText());
                 productDatasetDTO.setFullDescription(productDatasetView.getFullDescription());
                 productDatasetDTO.setProduct(productDatasetView.getSelectProduct());
+                productDatasetDTO.setExtent(AoIUtil.toWKT(productDatasetView.getExtent()));
                 productDatasetView.setLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {

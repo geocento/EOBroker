@@ -1,12 +1,12 @@
 package com.geocento.webapps.eobroker.admin.client.services;
 
+import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
 import com.geocento.webapps.eobroker.admin.shared.dtos.EditProductDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
-import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 

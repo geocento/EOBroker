@@ -14,6 +14,10 @@
             font-size: 1.5em;
         }
 
+        .subsection {
+            font-size: 1.2em;
+        }
+
         .image {
             max-width: 200px;
             height: 150px !important;
@@ -30,13 +34,28 @@
             padding: 10px 0px;
         }
 
+        .tabPanel {
+            padding: 20px;
+            background: #c8ddd4;
+        }
+
+        .title > p {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 3.6em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 3;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
         <g:HTMLPanel addStyleNames="{style.formPanel}">
             <g:HTMLPanel>
                 <design:MaterialImage float="LEFT" addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
                 <g:HTMLPanel>
-                    <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+                    <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
                     <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
                 </g:HTMLPanel>
             </g:HTMLPanel>

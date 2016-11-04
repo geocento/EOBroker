@@ -3,16 +3,21 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps">
     <ui:style>
 
+        .panel {
+            position: relative !important;
+        }
+
         .fabPanel li, .fabPanel a {
             line-height: normal !important;
             height: auto;
         }
+
     </ui:style>
-    <g:HTMLPanel>
+    <g:HTMLPanel addStyleNames="{style.panel}">
         <maps:ArcGISMap ui:field="mapContainer">
         </maps:ArcGISMap>
         <!-- FAB -->
-        <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="60" addStyleNames="{style.fabPanel}">
+        <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="60" addStyleNames="{style.fabPanel}" ui:field="editButton">
             <design:MaterialTooltip text="Create" position="LEFT">
                 <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE"/>
             </design:MaterialTooltip>

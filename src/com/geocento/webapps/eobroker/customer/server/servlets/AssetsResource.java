@@ -188,14 +188,15 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.product = :product", ProductDataset.class);
-            query.setParameter("product", product);
+            productDatasetQuery.setParameter("product", product);
             productDescriptionDTO.setProductDatasets(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
                 @Override
                 public ProductDatasetDTO mutate(ProductDataset productDataset) {
                     ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
-                    productDatasetDTO.setId(productDatasetDTO.getId());
-                    productDatasetDTO.setName(productDatasetDTO.getName());
-                    productDatasetDTO.setDescription(productDatasetDTO.getDescription());
+                    productDatasetDTO.setId(productDataset.getId());
+                    productDatasetDTO.setName(productDataset.getName());
+                    productDatasetDTO.setImageUrl(productDataset.getImageUrl());
+                    productDatasetDTO.setDescription(productDataset.getDescription());
                     productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
                     // initiate the services with product dto
                     ProductDTO productDTO = new ProductDTO();
@@ -208,6 +209,36 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public ProductDatasetDescriptionDTO getProductDatasetDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductDataset productDataset = em.find(ProductDataset.class, id);
+            if(productDataset == null) {
+                throw new RequestException("Product does not exist");
+            }
+            return createProductDatasetDescriptionDTO(productDataset);
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductDatasetDescriptionDTO createProductDatasetDescriptionDTO(ProductDataset productDataset) {
+        ProductDatasetDescriptionDTO productDatasetDescriptionDTO = new ProductDatasetDescriptionDTO();
+        productDatasetDescriptionDTO.setId(productDataset.getId());
+        productDatasetDescriptionDTO.setName(productDataset.getName());
+        productDatasetDescriptionDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetDescriptionDTO.setDescription(productDataset.getDescription());
+        productDatasetDescriptionDTO.setFullDescription(productDataset.getFullDescription());
+        productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
+        productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+        return productDatasetDescriptionDTO;
     }
 
     @Override
@@ -255,6 +286,7 @@ public class AssetsResource implements AssetsService {
                     productServiceDTO.setCompanyName(productService.getCompany().getName());
                     productServiceDTO.setCompanyId(productService.getCompany().getId());
                     productServiceDTO.setServiceImage(productService.getImageUrl());
+                    productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
                     productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
                     return productServiceDTO;
                 }

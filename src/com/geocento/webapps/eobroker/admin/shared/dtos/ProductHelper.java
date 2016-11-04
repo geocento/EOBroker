@@ -54,4 +54,15 @@ public class ProductHelper {
                 "|| setweight(to_tsvector('english','" + product.getShortDescription() + "'), 'B')";
     }
 
+    public static ProductDTO createProductDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setName(product.getName());
+        productDTO.setDescription(product.getShortDescription());
+        productDTO.setImageUrl(product.getImageUrl());
+        productDTO.setSector(product.getSector());
+        productDTO.setThematic(product.getThematic());
+        return productDTO;
+    }
+
 }
