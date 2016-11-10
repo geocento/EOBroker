@@ -3,24 +3,17 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImagery;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImageryHandler;
 import com.geocento.webapps.eobroker.customer.client.events.SearchImagery;
 import com.geocento.webapps.eobroker.customer.client.events.SearchImageryHandler;
-import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
-import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
-import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
-import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.SearchPageView;
-import com.geocento.webapps.eobroker.customer.shared.SearchResult;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -38,6 +31,9 @@ import java.util.List;
 public class SearchPageActivity extends TemplateActivity implements SearchPageView.Presenter {
 
     private SearchPageView searchPageView;
+    private String text;
+    private int start;
+    private int limit;
 
     public SearchPageActivity(SearchPagePlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -60,15 +56,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     protected void bind() {
         super.bind();
 
-        handlers.add(searchPageView.getChangeSearch().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-/*
-                clientFactory.getPlaceController().goTo(new LandingPagePlace(""));
-*/
-            }
-        }));
-
         activityEventBus.addHandler(RequestImagery.TYPE, new RequestImageryHandler() {
             @Override
             public void onRequestImagery(RequestImagery event) {
@@ -87,15 +74,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         final String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
-        Long productId = null;
-        if(tokens.containsKey(SearchPagePlace.TOKENS.product.toString())) {
-            try {
-                productId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.product.toString()));
-            } catch (Exception e) {
-
-            }
-        }
-        String browse = tokens.get(SearchPagePlace.TOKENS.browse.toString());
         Long aoiId = null;
         if(tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
             try {
@@ -111,89 +89,54 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
             }
         }
-        // update the interface
-        searchPageView.setCategories(category == null ? ListUtil.toList(Category.values()) : ListUtil.toList(category));
         // either text or product is provided
-        if(text == null && productId == null && (browse == null || (browse != null && category == null))) {
+        if(text == null && category == null) {
             clientFactory.getPlaceController().goTo(new LandingPagePlace());
             return;
         }
+        this.text = text;
+        this.category = category;
+        this.start = 0;
+        this.limit = 24;
         // now start the search
         searchPageView.clearResults();
-        if(browse != null) {
+        searchPageView.setSearchText(text);
+        showCategories(true, text);
+        searchPageView.selectCategory(category);
+        searchPageView.displayFilters(category);
+        if(category != null) {
+            // search using the category
             switch (category) {
                 case products: {
                     searchPageView.setTitleText("Browse products");
-                    searchPageView.setCurrentSearch("");
-                    searchPageView.displayLoadingResults("Loading products...");
-                    try {
-                        final int start = 0, limit = 200;
-                        REST.withCallback(new MethodCallback<List<ProductDTO>>() {
-                            @Override
-                            public void onFailure(Method method, Throwable exception) {
-                                Window.alert("Error");
-                            }
-
-                            @Override
-                            public void onSuccess(Method method, List<ProductDTO> products) {
-                                searchPageView.setSearchResults("Found " + products.size() + " matching products");
-                                searchPageView.hideLoadingResults();
-                                // add all results to the interface
-                                searchPageView.displayProductsList(products, start, limit, text);
-                            }
-                        }).call(ServicesUtil.searchService).listProducts(text, start, limit, aoiId);
-                    } catch (RequestException e) {
-                    }
+                    loadProducts(text, start, limit);
+                } break;
+                case productservices: {
+                    searchPageView.setTitleText("Browse on-demand services");
+                    loadProductServices(text, start, limit);
+                } break;
+                case productdatasets: {
+                    searchPageView.setTitleText("Browse off-the-shelf data");
+                    loadProductDatasets(text, start, limit);
+                } break;
+                case software: {
+                    searchPageView.setTitleText("Browse software solutions");
+                    loadSoftware(text, start, limit);
+                } break;
+                case project: {
+                    searchPageView.setTitleText("Browse projects");
+                    loadProjects(text, start, limit);
                 } break;
                 case companies: {
                     searchPageView.setTitleText("Browse companies");
-                    searchPageView.setCurrentSearch("");
                     searchPageView.displayLoadingResults("Loading companies...");
-                    final int start = 0, limit = 10;
-                    REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
-                        @Override
-                        public void onFailure(Method method, Throwable exception) {
-                            Window.alert("Error");
-                        }
-
-                        @Override
-                        public void onSuccess(Method method, List<CompanyDTO> companyDTOs) {
-                            searchPageView.setSearchResults("Found " + companyDTOs.size() + " matching companies");
-                            searchPageView.hideLoadingResults();
-                            // add all results to the interface
-                            searchPageView.displayCompaniesList(companyDTOs, start, limit, text);
-                        }
-                    }).call(ServicesUtil.searchService).listCompanies(text, start, limit, aoiId);
+                    loadCompanies(text, start, limit);
                 } break;
-            }
-        } else if(productId != null) {
-            searchPageView.setTitleText("Explore product services");
-            searchPageView.displayLoadingResults("Loading product and matching results...");
-            try {
-                REST.withCallback(new MethodCallback<SearchResult>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        Window.alert("Error");
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, SearchResult searchResult) {
-                        searchPageView.hideLoadingResults();
-                        // add all results to the interface
-                        List<ProductDTO> suggestedProducts = searchResult.getProducts();
-                        ProductDTO product = suggestedProducts.get(0);
-                        searchPageView.setSearchResults("You selected '" + product.getName() + "'");
-                        searchPageView.setProductSelection(product, searchResult.getProductServices(), suggestedProducts.subList(0, Math.min(1, suggestedProducts.size() - 1)));
-                        searchPageView.setMatchingImagery(product.getName());
-                    }
-                }).call(ServicesUtil.searchService).getMatchingServicesForProduct(productId, null);
-            } catch (RequestException e) {
             }
         } else if(text != null) {
             searchPageView.setTitleText("Search Results");
-            searchPageView.displayLoadingResults("Searching matching results...");
-            searchPageView.setCurrentSearch(text);
             try {
+                searchPageView.displayLoadingResults("Searching matching results...");
                 REST.withCallback(new MethodCallback<SearchResult>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
@@ -203,17 +146,57 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     @Override
                     public void onSuccess(Method method, SearchResult searchResult) {
                         searchPageView.hideLoadingResults();
-                        searchPageView.setSearchResults("Results for '" + text + "'");
+                        searchPageView.setResultsTitle("");
                         // add all results to the interface
-                        List<ProductDTO> suggestedProducts = searchResult.getProducts();
-                        searchPageView.setMatchingProducts(suggestedProducts);
-                        searchPageView.setMatchingServices(searchResult.getProductServices());
-                        searchPageView.setMatchingImagery(text);
-                        // search for datasets
-                        // TODO - move to server to locally cache? could be issue with timing...
-                        searchPageView.setDatasetProviders(searchResult.getDatasetsProviders(), text, aoi);
+                        // start with products
+                        {
+                            List<ProductDTO> products = searchResult.getProducts();
+                            boolean more = searchResult.isMoreProducts();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.products, text) : null;
+                            if (more) {
+                                products = products.subList(0, 4);
+                            }
+                            searchPageView.setMatchingProducts(products, moreUrl);
+                        }
+                        // add on demand services
+                        {
+                            List<ProductServiceDTO> productServiceDTOs = searchResult.getProductServices();
+                            boolean more = searchResult.isMoreProductServices();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.productservices, text) : null;
+                            if (more) {
+                                productServiceDTOs = productServiceDTOs.subList(0, 4);
+                            }
+                            searchPageView.setMatchingServices(productServiceDTOs, moreUrl);
+                        }
+                        {
+                            List<ProductDatasetDTO> productDatasetDTOs = searchResult.getProductDatasets();
+                            boolean more = searchResult.isMoreProductDatasets();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.productdatasets, text) : null;
+                            if (more) {
+                                productDatasetDTOs = productDatasetDTOs.subList(0, 4);
+                            }
+                            searchPageView.setMatchingDatasets(productDatasetDTOs, moreUrl);
+                        }
+                        {
+                            List<SoftwareDTO> softwareDTOs = searchResult.getSoftwares();
+                            boolean more = searchResult.isMoreSoftware();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.software, text) : null;
+                            if (more) {
+                                softwareDTOs = softwareDTOs.subList(0, 4);
+                            }
+                            searchPageView.setMatchingSoftwares(softwareDTOs, moreUrl);
+                        }
+                        {
+                            List<ProjectDTO> projectDTOs = searchResult.getProjects();
+                            boolean more = searchResult.isMoreProjects();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.project, text) : null;
+                            if (more) {
+                                projectDTOs = projectDTOs.subList(0, 4);
+                            }
+                            searchPageView.setMatchingProjects(projectDTOs, moreUrl);
+                        }
                     }
-                }).call(ServicesUtil.searchService).getMatchingServices(text, category, null);
+                }).call(ServicesUtil.searchService).getMatchingServices(text, null);
             } catch (RequestException e) {
             }
         }
@@ -235,4 +218,168 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     }
 
+    private void loadProducts(final String text, final int start, final int limit) {
+        try {
+            searchPageView.displayLoadingResults("Loading products...");
+            REST.withCallback(new MethodCallback<List<ProductDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ProductDTO> products) {
+                    searchPageView.hideLoadingResults();
+                    // add all results to the interface
+                    searchPageView.addProducts(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
+                }
+            }).call(ServicesUtil.searchService).listProducts(text, start, limit, aoi == null ? null : aoi.getId());
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadProductServices(final String text, final int start, final int limit) {
+        try {
+            searchPageView.displayLoadingResults("Loading services...");
+            REST.withCallback(new MethodCallback<List<ProductServiceDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ProductServiceDTO> products) {
+                    searchPageView.hideLoadingResults();
+                    // add all results to the interface
+                    searchPageView.addProductServices(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
+                }
+            }).call(ServicesUtil.searchService).listProductServices(text, start, limit, aoi == null ? null : aoi.getId());
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadProductDatasets(final String text, final int start, final int limit) {
+        try {
+            searchPageView.displayLoadingResults("Loading data...");
+            REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ProductDatasetDTO> products) {
+                    searchPageView.hideLoadingResults();
+                    // add all results to the interface
+                    searchPageView.addProductDatasets(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
+                }
+            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, aoi == null ? null : aoi.getId());
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadSoftware(final String text, final int start, final int limit) {
+        try {
+            searchPageView.displayLoadingResults("Loading software...");
+            REST.withCallback(new MethodCallback<List<SoftwareDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<SoftwareDTO> softwareDTOs) {
+                    searchPageView.hideLoadingResults();
+                    // add all results to the interface
+                    searchPageView.addSoftware(softwareDTOs, start, softwareDTOs != null && softwareDTOs.size() != 0 && softwareDTOs.size() % limit == 0, text);
+                }
+            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, aoi == null ? null : aoi.getId());
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadProjects(final String text, final int start, final int limit) {
+        try {
+            searchPageView.displayLoadingResults("Loading projects...");
+            REST.withCallback(new MethodCallback<List<ProjectDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ProjectDTO> projectDTOs) {
+                    searchPageView.hideLoadingResults();
+                    // add all results to the interface
+                    searchPageView.addProjects(projectDTOs, start, projectDTOs != null && projectDTOs.size() != 0 && projectDTOs.size() % limit == 0, text);
+                }
+            }).call(ServicesUtil.searchService).listProjects(text, start, limit, aoi == null ? null : aoi.getId());
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadCompanies(final String text, final int start, final int limit) {
+        try {
+            REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<CompanyDTO> companyDTOs) {
+                    searchPageView.hideLoadingResults();
+                    // add all results to the interface
+                    searchPageView.addCompanies(companyDTOs, start, companyDTOs != null && companyDTOs.size() != 0 && companyDTOs.size() % limit == 0, text);
+                }
+            }).call(ServicesUtil.searchService).listCompanies(text, start, limit, aoi == null ? null : aoi.getId());
+        } catch (RequestException e) {
+        }
+    }
+
+    private String getSearchCategoryUrl(Category category, String text) {
+        return "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), category.toString(),
+                SearchPagePlace.TOKENS.text.toString(), text == null ? "" : text
+        )));
+    }
+
+    private void showCategories(boolean display, String text) {
+        searchPageView.displayCategories(display);
+        searchPageView.getProductsCategory().setHref(getSearchCategoryUrl(Category.products, text));
+        searchPageView.getProductServicesCategory().setHref(getSearchCategoryUrl(Category.productservices, text));
+        searchPageView.getProductDatasetsCategory().setHref(getSearchCategoryUrl(Category.productdatasets, text));
+        searchPageView.getSoftwareCategory().setHref(getSearchCategoryUrl(Category.software, text));
+        searchPageView.getProjectsCategory().setHref(getSearchCategoryUrl(Category.project, text));
+    }
+
+    @Override
+    public void loadMoreProducts() {
+        start += limit;
+        loadProducts(text, start, limit);
+    }
+
+    @Override
+    public void loadMoreProductServices() {
+        start += limit;
+        loadProductServices(text, start, limit);
+    }
+
+    @Override
+    public void loadMoreProductDatasets() {
+        start += limit;
+        loadProductDatasets(text, start, limit);
+    }
+
+    @Override
+    public void loadMoreSofware() {
+        start += limit;
+        loadSoftware(text, start, limit);
+    }
+
+    @Override
+    public void loadMoreProjects() {
+        start += limit;
+        loadProjects(text, start, limit);
+    }
 }

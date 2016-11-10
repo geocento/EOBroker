@@ -1,18 +1,16 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
-import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -20,10 +18,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import gwt.material.design.addins.client.masonry.MaterialMasonry;
-import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.*;
+
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -44,6 +43,8 @@ public class FullViewImpl extends Composite implements FullView {
         String subsection();
 
         String tabPanel();
+
+        String vertical();
     }
 
     @UiField Style style;
@@ -51,13 +52,15 @@ public class FullViewImpl extends Composite implements FullView {
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    HTMLPanel details;
+    MaterialRow details;
     @UiField
-    MaterialTitle title;
+    MaterialLabel title;
     @UiField
     MaterialImage image;
     @UiField
     HTMLPanel tags;
+    @UiField
+    MaterialLabel description;
 
     public FullViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -94,77 +97,6 @@ public class FullViewImpl extends Composite implements FullView {
     }
 
     @Override
-    public void displayCompany(final CompanyDescriptionDTO companyDescriptionDTO) {
-        clearDetails();
-        image.setUrl(companyDescriptionDTO.getIconURL());
-        title.setTitle(companyDescriptionDTO.getName());
-        title.setDescription(companyDescriptionDTO.getDescription());
-        tags.clear();
-        MaterialPanel badges = new MaterialPanel();
-        badges.setPadding(10);
-        MaterialChip email = new MaterialChip();
-        email.setText("Contact");
-        email.setBackgroundColor("grey");
-        email.setTextColor("white");
-        email.setLetterBackgroundColor("blue");
-        email.setLetterColor("white");
-        email.setIconType(IconType.CONTACT_MAIL);
-        email.setMarginRight(20);
-        email.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                template.getClientFactory().getPlaceController().goTo(
-                        new ConversationPlace(
-                                ConversationPlace.TOKENS.companyid.toString() + "=" + companyDescriptionDTO.getId() +
-                                "&" + ConversationPlace.TOKENS.topic.toString() + "=Request for information"
-                        ));
-            }
-        });
-        badges.add(email);
-        MaterialChip website = new MaterialChip();
-        website.setText("Website");
-        website.setBackgroundColor("grey");
-        website.setTextColor("white");
-        website.setLetterBackgroundColor("green");
-        website.setLetterColor("white");
-        website.setIconType(IconType.WEB);
-        website.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                Window.open(companyDescriptionDTO.getWebsite(), "_blank", null);
-            }
-        });
-        badges.add(website);
-        tags.add(badges);
-        MaterialTab materialTab = createTabs();
-        int numTabs = 4;
-        int size = (int) Math.floor(12 / numTabs);
-        HTMLPanel fullDescriptionPanel = new HTMLPanel(companyDescriptionDTO.getFullDescription());
-        addTab(materialTab, "Description", fullDescriptionPanel, size);
-        // create tab panel for services
-        HTMLPanel servicesPanel = null;
-        if(companyDescriptionDTO.getProductServices().size() == 0) {
-            servicesPanel = new HTMLPanel("<p class='" + style.subsection() + "'>This company does not provide on-demand services</p>");
-        } else {
-            servicesPanel = new HTMLPanel("<p class='" + style.subsection() + "'>On-demand services provided</p>");
-            MaterialRow materialRow = new MaterialRow();
-            servicesPanel.add(materialRow);
-            for (ProductServiceDTO productServiceDTO : companyDescriptionDTO.getProductServices()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
-                materialColumn.add(new ProductServiceWidget(productServiceDTO));
-                materialRow.add(materialColumn);
-            }
-        }
-        addTab(materialTab, "Offer (" + companyDescriptionDTO.getProductServices().size() + ")", servicesPanel, size);
-        addTab(materialTab, "Others", new HTMLPanel(""), size);
-        materialTab.selectTab("fullViewTab0");
-        details.add(materialTab.getParent().getParent());
-        details.add(new HTML("<p class='" + style.subsection() + "'>Other similar companies...</p>"));
-        MaterialRow otherItemsRow = new MaterialRow();
-        details.add(otherItemsRow);
-    }
-
-    @Override
     public void clearDetails() {
         details.clear();
     }
@@ -175,11 +107,118 @@ public class FullViewImpl extends Composite implements FullView {
     }
 
     @Override
+    public void displayProduct(ProductDescriptionDTO productDescriptionDTO) {
+        clearDetails();
+        image.setUrl(productDescriptionDTO.getImageUrl());
+        title.setText(productDescriptionDTO.getName());
+        description.setText(productDescriptionDTO.getShortDescription());
+        tags.clear();
+        MaterialPanel badges = new MaterialPanel();
+        badges.setPadding(10);
+        MaterialChip thematic = new MaterialChip();
+        thematic.setText(productDescriptionDTO.getThematic().toString());
+        thematic.setBackgroundColor("grey");
+        thematic.setTextColor("white");
+        thematic.setLetterBackgroundColor("blue");
+        thematic.setLetterColor("white");
+        thematic.setLetter("T");
+        thematic.setMarginRight(20);
+        badges.add(thematic);
+        MaterialChip sector = new MaterialChip();
+        sector.setText(productDescriptionDTO.getSector().toString());
+        sector.setBackgroundColor("grey");
+        sector.setTextColor("white");
+        sector.setLetterBackgroundColor("green");
+        sector.setLetterColor("white");
+        sector.setLetter("S");
+        badges.add(sector);
+        tags.add(badges);
+        // add the tabs now
+        MaterialPanel tabsPanel = createTabsPanel();
+        MaterialTab materialTab = createTabs(tabsPanel);
+        int numTabs = 4;
+        int size = (int) Math.floor(12 / numTabs);
+        HTMLPanel fullDescriptionPanel = new HTMLPanel(productDescriptionDTO.getDescription());
+        fullDescriptionPanel.getElement().getStyle().setPadding(20, com.google.gwt.dom.client.Style.Unit.PX);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        // create tab panel for services
+        MaterialPanel servicesPanel = new MaterialPanel();
+        if(productDescriptionDTO.getProductServices().size() == 0) {
+            servicesPanel.add(createSubsection("No on-demand services are available for this product"));
+            servicesPanel.add(new HTML("<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>"));
+        } else {
+            servicesPanel.add(createSubsection("This product can be provided by the following on-demand services"));
+            MaterialRow materialRow = new MaterialRow();
+            servicesPanel.add(materialRow);
+            for (ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                ProductServiceWidget productServiceWidget = new ProductServiceWidget(productServiceDTO);
+/*
+                productServiceWidget.displayQuote(true);
+*/
+                materialColumn.add(productServiceWidget);
+                materialRow.add(materialColumn);
+            }
+            MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
+            materialAnchorButton.setText("Request quote");
+            materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDescriptionDTO.getId())));
+            servicesPanel.add(materialAnchorButton);
+        }
+        addTab(materialTab, tabsPanel, "On-demand (" + productDescriptionDTO.getProductServices().size() + ")", servicesPanel, size);
+        // create tab panel for services
+        MaterialPanel productDatasetPanel = new MaterialPanel();
+        if(productDescriptionDTO.getProductDatasets().size() == 0) {
+            productDatasetPanel.add(createSubsection("No off the shelf data is available for this product"));
+            productDatasetPanel.add(new HTML("<p>We are sorry but we do not have any supplier currently providing off the shelf data for this product</p>"));
+        } else {
+            productDatasetPanel.add(createSubsection("The following off the shelf data items implement this product"));
+            MaterialRow materialRow = new MaterialRow();
+            productDatasetPanel.add(materialRow);
+            for (ProductDatasetDTO productDatasetDTO : productDescriptionDTO.getProductDatasets()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 4, 3);
+                materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
+                materialRow.add(materialColumn);
+            }
+        }
+        addTab(materialTab, tabsPanel, "Off-the-shelf (" + productDescriptionDTO.getProductDatasets().size() + ")", productDatasetPanel, size);
+        // add the others panel
+        int othersCount = 0;
+        HTMLPanel othersPanel = new HTMLPanel("");
+        MaterialRow othersRow = new MaterialRow();
+        othersPanel.add(othersRow);
+        othersRow.add(createSubsection("Software solutions"));
+        othersRow.add(new MaterialLabel("TODO..."));
+        othersRow.add(createSubsection("Projects"));
+        othersRow.add(new MaterialLabel("TODO..."));
+        if(productDescriptionDTO.hasImageRule()) {
+            othersRow.add(createSubsection("Search or request imagery for '" + productDescriptionDTO.getName() + "'"));
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
+                materialAnchorButton.setText("Search imagery");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new ImageSearchPlace(Utils.generateTokens(ImageSearchPlace.TOKENS.product.toString(), productDescriptionDTO.getId() + ""))));
+                othersRow.add(materialAnchorButton);
+            }
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
+                materialAnchorButton.setText("Request imagery");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestImageryPlace()));
+                othersRow.add(materialAnchorButton);
+            }
+        }
+        addTab(materialTab, tabsPanel, "Others (" + othersCount + ")", othersPanel, size);
+        details.add(tabsPanel);
+        materialTab.selectTab("fullViewTab0");
+        // add suggestions
+        addColumnSection("Similar products of interest");
+        addColumnLine(new MaterialLabel("TODO..."));
+    }
+
+    @Override
     public void displayProductService(final ProductServiceDescriptionDTO productServiceDescriptionDTO) {
         clearDetails();
         image.setUrl(productServiceDescriptionDTO.getServiceImage());
-        title.setTitle(productServiceDescriptionDTO.getName());
-        title.setDescription(productServiceDescriptionDTO.getDescription());
+        title.setText(productServiceDescriptionDTO.getName());
+        description.setText(productServiceDescriptionDTO.getDescription());
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
@@ -212,10 +251,32 @@ public class FullViewImpl extends Composite implements FullView {
         });
         badges.add(product);
         tags.add(badges);
-        MaterialTab materialTab = createTabs();
+        // add actions
+        {
+            MaterialPanel actionsPanel = new MaterialPanel();
+            details.add(actionsPanel);
+            if (productServiceDescriptionDTO.isHasFeasibility()) {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("CHECK FEASIBILITY");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new ProductFeasibilityPlace(
+                                ProductFeasibilityPlace.TOKENS.productservice.toString() + "=" + productServiceDescriptionDTO.getId())));
+                actionsPanel.add(materialAnchorButton);
+                materialAnchorButton.setMargin(20);
+            }
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("REQUEST QUOTE");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new ProductFormPlace(
+                                ProductFormPlace.TOKENS.id.toString() + "=" + productServiceDescriptionDTO.getProduct().getId())));
+                actionsPanel.add(materialAnchorButton);
+                materialAnchorButton.setMargin(20);
+            }
+        }
+        MaterialPanel tabsPanel = createTabsPanel();
+        MaterialTab materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
-        addTab(materialTab, "Description", new HTMLPanel(productServiceDescriptionDTO.getFullDescription()), size);
+        addTab(materialTab, tabsPanel, "Description", new HTMLPanel(productServiceDescriptionDTO.getFullDescription()), size);
         // create tab panel for services
         MaterialRow featuresPanel = new MaterialRow();
         MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
@@ -240,173 +301,87 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         materialColumn.add(mapContainer);
-        addTab(materialTab, "Features", featuresPanel, size);
+        addTab(materialTab, tabsPanel, "Features", featuresPanel, size);
         // create tab panel for services
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, "Terms and Conditions", termsAndConditionsPanel, size);
-        addTab(materialTab, "Others", new HTMLPanel(""), size);
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+        addTab(materialTab, tabsPanel, "Others", new HTMLPanel(""), size);
         materialTab.selectTab("fullViewTab0");
-        details.add(materialTab.getParent().getParent());
-        details.add(new HTML("<p class='" + style.section() + "'>You might also be interested in...</p>"));
-        MaterialRow otherItemsRow = new MaterialRow();
-        details.add(otherItemsRow);
-        otherItemsRow.add(new MaterialLabel("Add recommendations..."));
-    }
-
-    @Override
-    public void displayProduct(ProductDescriptionDTO productDescriptionDTO) {
-        clearDetails();
-        image.setUrl(productDescriptionDTO.getImageUrl());
-        title.setTitle(productDescriptionDTO.getName());
-        title.setDescription(productDescriptionDTO.getShortDescription());
-        tags.clear();
-        MaterialPanel badges = new MaterialPanel();
-        badges.setPadding(10);
-        MaterialChip thematic = new MaterialChip();
-        thematic.setText(productDescriptionDTO.getThematic().toString());
-        thematic.setBackgroundColor("grey");
-        thematic.setTextColor("white");
-        thematic.setLetterBackgroundColor("blue");
-        thematic.setLetterColor("white");
-        thematic.setLetter("T");
-        thematic.setMarginRight(20);
-        badges.add(thematic);
-        MaterialChip sector = new MaterialChip();
-        sector.setText(productDescriptionDTO.getSector().toString());
-        sector.setBackgroundColor("grey");
-        sector.setTextColor("white");
-        sector.setLetterBackgroundColor("green");
-        sector.setLetterColor("white");
-        sector.setLetter("S");
-        badges.add(sector);
-        tags.add(badges);
-        MaterialTab materialTab = createTabs();
-        int numTabs = 4;
-        int size = (int) Math.floor(12 / numTabs);
-        HTMLPanel fullDescriptionPanel = new HTMLPanel(productDescriptionDTO.getDescription());
-        fullDescriptionPanel.getElement().getStyle().setPadding(20, com.google.gwt.dom.client.Style.Unit.PX);
-        addTab(materialTab, "Description", fullDescriptionPanel, size);
-        // create tab panel for services
-        HTMLPanel servicesPanel = null;
-        if(productDescriptionDTO.getProductServices().size() == 0) {
-            servicesPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No on-demand services are available for this product</p>" +
-                    "<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>");
+        details.add(tabsPanel);
+        addColumnSection("You might also be interested in...");
+        List<ProductServiceDTO> suggestedServices = productServiceDescriptionDTO.getSuggestedServices();
+        if(suggestedServices == null || suggestedServices.size() == 0) {
+            addColumnLine(new MaterialLabel("No suggestions..."));
         } else {
-            servicesPanel = new HTMLPanel("<p class='" + style.subsection() + "'>This product can be provided by the following on-demand services</p>");
-            MaterialRow materialRow = new MaterialRow();
-            servicesPanel.add(materialRow);
-            for (ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
-                materialColumn.add(new ProductServiceWidget(productServiceDTO));
-                materialRow.add(materialColumn);
+            for(ProductServiceDTO productServiceDTO : productServiceDescriptionDTO.getSuggestedServices()) {
+                materialColumn = new MaterialColumn(12, 6, 3);
+                ProductServiceWidget productServiceWidget = new ProductServiceWidget(productServiceDTO);
+                materialColumn.add(productServiceWidget);
+                details.add(materialColumn);
             }
         }
-        addTab(materialTab, "On-demand (" + productDescriptionDTO.getProductServices().size() + ")", servicesPanel, size);
-        // create tab panel for services
-        HTMLPanel productDatasetPanel = null;
-        if(productDescriptionDTO.getProductDatasets().size() == 0) {
-            productDatasetPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No off the shelf data is available for this product</p>" +
-                    "<p>We are sorry but we do not have any supplier currently providing off the shelf data for this product</p>");
-        } else {
-            productDatasetPanel = new HTMLPanel("<p class='" + style.subsection() + "'>The following off the shelf data items implement this product</p>");
-            MaterialRow materialRow = new MaterialRow();
-            productDatasetPanel.add(materialRow);
-            for (ProductDatasetDTO productDatasetDTO : productDescriptionDTO.getProductDatasets()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 4, 3);
-                materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
-                materialRow.add(materialColumn);
-            }
-        }
-        addTab(materialTab, "Off-the-shelf (" + productDescriptionDTO.getProductDatasets().size() + ")", productDatasetPanel, size);
-        addTab(materialTab, "Others", new HTMLPanel(""), size);
-        materialTab.selectTab("fullViewTab0");
-        details.add(materialTab.getParent().getParent());
-        details.add(new HTML("<p class='" + style.subsection() + "'>You might also be interested in...</p>"));
-        MaterialRow otherItemsRow = new MaterialRow();
-        details.add(otherItemsRow);
-        if(productDescriptionDTO.hasImageRule()) {
-            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
-            otherItemsRow.add(serviceColumn);
-            serviceColumn.add(new ImageSearchWidget(productDescriptionDTO.getName()));
-            serviceColumn = new MaterialColumn(12, 6, 4);
-            otherItemsRow.add(serviceColumn);
-            serviceColumn.add(new ImageRequestWidget(productDescriptionDTO.getName()));
-        }
-    }
-
-    private void addTab(MaterialTab materialTab, String name, Panel panel, int size) {
-        String tabId = "fullViewTab" + materialTab.getWidgetCount();
-        MaterialTabItem materialTabItem = new MaterialTabItem();
-        materialTabItem.setWaves(WavesType.GREEN);
-        materialTabItem.setGrid("s" + size + " m" + size + " l" + size);
-        MaterialLink materialLink = new MaterialLink(name);
-        materialLink.setHref("#" + tabId);
-        materialTabItem.add(materialLink);
-        materialTab.add(materialTabItem);
-        MaterialRow materialRow = (MaterialRow) materialTab.getParent().getParent();
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
-        materialRow.add(materialColumn);
-        materialColumn.add(panel);
-        materialColumn.setId(tabId);
-        panel.addStyleName(style.tabPanel());
-    }
-
-    private MaterialTab createTabs() {
-        MaterialRow materialRow = new MaterialRow();
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
-        materialRow.add(materialColumn);
-        MaterialTab materialTab = new MaterialTab();
-        materialColumn.add(materialTab);
-        return materialTab;
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override
     public void displayProductDataset(final ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
         clearDetails();
         image.setUrl(productDatasetDescriptionDTO.getImageUrl());
-        title.setTitle(productDatasetDescriptionDTO.getName());
-        title.setDescription(productDatasetDescriptionDTO.getDescription());
+        title.setText(productDatasetDescriptionDTO.getName());
+        description.setText(productDatasetDescriptionDTO.getDescription());
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
-        MaterialChip company = new MaterialChip();
-        final CompanyDTO companyDTO = productDatasetDescriptionDTO.getCompany();
-        company.setText(companyDTO.getName());
-        company.setBackgroundColor("grey");
-        company.setTextColor("white");
-        company.setUrl(companyDTO.getIconURL());
-        company.setMarginRight(20);
-        company.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()));
-            }
-        });
-        company.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
-        badges.add(company);
-        MaterialChip product = new MaterialChip();
-        final ProductDTO productDTO = productDatasetDescriptionDTO.getProduct();
-        product.setText(productDTO.getName());
-        product.setBackgroundColor("grey");
-        product.setTextColor("white");
-        product.setUrl(productDTO.getImageUrl());
-        product.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId()));
-            }
-        });
-        badges.add(product);
+        {
+            MaterialChip commercial = new MaterialChip();
+            commercial.setText(productDatasetDescriptionDTO.isCommercial() ? "Commercial" : "Free");
+            commercial.setBackgroundColor(productDatasetDescriptionDTO.isCommercial() ? "amber" : "green");
+            commercial.setTextColor("white");
+            commercial.setMarginRight(20);
+            badges.add(commercial);
+        }
+        {
+            MaterialChip company = new MaterialChip();
+            final CompanyDTO companyDTO = productDatasetDescriptionDTO.getCompany();
+            company.setText(companyDTO.getName());
+            company.setBackgroundColor("grey");
+            company.setTextColor("white");
+            company.setUrl(companyDTO.getIconURL());
+            company.setMarginRight(20);
+            company.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()));
+                }
+            });
+            company.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
+            badges.add(company);
+        }
+        {
+            MaterialChip product = new MaterialChip();
+            final ProductDTO productDTO = productDatasetDescriptionDTO.getProduct();
+            product.setText(productDTO.getName());
+            product.setBackgroundColor("grey");
+            product.setTextColor("white");
+            product.setUrl(productDTO.getImageUrl());
+            product.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId()));
+                }
+            });
+            badges.add(product);
+        }
+        // add actions
+        {
+            MaterialPanel actionsPanel = new MaterialPanel();
+            details.add(actionsPanel);
+        }
         tags.add(badges);
-        MaterialTab materialTab = createTabs();
+        MaterialPanel tabsPanel = createTabsPanel();
+        MaterialTab materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
-        addTab(materialTab, "Description", new HTMLPanel(productDatasetDescriptionDTO.getFullDescription()), size);
+        addTab(materialTab, tabsPanel, "Description", new HTMLPanel(productDatasetDescriptionDTO.getFullDescription()), size);
         // create tab panel for services
         MaterialRow featuresPanel = new MaterialRow();
         MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
@@ -432,20 +407,224 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         materialColumn.add(mapContainer);
-        addTab(materialTab, "Features", featuresPanel, size);
+        addTab(materialTab, tabsPanel, "Features", featuresPanel, size);
         // create tab panel for services
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, "Terms and Conditions", termsAndConditionsPanel, size);
-        addTab(materialTab, "Others", new HTMLPanel(""), size);
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+        // add access panel
+        {
+            MaterialPanel accessPanel = new MaterialPanel();
+            accessPanel.add(createSubsection("Methods to access the data"));
+            for(DatasetAccess datasetAccess : productDatasetDescriptionDTO.getDatasetAccesses()) {
+                accessPanel.add(new DataAccessWidget(datasetAccess));
+            }
+            addTab(materialTab, tabsPanel, "Access", accessPanel, size);
+        }
+        details.add(tabsPanel);
         materialTab.selectTab("fullViewTab0");
-        details.add(materialTab.getParent().getParent());
-        details.add(new HTML("<p class='" + style.section() + "'>You might also be interested in...</p>"));
-        MaterialRow otherItemsRow = new MaterialRow();
-        details.add(otherItemsRow);
-        otherItemsRow.add(new MaterialLabel("Add recommendations..."));
+        addColumnSection("You might also be interested in...");
+        MaterialRow materialRow = new MaterialRow();
+        List<ProductDatasetDTO> suggestedDatasets = productDatasetDescriptionDTO.getSuggestedDatasets();
+        if(suggestedDatasets == null || suggestedDatasets.size() == 0) {
+            addColumnLine(new MaterialLabel("No suggestions..."));
+        } else {
+            for (ProductDatasetDTO productDatasetDTO : suggestedDatasets) {
+                materialColumn = new MaterialColumn(12, 6, 3);
+                ProductDatasetWidget productDatasetWidget = new ProductDatasetWidget(productDatasetDTO);
+                materialColumn.add(productDatasetWidget);
+                materialRow.add(materialColumn);
+            }
+        }
     }
 
-    private Widget createSubsection(String message) {
+    @Override
+    public void displayCompany(final CompanyDescriptionDTO companyDescriptionDTO) {
+        clearDetails();
+        image.setUrl(companyDescriptionDTO.getIconURL());
+        title.setText(companyDescriptionDTO.getName());
+        description.setText(companyDescriptionDTO.getDescription());
+        tags.clear();
+        MaterialPanel badges = new MaterialPanel();
+        badges.setPadding(10);
+        MaterialChip email = new MaterialChip();
+        email.setText("Contact");
+        email.setBackgroundColor("grey");
+        email.setTextColor("white");
+        email.setLetterBackgroundColor("blue");
+        email.setLetterColor("white");
+        email.setLetter("@");
+        email.setMarginRight(20);
+        email.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                template.getClientFactory().getPlaceController().goTo(
+                        new ConversationPlace(
+                                ConversationPlace.TOKENS.companyid.toString() + "=" + companyDescriptionDTO.getId() +
+                                        "&" + ConversationPlace.TOKENS.topic.toString() + "=Request for information"
+                        ));
+            }
+        });
+        email.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
+        badges.add(email);
+        MaterialChip website = new MaterialChip();
+        website.setText("Website");
+        website.setBackgroundColor("grey");
+        website.setTextColor("white");
+        website.setLetterBackgroundColor("green");
+        website.setLetterColor("white");
+        website.setLetter("W");
+        website.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
+        website.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Window.open(companyDescriptionDTO.getWebsite(), "_blank", null);
+            }
+        });
+        badges.add(website);
+        tags.add(badges);
+        MaterialPanel tabsPanel = createTabsPanel();
+        MaterialTab materialTab = createTabs(tabsPanel);
+        int numTabs = 4;
+        int size = (int) Math.floor(12 / numTabs);
+        HTMLPanel fullDescriptionPanel = new HTMLPanel(companyDescriptionDTO.getFullDescription());
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        // create tab panel for offers
+        int offerCount = 0;
+        MaterialPanel servicesPanel = new MaterialPanel();
+        MaterialRow materialRow = new MaterialRow();
+        servicesPanel.add(materialRow);
+        if(companyDescriptionDTO.getProductServices().size() == 0) {
+/*
+            servicesPanel.add(createSubsection("This company does not provide on-demand services"));
+*/
+        } else {
+            offerCount += companyDescriptionDTO.getProductServices().size();
+/*
+            servicesPanel.add(createSubsection("On-demand services provided"));
+            MaterialRow materialRow = new MaterialRow();
+            servicesPanel.add(materialRow);
+*/
+            for (ProductServiceDTO productServiceDTO : companyDescriptionDTO.getProductServices()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                materialColumn.add(new ProductServiceWidget(productServiceDTO));
+                materialRow.add(materialColumn);
+            }
+        }
+        if(companyDescriptionDTO.getProductDatasets().size() == 0) {
+/*
+            servicesPanel.add(createSubsection("This company does not provide off-the-shelf data"));
+*/
+        } else {
+            offerCount += companyDescriptionDTO.getProductDatasets().size();
+/*
+            servicesPanel.add(createSubsection("Off-the-shelf data provided"));
+            MaterialRow materialRow = new MaterialRow();
+            servicesPanel.add(materialRow);
+*/
+/*
+            MaterialLabel materialLabel = new MaterialLabel("Test");
+            materialLabel.addStyleName(style.vertical());
+            materialLabel.setBackgroundColor("green");
+            materialLabel.setTextColor("white");
+            MaterialColumn materialLabelColumn = new MaterialColumn(1, 1, 1);
+            materialLabelColumn.add(materialLabel);
+            materialRow.add(materialLabelColumn);
+*/
+            for(ProductDatasetDTO productDatasetDTO : companyDescriptionDTO.getProductDatasets()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
+                materialRow.add(materialColumn);
+            }
+        }
+        if(companyDescriptionDTO.getSoftware().size() == 0) {
+/*
+            servicesPanel.add(createSubsection("This company does not provide software solutions"));
+*/
+        } else {
+            offerCount += companyDescriptionDTO.getSoftware().size();
+/*
+            servicesPanel.add(createSubsection("Software solutions provided"));
+            MaterialRow materialRow = new MaterialRow();
+            servicesPanel.add(materialRow);
+*/
+            for(SoftwareDTO softwareDTO : companyDescriptionDTO.getSoftware()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                materialColumn.add(new SoftwareWidget(softwareDTO));
+                materialRow.add(materialColumn);
+            }
+        }
+        if(companyDescriptionDTO.getProject().size() == 0) {
+/*
+            servicesPanel.add(createSubsection("This company does not manage any project"));
+*/
+        } else {
+            offerCount += companyDescriptionDTO.getProject().size();
+/*
+            servicesPanel.add(createSubsection("Project managed"));
+            MaterialRow materialRow = new MaterialRow();
+            servicesPanel.add(materialRow);
+*/
+            for(ProjectDTO projectDTO : companyDescriptionDTO.getProject()) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                materialColumn.add(new ProjectWidget(projectDTO));
+                materialRow.add(materialColumn);
+            }
+        }
+        addTab(materialTab, tabsPanel, "Offer (" + offerCount + ")", servicesPanel, size);
+        addTab(materialTab, tabsPanel, "Others", new HTMLPanel(""), size);
+        details.add(tabsPanel);
+        materialTab.selectTab("fullViewTab0");
+        addColumnSection("Other similar companies");
+        addColumnLine(new MaterialLabel("TODO..."));
+    }
+
+    private void addColumnLine(MaterialWidget materialWidget) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        materialColumn.add(materialWidget);
+        details.add(materialColumn);
+    }
+
+    private void addColumnSection(String message) {
+        MaterialLabel label = new MaterialLabel(message);
+        label.addStyleName(style.section());
+        addColumnLine(label);
+    }
+
+    private void addTab(MaterialTab materialTab, MaterialPanel tabPanel, String name, Panel panel, int size) {
+        String tabId = "fullViewTab" + materialTab.getWidgetCount();
+        MaterialTabItem materialTabItem = new MaterialTabItem();
+        materialTabItem.setWaves(WavesType.GREEN);
+        materialTabItem.setGrid("s" + size + " m" + size + " l" + size);
+        MaterialLink materialLink = new MaterialLink(name);
+        materialLink.setHref("#" + tabId);
+        materialTabItem.add(materialLink);
+        materialTab.add(materialTabItem);
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        tabPanel.add(materialColumn);
+        materialColumn.add(panel);
+        materialColumn.setId(tabId);
+        panel.addStyleName(style.tabPanel());
+    }
+
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    private MaterialPanel createTabsPanel() {
+        MaterialPanel materialPanel = new MaterialPanel();
+        return materialPanel;
+    }
+
+    private MaterialTab createTabs(MaterialPanel materialPanel) {
+        MaterialTab materialTab = new MaterialTab();
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        materialPanel.add(materialColumn);
+        materialColumn.add(materialTab);
+        return materialTab;
+    }
+
+    private MaterialLabel createSubsection(String message) {
         MaterialLabel label = new MaterialLabel(message);
         label.addStyleName(style.subsection());
         return label;

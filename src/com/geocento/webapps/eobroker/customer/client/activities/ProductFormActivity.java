@@ -146,7 +146,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 }
 
                 @Override
-                public void onSuccess(Method method, ProductFormDTO productFormDTO) {
+                public void onSuccess(Method method, final ProductFormDTO productFormDTO) {
                     productFormView.hideLoading();
                     productFormView.setProductImage(productFormDTO.getImageUrl());
                     productFormView.setProductName(productFormDTO.getName());
@@ -159,7 +159,14 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     for(ProductServiceDTO productServiceDTO : productFormDTO.getProductServices()) {
                         productFormView.addProductService(productServiceDTO);
                     }
-                    productFormView.setInformationUrl("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productFormDTO.getId())));
+                    handlers.add(productFormView.getInformation().addClickHandler(new ClickHandler() {
+
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productFormDTO.getId())), "_blank", null);
+                        }
+                    }));
+
                 }
             }).call(ServicesUtil.assetsService).getProductForm(productId);
         } catch (RequestException e) {

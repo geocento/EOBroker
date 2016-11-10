@@ -3,7 +3,7 @@ package com.geocento.webapps.eobroker.common.shared.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -35,7 +35,19 @@ public class Company {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
-    Set<ProductService> services;
+    List<ProductService> services;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    List<ProductDataset> datasets;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    List<Software> software;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    List<Project> projects;
 
     public Company() {
     }
@@ -96,11 +108,35 @@ public class Company {
         this.website = website;
     }
 
-    public Set<ProductService> getServices() {
+    public List<ProductService> getServices() {
         return services;
     }
 
-    public void setServices(Set<ProductService> services) {
+    public void setServices(List<ProductService> services) {
         this.services = services;
+    }
+
+    public List<ProductDataset> getDatasets() {
+        return datasets;
+    }
+
+    public void setDatasets(List<ProductDataset> datasets) {
+        this.datasets = datasets;
+    }
+
+    public List<Software> getSoftware() {
+        return software;
+    }
+
+    public void setSoftware(List<Software> software) {
+        this.software = software;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 }

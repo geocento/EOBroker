@@ -57,9 +57,19 @@
             z-index: 1000;
         }
 
+        .title > p {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
+    <views:TemplateView titleText="Dashboard" ui:field="template">
 <!--
         <design:MaterialTitle title="Messages"></design:MaterialTitle>
         <g:HTMLPanel addStyleNames="{style.services}">
@@ -68,24 +78,41 @@
 -->
 
         <design:MaterialTitle title="Your company"></design:MaterialTitle>
-        <widgets:CompanyWidget addStyleNames="{style.companyWidget}" ui:field="companyWidget"></widgets:CompanyWidget>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12 m6 l4">
+                <design:MaterialImage ui:field="companyImage"></design:MaterialImage>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12 m6 l8">
+                <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="companyTitle"></design:MaterialTitle>
+            </design:MaterialColumn>
+        </design:MaterialRow>
         <g:HTMLPanel>
             <design:MaterialButton backgroundColor="blue" text="Edit Company" ui:field="editCompany"></design:MaterialButton>
         </g:HTMLPanel>
 
         <design:MaterialTitle title="Your services"></design:MaterialTitle>
-        <g:HTMLPanel addStyleNames="{style.services}" ui:field="services">
-        </g:HTMLPanel>
+        <design:MaterialRow addStyleNames="{style.services}" ui:field="services">
+        </design:MaterialRow>
         <design:MaterialButton backgroundColor="blue" text="Add new service" ui:field="addService"></design:MaterialButton>
 
         <design:MaterialTitle title="Off the shelf data"></design:MaterialTitle>
-        <g:HTMLPanel addStyleNames="{style.services}" ui:field="productdatasets">
-        </g:HTMLPanel>
+        <design:MaterialRow addStyleNames="{style.services}" ui:field="productdatasets">
+        </design:MaterialRow>
         <design:MaterialButton backgroundColor="blue" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
 
+        <design:MaterialTitle title="Software solutions"></design:MaterialTitle>
+        <design:MaterialRow addStyleNames="{style.services}" ui:field="softwares">
+        </design:MaterialRow>
+        <design:MaterialButton backgroundColor="blue" text="Add new software" ui:field="addSoftware"></design:MaterialButton>
+
+        <design:MaterialTitle title="Projects"></design:MaterialTitle>
+        <design:MaterialRow addStyleNames="{style.services}" ui:field="projects">
+        </design:MaterialRow>
+        <design:MaterialButton backgroundColor="blue" text="Add new project" ui:field="addProject"></design:MaterialButton>
+
         <design:MaterialTitle title="Your datasets"></design:MaterialTitle>
-        <g:HTMLPanel addStyleNames="{style.services}" ui:field="datasets">
-        </g:HTMLPanel>
+        <design:MaterialRow addStyleNames="{style.services}" ui:field="datasets">
+        </design:MaterialRow>
         <design:MaterialButton backgroundColor="blue" text="Add new dataset" ui:field="addDataset"></design:MaterialButton>
     </views:TemplateView>
 </ui:UiBinder>

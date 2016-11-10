@@ -20,6 +20,7 @@ package com.geocento.webapps.eobroker.customer.client.widgets;
  * #L%
  */
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -290,22 +291,7 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
             link.setIconColor("grey");
             link.setTextColor("black");
             // Generate an icon
-            IconType iconType = IconType.ACCESS_ALARM;
-            switch (suggestion.getCategory()) {
-                case products:
-                    iconType = IconType.ADD_LOCATION;
-                    break;
-                case imagery:
-                    iconType = IconType.PICTURE_IN_PICTURE;
-                    break;
-                case datasets:
-                    iconType = IconType.LAYERS;
-                    break;
-                case companies:
-                    iconType = IconType.BUSINESS;
-                    break;
-            }
-            link.setIconType(iconType);
+            link.setIconType(CategoryUtils.getIconType(suggestion.getCategory()));
 
             // Generate an image
             link.setText(suggestion.getName());

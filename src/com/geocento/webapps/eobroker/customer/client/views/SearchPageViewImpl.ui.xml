@@ -4,6 +4,7 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
 
@@ -21,7 +22,7 @@
         }
 
         .filters {
-            padding: 0px 10px 0px 30px;
+            padding: 30px;
             line-height: normal !important;
         }
 
@@ -32,27 +33,20 @@
         }
 
         .productTitle, .productServicesTitle {
-            margin: 7px 0;
-            padding-left: 10px;
-            line-height: 50px;
-            font-size: 1.6em;
+            margin: 0;
+            padding: 0px 10px;
+            line-height: 2em;
+            font-size: 1.2em;
             color: white;
         }
 
         .productTitle {
-            background-color: #4db6ac;
         }
 
         .productServicesTitle {
-            background-color: #4db6ac;
         }
 
         .alternativesTitle {
-
-        }
-
-        .filters {
-            line-height: normal !important;
         }
 
         .logoImage {
@@ -65,7 +59,6 @@
         }
 
         .mapPanel {
-            background: white;
         }
 
         .map {
@@ -85,12 +78,12 @@
 
         .sidenavPanel {
             height: 100%;
-            background: white;
         }
 
         .sideNav {
             height: auto !important;
             bottom: 0px !important;
+            background: rgb(238, 238, 238) !important;
         }
 
         .subTitle {
@@ -107,35 +100,75 @@
             font-size: 1em;
         }
 
+        .resultsPanel {
+            padding: 10px 20px;
+            max-width: 960px;
+        }
+
+        a.category {
+            height: inherit;
+            font-size: 1em;
+            line-height: 2.6em;
+            padding: 0 !important;
+            margin: 0;
+        }
+
+        .category.selected {
+            color: blue !important;
+        }
+
+        .filterBy {
+            margin-top: 20px;
+            padding-top: 20px;
+            padding-left: 10px;
+            border-top: 1px #ccc solid;
+        }
+
+        .loadingPanel {
+            text-align: center;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template" titleText="Search">
+    <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
+    <views:TemplateView titleText="Search" footer="false" ui:field="template">
         <views:header>
             <!-- SideNav -->
-            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="1" backgroundColor="white" addStyleNames="{style.sideNav}" ui:field="filtersPanel">
+            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="filtersPanel">
                 <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
-                    <design:MaterialLink visible="false" text="Filter by" fontSize="1em" textColor="blue-grey" iconType="SEARCH"/>
                     <g:HTMLPanel addStyleNames="{style.filters}">
                         <g:HTMLPanel ui:field="categories">
-                            <design:MaterialLabel addStyleNames="{style.optionTitle}">Categories</design:MaterialLabel>
+                            <design:MaterialLink addStyleNames="{style.category}" text="Products" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></design:MaterialLink>
+                            <design:MaterialLink addStyleNames="{style.category}" text="On-demand services" iconType="MAP" ui:field="productServicesCategory"></design:MaterialLink>
+                            <design:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf data" iconType="MAP" ui:field="productDatasetsCategory"></design:MaterialLink>
+                            <design:MaterialLink addStyleNames="{style.category}" text="Software solutions" iconType="MAP" ui:field="softwareCategory"></design:MaterialLink>
+                            <design:MaterialLink addStyleNames="{style.category}" text="Projects" iconType="MAP" ui:field="projectsCategory"></design:MaterialLink>
                         </g:HTMLPanel>
-                        <g:HTMLPanel ui:field="settings">
+                        <design:MaterialLink visible="false" text="Filter by" fontSize="1em" textColor="blue-grey" iconType="SEARCH"/>
+                        <g:HTMLPanel addStyleNames="{style.filterBy}">
+                            <g:HTMLPanel ui:field="settings">
+                            </g:HTMLPanel>
+                            <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
+                            <maps:MapContainer addStyleNames="{style.mapPanel}" height="200px" ui:field="mapContainer"></maps:MapContainer>
+                            <g:HTMLPanel ui:field="timeFrame">
+                                <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
+                                <design:MaterialDatePicker placeholder="Start date" ui:field="start"></design:MaterialDatePicker>
+                                <design:MaterialDatePicker placeholder="Stop date" ui:field="stop"></design:MaterialDatePicker>
+                            </g:HTMLPanel>
                         </g:HTMLPanel>
-                        <design:MaterialLabel addStyleNames="{style.optionTitle}">Area of interest</design:MaterialLabel>
-                        <maps:MapContainer addStyleNames="{style.mapPanel}" height="250px" ui:field="mapContainer"></maps:MapContainer>
-                        <design:MaterialCheckBox text="limit to AoI" addStyleNames="{style.optionTitle}" ui:field="filterByAoI"></design:MaterialCheckBox>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
             </widgets:MaterialSideNav>
         </views:header>
-        <g:HTMLPanel>
-            <design:MaterialTooltip text="Click to change your search">
-                <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="blue-grey" text="some search keywords" ui:field="currentSearch"/>
-            </design:MaterialTooltip>
-        </g:HTMLPanel>
-        <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
-        <g:HTMLPanel>
-            <p>Can't find what you are looking for? Please <g:Anchor ui:field="sendRequirements">send us</g:Anchor> your requirements!</p>
+        <g:HTMLPanel addStyleNames="{style.resultsPanel}">
+            <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="blue-grey" ui:field="resultsTitle"/>
+            <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
+            <g:HTMLPanel addStyleNames="{style.loadingPanel}">
+                <cwidgets:LoadingWidget ui:field="loading"></cwidgets:LoadingWidget>
+            </g:HTMLPanel>
+            <g:HTMLPanel visible="false" ui:field="requirementsPanel">
+                <p>Can't find what you are looking for? Please <g:Anchor ui:field="sendRequirements">send us</g:Anchor> your requirements!</p>
+            </g:HTMLPanel>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

@@ -109,17 +109,19 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setFullDescription(productDatasetView.getFullDescription());
                 productDatasetDTO.setProduct(productDatasetView.getSelectProduct());
                 productDatasetDTO.setExtent(AoIUtil.toWKT(productDatasetView.getExtent()));
-                productDatasetView.setLoading("Saving dataset...");
+                displayLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            productDatasetView.setLoadingError("Error saving company");
+                            hideLoading();
+                            displayError("Error saving dataset");
                         }
 
                         @Override
                         public void onSuccess(Method method, Long companyId) {
-                            productDatasetView.hideLoading("Product dataset saved");
+                            hideLoading();
+                            displaySuccess("Product dataset saved");
                             productDatasetDTO.setId(companyId);
                         }
                     }).call(ServicesUtil.assetsService).saveProductDataset(productDatasetDTO);

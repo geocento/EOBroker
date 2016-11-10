@@ -40,28 +40,19 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL">
+    <design:MaterialCard backgroundColor="orange" axis="VERTICAL">
         <design:MaterialCardImage>
             <design:MaterialImage ui:field="image"></design:MaterialImage>
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
-            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
-            <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
+        <design:MaterialCardContent textColor="white" padding="10">
+            <design:MaterialLabel fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
-        <design:MaterialCardReveal>
-            <design:MaterialLabel fontSize="1.4em" text="Description"/>
-            <design:MaterialLabel ui:field="description"></design:MaterialLabel>
-        </design:MaterialCardReveal>
-        <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
-            <design:MaterialLink visible="false" iconType="ASSESSMENT" text="CHECK" textColor="white" ui:field="check"></design:MaterialLink>
-            <design:MaterialLink iconType="ASSESSMENT" text="QUOTE" textColor="white" ui:field="quote"></design:MaterialLink>
-            <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
+        <design:MaterialCardAction addStyleNames="{style.actions}" padding="10">
+            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
+            <design:MaterialLink text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
+            <design:MaterialLink visible="false" text="" padding="0" iconType="CHECK" float="RIGHT" textColor="white" ui:field="check"></design:MaterialLink>
         </design:MaterialCardAction>
-        <cutout:MaterialCutOut circle="true" opacity="0.9" textAlign="CENTER" ui:field="cutout">
-            <design:MaterialTitle ui:field="cutoutTitle"></design:MaterialTitle>
-            <design:MaterialButton text="Close" ui:field="close"></design:MaterialButton>
-        </cutout:MaterialCutOut>
     </design:MaterialCard>
 </ui:UiBinder>

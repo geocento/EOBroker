@@ -1,9 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -26,6 +24,10 @@ public interface DashboardView extends IsWidget {
 
     HasClickHandlers getAddDataset();
 
+    HasClickHandlers getAddSoftware();
+
+    HasClickHandlers getAddProject();
+
     HasClickHandlers editCompany();
 
     TemplateView getTemplateView();
@@ -33,6 +35,10 @@ public interface DashboardView extends IsWidget {
     void setDatasets(List<DatasetProviderDTO> response);
 
     void setProductDatasets(List<ProductDatasetDTO> response);
+
+    void setSoftwares(List<SoftwareDTO> softwareDTOs);
+
+    void setProjects(List<ProjectDTO> projectDTOs);
 
     public interface Presenter {
     }

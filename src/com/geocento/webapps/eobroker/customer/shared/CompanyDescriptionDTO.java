@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by thomas on 07/06/2016.
@@ -14,7 +14,10 @@ public class CompanyDescriptionDTO {
     String contactEmail;
     String fullDescription;
     String website;
-    private Set<ProductServiceDTO> productServices;
+    List<ProductServiceDTO> productServices;
+    List<ProductDatasetDTO> productDatasets;
+    List<SoftwareDTO> software;
+    List<ProjectDTO> project;
 
     public CompanyDescriptionDTO() {
     }
@@ -67,19 +70,43 @@ public class CompanyDescriptionDTO {
         this.fullDescription = fullDescription;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
     public String getWebsite() {
         return website;
     }
 
-    public void setProductServices(Set<ProductServiceDTO> productServices) {
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public List<ProductServiceDTO> getProductServices() {
+        return productServices;
+    }
+
+    public void setProductServices(List<ProductServiceDTO> productServices) {
         this.productServices = productServices;
     }
 
-    public Set<ProductServiceDTO> getProductServices() {
-        return productServices;
+    public List<ProductDatasetDTO> getProductDatasets() {
+        return productDatasets;
+    }
+
+    public void setProductDatasets(List<ProductDatasetDTO> productDatasets) {
+        this.productDatasets = productDatasets;
+    }
+
+    public List<SoftwareDTO> getSoftware() {
+        return software;
+    }
+
+    public void setSoftware(List<SoftwareDTO> software) {
+        this.software = software;
+    }
+
+    public List<ProjectDTO> getProject() {
+        return project;
+    }
+
+    public void setProject(List<ProjectDTO> project) {
+        this.project = project;
     }
 }

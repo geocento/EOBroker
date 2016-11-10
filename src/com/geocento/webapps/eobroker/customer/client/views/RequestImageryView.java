@@ -46,6 +46,8 @@ public interface RequestImageryView extends IsWidget {
 
     String getApplication();
 
+    void displayFormError(String message);
+
     public interface Presenter {
         void aoiChanged(AoI aoi);
     }

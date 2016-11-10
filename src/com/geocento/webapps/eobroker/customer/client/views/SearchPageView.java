@@ -3,13 +3,10 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.customer.shared.Offer;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
-import com.geocento.webapps.eobroker.customer.shared.DatasetProviderDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
+import gwt.material.design.client.base.HasHref;
 
 import java.util.List;
 
@@ -22,7 +19,7 @@ public interface SearchPageView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void setCurrentSearch(String search);
+    void setSearchText(String search);
 
     void displayAoI(AoI aoi);
 
@@ -32,33 +29,65 @@ public interface SearchPageView extends IsWidget {
 
     void clearResults();
 
-    void setCategories(List<Category> categories);
-
-    void setProductSelection(ProductDTO productDTO, List<ProductServiceDTO> productServices, List<ProductDTO> productDTOs);
-
-    HasClickHandlers getChangeSearch();
-
     void setTitleText(String title);
 
-    void setMatchingProducts(List<ProductDTO> suggestedProducts);
+    void setMatchingProducts(List<ProductDTO> suggestedProducts, String moreUrl);
 
-    void setMatchingServices(List<ProductServiceDTO> productServices);
+    void setMatchingServices(List<ProductServiceDTO> productServices, String moreUrl);
 
-    void displayProductsList(List<ProductDTO> products, int start, int limit, String text);
+    void addProducts(List<ProductDTO> products, int start, boolean hasMore, String text);
 
-    void displayOffer(List<Offer> offers, int start, int limit, String text);
+    void setMatchingDatasets(List<ProductDatasetDTO> productDatasets, String moreUrl);
+
+    void setMatchingSoftwares(List<SoftwareDTO> softwares, String moreUrl);
+
+    void setMatchingProjects(List<ProjectDTO> projects, String moreUrl);
 
     void setMatchingImagery(String text);
 
     TemplateView getTemplateView();
 
-    void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text);
-
     void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi);
 
-    void setSearchResults(String message);
+    void setResultsTitle(String message);
+
+    HasHref getProductsCategory();
+
+    HasHref getProductServicesCategory();
+
+    HasHref getProductDatasetsCategory();
+
+    HasHref getSoftwareCategory();
+
+    HasHref getProjectsCategory();
+
+    void displayCategories(boolean display);
+
+    void selectCategory(Category category);
+
+    void displayFilters(Category category);
+
+    void addProductServices(List<ProductServiceDTO> products, int start, boolean hasMore, String text);
+
+    void addProductDatasets(List<ProductDatasetDTO> products, int start, boolean hasMore, String text);
+
+    void addSoftware(List<SoftwareDTO> softwareDTOs, int start, boolean hasMore, String text);
+
+    void addProjects(List<ProjectDTO> projectDTOs, int start, boolean hasMore, String text);
+
+    void addCompanies(List<CompanyDTO> companyDTOs, int start, boolean hasMore, String text);
 
     public interface Presenter {
+
+        void loadMoreProducts();
+
+        void loadMoreProductServices();
+
+        void loadMoreProductDatasets();
+
+        void loadMoreSofware();
+
+        void loadMoreProjects();
     }
 
 }

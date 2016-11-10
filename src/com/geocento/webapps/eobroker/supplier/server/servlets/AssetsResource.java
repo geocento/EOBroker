@@ -182,6 +182,7 @@ public class AssetsResource implements AssetsService {
                 productService = new ProductService();
                 productService.setCompany(user.getCompany());
                 em.persist(productService);
+                user.getCompany().getServices().add(productService);
             }
             productService.setName(productServiceDTO.getName());
             productService.setDescription(productServiceDTO.getDescription());
@@ -189,6 +190,10 @@ public class AssetsResource implements AssetsService {
             Product product = em.find(Product.class, productServiceDTO.getProduct().getId());
             if (product == null) {
                 throw new RequestException("Product does not exist");
+            }
+            // if it was previously assigned to a different product, make sure we remove the service from the product first
+            if(productService.getProduct() != null) {
+                productService.getProduct().getProductServices().remove(productService);
             }
             productService.setProduct(product);
             product.getProductServices().add(productService);
@@ -225,26 +230,15 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public CompanyDTO getCompany(Long id) throws RequestException {
+    public CompanyDTO getCompany() throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
             Company company = null;
-            if (id == null) {
-                User user = em.find(User.class, userName);
-                company = user.getCompany();
-                if (company == null) {
-                    em.getTransaction().begin();
-                    company = new Company();
-                    em.persist(company);
-                    user.setCompany(company);
-                    em.getTransaction().commit();
-                }
-            } else {
-                company = em.find(Company.class, id);
-            }
+            User user = em.find(User.class, userName);
+            company = user.getCompany();
             if (company == null) {
-                throw new RequestException("Unknown company");
+                throw new RequestException("No company assigned!");
             }
             return CompanyHelper.createCompanyDTO(company);
         } catch (Exception e) {
@@ -519,6 +513,7 @@ public class AssetsResource implements AssetsService {
                 productDataset = new ProductDataset();
                 productDataset.setCompany(user.getCompany());
                 em.persist(productDataset);
+                user.getCompany().getDatasets().add(productDataset);
             } else {
                 productDataset = em.find(ProductDataset.class, productDatasetDTO.getId());
                 if(productDataset == null) {
@@ -535,6 +530,10 @@ public class AssetsResource implements AssetsService {
             Product product = em.find(Product.class, productDatasetDTO.getProduct().getId());
             if(product == null) {
                 throw new RequestException("Product does not exist");
+            }
+            // if it was previously assigned to a different product, make sure we remove the service from the product first
+            if(productDataset.getProduct() != null) {
+                productDataset.getProduct().getProductDatasets().remove(productDataset);
             }
             productDataset.setProduct(product);
             productDataset.setImageUrl(productDatasetDTO.getImageUrl());
@@ -570,6 +569,305 @@ public class AssetsResource implements AssetsService {
     private static String getProductDatasetTSV(ProductDataset productDataset) {
         return "setweight(to_tsvector('english','dataset off the shelf " + productDataset.getName() + "'), 'A') " +
                 "|| setweight(to_tsvector('english','" + productDataset.getDescription() + "'), 'B')";
+    }
+
+    private SoftwareDTO createSoftwareDTO(Software software) {
+        SoftwareDTO softwareDTO = new SoftwareDTO();
+        softwareDTO.setId(software.getId());
+        softwareDTO.setName(software.getName());
+        softwareDTO.setImageUrl(software.getImageUrl());
+        softwareDTO.setDescription(software.getDescription());
+        return softwareDTO;
+    }
+
+    @Override
+    public List<SoftwareDTO> listSoftwares() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Software> query = em.createQuery("select s from Software s where s.company = :company", Software.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Software, SoftwareDTO>() {
+                @Override
+                public SoftwareDTO mutate(Software software) {
+                    return createSoftwareDTO(software);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading product datasets");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public SoftwareDTO getSoftware(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Software software = em.find(Software.class, id);
+            User user = em.find(User.class, userName);
+            if(software == null) {
+                throw new RequestException("Dataset does not exist");
+            }
+            if(software.getCompany() != user.getCompany()) {
+                throw new RequestException("Not allowed");
+            }
+            SoftwareDTO softwareDTO = createSoftwareDTO(software);
+            softwareDTO.setFullDescription(software.getFullDescription());
+            softwareDTO.setProducts(ListUtil.mutate(software.getProducts(), new ListUtil.Mutate<ProductSoftware, ProductSoftwareDTO>() {
+                @Override
+                public ProductSoftwareDTO mutate(ProductSoftware productSoftware) {
+                    return createProductSoftwareDTO(productSoftware);
+                }
+            }));
+            return softwareDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductSoftwareDTO createProductSoftwareDTO(ProductSoftware productSoftware) {
+        ProductSoftwareDTO productSoftwareDTO = new ProductSoftwareDTO();
+        productSoftwareDTO.setId(productSoftware.getId());
+        productSoftwareDTO.setPitch(productSoftware.getPitch());
+        productSoftwareDTO.setProduct(ProductHelper.createProductDTO(productSoftware.getProduct()));
+        return productSoftwareDTO;
+    }
+
+    @Override
+    public Long saveSoftware(SoftwareDTO softwareDTO) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Software software = null;
+            if(softwareDTO.getId() == null) {
+                software = new Software();
+                software.setCompany(user.getCompany());
+                em.persist(software);
+                user.getCompany().getSoftware().add(software);
+            } else {
+                software = em.find(Software.class, softwareDTO.getId());
+                if(software == null) {
+                    throw new RequestException("Could not find the dataset");
+                }
+                if(user.getCompany() != software.getCompany()) {
+                    throw new RequestException("Not allowed");
+                }
+            }
+            // update values
+            software.setName(softwareDTO.getName());
+            software.setDescription(softwareDTO.getDescription());
+            software.setFullDescription(softwareDTO.getFullDescription());
+            ArrayList<ProductSoftware> productSoftwares = new ArrayList<ProductSoftware>();
+            for(final ProductSoftwareDTO productSoftwareDTO : softwareDTO.getProducts()) {
+                ProductSoftware dbProductSoftware = null;
+                if(productSoftwareDTO.getId() != null) {
+                    dbProductSoftware = ListUtil.findValue(software.getProducts(), new ListUtil.CheckValue<ProductSoftware>() {
+                        @Override
+                        public boolean isValue(ProductSoftware value) {
+                            return value.getId().equals(productSoftwareDTO.getId());
+                        }
+                    });
+                }
+                if(dbProductSoftware == null) {
+                    dbProductSoftware = new ProductSoftware();
+                    em.persist(dbProductSoftware);
+                }
+                Product product = em.find(Product.class, productSoftwareDTO.getProduct().getId());
+                if(product == null) {
+                    throw new RequestException("Could not find product with id " + productSoftwareDTO.getProduct().getId());
+                }
+                dbProductSoftware.setPitch(productSoftwareDTO.getPitch());
+                dbProductSoftware.setProduct(product);
+                productSoftwares.add(dbProductSoftware);
+            }
+            software.setProducts(productSoftwares);
+            software.setImageUrl(softwareDTO.getImageUrl());
+            // update the keyphrases
+            Query query = em.createNativeQuery("UPDATE software SET tsv = " + getSoftwareTSV(software) +
+                    ", tsvname = " + getSoftwareNameTSV(software) + " where id = " + software.getId() +
+                    ";");
+            query.executeUpdate();
+            em.getTransaction().commit();
+            return software.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving software");
+        } finally {
+            em.close();
+        }
+    }
+
+    private static String getSoftwareNameTSV(Software software) {
+        return "setweight(to_tsvector('english','software'), 'A') || setweight(to_tsvector('english','" + software.getName() + "'), 'B')";
+    }
+
+    private static String getSoftwareTSV(Software software) {
+        return "setweight(to_tsvector('english','software " + software.getName() + "'), 'A') " +
+                "|| setweight(to_tsvector('english','" + software.getDescription() + "'), 'B')";
+    }
+
+    private ProjectDTO createProjectDTO(Project project) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setId(project.getId());
+        projectDTO.setName(project.getName());
+        projectDTO.setImageUrl(project.getImageUrl());
+        projectDTO.setDescription(project.getDescription());
+        return projectDTO;
+    }
+
+    @Override
+    public List<ProjectDTO> listProjects() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Project> query = em.createQuery("select p from Project p where p.company = :company", Project.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Project, ProjectDTO>() {
+                @Override
+                public ProjectDTO mutate(Project project) {
+                    return createProjectDTO(project);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading product datasets");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProjectDTO getProject(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Project project = em.find(Project.class, id);
+            User user = em.find(User.class, userName);
+            if(project == null) {
+                throw new RequestException("Dataset does not exist");
+            }
+            if(project.getCompany() != user.getCompany()) {
+                throw new RequestException("Not allowed");
+            }
+            ProjectDTO projectDTO = createProjectDTO(project);
+            projectDTO.setFullDescription(project.getFullDescription());
+            projectDTO.setProducts(ListUtil.mutate(project.getProducts(), new ListUtil.Mutate<ProductProject, ProductProjectDTO>() {
+                @Override
+                public ProductProjectDTO mutate(ProductProject productProject) {
+                    return createProductProjectDTO(productProject);
+                }
+            }));
+            return projectDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductProjectDTO createProductProjectDTO(ProductProject productProject) {
+        ProductProjectDTO productProjectDTO = new ProductProjectDTO();
+        productProjectDTO.setId(productProject.getId());
+        productProjectDTO.setPitch(productProject.getPitch());
+        productProjectDTO.setProduct(ProductHelper.createProductDTO(productProject.getProduct()));
+        return productProjectDTO;
+    }
+
+    @Override
+    public Long saveProject(ProjectDTO projectDTO) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Project project = null;
+            if(projectDTO.getId() == null) {
+                project = new Project();
+                project.setCompany(user.getCompany());
+                em.persist(project);
+                user.getCompany().getProjects().add(project);
+            } else {
+                project = em.find(Project.class, projectDTO.getId());
+                if(project == null) {
+                    throw new RequestException("Could not find the project");
+                }
+                if(user.getCompany() != project.getCompany()) {
+                    throw new RequestException("Not allowed");
+                }
+            }
+            // update values
+            project.setName(projectDTO.getName());
+            project.setDescription(projectDTO.getDescription());
+            project.setFullDescription(projectDTO.getFullDescription());
+            ArrayList<ProductProject> productProjects = new ArrayList<ProductProject>();
+            for(final ProductProjectDTO productProjectDTO : projectDTO.getProducts()) {
+                ProductProject dbProductProject = null;
+                if(productProjectDTO.getId() != null) {
+                    dbProductProject = ListUtil.findValue(project.getProducts(), new ListUtil.CheckValue<ProductProject>() {
+                        @Override
+                        public boolean isValue(ProductProject value) {
+                            return value.getId().equals(productProjectDTO.getId());
+                        }
+                    });
+                }
+                if(dbProductProject == null) {
+                    dbProductProject = new ProductProject();
+                    em.persist(dbProductProject);
+                }
+                Product product = em.find(Product.class, productProjectDTO.getProduct().getId());
+                if(product == null) {
+                    throw new RequestException("Could not find product with id " + productProjectDTO.getProduct().getId());
+                }
+                dbProductProject.setPitch(productProjectDTO.getPitch());
+                dbProductProject.setProduct(product);
+                productProjects.add(dbProductProject);
+            }
+            project.setProducts(productProjects);
+            project.setImageUrl(projectDTO.getImageUrl());
+            // update the keyphrases
+            Query query = em.createNativeQuery("UPDATE project SET tsv = " + getProjectTSV(project) +
+                    ", tsvname = " + getProjectNameTSV(project) + " where id = " + project.getId() +
+                    ";");
+            query.executeUpdate();
+            em.getTransaction().commit();
+            return project.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving project");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public OfferDTO getOffer() throws RequestException {
+        OfferDTO offerDTO = new OfferDTO();
+        offerDTO.setCompanyDTO(getCompany());
+        offerDTO.setProductServiceDTOs(listProductServices());
+        offerDTO.setProductDatasetDTOs(listProductDatasets());
+        offerDTO.setSoftwareDTOs(listSoftwares());
+        offerDTO.setProjectDTOs(listProjects());
+        return offerDTO;
+    }
+
+    private static String getProjectNameTSV(Project project) {
+        return "setweight(to_tsvector('english','dataset off the shelf'), 'A') || setweight(to_tsvector('english','" + project.getName() + "'), 'B')";
+    }
+
+    private static String getProjectTSV(Project project) {
+        return "setweight(to_tsvector('english','dataset off the shelf " + project.getName() + "'), 'A') " +
+                "|| setweight(to_tsvector('english','" + project.getDescription() + "'), 'B')";
     }
 
 }

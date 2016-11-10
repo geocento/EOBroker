@@ -58,9 +58,9 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @UiField
     MaterialImage image;
     @UiField
-    MaterialLabel name;
+    MaterialTitle title;
     @UiField
-    MaterialLink information;
+    MaterialLabel name;
     @UiField
     MaterialLabel description;
     @UiField
@@ -73,6 +73,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     MaterialAnchorButton drawPolygon;
     @UiField
     MaterialAnchorButton clearAoIs;
+    @UiField
+    MaterialChip information;
 
     private Presenter presenter;
 
@@ -214,8 +216,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     }
 
     @Override
-    public void setInformationUrl(String url) {
-        information.setHref(url);
+    public HasClickHandlers getInformation() {
+        return information;
     }
 
     @Override

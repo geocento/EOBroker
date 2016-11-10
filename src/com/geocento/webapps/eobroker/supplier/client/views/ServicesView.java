@@ -40,14 +40,6 @@ public interface ServicesView extends IsWidget {
 
     HasText getSampleWmsUrl();
 
-    void displayLoading(String message);
-
-    void hideLoading();
-
-    void displayError(String message);
-
-    void displaySuccess(String message);
-
     TemplateView getTemplateView();
 
     public interface Presenter {

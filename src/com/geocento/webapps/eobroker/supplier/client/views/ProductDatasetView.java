@@ -38,12 +38,6 @@ public interface ProductDatasetView extends IsWidget {
 
     TemplateView getTemplateView();
 
-    void setLoading(String message);
-
-    void setLoadingError(String message);
-
-    void hideLoading(String message);
-
     void setExtent(AoI aoi);
 
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);

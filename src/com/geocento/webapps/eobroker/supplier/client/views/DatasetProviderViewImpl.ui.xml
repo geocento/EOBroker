@@ -6,20 +6,27 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
         >
     <ui:style>
+
         .buttonsPanel {
             padding: 20px 0px;
         }
 
+        .subtitle {
+            display: block;
+            margin: 20px 0px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
+    <views:TemplateView titleText="Datasets provider" ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
-        <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-        <design:MaterialTextBox placeholder="URI" type="URL" iconType="WEB" ui:field="uri"/>
-        <design:MaterialIcon text="Icon" textColor="black" iconType="IMAGE"></design:MaterialIcon>
-        <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
-        <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-            <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-        </g:HTMLPanel>
+        <design:MaterialRow>
+            <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            <design:MaterialTextBox placeholder="URI" type="URL" iconType="WEB" ui:field="uri"/>
+            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+            </g:HTMLPanel>
+        </design:MaterialRow>
     </views:TemplateView>
 </ui:UiBinder>

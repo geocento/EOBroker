@@ -22,6 +22,8 @@ public class ClientFactoryImpl implements ClientFactory {
     private ConversationView conversationView = null;
     private DatasetProviderView datasetProviderView = null;
     private ProductDatasetView productDatasetView = null;
+    private SoftwareView softwareView = null;
+    private ProjectView projectView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -108,6 +110,22 @@ public class ClientFactoryImpl implements ClientFactory {
             productDatasetView = new ProductDatasetViewImpl(this);
         }
         return productDatasetView;
+    }
+
+    @Override
+    public SoftwareView getSoftwareView() {
+        if(softwareView == null) {
+            softwareView = new SoftwareViewImpl(this);
+        }
+        return softwareView;
+    }
+
+    @Override
+    public ProjectView getProjectView() {
+        if(projectView == null) {
+            projectView = new ProjectViewImpl(this);
+        }
+        return projectView;
     }
 
 }

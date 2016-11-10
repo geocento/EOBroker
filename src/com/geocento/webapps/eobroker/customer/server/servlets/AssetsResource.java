@@ -18,6 +18,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/")
@@ -127,18 +128,18 @@ public class AssetsResource implements AssetsService {
             productFormDTO.setProductServices(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
                 @Override
                 public ProductServiceDTO mutate(ProductService productService) {
-                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                        productServiceDTO.setId(productService.getId());
-                        productServiceDTO.setName(productService.getName());
-                        productServiceDTO.setDescription(productService.getDescription());
-                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                        productServiceDTO.setCompanyName(productService.getCompany().getName());
-                        productServiceDTO.setCompanyId(productService.getCompany().getId());
-                        productServiceDTO.setServiceImage(productService.getImageUrl());
-                        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-                        productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
-                        return productServiceDTO;
-                    }
+                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                    productServiceDTO.setId(productService.getId());
+                    productServiceDTO.setName(productService.getName());
+                    productServiceDTO.setDescription(productService.getDescription());
+                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                    productServiceDTO.setCompanyName(productService.getCompany().getName());
+                    productServiceDTO.setCompanyId(productService.getCompany().getId());
+                    productServiceDTO.setServiceImage(productService.getImageUrl());
+                    productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+                    productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+                    return productServiceDTO;
+                }
             }));
             return productFormDTO;
         } finally {
@@ -192,13 +193,7 @@ public class AssetsResource implements AssetsService {
             productDescriptionDTO.setProductDatasets(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
                 @Override
                 public ProductDatasetDTO mutate(ProductDataset productDataset) {
-                    ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
-                    productDatasetDTO.setId(productDataset.getId());
-                    productDatasetDTO.setName(productDataset.getName());
-                    productDatasetDTO.setImageUrl(productDataset.getImageUrl());
-                    productDatasetDTO.setDescription(productDataset.getDescription());
-                    productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
-                    // initiate the services with product dto
+                    ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
                     ProductDTO productDTO = new ProductDTO();
                     productDTO.setId(productDescriptionDTO.getId());
                     productDatasetDTO.setProduct(productDTO);
@@ -222,23 +217,29 @@ public class AssetsResource implements AssetsService {
             if(productDataset == null) {
                 throw new RequestException("Product does not exist");
             }
-            return createProductDatasetDescriptionDTO(productDataset);
+            // add suggestions
+            // for now make it simple and just add the same product services
+            ProductDatasetDescriptionDTO productDatasetDescriptionDTO = new ProductDatasetDescriptionDTO();
+            productDatasetDescriptionDTO.setId(productDataset.getId());
+            productDatasetDescriptionDTO.setName(productDataset.getName());
+            productDatasetDescriptionDTO.setImageUrl(productDataset.getImageUrl());
+            productDatasetDescriptionDTO.setDescription(productDataset.getDescription());
+            productDatasetDescriptionDTO.setFullDescription(productDataset.getFullDescription());
+            productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
+            productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+            productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            List<ProductDataset> suggestedDatasets = new ArrayList<ProductDataset>(productDataset.getProduct().getProductDatasets());
+            suggestedDatasets.remove(productDataset);
+            productDatasetDescriptionDTO.setSuggestedDatasets(ListUtil.mutate(suggestedDatasets, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+                @Override
+                public ProductDatasetDTO mutate(ProductDataset productDataset) {
+                    return createProductDatasetDTO(productDataset);
+                }
+            }));
+            return productDatasetDescriptionDTO;
         } finally {
             em.close();
         }
-    }
-
-    private ProductDatasetDescriptionDTO createProductDatasetDescriptionDTO(ProductDataset productDataset) {
-        ProductDatasetDescriptionDTO productDatasetDescriptionDTO = new ProductDatasetDescriptionDTO();
-        productDatasetDescriptionDTO.setId(productDataset.getId());
-        productDatasetDescriptionDTO.setName(productDataset.getName());
-        productDatasetDescriptionDTO.setImageUrl(productDataset.getImageUrl());
-        productDatasetDescriptionDTO.setDescription(productDataset.getDescription());
-        productDatasetDescriptionDTO.setFullDescription(productDataset.getFullDescription());
-        productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
-        productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
-        productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
-        return productDatasetDescriptionDTO;
     }
 
     @Override
@@ -278,17 +279,25 @@ public class AssetsResource implements AssetsService {
             companyDTO.setProductServices(ListUtil.mutate(company.getServices(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
                 @Override
                 public ProductServiceDTO mutate(ProductService productService) {
-                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                    productServiceDTO.setId(productService.getId());
-                    productServiceDTO.setName(productService.getName());
-                    productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                    productServiceDTO.setCompanyName(productService.getCompany().getName());
-                    productServiceDTO.setCompanyId(productService.getCompany().getId());
-                    productServiceDTO.setServiceImage(productService.getImageUrl());
-                    productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
-                    productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-                    return productServiceDTO;
+                    return createProductServiceDTO(productService);
+                }
+            }));
+            companyDTO.setProductDatasets(ListUtil.mutate(company.getDatasets(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+                @Override
+                public ProductDatasetDTO mutate(ProductDataset object) {
+                    return createProductDatasetDTO(object);
+                }
+            }));
+            companyDTO.setSoftware(ListUtil.mutate(company.getSoftware(), new ListUtil.Mutate<Software, SoftwareDTO>() {
+                @Override
+                public SoftwareDTO mutate(Software software) {
+                    return createSoftwareDTO(software);
+                }
+            }));
+            companyDTO.setProject(ListUtil.mutate(company.getProjects(), new ListUtil.Mutate<Project, ProjectDTO>() {
+                @Override
+                public ProjectDTO mutate(Project project) {
+                    return createProjectDTO(project);
                 }
             }));
             return companyDTO;
@@ -297,6 +306,52 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private ProductServiceDTO createProductServiceDTO(ProductService productService) {
+        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+        productServiceDTO.setId(productService.getId());
+        productServiceDTO.setName(productService.getName());
+        productServiceDTO.setDescription(productService.getDescription());
+        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+        productServiceDTO.setCompanyName(productService.getCompany().getName());
+        productServiceDTO.setCompanyId(productService.getCompany().getId());
+        productServiceDTO.setServiceImage(productService.getImageUrl());
+/*
+                    productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+*/
+        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+        return productServiceDTO;
+    }
+
+    private ProductDatasetDTO createProductDatasetDTO(ProductDataset productDataset) {
+        ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+        productDatasetDTO.setId(productDataset.getId());
+        productDatasetDTO.setName(productDataset.getName());
+        productDatasetDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetDTO.setDescription(productDataset.getDescription());
+        productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        return productDatasetDTO;
+    }
+
+    private SoftwareDTO createSoftwareDTO(Software software) {
+        SoftwareDTO softwareDTO = new SoftwareDTO();
+        softwareDTO.setId(software.getId());
+        softwareDTO.setName(software.getName());
+        softwareDTO.setImageUrl(software.getImageUrl());
+        softwareDTO.setDescription(software.getDescription());
+        softwareDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(software.getCompany()));
+        return softwareDTO;
+    }
+
+    private ProjectDTO createProjectDTO(Project project) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setId(project.getId());
+        projectDTO.setName(project.getName());
+        projectDTO.setImageUrl(project.getImageUrl());
+        projectDTO.setDescription(project.getDescription());
+        projectDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(project.getCompany()));
+        return projectDTO;
     }
 
     @Override
@@ -331,6 +386,7 @@ public class AssetsResource implements AssetsService {
             }
             ProductServiceDescriptionDTO productServiceDescriptionDTO = new ProductServiceDescriptionDTO();
             productServiceDescriptionDTO.setId(productService.getId());
+            productServiceDescriptionDTO.setServiceImage(productService.getImageUrl());
             productServiceDescriptionDTO.setName(productService.getName());
             productServiceDescriptionDTO.setDescription(productService.getDescription());
             productServiceDescriptionDTO.setFullDescription(productService.getFullDescription());
@@ -338,6 +394,16 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
             productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
+            // add suggestions
+            // for now make it simple and just add the same product services
+            List<ProductService> suggestedServices = new ArrayList<ProductService>(productService.getProduct().getProductServices());
+            suggestedServices.remove(productService);
+            productServiceDescriptionDTO.setSuggestedServices(ListUtil.mutate(suggestedServices, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+                @Override
+                public ProductServiceDTO mutate(ProductService productService) {
+                    return createProductServiceDTO(productService);
+                }
+            }));
             return productServiceDescriptionDTO;
         } catch (Exception e) {
             throw new RequestException("Server error");

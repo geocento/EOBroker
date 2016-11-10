@@ -91,17 +91,19 @@ public class DatasetProviderActivity extends TemplateActivity implements Dataset
                 datasetProviderDTO.setName(datasetProviderView.getName().getText());
                 datasetProviderDTO.setIconURL(datasetProviderView.getIconUrl());
                 datasetProviderDTO.setUri(datasetProviderView.getUri().getText());
-                datasetProviderView.setLoading("Saving dataset...");
+                displayLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            datasetProviderView.setLoadingError("Error saving company");
+                            hideLoading();
+                            displayError("Error saving company");
                         }
 
                         @Override
                         public void onSuccess(Method method, Long companyId) {
-                            datasetProviderView.hideLoading("DatasetProvider saved");
+                            hideLoading();
+                            displaySuccess("Saved dataset provider");
                             datasetProviderDTO.setId(companyId);
                         }
                     }).call(ServicesUtil.assetsService).saveDatasetProvider(datasetProviderDTO);

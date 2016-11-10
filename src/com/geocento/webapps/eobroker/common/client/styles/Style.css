@@ -3,3 +3,25 @@
 .highlighted {
      background: #ccc;
  }
+
+.slimScrollbar::-webkit-scrollbar {
+    border-color: transparent;
+    border-top: 20px;
+    border-bottom: 20px;
+}
+
+.slimScrollbar::-webkit-scrollbar-button {
+    height: 20px;
+}
+
+.slimScrollbar::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.slimScrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.slimScrollbar::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+}

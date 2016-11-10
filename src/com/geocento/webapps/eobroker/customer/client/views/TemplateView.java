@@ -20,6 +20,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
@@ -96,6 +97,8 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialBadge notificationsBadge;
     @UiField
     MaterialDropDown notificationsPanel;
+    @UiField
+    MaterialFooter footer;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -282,6 +285,14 @@ public class TemplateView extends Composite implements HasWidgets {
 
     public void setPanelStyleName(String styleName, boolean added) {
         panel.setStyleName(styleName, added);
+    }
+
+    public void setFooter(boolean display) {
+        footer.setVisible(display);
+    }
+
+    public void scrollToTop() {
+        Window.scrollTo(0, 0);
     }
 
     @Override

@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .pitch {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+
+    </ui:style>
+    <design:MaterialCard backgroundColor="white" axis="HORIZONTAL">
+        <design:MaterialCardImage>
+            <design:MaterialIcon size="LARGE" ui:field="image"/>
+        </design:MaterialCardImage>
+        <design:MaterialCardContent>
+            <design:MaterialLink float="RIGHT" ui:field="action"></design:MaterialLink>
+            <design:MaterialLabel addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialLabel>
+        </design:MaterialCardContent>
+    </design:MaterialCard>
+</ui:UiBinder>

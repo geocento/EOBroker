@@ -1,6 +1,10 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+
+import java.util.List;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -17,8 +21,11 @@ public class ProductDatasetDescriptionDTO {
     String extent;
     String email;
     String website;
-    String apiUrl;
-    String sampleWmsUrl;
+    boolean commercial;
+    List<DatasetAccess> datasetAccesses;
+    List<DatasetAccess> samples;
+    List<FeatureDescription> features;
+    List<ProductDatasetDTO> suggestedDatasets;
 
     public ProductDatasetDescriptionDTO() {
     }
@@ -47,6 +54,14 @@ public class ProductDatasetDescriptionDTO {
         this.product = product;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getName() {
         return name;
     }
@@ -61,30 +76,6 @@ public class ProductDatasetDescriptionDTO {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
     }
 
     public String getFullDescription() {
@@ -103,19 +94,59 @@ public class ProductDatasetDescriptionDTO {
         this.extent = extent;
     }
 
-    public String getApiUrl() {
-        return apiUrl;
+    public String getEmail() {
+        return email;
     }
 
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getSampleWmsUrl() {
-        return sampleWmsUrl;
+    public String getWebsite() {
+        return website;
     }
 
-    public void setSampleWmsUrl(String sampleWmsUrl) {
-        this.sampleWmsUrl = sampleWmsUrl;
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public boolean isCommercial() {
+        return commercial;
+    }
+
+    public void setCommercial(boolean commercial) {
+        this.commercial = commercial;
+    }
+
+    public List<DatasetAccess> getDatasetAccesses() {
+        return datasetAccesses;
+    }
+
+    public void setDatasetAccesses(List<DatasetAccess> datasetAccesses) {
+        this.datasetAccesses = datasetAccesses;
+    }
+
+    public List<DatasetAccess> getSamples() {
+        return samples;
+    }
+
+    public void setSamples(List<DatasetAccess> samples) {
+        this.samples = samples;
+    }
+
+    public List<FeatureDescription> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<FeatureDescription> features) {
+        this.features = features;
+    }
+
+    public List<ProductDatasetDTO> getSuggestedDatasets() {
+        return suggestedDatasets;
+    }
+
+    public void setSuggestedDatasets(List<ProductDatasetDTO> suggestedDatasets) {
+        this.suggestedDatasets = suggestedDatasets;
     }
 }

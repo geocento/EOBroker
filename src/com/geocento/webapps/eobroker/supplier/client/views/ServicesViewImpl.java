@@ -177,26 +177,6 @@ public class ServicesViewImpl extends Composite implements ServicesView {
     }
 
     @Override
-    public void displayLoading(String message) {
-        template.setLoading(message);
-    }
-
-    @Override
-    public void hideLoading() {
-        template.hideLoading();
-    }
-
-    @Override
-    public void displayError(String message) {
-        template.displayError(message);
-    }
-
-    @Override
-    public void displaySuccess(String message) {
-        template.displaySuccess(message);
-    }
-
-    @Override
     public TemplateView getTemplateView() {
         return template;
     }

@@ -47,8 +47,11 @@ public class Product {
     @Column(length = 10000)
     String recommendationRule;
 
-    @OneToMany(mappedBy = "product")
-    Set<ProductService> productServices;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    List<ProductService> productServices;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    List<ProductDataset> productDatasets;
 
     public Product() {
     }
@@ -133,8 +136,20 @@ public class Product {
         this.recommendationRule = recommendationRule;
     }
 
-    public Set<ProductService> getProductServices() {
+    public List<ProductService> getProductServices() {
         return productServices;
+    }
+
+    public void setProductServices(List<ProductService> productServices) {
+        this.productServices = productServices;
+    }
+
+    public List<ProductDataset> getProductDatasets() {
+        return productDatasets;
+    }
+
+    public void setProductDatasets(List<ProductDataset> productDatasets) {
+        this.productDatasets = productDatasets;
     }
 
     @PreRemove

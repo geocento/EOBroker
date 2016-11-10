@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
@@ -10,7 +12,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -29,6 +32,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
+import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.ui.*;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -61,6 +66,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         String subTitle();
 
         String subtext();
+
+        String selected();
     }
 
     @UiField
@@ -69,7 +76,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    MaterialLink currentSearch;
+    MaterialLink resultsTitle;
     @UiField
     HTMLPanel categories;
     @UiField
@@ -82,6 +89,20 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     HTMLPanel settings;
     @UiField
     MaterialCheckBox filterByAoI;
+    @UiField
+    MaterialLink productsCategory;
+    @UiField
+    MaterialLink productServicesCategory;
+    @UiField
+    MaterialLink productDatasetsCategory;
+    @UiField
+    MaterialLink softwareCategory;
+    @UiField
+    MaterialLink projectsCategory;
+    @UiField
+    LoadingWidget loading;
+    @UiField
+    HTMLPanel requirementsPanel;
 
     private Presenter presenter;
 
@@ -91,24 +112,26 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        // add categories controls
-        for(Category category : Category.values()) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(category.getName());
-            materialCheckBox.setObject(category);
-            materialCheckBox.addStyleName(style.option());
-            categories.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
-        }
-
         filtersPanel.show();
 
+        // update icons
+        productsCategory.setIconType(CategoryUtils.getIconType(Category.products));
+        productServicesCategory.setIconType(CategoryUtils.getIconType(Category.productservices));
+        productDatasetsCategory.setIconType(CategoryUtils.getIconType(Category.productdatasets));
+        softwareCategory.setIconType(CategoryUtils.getIconType(Category.software));
+        projectsCategory.setIconType(CategoryUtils.getIconType(Category.project));
+
+        // hide the loading results widget
+        hideLoadingResults();
+
+        // hide the send requirements panel
+        displaySendRequirements(false);
+
         onResize(null);
+    }
+
+    private void displaySendRequirements(boolean display) {
+        requirementsPanel.setVisible(display);
     }
 
     @Override
@@ -122,13 +145,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void setCurrentSearch(String search) {
+    public void setSearchText(String search) {
         template.setSearchText(search);
     }
 
     @Override
-    public void setSearchResults(String message) {
-        currentSearch.setText(message);
+    public void setResultsTitle(String message) {
+        resultsTitle.setText(message);
+        resultsTitle.setVisible(message != null && message.length() > 0);
     }
 
     @Override
@@ -139,11 +163,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void displayLoadingResults(String message) {
         template.displayLoading();
+        loading.setVisible(true);
+        loading.setText(message);
     }
 
     @Override
     public void hideLoadingResults() {
         template.hideLoading();
+        loading.setVisible(false);
     }
 
     @Override
@@ -151,44 +178,27 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         container.clear();
     }
 
-    @Override
-    public void setProductSelection(ProductDTO productDTO, List<ProductServiceDTO> services, List<ProductDTO> others) {
-        clearResults();
-        MaterialRow productRow = new MaterialRow();
-        container.add(productRow);
-        addTitle(productRow, "Selected product", style.productTitle());
-        MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-        productRow.add(materialColumn);
-        materialColumn.add(new ProductWidget(productDTO));
-        addTitle(productRow, "EO Broker services offering this product", style.productServicesTitle());
-        for(ProductServiceDTO productServiceDTO : services) {
-            MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
-            productRow.add(serviceColumn);
-            serviceColumn.add(new ProductServiceWidget(productServiceDTO));
+    private void addTitle(MaterialRow productRow, String message, String style, String moreUrl) {
+        MaterialPanel materialPanel = new MaterialPanel();
+        if(moreUrl != null) {
+            MaterialLink moreLink = new MaterialLink("More");
+            moreLink.setTextColor("blue");
+            moreLink.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
+            materialPanel.add(moreLink);
+            moreLink.setHref(moreUrl);
         }
-    }
-
-    private void addTitle(MaterialRow productRow, String message, String style) {
+        MaterialLabel title = new MaterialLabel(message);
+        title.setTextColor("black");
+        materialPanel.add(title);
+        materialPanel.addStyleName(style);
+        productRow.add(materialPanel);
+/*
         HTMLPanel htmlPanel = new HTMLPanel("<span class='flow-text'>" + message + "</span>");
         htmlPanel.addStyleName(style);
         MaterialColumn titleMaterialColumn = new MaterialColumn(12, 12, 12);
         productRow.add(titleMaterialColumn);
         titleMaterialColumn.add(htmlPanel);
-    }
-
-    @Override
-    public void setCategories(List<Category> categories) {
-        for(Widget widget : this.categories) {
-            if(widget instanceof MaterialCheckBox) {
-                MaterialCheckBox checkBox = ((MaterialCheckBox) widget);
-                checkBox.setValue(categories.contains((Category) checkBox.getObject()));
-            }
-        }
-    }
-
-    @Override
-    public HasClickHandlers getChangeSearch() {
-        return currentSearch;
+*/
     }
 
     @Override
@@ -197,27 +207,29 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void setMatchingProducts(List<ProductDTO> suggestedProducts) {
-        categories.setVisible(true);
-        settings.setVisible(false);
+    public void setMatchingProducts(List<ProductDTO> suggestedProducts, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, suggestedProducts == null || suggestedProducts.size() == 0 ? "No product matching your request" :
-                                        "Products matching your request",
-                style.productTitle());
-        for(ProductDTO productDTO : suggestedProducts) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-            materialColumn.add(new ProductWidget(productDTO));
-            productRow.add(materialColumn);
+        addTitle(productRow, "Products", style.productTitle(), moreUrl);
+        if(suggestedProducts != null && suggestedProducts.size() > 0) {
+            for (ProductDTO productDTO : suggestedProducts) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                materialColumn.add(new ProductWidget(productDTO));
+                productRow.add(materialColumn);
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No suitable products found...");
+            label.addStyleName(style.subtext());
+            productRow.add(label);
         }
     }
 
     @Override
-    public void setMatchingServices(List<ProductServiceDTO> productServices) {
+    public void setMatchingServices(List<ProductServiceDTO> productServices, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "EO Broker services matching your request", style.productServicesTitle());
-        if(productServices.size() > 0) {
+        addTitle(productRow, "On-demand services", style.productServicesTitle(), moreUrl);
+        if(productServices != null && productServices.size() > 0) {
             for (ProductServiceDTO productServiceDTO : productServices) {
                 MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
                 productRow.add(serviceColumn);
@@ -231,84 +243,60 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void displayProductsList(List<ProductDTO> products, int start, int limit, String text) {
-        categories.setVisible(false);
-        settings.setVisible(true);
-        settings.clear();
-        MaterialLabel materialLabel = new MaterialLabel("Sector");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        MaterialListBox sectorSelection = new MaterialListBox();
-        sectorSelection.addStyleName(style.option());
-        sectorSelection.addItem("All");
-        for(Sector option : Sector.values()) {
-            sectorSelection.addItem(option.toString());
-        }
-        settings.add(sectorSelection);
-        materialLabel = new MaterialLabel("Thematic");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        for(Thematic option : Thematic.values()) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(option.toString());
-            materialCheckBox.setObject(option);
-            materialCheckBox.addStyleName(style.option());
-            settings.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
-        }
+    public void setMatchingDatasets(List<ProductDatasetDTO> productDatasets, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        for(ProductDTO productDTO : products) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-            productRow.add(materialColumn);
-            materialColumn.add(new ProductWidget(productDTO));
+        addTitle(productRow, "Off-the-shelf data", style.productServicesTitle(), moreUrl);
+        if(productDatasets != null && productDatasets.size() > 0) {
+            for (ProductDatasetDTO productDatasetDTO : productDatasets) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new ProductDatasetWidget(productDatasetDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No off-the-shelf data found...");
+            label.addStyleName(style.subtext());
+            productRow.add(label);
         }
     }
 
     @Override
-    public void displayOffer(List<Offer> offers, int start, int limit, String text) {
-        categories.setVisible(false);
-        settings.setVisible(true);
-        settings.clear();
-        MaterialLabel materialLabel = new MaterialLabel("Sector");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        MaterialListBox sectorSelection = new MaterialListBox();
-        sectorSelection.addStyleName(style.option());
-        sectorSelection.addItem("All");
-        for(Sector option : Sector.values()) {
-            sectorSelection.addItem(option.toString());
-        }
-        settings.add(sectorSelection);
-        materialLabel = new MaterialLabel("Thematic");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        for(Thematic option : Thematic.values()) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(option.toString());
-            materialCheckBox.setObject(option);
-            materialCheckBox.addStyleName(style.option());
-            settings.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
-        }
+    public void setMatchingSoftwares(List<SoftwareDTO> softwares, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        for(Offer offer : offers) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-            productRow.add(materialColumn);
-            if(offer instanceof ProductDTO) {
-                materialColumn.add(new ProductWidget((ProductDTO) offer));
+        addTitle(productRow, "Software solutions", style.productServicesTitle(), moreUrl);
+        if(softwares != null && softwares.size() > 0) {
+            for (SoftwareDTO softwareDTO : softwares) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new SoftwareWidget(softwareDTO));
             }
+        } else {
+            MaterialLabel label = new MaterialLabel("No software solutions found...");
+            label.addStyleName(style.subtext());
+            productRow.add(label);
+        }
+    }
+
+    @Override
+    public void setMatchingProjects(List<ProjectDTO> projects, String moreUrl) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        boolean more = projects != null && projects.size() > 4;
+        addTitle(productRow, "Projects", style.productServicesTitle(), moreUrl);
+        if(projects != null && projects.size() > 0) {
+            if(more) {
+                projects = projects.subList(0, 4);
+            }
+            for (ProjectDTO projectDTO : projects) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new ProjectWidget(projectDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No projects found...");
+            label.addStyleName(style.subtext());
+            productRow.add(label);
         }
     }
 
@@ -316,7 +304,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     public void setMatchingImagery(String text) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "Search or request imagery for '" + text + "'", style.productServicesTitle());
+        addTitle(productRow, "Search or request imagery for '" + text + "'", style.productServicesTitle(), null);
         MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
         productRow.add(serviceColumn);
         serviceColumn.add(new ImageSearchWidget(text));
@@ -331,57 +319,15 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void displayCompaniesList(List<CompanyDTO> companyDTOs, int start, int limit, String text) {
-        categories.setVisible(false);
-        settings.setVisible(true);
-        settings.clear();
-        MaterialLabel materialLabel = new MaterialLabel("Company size");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        for(String option : new String[] {"Large corporation > 4000", "Large < 4000", "Medium-sized < 250", "Small < 50", "Micro < 10"}) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(option);
-            materialCheckBox.setObject(option);
-            materialCheckBox.addStyleName(style.option());
-            settings.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
-        }
-        materialLabel = new MaterialLabel("Company certifications");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        for(String option : new String[] {"Certification 1", "Certification 2", "Certification 3"}) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(option);
-            materialCheckBox.setObject(option);
-            materialCheckBox.addStyleName(style.option());
-            settings.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
-        }
-        MaterialRow materialRow = new MaterialRow();
-        container.add(materialRow);
-        for(CompanyDTO companyDTO : companyDTOs) {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-            materialRow.add(materialColumn);
-            materialColumn.add(new CompanyWidget(companyDTO));
-        }
-    }
-
-    @Override
     public void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi) {
         MaterialRow datasetsRow = new MaterialRow();
         container.add(datasetsRow);
-        addTitle(datasetsRow, "Matching datasets", style.productServicesTitle());
+        boolean more = datasetProviderDTOs != null && datasetProviderDTOs.size() > 4;
+        addTitle(datasetsRow, "Matching datasets", style.productServicesTitle(), null);
         for(final DatasetProviderDTO datasetProviderDTO : datasetProviderDTOs) {
+            if(more) {
+                datasetProviderDTOs = datasetProviderDTOs.subList(0, 4);
+            }
             final MaterialRow datasetRow = new MaterialRow();
             container.add(datasetRow);
             MaterialLabelIcon labelIcon = new MaterialLabelIcon(datasetProviderDTO.getIconURL(), datasetProviderDTO.getName());
@@ -458,6 +404,317 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     }
                     break;
             }
+        }
+    }
+
+    @Override
+    public HasHref getProductsCategory() {
+        return productsCategory;
+    }
+
+    @Override
+    public HasHref getProductServicesCategory() {
+        return productServicesCategory;
+    }
+
+    @Override
+    public HasHref getProductDatasetsCategory() {
+        return productDatasetsCategory;
+    }
+
+    @Override
+    public HasHref getSoftwareCategory() {
+        return softwareCategory;
+    }
+
+    @Override
+    public HasHref getProjectsCategory() {
+        return projectsCategory;
+    }
+
+    @Override
+    public void displayCategories(boolean display) {
+        categories.setVisible(true);
+    }
+
+    @Override
+    public void selectCategory(Category category) {
+        for(Widget widget : categories) {
+            widget.removeStyleName(style.selected());
+        }
+        if(category == null) {
+            return;
+        }
+        switch (category) {
+            case products:
+                productsCategory.addStyleName(style.selected());
+                break;
+            case productservices:
+                productServicesCategory.addStyleName(style.selected());
+                break;
+            case productdatasets:
+                productDatasetsCategory.addStyleName(style.selected());
+                break;
+            case software:
+                softwareCategory.addStyleName(style.selected());
+                break;
+            case project:
+                projectsCategory.addStyleName(style.selected());
+                break;
+        }
+    }
+
+    @Override
+    public void displayFilters(Category category) {
+        if(category == null) {
+            settings.clear();
+        } else {
+            switch (category) {
+                case products:
+                    displayProductFilters();
+                    break;
+                case productservices:
+                    break;
+                case productdatasets:
+                    break;
+                case software:
+                    break;
+                case project:
+                    break;
+                case companies:
+                    displayCompaniesFilters();
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void addProducts(List<ProductDTO> products, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(products == null || products.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No products found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for (ProductDTO productDTO : products) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(materialColumn);
+                materialColumn.add(new ProductWidget(productDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreProducts();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    @Override
+    public void addProductServices(List<ProductServiceDTO> productServiceDTOs, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(productServiceDTOs == null || productServiceDTOs.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No on-demand services found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for(ProductServiceDTO productServiceDTO : productServiceDTOs) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(materialColumn);
+                materialColumn.add(new ProductServiceWidget(productServiceDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreProductServices();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    @Override
+    public void addProductDatasets(List<ProductDatasetDTO> productDatasetDTOs, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(productDatasetDTOs == null || productDatasetDTOs.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No off-the-shelf data found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for(ProductDatasetDTO productDatasetDTO : productDatasetDTOs) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(materialColumn);
+                materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreProductDatasets();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    @Override
+    public void addSoftware(List<SoftwareDTO> softwareDTOs, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(softwareDTOs == null || softwareDTOs.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No software found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for(SoftwareDTO softwareDTO : softwareDTOs) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(materialColumn);
+                materialColumn.add(new SoftwareWidget(softwareDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreSofware();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    @Override
+    public void addProjects(List<ProjectDTO> projectDTOs, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(projectDTOs == null || projectDTOs.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No project found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for(ProjectDTO projectDTO : projectDTOs) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(materialColumn);
+                materialColumn.add(new ProjectWidget(projectDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreProjects();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    @Override
+    public void addCompanies(List<CompanyDTO> companyDTOs, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(companyDTOs == null || companyDTOs.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No companies found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for(CompanyDTO companyDTO : companyDTOs) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(materialColumn);
+                materialColumn.add(new CompanyWidget(companyDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.loadMoreProducts();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    private void displayProductFilters() {
+        settings.clear();
+        // add sector selection
+        MaterialLabel materialLabel = new MaterialLabel("Sector");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
+        MaterialListBox sectorSelection = new MaterialListBox();
+        sectorSelection.addStyleName(style.option());
+        sectorSelection.addItem("All");
+        for(Sector option : Sector.values()) {
+            sectorSelection.addItem(option.toString());
+        }
+        settings.add(sectorSelection);
+        // add thematic selection
+        materialLabel = new MaterialLabel("Thematic");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
+        MaterialListBox thematicSelection = new MaterialListBox();
+        thematicSelection.addStyleName(style.option());
+        thematicSelection.addItem("All");
+        for(Thematic option : Thematic.values()) {
+            thematicSelection.addItem(option.toString());
+        }
+        settings.add(thematicSelection);
+    }
+
+    private void displayCompaniesFilters() {
+        settings.clear();
+        MaterialLabel materialLabel = new MaterialLabel("Company size");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
+        for(String option : new String[] {"Large corporation > 4000", "Large < 4000", "Medium-sized < 250", "Small < 50", "Micro < 10"}) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(option);
+            materialCheckBox.setObject(option);
+            materialCheckBox.addStyleName(style.option());
+            settings.add(materialCheckBox);
+            materialCheckBox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - update display
+                }
+            });
+        }
+        materialLabel = new MaterialLabel("Company certifications");
+        materialLabel.addStyleName(style.optionTitle());
+        settings.add(materialLabel);
+        for(String option : new String[] {"Certification 1", "Certification 2", "Certification 3"}) {
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
+            materialCheckBox.setText(option);
+            materialCheckBox.setObject(option);
+            materialCheckBox.addStyleName(style.option());
+            settings.add(materialCheckBox);
+            materialCheckBox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - update display
+                }
+            });
         }
     }
 

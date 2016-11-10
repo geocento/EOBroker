@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.common.shared.entities;
 import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -34,6 +35,17 @@ public class ProductDataset {
 
     @Convert(converter = GeometryConverter.class)
     String extent;
+
+    boolean commercial;
+
+    @OneToMany
+    List<DatasetAccess> datasetAccesses;
+
+    @OneToMany
+    List<DatasetAccess> samples;
+
+    @OneToMany
+    List<FeatureDescription> features;
 
     @Column(length = 1000)
     String email;
@@ -128,6 +140,38 @@ public class ProductDataset {
 
     public void setExtent(String extent) {
         this.extent = extent;
+    }
+
+    public boolean getCommercial() {
+        return commercial;
+    }
+
+    public void setCommercial(boolean commercial) {
+        this.commercial = commercial;
+    }
+
+    public List<DatasetAccess> getDatasetAccesses() {
+        return datasetAccesses;
+    }
+
+    public void setDatasetAccesses(List<DatasetAccess> datasetAccesses) {
+        this.datasetAccesses = datasetAccesses;
+    }
+
+    public List<DatasetAccess> getSamples() {
+        return samples;
+    }
+
+    public void setSamples(List<DatasetAccess> samples) {
+        this.samples = samples;
+    }
+
+    public List<FeatureDescription> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<FeatureDescription> features) {
+        this.features = features;
     }
 
     public String getApiUrl() {

@@ -9,6 +9,17 @@
             text-overflow: ellipsis;
         }
 
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+
         .companyLogo {
             position: absolute;
             right: auto !important;
@@ -29,15 +40,18 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="indigo lighten-1" axis="VERTICAL">
+    <design:MaterialCard backgroundColor="green" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
+            <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
-            <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
+        <design:MaterialCardContent textColor="white" padding="10">
+            <design:MaterialLabel fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"/>
+            <design:MaterialLabel addStyleNames="{style.description}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
-        <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
-            <design:MaterialLink iconType="INFO" text="INFO" ui:field="info"></design:MaterialLink>
+        <design:MaterialCardAction addStyleNames="{style.actions}" padding="10" ui:field="action">
+            <design:MaterialLink text="INFO" textColor="white" ui:field="info"></design:MaterialLink>
+            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

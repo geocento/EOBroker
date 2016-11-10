@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class ProductTextBox extends MaterialSearch {
 
+    private ProductDTO product;
+
     public ProductTextBox() {
         addKeyUpHandler(new KeyUpHandler() {
             @Override
@@ -48,5 +50,14 @@ public class ProductTextBox extends MaterialSearch {
             }
         });
 
+    }
+
+    public void setProduct(ProductDTO product) {
+        setSelectedObject(product != null ? new SearchObject(product.getName(), "", product) : null);
+        setText(product != null && product.getName() != null ? product.getName() : "");
+    }
+
+    public ProductDTO getProduct() {
+        return getSelectedObject() != null ? (ProductDTO) getSelectedObject().getO() : null;
     }
 }

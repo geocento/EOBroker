@@ -25,12 +25,6 @@ public interface DatasetProviderView extends IsWidget {
 
     TemplateView getTemplateView();
 
-    void setLoading(String message);
-
-    void setLoadingError(String message);
-
-    void hideLoading(String message);
-
     public interface Presenter {
     }
 

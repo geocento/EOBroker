@@ -2,11 +2,14 @@ package com.geocento.webapps.eobroker.common.shared.entities;
 
 public enum Category {
 
-    imagery("Imagery"),
-    products("Analytics"),
-    companies("Companies"),
+    products("Products"),
+    productservices("On-demand services"),
+    productdatasets("Off-the-shelf data"),
     datasets("Datasets"),
-    software("Software");
+    software("Software solutions"),
+    project("Projects"),
+    companies("Companies"),
+    imagery("Imagery");
 
     private String name;
 

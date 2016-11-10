@@ -56,22 +56,28 @@
 -->
             <m:MaterialRow>
                 <m:MaterialColumn grid="s12 m12 l6">
-                    <m:MaterialTextBox placeholder="Specify type of imagery you request" ui:field="imagetype"></m:MaterialTextBox>
-                    <m:MaterialListBox placeholder="Specify the application" ui:field="application"></m:MaterialListBox>
                     <m:MaterialRow>
+                        <m:MaterialColumn grid="s12">
+                            <m:MaterialTextBox placeholder="Specify type of imagery you request" ui:field="imagetype"></m:MaterialTextBox>
+                        </m:MaterialColumn>
+                        <m:MaterialColumn grid="s12">
+                            <m:MaterialListBox placeholder="Specify the application" ui:field="application"></m:MaterialListBox>
+                        </m:MaterialColumn>
                         <m:MaterialColumn grid="s12 m6 l6">
                             <m:MaterialDatePicker placeholder="Start time" ui:field="start"></m:MaterialDatePicker>
                         </m:MaterialColumn>
                         <m:MaterialColumn grid="s12 m6 l6">
                             <m:MaterialDatePicker placeholder="Stop time" ui:field="stop"></m:MaterialDatePicker>
                         </m:MaterialColumn>
+                        <m:MaterialColumn grid="s12">
+                            <m:MaterialTextArea placeholder="Additional information" ui:field="information"></m:MaterialTextArea>
+                        </m:MaterialColumn>
+                        <m:MaterialColumn grid="s12">
+                            <m:MaterialLabel text="Select supplier services" addStyleNames="{style.section}"></m:MaterialLabel>
+                            <g:HTMLPanel addStyleNames="{style.suppliersPanel}" ui:field="suppliers">
+                            </g:HTMLPanel>
+                        </m:MaterialColumn>
                     </m:MaterialRow>
-                    <m:MaterialTextArea placeholder="Additional information" ui:field="information"></m:MaterialTextArea>
-                    <m:MaterialLabel text="Select suppliers" addStyleNames="{style.section}"></m:MaterialLabel>
-                    <g:HTMLPanel addStyleNames="{style.suppliersPanel}" ui:field="suppliers">
-                        <m:MaterialCheckBox text="Geocento"></m:MaterialCheckBox>
-                        <m:MaterialCheckBox text="KSAT"></m:MaterialCheckBox>
-                    </g:HTMLPanel>
                 </m:MaterialColumn>
                 <m:MaterialColumn grid="s12 m12 l6">
                     <m:MaterialLabel text="Draw or upload AoI" addStyleNames="{style.section}"></m:MaterialLabel>

@@ -58,12 +58,13 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
+    <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.panel}">
         <header>
             <!-- NavBar -->
-            <m:MaterialNavBar activates="sideNav" backgroundColor="grey" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
+            <m:MaterialNavBar activates="sideNav" backgroundColor="green" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
                 <m:MaterialNavSection flex="NONE">
-                    <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                    <m:MaterialImage height="64px" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
                     <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
                 </m:MaterialNavSection>
                 <m:MaterialNavSection float="RIGHT">

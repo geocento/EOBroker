@@ -17,13 +17,12 @@
         <design:MaterialCardImage>
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
-            <design:MaterialLabel truncate="true" fontSize="1.4em" ui:field="title"/>
+        <design:MaterialCardContent textColor="white" padding="10">
+            <design:MaterialLabel truncate="true" fontSize="1.2em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
-        <design:MaterialCardAction ui:field="action">
-            <design:MaterialLink iconType="ASSESSMENT" text="QUOTE" textColor="white" ui:field="quote"></design:MaterialLink>
-            <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
+        <design:MaterialCardAction ui:field="action" padding="10">
+            <design:MaterialLink text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

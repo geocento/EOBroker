@@ -100,11 +100,23 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
 
     private void submitRequest() {
         String imageType = requestImageryView.getImageType();
+        if(imageType.length() == 0) {
+            requestImageryView.displayFormError("Please provide a description of the imagery type");
+            return;
+        }
         Date start = requestImageryView.getStartDate();
         Date stop = requestImageryView.getStopDate();
+        if(start == null || stop == null) {
+            requestImageryView.displayFormError("Please provide a start and stop time");
+            return;
+        }
         String application = requestImageryView.getApplication();
         String additionalInformation = requestImageryView.getAdditionalInformation();
         List<ImageService> imageServices = requestImageryView.getSelectedServices();
+        if(imageServices.size() == 0) {
+            requestImageryView.displayFormError("Please select at least one supplier service");
+            return;
+        }
         ImageRequestDTO imageRequestDTO = new ImageRequestDTO();
         imageRequestDTO.setAoiWKT(AoIUtil.toWKT(aoi));
         imageRequestDTO.setImageType(imageType);

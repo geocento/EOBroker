@@ -18,6 +18,25 @@
             margin: 20px 0px 20px 30px;
         }
 
+        .image {
+            width: 100%;
+        }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+        }
+
+        .title {
+            font-size: 1.4em;
+            margin: 10px 0px;
+        }
+
         .editor {
             margin-bottom: 20px;
         }
@@ -32,22 +51,31 @@
             color: #9e9e9e;
         }
 
+        .tags {
+            font-size: 1em;
+            padding: 10px 0px;
+        }
+
+        .information {
+            cursor: pointer;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
         <g:HTMLPanel addStyleNames="{style.formPanel}">
-            <design:MaterialTitle textColor="blue-grey" marginBottom="20" title="Request quotation for the following product" ui:field="title"></design:MaterialTitle>
-            <design:MaterialCard backgroundColor="white" axis="HORIZONTAL" shadow="0">
-                <design:MaterialCardImage>
-                    <design:MaterialImage ui:field="image"></design:MaterialImage>
-                </design:MaterialCardImage>
-                <design:MaterialCardContent>
-                    <design:MaterialLabel fontSize="1.5em" ui:field="name"/>
-                    <design:MaterialLabel ui:field="description"></design:MaterialLabel>
-                </design:MaterialCardContent>
-                <design:MaterialCardAction ui:field="action">
-                    <design:MaterialLink iconType="INFO" text="MORE INFORMATION" ui:field="information"></design:MaterialLink>
-                </design:MaterialCardAction>
-            </design:MaterialCard>
+            <design:MaterialTitle textColor="blue-grey" marginBottom="20" title="Request quotation for the following product" addStyleNames="{style.information}" ui:field="title"></design:MaterialTitle>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                    <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m8 l8">
+                    <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="name"></design:MaterialLabel>
+                    <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                    <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags">
+                        <design:MaterialChip textColor="white" backgroundColor="grey" text="Information" letter="i" letterColor="white" letterBackgroundColor="red" ui:field="information"></design:MaterialChip>
+                    </g:HTMLPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
             <g:HTMLPanel>
                 <design:MaterialLabel text="Please fill in the form" textColor="blue-grey" marginTop="20" marginBottom="20" fontSize="1.4em"/>
                 <design:MaterialRow>

@@ -4,14 +4,15 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.FullViewImpl.Style">
-        .formPanel {
+        .panel {
             max-width: 960px;
             margin: 0px auto;
-            padding: 0px 20px;
+            padding: 50px 20px;
         }
 
         .section {
-            font-size: 1.5em;
+            margin: 1em 0;
+            font-size: 1.3em;
         }
 
         .subsection {
@@ -19,9 +20,7 @@
         }
 
         .image {
-            max-width: 200px;
-            height: 150px !important;
-            margin-right: 30px;
+            width: 100%;
         }
 
         .details {
@@ -39,27 +38,44 @@
             background: #c8ddd4;
         }
 
-        .title > p {
+        .description {
             overflow: hidden;
             line-height: 1.2em;
-            height: 3.6em;
+            height: 2.4em;
             /* TODO - find something more cross browser */
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             display: -webkit-box;
             -webkit-box-orient: vertical;
         }
 
+        .title {
+            font-size: 1.4em;
+            margin: 10px 0px;
+        }
+
+        .vertical {
+            -ms-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -webkit-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            padding: 10px;
+            text-transform: uppercase;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
-        <g:HTMLPanel addStyleNames="{style.formPanel}">
-            <g:HTMLPanel>
-                <design:MaterialImage float="LEFT" addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
-                <g:HTMLPanel>
-                    <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
-                    <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
-                </g:HTMLPanel>
-            </g:HTMLPanel>
-            <g:HTMLPanel addStyleNames="{style.details}" ui:field="details"></g:HTMLPanel>
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <design:MaterialRow>
+                    <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                        <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m8 l8">
+                        <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                        <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                        <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
+                    </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialRow addStyleNames="{style.details}" ui:field="details"></design:MaterialRow>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

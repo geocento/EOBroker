@@ -36,6 +36,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
         } else {
             templateView.setNotifications(notifications);
         }
+        // make sure page scrolls to the top
+        templateView.scrollToTop();
     }
 
     @Override
@@ -87,6 +89,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
 
     public void displayError(String message) {
         templateView.displayError(message);
+    }
+
+    public void displaySuccess(String message) {
+        templateView.displaySuccess(message);
     }
 
 }

@@ -1,9 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -30,8 +29,6 @@ public class ProductWidget extends Composite {
     @UiField
     MaterialLabel description;
     @UiField
-    MaterialLink quote;
-    @UiField
     MaterialLink information;
 
     public ProductWidget(ProductDTO productDTO) {
@@ -39,7 +36,9 @@ public class ProductWidget extends Composite {
         image.setUrl(productDTO.getImageUrl() == null || productDTO.getImageUrl().length() == 0 ? "./images/noImage.png" : productDTO.getImageUrl());
         title.setText(productDTO.getName());
         description.setText(productDTO.getDescription());
+/*
         quote.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDTO.getId())));
+*/
         information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId())));
     }
 }

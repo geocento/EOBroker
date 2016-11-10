@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .product {
+            height: 60px;
+            line-height: 60px;
+        }
+
+    </ui:style>
+    <g:HTMLPanel>
+        <design:MaterialLabel ui:field="title"></design:MaterialLabel>
+        <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
+        <design:MaterialTextBox length="250" placeholder="Enter product pitch" ui:field="pitch"></design:MaterialTextBox>
+    </g:HTMLPanel>
+</ui:UiBinder>

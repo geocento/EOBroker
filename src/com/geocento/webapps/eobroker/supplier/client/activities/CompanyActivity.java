@@ -2,10 +2,8 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.CompanyView;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,7 +12,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -79,7 +76,7 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                     companyView.setIconUrl(companyDTO.getIconURL());
                 }
 
-            }).call(ServicesUtil.assetsService).getCompany(null);
+            }).call(ServicesUtil.assetsService).getCompany();
         } catch (RequestException e) {
             e.printStackTrace();
         }
@@ -100,16 +97,19 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                 companyDTO.setFullDescription(companyView.getFullDescription());
                 companyDTO.setIconURL(companyView.getIconUrl());
                 try {
+                    displayLoading("Saving company...");
                     REST.withCallback(new MethodCallback<Void>() {
 
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            hideLoading();
+                            displayError("Error saving company...");
                         }
 
                         @Override
                         public void onSuccess(Method method, Void result) {
-                            MaterialToast.fireToast("Company changes saved");
+                            hideLoading();
+                            displaySuccess("Company saved");
                         }
 
                     }).call(ServicesUtil.assetsService).updateCompany(companyDTO);

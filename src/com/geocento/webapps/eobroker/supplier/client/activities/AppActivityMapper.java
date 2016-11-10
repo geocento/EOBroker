@@ -35,6 +35,10 @@ public class AppActivityMapper implements ActivityMapper {
             return new DatasetProviderActivity((DatasetProviderPlace) place, clientFactory);
         } else if(place instanceof ProductDatasetPlace) {
             return new ProductDatasetActivity((ProductDatasetPlace) place, clientFactory);
+        } else if(place instanceof SoftwarePlace) {
+            return new SoftwareActivity((SoftwarePlace) place, clientFactory);
+        } else if(place instanceof ProjectPlace) {
+            return new ProjectActivity((ProjectPlace) place, clientFactory);
         }
         return null;
     }

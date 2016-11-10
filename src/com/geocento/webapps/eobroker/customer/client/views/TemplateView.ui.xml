@@ -9,6 +9,7 @@
             @external nav-wrapper;
 
             .panel {
+                background: rgb(238, 238, 238);
             }
 
             .panel header, .panel main, .panel footer {
@@ -60,13 +61,14 @@
 
         </ui:style>
         <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+        <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
         <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
             <header>
                 <g:HTMLPanel ui:field="header">
                     <!-- NavBar -->
                     <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
                         <m:MaterialNavSection>
-                            <m:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                            <m:MaterialImage height="64px" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
                             <m:MaterialLabel visible="false" text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
                             <m:MaterialLink visible="false" text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
                         </m:MaterialNavSection>
@@ -100,7 +102,7 @@
             </header>
             <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">
             </m:MaterialContainer>
-            <m:MaterialFooter backgroundColor="blue-grey">
+            <m:MaterialFooter backgroundColor="blue-grey" ui:field="footer">
                 <m:MaterialRow>
                     <m:MaterialColumn grid="s12 m6 l6">
                         <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>

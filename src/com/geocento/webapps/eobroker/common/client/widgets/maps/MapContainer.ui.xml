@@ -19,7 +19,7 @@
         <!-- FAB -->
         <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="60" addStyleNames="{style.fabPanel}" ui:field="editButton">
             <design:MaterialTooltip text="Create" position="LEFT">
-                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE"/>
+                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE" opacity="1.0"/>
             </design:MaterialTooltip>
             <design:MaterialFABList>
                 <design:MaterialTooltip text="Draw polygon" position="LEFT">

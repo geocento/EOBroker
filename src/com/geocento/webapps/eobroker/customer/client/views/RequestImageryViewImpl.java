@@ -11,6 +11,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -120,9 +121,30 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     @Override
     public void setSuppliers(List<ImageService> imageServices) {
         suppliers.clear();
-        for(ImageService imageService : imageServices) {
+        for(final ImageService imageService : imageServices) {
+/*
+            MaterialPanel materialPanel = new MaterialPanel();
+            MaterialLabelIcon labelIcon = new MaterialLabelIcon();
+            labelIcon.setImageHeight("16px");
+            labelIcon.setImageUrl(imageService.getCompany().getIconURL());
+            labelIcon.setText("by " + imageService.getCompany().getName());
+            labelIcon.getElement().getStyle().setFloat(Style.Float.RIGHT);
+            labelIcon.addDomHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(), imageService.getCompany().getId() + ""))), "_blank", null);
+                }
+            }, ClickEvent.getType());
+            labelIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+            materialPanel.add(labelIcon);
             MaterialCheckBox materialCheckBox = new MaterialCheckBox();
             materialCheckBox.setText(imageService.getName());
+            materialCheckBox.setObject(imageService);
+            materialPanel.add(materialCheckBox);
+            suppliers.add(materialPanel);
+*/
+            MaterialCheckBox materialCheckBox = new MaterialCheckBox("<span style='display: inline;'><b>" + imageService.getName() + "</b> " +
+                    "by <img style='max-height: 24px; vertical-align: middle;' src='" + imageService.getCompany().getIconURL() + "'/> <b>" + imageService.getCompany().getName() + "</b></span>");
             materialCheckBox.setObject(imageService);
             suppliers.add(materialCheckBox);
         }
@@ -158,11 +180,21 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
         List<ImageService> selectedServices = new ArrayList<ImageService>();
         for(int index = 0; index < suppliers.getWidgetCount(); index++) {
             Widget widget = suppliers.getWidget(index);
-            if(widget instanceof MaterialCheckBox) {
-                if(((MaterialCheckBox) widget).getValue()) {
+            if (widget instanceof MaterialCheckBox) {
+                if (((MaterialCheckBox) widget).getValue()) {
                     selectedServices.add((ImageService) ((MaterialCheckBox) widget).getObject());
                 }
             }
+/*
+            if(widget instanceof MaterialPanel) {
+                widget = ((MaterialPanel) widget).getWidget(1);
+                if (widget instanceof MaterialCheckBox) {
+                    if (((MaterialCheckBox) widget).getValue()) {
+                        selectedServices.add((ImageService) ((MaterialCheckBox) widget).getObject());
+                    }
+                }
+            }
+*/
         }
         return selectedServices;
     }
@@ -191,6 +223,11 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     @Override
     public String getApplication() {
         return application.getSelectedItemText();
+    }
+
+    @Override
+    public void displayFormError(String message) {
+        Window.alert(message);
     }
 
     @Override

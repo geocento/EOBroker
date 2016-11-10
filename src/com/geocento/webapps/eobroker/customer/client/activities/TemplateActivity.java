@@ -36,7 +36,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     private String text;
 
     private int lastCall = 0;
-    private Category category = null;
+    protected Category category = null;
     protected AoI aoi;
 
     public TemplateActivity(ClientFactory clientFactory) {
@@ -65,6 +65,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         templateView.setPresenter(this);
         // reset some values
         templateView.setSearchText(null);
+        // make sure page scrolls to the top
+        templateView.scrollToTop();
     }
 
     private void loadUserOrders() {
@@ -169,12 +171,17 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         } else {
             // TODO - move to the server side
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
+/*
             if(category == null) {
                 for(Category suggestionCategory : Category.values()) {
                     suggestions.addAll(getSuggestion(suggestionCategory));
                 }
             } else {
                 suggestions.addAll(getSuggestion(category));
+            }
+*/
+            for(Category suggestionCategory : Category.values()) {
+                suggestions.addAll(getSuggestion(suggestionCategory));
             }
             templateView.displayListSuggestions(suggestions);
         }
@@ -190,15 +197,12 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             case products:
                 suggestions.add(new Suggestion("Browse products", Category.products, "browse::"));
                 break;
-            case imagery:
-                suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
-                suggestions.add(new Suggestion("Request quotation for imagery", Category.imagery, "request::"));
-                break;
             case companies:
                 suggestions.add(new Suggestion("Browse companies", Category.companies, "browse::"));
                 break;
-            case datasets:
-                suggestions.add(new Suggestion("Browse datasets", Category.datasets, "browse::"));
+            case imagery:
+                suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
+                suggestions.add(new Suggestion("Request quotation for imagery", Category.imagery, "request::"));
                 break;
         }
         return suggestions;
@@ -232,7 +236,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                 if (action.contentEquals("product")) {
                     searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
                 } else if (action.contentEquals("browse")) {
-                    token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                    token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.products.toString();
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
@@ -257,7 +261,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                 if (action.contentEquals("company")) {
                     searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
                 } else if (action.contentEquals("browse")) {
-                    token += SearchPagePlace.TOKENS.browse.toString() + "=" + parameters;
+                    token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.companies.toString();
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }

@@ -111,19 +111,19 @@ public class ServicesActivity extends TemplateActivity implements ServicesView.P
                 productServiceDTO.setFullDescription(servicesView.getFullDescription());
                 productServiceDTO.setApiURL(servicesView.getAPIUrl().getText().length() > 0 ? servicesView.getAPIUrl().getText() : null);
                 productServiceDTO.setSampleWmsUrl(servicesView.getSampleWmsUrl().getText().length() > 0 ? servicesView.getSampleWmsUrl().getText() : null);
-                servicesView.displayLoading("Saving product service");
+                displayLoading("Saving product service");
                 try {
                     REST.withCallback(new MethodCallback<Void>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            servicesView.hideLoading();
-                            servicesView.displayError("Could not save product service");
+                            hideLoading();
+                            displayError("Could not save product service");
                         }
 
                         @Override
                         public void onSuccess(Method method, Void response) {
-                            servicesView.hideLoading();
-                            servicesView.displaySuccess("Product service saved");
+                            hideLoading();
+                            displaySuccess("Product service saved");
                         }
 
                     }).call(ServicesUtil.assetsService).updateProductService(productServiceDTO);

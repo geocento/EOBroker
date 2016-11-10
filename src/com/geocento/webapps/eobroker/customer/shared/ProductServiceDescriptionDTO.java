@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
+import java.util.List;
+
 /**
  * Created by thomas on 06/06/2016.
  */
@@ -17,6 +19,7 @@ public class ProductServiceDescriptionDTO {
     String fullDescription;
     CompanyDTO company;
     boolean hasFeasibility;
+    List<ProductServiceDTO> suggestedServices;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -99,5 +102,13 @@ public class ProductServiceDescriptionDTO {
 
     public void setHasFeasibility(boolean hasFeasibility) {
         this.hasFeasibility = hasFeasibility;
+    }
+
+    public List<ProductServiceDTO> getSuggestedServices() {
+        return suggestedServices;
+    }
+
+    public void setSuggestedServices(List<ProductServiceDTO> suggestedServices) {
+        this.suggestedServices = suggestedServices;
     }
 }

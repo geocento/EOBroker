@@ -16,12 +16,14 @@ public interface StyleResources extends ClientBundle {
     public interface Style extends CssResource {
 
         String highlighted();
+
+        String slimScrollbar();
     }
 
     @Source({"Style.css"})
     Style style();
 
-    @Source("images/eobe-logo.jpg")
+    @Source("images/eobe-logo.png")
     ImageResource logoEOBroker();
 
 }

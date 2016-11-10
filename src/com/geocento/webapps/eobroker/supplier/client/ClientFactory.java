@@ -30,4 +30,8 @@ public interface ClientFactory {
     DatasetProviderView getDatasetProviderView();
 
     ProductDatasetView getProductDatasetView();
+
+    SoftwareView getSoftwareView();
+
+    ProjectView getProjectView();
 }

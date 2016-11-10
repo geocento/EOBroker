@@ -59,7 +59,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/companies/")
     @Produces("application/json")
-    public CompanyDTO getCompany(@PathParam("id") Long id) throws RequestException;
+    public CompanyDTO getCompany() throws RequestException;
 
     @PUT
     @Path("/assets/companies/")
@@ -106,4 +106,38 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     Long saveProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException;
 
+    @GET
+    @Path("/assets/software/")
+    @Produces("application/json")
+    List<SoftwareDTO> listSoftwares() throws RequestException;
+
+    @GET
+    @Path("/assets/software/{id}")
+    @Produces("application/json")
+    SoftwareDTO getSoftware(@PathParam("id") Long id) throws RequestException;
+
+    @POST
+    @Path("/assets/software/")
+    @Produces("application/json")
+    Long saveSoftware(SoftwareDTO softwareDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/project/")
+    @Produces("application/json")
+    List<ProjectDTO> listProjects() throws RequestException;
+
+    @GET
+    @Path("/assets/project/{id}")
+    @Produces("application/json")
+    ProjectDTO getProject(@PathParam("id") Long id) throws RequestException;
+
+    @POST
+    @Path("/assets/project/")
+    @Produces("application/json")
+    Long saveProject(ProjectDTO projectDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/offer/")
+    @Produces("application/json")
+    OfferDTO getOffer() throws RequestException;
 }

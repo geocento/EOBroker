@@ -7,9 +7,7 @@ import com.geocento.webapps.eobroker.supplier.client.events.*;
 import com.geocento.webapps.eobroker.supplier.client.places.*;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.OfferDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -22,7 +20,6 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -53,6 +50,29 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         try {
+            REST.withCallback(new MethodCallback<OfferDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, OfferDTO response) {
+                    companyDTO = response.getCompanyDTO();
+                    dashboardView.setCompany(companyDTO);
+                    dashboardView.setServices(response.getProductServiceDTOs());
+                    dashboardView.setProductDatasets(response.getProductDatasetDTOs());
+                    dashboardView.setSoftwares(response.getSoftwareDTOs());
+                    dashboardView.setProjects(response.getProjectDTOs());
+                    dashboardView.setDatasets(response.getDatasetProviderDTOs());
+                }
+
+            }).call(ServicesUtil.assetsService).getOffer();
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
+/*
+        try {
             REST.withCallback(new MethodCallback<List<ProductServiceDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -82,7 +102,7 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
                     dashboardView.setCompany(companyDTO);
                 }
 
-            }).call(ServicesUtil.assetsService).getCompany(null);
+            }).call(ServicesUtil.assetsService).getCompany();
         } catch (RequestException e) {
             e.printStackTrace();
         }
@@ -120,6 +140,8 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
         } catch (RequestException e) {
             e.printStackTrace();
         }
+
+*/
     }
 
     @Override
@@ -170,6 +192,20 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
             @Override
             public void onClick(ClickEvent event) {
                 clientFactory.getPlaceController().goTo(new ProductDatasetPlace());
+            }
+        }));
+
+        handlers.add(dashboardView.getAddSoftware().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new SoftwarePlace());
+            }
+        }));
+
+        handlers.add(dashboardView.getAddProject().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ProjectPlace());
             }
         }));
 

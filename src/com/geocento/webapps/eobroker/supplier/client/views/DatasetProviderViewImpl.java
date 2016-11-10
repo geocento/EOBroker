@@ -90,19 +90,4 @@ public class DatasetProviderViewImpl extends Composite implements DatasetProvide
         return template;
     }
 
-    @Override
-    public void setLoading(String message) {
-        template.setLoading(message);
-    }
-
-    @Override
-    public void setLoadingError(String message) {
-        template.setLoading(message);
-    }
-
-    @Override
-    public void hideLoading(String message) {
-        template.hideLoading();
-    }
-
 }
