@@ -25,23 +25,30 @@
     <views:TemplateView titleText="Software" ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
         <design:MaterialRow>
-<!--
-            <design:MaterialIcon text="Icon" textColor="black" iconType="IMAGE"></design:MaterialIcon>
--->
-            <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
-            <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-            <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
-            <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
-            <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
-            <design:MaterialLink text="Software supported products" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-            <design:MaterialPanel>
-                <design:MaterialRow ui:field="products">
-                </design:MaterialRow>
-                <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
-            </design:MaterialPanel>
-            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-            </g:HTMLPanel>
+            <design:MaterialColumn grid="s12">
+                <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Software supported products" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel>
+                    <design:MaterialRow ui:field="products">
+                    </design:MaterialRow>
+                    <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
         </design:MaterialRow>
+        <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+            <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+        </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

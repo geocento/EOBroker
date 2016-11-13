@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -362,7 +363,7 @@ public class FullViewImpl extends Composite implements FullView {
             product.setText(productDTO.getName());
             product.setBackgroundColor("grey");
             product.setTextColor("white");
-            product.setUrl(productDTO.getImageUrl());
+            product.setUrl(productDTO.getImageUrl() == null ? "./images/noImage.png" : productDTO.getImageUrl());
             product.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -408,22 +409,27 @@ public class FullViewImpl extends Composite implements FullView {
         });
         materialColumn.add(mapContainer);
         addTab(materialTab, tabsPanel, "Features", featuresPanel, size);
-        // create tab panel for services
-        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
         // add access panel
         {
             MaterialPanel accessPanel = new MaterialPanel();
             accessPanel.add(createSubsection("Methods to access the data"));
             for(DatasetAccess datasetAccess : productDatasetDescriptionDTO.getDatasetAccesses()) {
-                accessPanel.add(new DataAccessWidget(datasetAccess));
+                DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, !productDatasetDescriptionDTO.isCommercial());
+                dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
+                dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
+                accessPanel.add(dataAccessWidget);
             }
             addTab(materialTab, tabsPanel, "Access", accessPanel, size);
         }
+        // add terms and conditions tab panel
+        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+        // now add the tabs panel
         details.add(tabsPanel);
         materialTab.selectTab("fullViewTab0");
         addColumnSection("You might also be interested in...");
         MaterialRow materialRow = new MaterialRow();
+        details.add(materialRow);
         List<ProductDatasetDTO> suggestedDatasets = productDatasetDescriptionDTO.getSuggestedDatasets();
         if(suggestedDatasets == null || suggestedDatasets.size() == 0) {
             addColumnLine(new MaterialLabel("No suggestions..."));
@@ -618,6 +624,7 @@ public class FullViewImpl extends Composite implements FullView {
 
     private MaterialTab createTabs(MaterialPanel materialPanel) {
         MaterialTab materialTab = new MaterialTab();
+        materialTab.setBackgroundColor("transparent");
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         materialPanel.add(materialColumn);
         materialColumn.add(materialTab);

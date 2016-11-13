@@ -8,7 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialAnchorButton;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 
@@ -22,18 +22,37 @@ public class DataAccessWidget extends Composite {
 
     private static DataAccessWidgetUiBinder ourUiBinder = GWT.create(DataAccessWidgetUiBinder.class);
     @UiField
-    MaterialIcon image;
+    MaterialLink image;
     @UiField
-    MaterialLink action;
+    MaterialAnchorButton action;
     @UiField
     MaterialLabel pitch;
 
-    public DataAccessWidget(DatasetAccess datasetAccess) {
+    public DataAccessWidget(DatasetAccess datasetAccess, boolean isFree) {
         initWidget(ourUiBinder.createAndBindUi(this));
         image.setIconType(datasetAccess.getAccessType() == AccessType.download ? IconType.ATTACH_FILE : IconType.ACCESS_ALARM);
         pitch.setText(datasetAccess.getPitch());
-        action.setIconType(datasetAccess.getAccessType() == AccessType.download ? IconType.FILE_DOWNLOAD : IconType.ACCESS_ALARM);
-        action.setHref(datasetAccess.getUrl());
+        String text = "Unknown";
+        if(isFree) {
+            switch (datasetAccess.getAccessType()) {
+                case download:
+                    text = "Download File";
+                    break;
+                case webapplication:
+                    text = "Open URL";
+                    break;
+                case wms:
+                case wfs:
+                case wcs:
+                    text = "View in map";
+                    break;
+                case api:
+                    text = "Copy URL";
+                    break;
+            }
+        }
+        action.setText(text);
+        action.setHref(datasetAccess.getUri());
     }
 
 }

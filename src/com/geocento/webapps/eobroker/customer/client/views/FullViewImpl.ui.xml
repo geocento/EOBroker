@@ -34,8 +34,12 @@
         }
 
         .tabPanel {
-            padding: 20px;
+            margin-bottom: 50px;
+            padding: 50px 20px;
+/*
             background: #c8ddd4;
+*/
+            border-bottom: 1px solid #c8ddd4;
         }
 
         .description {

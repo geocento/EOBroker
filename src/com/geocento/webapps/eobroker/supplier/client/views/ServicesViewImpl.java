@@ -1,28 +1,21 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
-import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
-import gwt.material.design.client.base.SearchObject;
-import gwt.material.design.client.events.SearchFinishEvent;
-import gwt.material.design.client.ui.*;
-import org.fusesource.restygwt.client.Method;
-import org.fusesource.restygwt.client.MethodCallback;
-import org.fusesource.restygwt.client.REST;
-
-import java.util.List;
+import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialTextArea;
+import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialTitle;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -52,7 +45,7 @@ public class ServicesViewImpl extends Composite implements ServicesView {
     @UiField
     MaterialRichEditor fullDescription;
     @UiField
-    MaterialSearch product;
+    ProductTextBox product;
     @UiField(provided = true)
     TemplateView template;
     @UiField
@@ -66,33 +59,6 @@ public class ServicesViewImpl extends Composite implements ServicesView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        product.addKeyUpHandler(new KeyUpHandler() {
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                REST.withCallback(new MethodCallback<List<ProductDTO>>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, List<ProductDTO> response) {
-                        product.setListSearches(ListUtil.mutate(response, new ListUtil.Mutate<ProductDTO, SearchObject>() {
-                            @Override
-                            public SearchObject mutate(ProductDTO productDTO) {
-                                return new SearchObject(productDTO.getName(), "", productDTO);
-                            }
-                        }));
-                    }
-                }).call(ServicesUtil.assetsService).findProducts(product.getValue());
-            }
-        });
-        product.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
-            @Override
-            public void onSearchFinish(SearchFinishEvent event) {
-
-            }
-        });
     }
 
     @Override
@@ -157,13 +123,12 @@ public class ServicesViewImpl extends Composite implements ServicesView {
 
     @Override
     public ProductDTO getSelectProduct() {
-        return (ProductDTO) product.getSelectedObject().getO();
+        return product.getProduct();
     }
 
     @Override
     public void setSelectedProduct(ProductDTO productDTO) {
-        product.setSelectedObject(productDTO == null ? null : new SearchObject(productDTO.getName(), "", productDTO));
-        product.setText(productDTO.getName());
+        product.setProduct(productDTO);
     }
 
     @Override

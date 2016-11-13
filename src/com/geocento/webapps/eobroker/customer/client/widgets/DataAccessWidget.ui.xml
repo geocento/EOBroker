@@ -8,21 +8,22 @@
             overflow: hidden;
             line-height: 1.2em;
             height: 2.4em;
+            font-size: 1.2em;
             /* TODO - find something more cross browser */
             -webkit-line-clamp: 2;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            color: #ccc;
+            color: #333;
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="white" axis="HORIZONTAL">
-        <design:MaterialCardImage>
-            <design:MaterialIcon size="LARGE" ui:field="image"/>
-        </design:MaterialCardImage>
-        <design:MaterialCardContent>
-            <design:MaterialLink float="RIGHT" ui:field="action"></design:MaterialLink>
-            <design:MaterialLabel addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialLabel>
-        </design:MaterialCardContent>
-    </design:MaterialCard>
+    <design:MaterialPanel height="6.4em" backgroundColor="white" padding="0" margin="0">
+        <design:MaterialPanel height="100%" backgroundColor="green" float="LEFT">
+            <design:MaterialLink iconSize="LARGE" backgroundColor="green" textColor="white" ui:field="image"/>
+        </design:MaterialPanel>
+        <design:MaterialPanel height="100%" padding="10">
+            <design:MaterialAnchorButton float="RIGHT" target="_blank" ui:field="action"></design:MaterialAnchorButton>
+            <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" ui:field="pitch"></design:MaterialLabel>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
 </ui:UiBinder>

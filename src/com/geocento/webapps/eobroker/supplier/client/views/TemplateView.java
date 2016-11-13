@@ -95,7 +95,7 @@ public class TemplateView extends Composite implements HasWidgets {
     }
 
     public void displayError(String message) {
-        MaterialToast.fireToast(message, "green darken-1");
+        MaterialToast.fireToast(message, "red darken-1");
     }
 
     public void displaySuccess(String message) {

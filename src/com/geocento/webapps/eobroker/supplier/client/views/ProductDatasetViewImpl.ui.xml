@@ -21,27 +21,94 @@
             margin: 20px 0px;
         }
 
+        .message {
+            margin: 20px 0px;
+        }
+
+        .product {
+            height: 60px;
+            line-height: 60px;
+            margin-bottom: 20px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
         <design:MaterialRow>
-<!--
-            <design:MaterialIcon text="Icon" textColor="black" iconType="IMAGE"></design:MaterialIcon>
--->
-            <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
-            <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-            <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
-            <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
-            <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
-            <design:MaterialLink text="Dataset product" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-            <widgets:ProductTextBox ui:field="product"></widgets:ProductTextBox>
-            <design:MaterialLink text="Dataset extent" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-            <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
-            <design:MaterialTextBox placeholder="URI" type="URL" iconType="WEB" ui:field="uri"/>
-            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-            </g:HTMLPanel>
+            <design:MaterialColumn grid="s12">
+                <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Service type" textColor="black" iconType="MONETIZATION_ON" addStyleNames="{style.subtitle}"/>
+                <design:MaterialListBox ui:field="serviceType"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Dataset product" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Dataset features" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel ui:field="features">
+                    <design:MaterialLabel>TODO, add list of features from product definition</design:MaterialLabel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Dataset extent" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full data access" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel>
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="dataAccessMessage"></design:MaterialLabel>
+                    <design:MaterialRow ui:field="dataAccess"></design:MaterialRow>
+                    <design:MaterialButton text="Add data access" ui:field="addDataAccess"></design:MaterialButton>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Samples" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel>
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
+                    <design:MaterialRow ui:field="samples"></design:MaterialRow>
+                    <design:MaterialRow>
+                        <design:MaterialColumn grid="s12 m4 l4">
+                            <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn>
+                            <design:MaterialLabel>Or upload to server</design:MaterialLabel>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12 m4 l4">
+                            <c:MaterialFileUploader acceptedFiles="image/*" url="" height="auto" shadow="1" padding="20" ui:field="sampleUploader">
+                                <design:MaterialListBox ui:field="type"></design:MaterialListBox>
+                                <design:MaterialTextBox placeholder="Name of resource" ui:field="resourceName"></design:MaterialTextBox>
+                                <design:MaterialRow>
+                                    <design:MaterialColumn>
+                                        <design:MaterialLabel>Create sample</design:MaterialLabel>
+                                    </design:MaterialColumn>
+                                    <design:MaterialColumn>
+                                        <design:MaterialButton backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
+                                    </design:MaterialColumn>
+                                </design:MaterialRow>
+                            </c:MaterialFileUploader>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
         </design:MaterialRow>
     </views:TemplateView>
 </ui:UiBinder>

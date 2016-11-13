@@ -12,11 +12,11 @@ public class DatasetAccess {
     @GeneratedValue
     Long id;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     AccessType accessType;
 
     @Column(length = 1000)
-    String url;
+    String uri;
 
     @Column(length = 1000)
     String pitch;
@@ -40,12 +40,12 @@ public class DatasetAccess {
         this.accessType = accessType;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUri() {
+        return uri;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getPitch() {

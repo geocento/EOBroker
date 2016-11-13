@@ -1,6 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.ServiceType;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+
+import java.util.List;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -15,10 +20,11 @@ public class ProductDatasetDTO {
     String description;
     String fullDescription;
     String extent;
-    String email;
     String website;
-    String apiUrl;
-    String sampleWmsUrl;
+    ServiceType serviceType;
+    List<DatasetAccess> datasetAccesses;
+    List<DatasetAccess> samples;
+    List<FeatureDescription> features;
 
     public ProductDatasetDTO() {
     }
@@ -55,14 +61,6 @@ public class ProductDatasetDTO {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
@@ -71,20 +69,12 @@ public class ProductDatasetDTO {
         this.imageUrl = imageUrl;
     }
 
-    public String getEmail() {
-        return email;
+    public String getDescription() {
+        return description;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getFullDescription() {
@@ -103,19 +93,43 @@ public class ProductDatasetDTO {
         this.extent = extent;
     }
 
-    public String getApiUrl() {
-        return apiUrl;
+    public String getWebsite() {
+        return website;
     }
 
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
-    public String getSampleWmsUrl() {
-        return sampleWmsUrl;
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 
-    public void setSampleWmsUrl(String sampleWmsUrl) {
-        this.sampleWmsUrl = sampleWmsUrl;
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    public List<DatasetAccess> getDatasetAccesses() {
+        return datasetAccesses;
+    }
+
+    public void setDatasetAccesses(List<DatasetAccess> datasetAccesses) {
+        this.datasetAccesses = datasetAccesses;
+    }
+
+    public List<DatasetAccess> getSamples() {
+        return samples;
+    }
+
+    public void setSamples(List<DatasetAccess> samples) {
+        this.samples = samples;
+    }
+
+    public List<FeatureDescription> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<FeatureDescription> features) {
+        this.features = features;
     }
 }

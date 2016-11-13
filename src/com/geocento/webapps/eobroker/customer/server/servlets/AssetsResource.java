@@ -228,6 +228,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
             productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
             productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            productDatasetDescriptionDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             List<ProductDataset> suggestedDatasets = new ArrayList<ProductDataset>(productDataset.getProduct().getProductDatasets());
             suggestedDatasets.remove(productDataset);
             productDatasetDescriptionDTO.setSuggestedDatasets(ListUtil.mutate(suggestedDatasets, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {

@@ -91,9 +91,13 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         productDatasetView.getName().setText(productDatasetDTO.getName());
         productDatasetView.setIconUrl(productDatasetDTO.getImageUrl());
         productDatasetView.getDescription().setText(productDatasetDTO.getDescription());
+        productDatasetView.setServiceType(productDatasetDTO.getServiceType());
         productDatasetView.setFullDescription(productDatasetDTO.getFullDescription());
         productDatasetView.setSelectedProduct(productDatasetDTO.getProduct());
         productDatasetView.setExtent(AoIUtil.fromWKT(productDatasetDTO.getExtent()));
+        productDatasetView.setDataAccess(productDatasetDTO.getDatasetAccesses());
+        productDatasetView.setSampleDataAccess(productDatasetDTO.getSamples());
+        productDatasetView.setFeatures(productDatasetDTO.getFeatures());
     }
 
     @Override
@@ -109,6 +113,9 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setFullDescription(productDatasetView.getFullDescription());
                 productDatasetDTO.setProduct(productDatasetView.getSelectProduct());
                 productDatasetDTO.setExtent(AoIUtil.toWKT(productDatasetView.getExtent()));
+                productDatasetDTO.setDatasetAccesses(productDatasetView.getDataAccesses());
+                productDatasetDTO.setSamples(productDatasetView.getSamples());
+                productDatasetDTO.setFeatures(productDatasetView.getFeatures());
                 displayLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {

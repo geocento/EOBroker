@@ -36,15 +36,17 @@ public class ProductDataset {
     @Convert(converter = GeometryConverter.class)
     String extent;
 
-    boolean commercial;
+    @Enumerated(EnumType.STRING)
+    ServiceType serviceType;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> datasetAccesses;
 
-    @OneToMany
+    @JoinTable(name = "productdataset_samples")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> samples;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<FeatureDescription> features;
 
     @Column(length = 1000)
@@ -52,12 +54,6 @@ public class ProductDataset {
 
     @Column(length = 1000)
     String website;
-
-    @Column(length = 1000)
-    String apiUrl;
-
-    @Column(length = 1000)
-    String sampleWmsUrl;
 
     public ProductDataset() {
     }
@@ -142,12 +138,12 @@ public class ProductDataset {
         this.extent = extent;
     }
 
-    public boolean getCommercial() {
-        return commercial;
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 
-    public void setCommercial(boolean commercial) {
-        this.commercial = commercial;
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
     }
 
     public List<DatasetAccess> getDatasetAccesses() {
@@ -174,19 +170,4 @@ public class ProductDataset {
         this.features = features;
     }
 
-    public String getApiUrl() {
-        return apiUrl;
-    }
-
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
-    }
-
-    public String getSampleWmsUrl() {
-        return sampleWmsUrl;
-    }
-
-    public void setSampleWmsUrl(String sampleWmsUrl) {
-        this.sampleWmsUrl = sampleWmsUrl;
-    }
 }
