@@ -44,19 +44,34 @@
 
             .textSearch {
                 flex: 1 1 auto;
-                height: 100%;
+                line-height: 54px !important;
+                margin: 5px auto !important;
+                max-width: 900px;
+                background: #809dab !important;
+                border-radius: 3px;
+            }
+
+            .textSearch i {
+                height: 54px !important;
+                line-height: 54px !important;
             }
 
             .textSearch > input {
                 display: inline-block !important;
                 color: white;
             }
+
             .textSearch > input:focus {
-                color: black;
+                background: #809dab !important;
+                color: white !important;
             }
 
             .categories {
                 padding-left: 20px;
+            }
+
+            .title {
+                border-left: 1px solid white;
             }
 
         </ui:style>
@@ -68,8 +83,8 @@
                     <!-- NavBar -->
                     <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
                         <m:MaterialNavSection>
-                            <m:MaterialImage height="64px" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
-                            <m:MaterialLabel visible="false" text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                            <m:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                            <m:MaterialLabel visible="true" text="" display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
                             <m:MaterialLink visible="false" text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
                         </m:MaterialNavSection>
                         <m:MaterialNavSection float="RIGHT">
@@ -91,7 +106,7 @@
                             </m:MaterialTooltip>
                         </m:MaterialNavSection>
                         <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
-                            <widgets:MaterialSuggestion height="60px" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
+                            <widgets:MaterialSuggestion layoutPosition="RELATIVE" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
                     <m:MaterialDropDown activator="categories" constrainWidth="true" ui:field="categoriesDropdown">

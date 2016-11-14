@@ -7,6 +7,8 @@ var arcgisMap = function(callback) {
     var self = this;
 
     require([
+        "esri/config",
+        "esri/urlUtils",
         "esri/map",
         "esri/toolbars/draw",
         "esri/graphic",
@@ -18,9 +20,16 @@ var arcgisMap = function(callback) {
         "esri/symbols/SimpleFillSymbol",
         "esri/Color",
         'esri/layers/WMSLayerInfo'
-    ], function(Map, Draw, Graphic,
+    ], function(esriConfig, urlUtils, Map, Draw, Graphic,
                 Polygon, Extent, WMSLayer,
                 SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color) {
+
+/*
+        urlUtils.addProxyRule({
+            urlPrefix: "192.168.92.100:8088",
+            proxyUrl: "/proxy.jsp"
+        });
+*/
 
         self.createDraw = function(map) {
             return new Draw(map);

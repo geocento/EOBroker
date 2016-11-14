@@ -40,4 +40,6 @@ public interface ClientFactory {
     ImagesResponseView getImagesResponseView();
 
     ConversationView getConversationView();
+
+    VisualisationView getVisualisationView();
 }

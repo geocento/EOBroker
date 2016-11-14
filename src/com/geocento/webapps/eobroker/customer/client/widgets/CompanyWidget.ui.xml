@@ -7,7 +7,7 @@
             line-height: 1.2em;
             height: 2.4em;
             /* TODO - find something more cross browser */
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             color: #ccc;
@@ -22,7 +22,7 @@
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction padding="10">
-            <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
+            <design:MaterialLink text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

@@ -40,7 +40,7 @@
         }
 
     </ui:style>
-    <views:TemplateView ui:field="template">
+    <views:TemplateView titleText="Home" ui:field="template">
 <!--
         <views:navBar>
             <m:MaterialLink text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>

@@ -1,0 +1,40 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+        >
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.VisualisationViewImpl.Style">
+
+        .displayPanel {
+
+        }
+
+        .providers {
+
+        }
+
+        .navOpened main, .navOpened footer {
+            padding-left: 450px;
+        }
+
+    </ui:style>
+    <views:TemplateView titleText="View datasets" footer="false" ui:field="template">
+        <views:header>
+            <widgets:MaterialSideNav width="450" design:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="resourcesBar">
+                <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
+                    <design:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></design:MaterialLink>
+                    <design:MaterialDropDown activator="provider" ui:field="providerDropdown">
+                    </design:MaterialDropDown>
+                </sideprofile:MaterialSideProfile>
+                <design:MaterialRow padding="0" margin="0" overflow="HIDDEN" ui:field="resourcePanel">
+                </design:MaterialRow>
+            </widgets:MaterialSideNav>
+        </views:header>
+        <g:HTMLPanel addStyleNames="{style.displayPanel}" ui:field="displayPanel">
+            <maps:MapContainer width="100%" height="100%" edit="false" ui:field="mapContainer"></maps:MapContainer>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

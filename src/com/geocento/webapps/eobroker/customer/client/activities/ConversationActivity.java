@@ -125,6 +125,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                             public void onSuccess(Method method, ConversationDTO response) {
                                 hideLoading();
                                 conversationDTO = response;
+                                History.newItem(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId() + ""), false);
                                 saveMessage();
                             }
                         }).call(ServicesUtil.ordersService).createConversation(createConversationDTO);

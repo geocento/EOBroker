@@ -5,7 +5,7 @@
         .description {
             overflow: hidden;
             line-height: 1em;
-            height: 4em;
+            height: 3em;
             /* TODO - find something more cross browser */
             -webkit-line-clamp: 3;
             display: -webkit-box;

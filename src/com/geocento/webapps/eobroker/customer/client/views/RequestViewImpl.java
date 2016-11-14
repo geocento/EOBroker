@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
+import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
@@ -17,7 +18,6 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
-import gwt.material.design.addins.client.avatar.MaterialAvatar;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
@@ -54,7 +54,7 @@ public class RequestViewImpl extends Composite implements RequestView {
     @UiField
     MaterialTextArea message;
     @UiField
-    MaterialColumn userImage;
+    UserWidget userImage;
     @UiField
     protected
     MaterialRow tabs;
@@ -92,9 +92,12 @@ public class RequestViewImpl extends Composite implements RequestView {
             }
         });
 
+/*
         MaterialAvatar materialAvatar = new MaterialAvatar(Customer.getLoginInfo().getUserName());
         materialAvatar.setWidth("100%");
         userImage.add(materialAvatar);
+*/
+        userImage.setUser(Customer.getLoginInfo().getUserName());
     }
 
     @Override
@@ -159,20 +162,16 @@ public class RequestViewImpl extends Composite implements RequestView {
     }
 
     @Override
-    public void addMessage(String imageUrl, boolean isCustomer, String message, Date date) {
+    public void addMessage(String userName, boolean isCustomer, String message, Date date) {
         MaterialRow materialRow = new MaterialRow();
         materialRow.setMarginBottom(0);
         messages.add(materialRow);
-        String colour = isCustomer ? "blue accent-1" : "green accent-1";
-        MaterialAvatar materialAvatar = new MaterialAvatar();
-        materialAvatar.setBackgroundColor(colour);
-        materialAvatar.setMarginTop(8);
-        materialAvatar.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
-        materialAvatar.setWidth("40px");
-        materialAvatar.setHeight("40px");
-        materialAvatar.setShadow(1);
-        materialAvatar.setCircle(true);
-        materialRow.add(materialAvatar);
+        String colour = "white";
+        UserWidget userWidget = new UserWidget(userName);
+        userWidget.setMarginTop(8);
+        userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
+        userWidget.setSize(40);
+        materialRow.add(userWidget);
         MaterialBubble materialBubble = new MaterialBubble();
         materialBubble.setBackgroundColor(colour);
         materialBubble.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
@@ -190,8 +189,6 @@ public class RequestViewImpl extends Composite implements RequestView {
         materialLabel.setFloat(Style.Float.RIGHT);
         materialLabel.setFontSize(0.6, Style.Unit.EM);
         materialBubble.add(materialLabel);
-        materialAvatar.setName(imageUrl);
-        materialAvatar.initialize();
     }
 
     protected void displayAoI(AoI aoi) {

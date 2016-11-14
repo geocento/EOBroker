@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
+import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
@@ -14,10 +15,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.avatar.MaterialAvatar;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
 import gwt.material.design.client.constants.Position;
-import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialRow;
+import gwt.material.design.client.ui.MaterialTextArea;
+import gwt.material.design.client.ui.MaterialTitle;
 
 import java.util.Date;
 import java.util.List;
@@ -43,7 +46,9 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @UiField
     MaterialTextArea message;
     @UiField
-    MaterialColumn userImage;
+    UserWidget userImage;
+    @UiField
+    MaterialLabel comment;
 
     public ConversationViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -51,9 +56,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        MaterialAvatar materialAvatar = new MaterialAvatar(Customer.getLoginInfo().getUserName());
-        materialAvatar.setWidth("100%");
-        userImage.add(materialAvatar);
+        userImage.setUser(Customer.getLoginInfo().getUserName());
     }
 
     @Override
@@ -73,7 +76,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
 
     @Override
     public void displayConversation(ConversationDTO conversationDTO) {
-        title.setTitle("'" + conversationDTO.getTopic() + "'");
+        title.setTitle(conversationDTO.getTopic());
         title.setDescription("Conversation with '" + conversationDTO.getCompany().getName() + "'" +
                 ", started on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
         displayMessages(conversationDTO.getMessages());
@@ -84,9 +87,11 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         this.message.setText("");
         String userName = Customer.getLoginInfo().getUserName();
         if(messages.size() == 0) {
-            this.messages.add(new MaterialLabel("No messages yet..."));
+            comment.setVisible(true);
+            comment.setText("No messages yet...");
             message.setPlaceholder("Start the conversation...");
         } else {
+            comment.setVisible(false);
             for (MessageDTO messageDTO : messages) {
                 boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());
                 addMessage(messageDTO.getFrom(),
@@ -97,20 +102,17 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     }
 
     @Override
-    public void addMessage(String imageUrl, boolean isCustomer, String message, Date date) {
+    public void addMessage(String userName, boolean isCustomer, String message, Date date) {
+        comment.setVisible(false);
         MaterialRow materialRow = new MaterialRow();
         materialRow.setMarginBottom(0);
         messages.add(materialRow);
-        String colour = isCustomer ? "blue accent-1" : "green accent-1";
-        MaterialAvatar materialAvatar = new MaterialAvatar();
-        materialAvatar.setBackgroundColor(colour);
-        materialAvatar.setMarginTop(8);
-        materialAvatar.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
-        materialAvatar.setWidth("40px");
-        materialAvatar.setHeight("40px");
-        materialAvatar.setShadow(1);
-        materialAvatar.setCircle(true);
-        materialRow.add(materialAvatar);
+        String colour = "white";
+        UserWidget userWidget = new UserWidget(userName);
+        userWidget.setMarginTop(8);
+        userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
+        userWidget.setSize(40);
+        materialRow.add(userWidget);
         MaterialBubble materialBubble = new MaterialBubble();
         materialBubble.setBackgroundColor(colour);
         materialBubble.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
@@ -128,8 +130,10 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         materialLabel.setFloat(Style.Float.RIGHT);
         materialLabel.setFontSize(0.6, Style.Unit.EM);
         materialBubble.add(materialLabel);
-        materialAvatar.setName(imageUrl);
-        materialAvatar.initialize();
+/*
+        userWidget.setName(userName);
+        userWidget.initialize();
+*/
     }
 
     @Override

@@ -47,7 +47,7 @@
         }
 
     </ui:style>
-    <views:TemplateView titleText="Request imagery quotation" ui:field="template">
+    <views:TemplateView titleText="Quotation for imagery" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
             <m:MaterialTitle textColor="blue-grey" title="Request quotation for imagery" description="Please fill in the form below"></m:MaterialTitle>
 <!--

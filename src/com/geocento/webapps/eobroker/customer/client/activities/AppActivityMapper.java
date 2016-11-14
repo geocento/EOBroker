@@ -39,6 +39,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new ImageryResponseActivity((ImageryResponsePlace) place, clientFactory);
         } else if(place instanceof ImagesResponsePlace) {
             return new ImagesResponseActivity((ImagesResponsePlace) place, clientFactory);
+        } else if(place instanceof VisualisationPlace) {
+            return new VisualisationActivity((VisualisationPlace) place, clientFactory);
         } else if(place instanceof ConversationPlace) {
             return new ConversationActivity((ConversationPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {

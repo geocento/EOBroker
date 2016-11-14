@@ -55,11 +55,7 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     @UiField
     MaterialTextArea information;
 
-    private Callback<Void, Exception> mapLoadedHandler = null;
-
     public MapJSNI map;
-
-    private boolean mapLoaded = false;
 
     public RequestImageryViewImpl(final ClientFactoryImpl clientFactory) {
         template = new TemplateView(clientFactory);
@@ -144,7 +140,7 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
             suppliers.add(materialPanel);
 */
             MaterialCheckBox materialCheckBox = new MaterialCheckBox("<span style='display: inline;'><b>" + imageService.getName() + "</b> " +
-                    "by <img style='max-height: 24px; vertical-align: middle;' src='" + imageService.getCompany().getIconURL() + "'/> <b>" + imageService.getCompany().getName() + "</b></span>");
+                    "by <img style='max-height: 24px; vertical-align: middle; margin: 0px 5px;' src='" + imageService.getCompany().getIconURL() + "'/> <b>" + imageService.getCompany().getName() + "</b></span>", true);
             materialCheckBox.setObject(imageService);
             suppliers.add(materialCheckBox);
         }

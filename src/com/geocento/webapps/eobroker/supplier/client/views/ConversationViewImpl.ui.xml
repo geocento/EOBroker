@@ -37,7 +37,8 @@
             <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
             </design:MaterialRow>
             <design:MaterialRow addStyleNames="{style.formValues}">
-                <design:MaterialColumn grid="s2 m2 l2" ui:field="userImage">
+                <design:MaterialColumn grid="s2 m2 l2">
+                    <widgets:UserWidget size="64" ui:field="userImage"/>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s10 m10 l10">
                     <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>

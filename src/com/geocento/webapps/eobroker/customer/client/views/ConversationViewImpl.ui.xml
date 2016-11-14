@@ -27,25 +27,32 @@
         }
 
         .panel {
-            margin: 0px auto    ;
+            margin: 0px auto;
             max-width: 960px;
         }
 
+        .comment {
+            margin: 20px 0px;
+            font-style: italic;
+        }
+
     </ui:style>
-    <views:TemplateView titleText="Request Management" ui:field="template">
+    <views:TemplateView titleText="Conversations" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
-            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+            <design:MaterialTitle title="" marginBottom="20" ui:field="title"></design:MaterialTitle>
+            <design:MaterialLabel addStyleNames="{style.comment}" ui:field="comment"></design:MaterialLabel>
             <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
             </design:MaterialRow>
             <design:MaterialRow addStyleNames="{style.formValues}">
-                <design:MaterialColumn grid="s2 m2 l2" ui:field="userImage">
+                <design:MaterialColumn grid="s2 m2 l2">
+                    <widgets:UserWidget size="64" ui:field="userImage"/>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s10 m10 l10">
                     <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12 m12 l12">
                     <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                        <widgets:ProgressButton text="SUBMIT" ui:field="submitMessage">
+                        <widgets:ProgressButton text="SEND MESSAGE" ui:field="submitMessage">
                         </widgets:ProgressButton>
                     </g:HTMLPanel>
                 </design:MaterialColumn>

@@ -105,6 +105,7 @@ public class MapContainer extends Composite {
         this.presenter = presenter;
     }
 
+/*
     public void setWidth(String width) {
         mapContainer.setWidth(width);
     }
@@ -112,6 +113,7 @@ public class MapContainer extends Composite {
     public void setHeight(String height) {
         mapContainer.setHeight(height);
     }
+*/
 
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
         this.mapLoadedHandler = mapLoadedHandler;
@@ -141,7 +143,7 @@ public class MapContainer extends Composite {
         return aoi;
     }
 
-    public void displayEdit(boolean display) {
+    public void setEdit(boolean display) {
         editButton.setVisible(display);
     }
 

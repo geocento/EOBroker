@@ -41,6 +41,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ImagesResponseView imagesResponseView = null;
 
+    private VisualisationView visualisationView = null;
+
     private ConversationViewImpl conversationView = null;
 
     @Override
@@ -160,6 +162,14 @@ public class ClientFactoryImpl implements ClientFactory {
             conversationView = new ConversationViewImpl(this);
         }
         return conversationView;
+    }
+
+    @Override
+    public VisualisationView getVisualisationView() {
+        if(visualisationView == null) {
+            visualisationView = new VisualisationViewImpl(this);
+        }
+        return visualisationView;
     }
 
 }

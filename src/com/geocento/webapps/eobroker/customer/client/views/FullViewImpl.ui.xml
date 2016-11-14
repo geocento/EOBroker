@@ -69,7 +69,7 @@
     </ui:style>
     <views:TemplateView ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
-            <design:MaterialRow>
+            <design:MaterialRow marginBottom="0">
                     <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
                         <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
                     </design:MaterialColumn>

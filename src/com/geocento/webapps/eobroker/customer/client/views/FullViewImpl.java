@@ -11,7 +11,6 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -134,6 +133,20 @@ public class FullViewImpl extends Composite implements FullView {
         sector.setLetter("S");
         badges.add(sector);
         tags.add(badges);
+        // add actions
+        {
+            MaterialPanel actionsPanel = new MaterialPanel();
+            details.add(actionsPanel);
+            MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("FOLLOW");
+            materialAnchorButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    Window.alert("TODO...");
+                }
+            });
+            actionsPanel.add(materialAnchorButton);
+            materialAnchorButton.setMargin(20);
+        }
         // add the tabs now
         MaterialPanel tabsPanel = createTabsPanel();
         MaterialTab materialTab = createTabs(tabsPanel);
@@ -272,6 +285,16 @@ public class FullViewImpl extends Composite implements FullView {
                 actionsPanel.add(materialAnchorButton);
                 materialAnchorButton.setMargin(20);
             }
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("ASK QUESTION");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new ConversationPlace(
+                                Utils.generateTokens(
+                                ConversationPlace.TOKENS.companyid.toString(), productServiceDescriptionDTO.getCompany().getId() + "",
+                                ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productServiceDescriptionDTO.getName() + "'"))));
+                actionsPanel.add(materialAnchorButton);
+                materialAnchorButton.setMargin(20);
+            }
         }
         MaterialPanel tabsPanel = createTabsPanel();
         MaterialTab materialTab = createTabs(tabsPanel);
@@ -290,7 +313,7 @@ public class FullViewImpl extends Composite implements FullView {
         materialColumn.add(createSubsection("Extent of service"));
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("200px");
-        mapContainer.displayEdit(false);
+        mapContainer.setEdit(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -376,6 +399,16 @@ public class FullViewImpl extends Composite implements FullView {
         {
             MaterialPanel actionsPanel = new MaterialPanel();
             details.add(actionsPanel);
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("ASK QUESTION");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new ConversationPlace(
+                                Utils.generateTokens(
+                                        ConversationPlace.TOKENS.companyid.toString(), productDatasetDescriptionDTO.getCompany().getId() + "",
+                                        ConversationPlace.TOKENS.topic.toString(), "Information on off the shelf product '" + productDatasetDescriptionDTO.getName() + "'"))));
+                actionsPanel.add(materialAnchorButton);
+                materialAnchorButton.setMargin(20);
+            }
         }
         tags.add(badges);
         MaterialPanel tabsPanel = createTabsPanel();
@@ -395,7 +428,7 @@ public class FullViewImpl extends Composite implements FullView {
         materialColumn.add(createSubsection("Extent of data"));
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("200px");
-        mapContainer.displayEdit(false);
+        mapContainer.setEdit(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -419,7 +452,7 @@ public class FullViewImpl extends Composite implements FullView {
                 dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
                 accessPanel.add(dataAccessWidget);
             }
-            addTab(materialTab, tabsPanel, "Access", accessPanel, size);
+            addTab(materialTab, tabsPanel, "Access to data", accessPanel, size);
         }
         // add terms and conditions tab panel
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");

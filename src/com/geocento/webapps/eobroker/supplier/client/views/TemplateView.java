@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
@@ -20,7 +21,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.avatar.MaterialAvatar;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 
@@ -57,7 +57,7 @@ public class TemplateView extends Composite implements HasWidgets {
     @UiField
     MaterialBadge ordersBadge;
     @UiField
-    MaterialAvatar userIcon;
+    UserWidget userIcon;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -78,7 +78,7 @@ public class TemplateView extends Composite implements HasWidgets {
 
         ordersBadge.setVisible(false);
 
-        userIcon.setName(Supplier.getLoginInfo().getUserName());
+        userIcon.setUser(Supplier.getLoginInfo().getUserName());
     }
 
     public void setTitleText(String title) {

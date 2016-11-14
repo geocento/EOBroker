@@ -76,6 +76,10 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialListBox type;
     @UiField
     MaterialTextBox resourceName;
+    @UiField
+    MaterialRow samples;
+    @UiField
+    MaterialLabel samplesMessage;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -242,17 +246,40 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
 
     @Override
     public void setSampleDataAccess(List<DatasetAccess> samples) {
+        this.samples.clear();
+        if(samples != null) {
+            for(DatasetAccess datasetAccess : samples) {
+                addSample(datasetAccess);
+            }
+        }
+        updateSamplesMessage();
+    }
 
+    private void addSample(DatasetAccess datasetAccess) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        this.samples.add(materialColumn);
+        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess);
+        materialColumn.add(dataAccessWidget);
+    }
+
+    private void updateSamplesMessage() {
+        List<DatasetAccess> dataAccess = getSamples();
+        samplesMessage.setText(dataAccess.size() == 0 ? "No samples provided, add new samples using the button below" :
+                dataAccess.size() + " samples defined, add more using the add button below");
+    }
+
+    @Override
+    public List<DatasetAccess> getSamples() {
+        List<DatasetAccess> dataAccesses = new ArrayList<DatasetAccess>();
+        for(int index = 0; index < samples.getWidgetCount(); index++) {
+            dataAccesses.add(((DataAccessWidget)((MaterialColumn) samples.getWidget(index)).getWidget(0)).getDatasetAccess());
+        }
+        return dataAccesses;
     }
 
     @Override
     public void setFeatures(List<FeatureDescription> features) {
 
-    }
-
-    @Override
-    public List<DatasetAccess> getSamples() {
-        return null;
     }
 
     @Override
@@ -264,6 +291,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     void addDataAccess(ClickEvent clickEvent) {
         addDataAccess(new DatasetAccess());
         updateDataAccessMessage();
+    }
+
+    @UiHandler("addHostedSample")
+    void addSample(ClickEvent clickEvent) {
+        addSample(new DatasetAccess());
+        updateSamplesMessage();
     }
 
 }

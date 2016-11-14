@@ -106,7 +106,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onSuccess(Method method, ProductDescriptionDTO productDescriptionDTO) {
                     fullView.hideLoading();
-                    fullView.displayTitle("Product information");
+                    fullView.displayTitle("Product");
                     fullView.displayProduct(productDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductDescription(productId);
@@ -129,7 +129,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onSuccess(Method method, CompanyDescriptionDTO companyDescriptionDTO) {
                     fullView.hideLoading();
-                    fullView.displayTitle("Company information");
+                    fullView.displayTitle("Company");
                     fullView.displayCompany(companyDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getCompanyDescription(companyId);
@@ -152,7 +152,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onSuccess(Method method, ProductServiceDescriptionDTO productServiceDescriptionDTO) {
                     fullView.hideLoading();
-                    fullView.displayTitle("Product service information");
+                    fullView.displayTitle("On-demand service");
                     fullView.displayProductService(productServiceDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductServiceDescription(productServiceId);
@@ -175,7 +175,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onSuccess(Method method, ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
                     fullView.hideLoading();
-                    fullView.displayTitle("Off the shelf data information");
+                    fullView.displayTitle("Off-the-shelf data");
                     fullView.displayProductDataset(productDatasetDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductDatasetDescription(productDatasetId);

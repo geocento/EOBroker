@@ -17,9 +17,9 @@
         }
 
     </ui:style>
-    <design:MaterialPanel height="6.4em" backgroundColor="white" padding="0" margin="0">
+    <design:MaterialPanel height="6em" backgroundColor="white" padding="0" margin="0">
         <design:MaterialPanel height="100%" backgroundColor="green" float="LEFT">
-            <design:MaterialLink iconSize="LARGE" backgroundColor="green" textColor="white" ui:field="image"/>
+            <design:MaterialIcon iconSize="LARGE" backgroundColor="green" textColor="white" ui:field="image"/>
         </design:MaterialPanel>
         <design:MaterialPanel height="100%" padding="10">
             <design:MaterialAnchorButton float="RIGHT" target="_blank" ui:field="action"></design:MaterialAnchorButton>
