@@ -2,23 +2,28 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
+import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Path("/")
@@ -207,6 +212,45 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public ProductServiceDescriptionDTO getProductServiceDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductService productService = em.find(ProductService.class, id);
+            if (productService == null) {
+                throw new RequestException("Company does not exist");
+            }
+            ProductServiceDescriptionDTO productServiceDescriptionDTO = new ProductServiceDescriptionDTO();
+            productServiceDescriptionDTO.setId(productService.getId());
+            productServiceDescriptionDTO.setServiceImage(productService.getImageUrl());
+            productServiceDescriptionDTO.setName(productService.getName());
+            productServiceDescriptionDTO.setDescription(productService.getDescription());
+            productServiceDescriptionDTO.setFullDescription(productService.getFullDescription());
+            productServiceDescriptionDTO.setWebsite(productService.getWebsite());
+            productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
+            productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+            productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
+            // add suggestions
+            // for now make it simple and just add the same product services
+            List<ProductService> suggestedServices = new ArrayList<ProductService>(productService.getProduct().getProductServices());
+            suggestedServices.remove(productService);
+            productServiceDescriptionDTO.setSuggestedServices(ListUtil.mutate(suggestedServices, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+                @Override
+                public ProductServiceDTO mutate(ProductService productService) {
+                    return createProductServiceDTO(productService);
+                }
+            }));
+            return productServiceDescriptionDTO;
+        } catch (Exception e) {
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ProductDatasetDescriptionDTO getProductDatasetDescription(Long id) throws RequestException {
         if(id == null) {
             throw new RequestException("Id cannot be null");
@@ -244,6 +288,86 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public SoftwareDescriptionDTO getSoftwareDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Software software = em.find(Software.class, id);
+            if(software == null) {
+                throw new RequestException("Software does not exist");
+            }
+            // add suggestions
+            // for now make it simple and just add the same product services
+            SoftwareDescriptionDTO softwareDescriptionDTO = new SoftwareDescriptionDTO();
+            softwareDescriptionDTO.setId(software.getId());
+            softwareDescriptionDTO.setName(software.getName());
+            softwareDescriptionDTO.setImageUrl(software.getImageUrl());
+            softwareDescriptionDTO.setDescription(software.getDescription());
+            softwareDescriptionDTO.setFullDescription(software.getFullDescription());
+            softwareDescriptionDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(software.getCompany()));
+            softwareDescriptionDTO.setProducts(ListUtil.mutate(software.getProducts(), new ListUtil.Mutate<ProductSoftware, ProductSoftwareDTO>() {
+                @Override
+                public ProductSoftwareDTO mutate(ProductSoftware productSoftware) {
+                    return createProductSoftwareDTO(productSoftware);
+                }
+            }));
+            return softwareDescriptionDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProjectDescriptionDTO getProjectDescription(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Project project = em.find(Project.class, id);
+            if(project == null) {
+                throw new RequestException("Project does not exist");
+            }
+            // add suggestions
+            // for now make it simple and just add the same product services
+            ProjectDescriptionDTO projectDescriptionDTO = new ProjectDescriptionDTO();
+            projectDescriptionDTO.setId(project.getId());
+            projectDescriptionDTO.setName(project.getName());
+            projectDescriptionDTO.setImageUrl(project.getImageUrl());
+            projectDescriptionDTO.setDescription(project.getDescription());
+            projectDescriptionDTO.setFullDescription(project.getFullDescription());
+            projectDescriptionDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(project.getCompany()));
+            projectDescriptionDTO.setProducts(ListUtil.mutate(project.getProducts(), new ListUtil.Mutate<ProductProject, ProductProjectDTO>() {
+                @Override
+                public ProductProjectDTO mutate(ProductProject productProject) {
+                    return createProductProjectDTO(productProject);
+                }
+            }));
+            return projectDescriptionDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductSoftwareDTO createProductSoftwareDTO(ProductSoftware productSoftware) {
+        ProductSoftwareDTO productSoftwareDTO = new ProductSoftwareDTO();
+        productSoftwareDTO.setId(productSoftware.getId());
+        productSoftwareDTO.setPitch(productSoftware.getPitch());
+        productSoftwareDTO.setProduct(ProductHelper.createProductDTO(productSoftware.getProduct()));
+        return productSoftwareDTO;
+    }
+
+    private ProductProjectDTO createProductProjectDTO(ProductProject productProject) {
+        ProductProjectDTO productProjectDTO = new ProductProjectDTO();
+        productProjectDTO.setId(productProject.getId());
+        productProjectDTO.setPitch(productProject.getPitch());
+        productProjectDTO.setProduct(ProductHelper.createProductDTO(productProject.getProduct()));
+        return productProjectDTO;
+    }
+
+    @Override
     public List<ImageService> getImageServices() throws RequestException {
         EntityManager em = EMF.get().createEntityManager();
         TypedQuery<ImageService> query = em.createQuery("select i from ImageService i", ImageService.class);
@@ -256,6 +380,86 @@ public class AssetsResource implements AssetsService {
         TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate", NewsItem.class);
         query.setMaxResults(5);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Offer> getRecommendations() {
+        List<RankedOffer> offers = new ArrayList<RankedOffer>();
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // TODO - find a recommendation system
+            Query q = em.createNativeQuery("SELECT id, category FROM textsearch WHERE category not in ('product') LIMIT 5;");
+            List<Object[]> results = q.getResultList();
+            if(results.size() > 0) {
+                final HashMap<Long, Double> rankings = new HashMap<Long, Double>();
+                List<Long> productServiceIds = new ArrayList<Long>();
+                List<Long> productDatasetIds = new ArrayList<Long>();
+                List<Long> softwareIds = new ArrayList<Long>();
+                for (Object[] result : results) {
+                    Long id = (Long) result[0];
+                    // TODO - provide a ranking value
+                    Double ranking = Math.random();
+                    rankings.put(id, ranking);
+                    switch((String) result[1]) {
+                        case "productservice":
+                            productServiceIds.add(id);
+                            break;
+                        case "productdataset":
+                            productDatasetIds.add(id);
+                            break;
+                        case "software":
+                            softwareIds.add(id);
+                            break;
+                    }
+                }
+                // now fetch the actual entities
+                // start with product
+                // then product services
+                if(productServiceIds.size() > 0) {
+                    TypedQuery<ProductService> productServiceQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
+                    productServiceQuery.setParameter("productIds", productServiceIds);
+                    offers.addAll(ListUtil.mutate(productServiceQuery.getResultList(), new ListUtil.Mutate<ProductService, RankedOffer>() {
+                        @Override
+                        public RankedOffer mutate(ProductService productService) {
+                            return new RankedOffer(rankings.get(productService.getId()), createProductServiceDTO(productService));
+                        }
+                    }));
+                }
+                // then product datasets
+                if(productDatasetIds.size() > 0) {
+                    TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
+                    productDatasetQuery.setParameter("productIds", productServiceIds);
+                    offers.addAll(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, RankedOffer>() {
+                        @Override
+                        public RankedOffer mutate(ProductDataset productDataset) {
+                            return new RankedOffer(rankings.get(productDataset.getId()), createProductDatasetDTO(productDataset));
+                        }
+                    }));
+                }
+                if(softwareIds.size() > 0) {
+                    TypedQuery<Software> softwareQuery = em.createQuery("select s from Software s where s.id IN :softwareIds", Software.class);
+                    softwareQuery.setParameter("softwareIds", softwareIds);
+                    List<Software> softwares = softwareQuery.getResultList();
+                    offers.addAll(ListUtil.mutate(softwares, new ListUtil.Mutate<Software, RankedOffer>() {
+                        @Override
+                        public RankedOffer mutate(Software software) {
+                            return new RankedOffer(rankings.get(software.getId()), createSoftwareDTO(software));
+                        }
+                    }));
+                }
+            }
+            if(offers.size() > 4) {
+                offers = offers.subList(0, 4);
+            }
+            return ListUtil.mutate(offers, new ListUtil.Mutate<RankedOffer, Offer>() {
+                @Override
+                public Offer mutate(RankedOffer object) {
+                    return object.getOffer();
+                }
+            });
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -367,45 +571,6 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Company does not exist");
             }
             return CompanyHelper.createCompanyDTO(company);
-        } catch (Exception e) {
-            throw new RequestException("Server error");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
-    public ProductServiceDescriptionDTO getProductServiceDescription(Long id) throws RequestException {
-        if(id == null) {
-            throw new RequestException("Id cannot be null");
-        }
-        EntityManager em = EMF.get().createEntityManager();
-        try {
-            ProductService productService = em.find(ProductService.class, id);
-            if (productService == null) {
-                throw new RequestException("Company does not exist");
-            }
-            ProductServiceDescriptionDTO productServiceDescriptionDTO = new ProductServiceDescriptionDTO();
-            productServiceDescriptionDTO.setId(productService.getId());
-            productServiceDescriptionDTO.setServiceImage(productService.getImageUrl());
-            productServiceDescriptionDTO.setName(productService.getName());
-            productServiceDescriptionDTO.setDescription(productService.getDescription());
-            productServiceDescriptionDTO.setFullDescription(productService.getFullDescription());
-            productServiceDescriptionDTO.setWebsite(productService.getWebsite());
-            productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
-            productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
-            productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
-            // add suggestions
-            // for now make it simple and just add the same product services
-            List<ProductService> suggestedServices = new ArrayList<ProductService>(productService.getProduct().getProductServices());
-            suggestedServices.remove(productService);
-            productServiceDescriptionDTO.setSuggestedServices(ListUtil.mutate(suggestedServices, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
-                @Override
-                public ProductServiceDTO mutate(ProductService productService) {
-                    return createProductServiceDTO(productService);
-                }
-            }));
-            return productServiceDescriptionDTO;
         } catch (Exception e) {
             throw new RequestException("Server error");
         } finally {

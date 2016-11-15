@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
@@ -68,9 +69,9 @@ public class TemplateView extends Composite implements HasWidgets {
     @UiField
     MaterialNavBar navBar;
     @UiField
-    HTMLPanel header;
+    MaterialPanel header;
     @UiField
-    MaterialLink signOut;
+    UserWidget userWidget;
     @UiField
     MaterialLink signIn;
     @UiField
@@ -99,10 +100,10 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialDropDown notificationsPanel;
     @UiField
     MaterialFooter footer;
+    @UiField
+    MaterialLink signOut;
 
     private final ClientFactoryImpl clientFactory;
-
-    private LoginInfo loginInfo;
 
     private Presenter presenter;
 
@@ -171,13 +172,6 @@ public class TemplateView extends Composite implements HasWidgets {
 
     public void setTitleText(String title) {
         this.title.setText(title);
-    }
-
-    public void setUser(LoginInfo loginInfo) {
-        boolean signedIn = loginInfo != null;
-        signIn.setVisible(!signedIn);
-        signOut.setVisible(signedIn);
-        this.loginInfo = loginInfo;
     }
 
     public ClientFactoryImpl getClientFactory() {
@@ -267,7 +261,11 @@ public class TemplateView extends Composite implements HasWidgets {
         orders.setVisible(signedIn);
         notifications.setVisible(signedIn);
         signIn.setVisible(!signedIn);
-        signOut.setVisible(signedIn);
+        userWidget.setVisible(signedIn);
+    }
+
+    public void setUser(LoginInfo loginInfo) {
+        userWidget.setUser(loginInfo.getUserName());
     }
 
     public void displayListSuggestions(List<Suggestion> searchObjects) {

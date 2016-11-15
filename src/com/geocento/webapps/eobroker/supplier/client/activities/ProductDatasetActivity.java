@@ -116,6 +116,31 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setDatasetAccesses(productDatasetView.getDataAccesses());
                 productDatasetDTO.setSamples(productDatasetView.getSamples());
                 productDatasetDTO.setFeatures(productDatasetView.getFeatures());
+                // do some checks
+                try {
+                    if (productDatasetDTO.getName() == null || productDatasetDTO.getName().length() < 3) {
+                        throw new Exception("Please provide a valid name");
+                    }
+                    if (productDatasetDTO.getImageUrl() == null) {
+                        throw new Exception("Please provide a picture");
+                    }
+                    if (productDatasetDTO.getDescription() == null || productDatasetDTO.getDescription().length() < 3) {
+                        throw new Exception("Please provide a valid description");
+                    }
+                    if (productDatasetDTO.getFullDescription() == null || productDatasetDTO.getFullDescription().length() < 3) {
+                        throw new Exception("Please provide a valid full description");
+                    }
+                    if (productDatasetDTO.getProduct() == null) {
+                        throw new Exception("Please select a product");
+                    }
+                    if (productDatasetDTO.getServiceType() == null) {
+                        throw new Exception("Please provide a service type");
+                    }
+                } catch (Exception e) {
+                    // TODO - use the view instead
+                    Window.alert(e.getMessage());
+                    return;
+                }
                 displayLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {

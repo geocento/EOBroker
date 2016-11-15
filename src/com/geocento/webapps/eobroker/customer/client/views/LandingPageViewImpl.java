@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
@@ -10,6 +11,13 @@ import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProductDatasetWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.SoftwareWidget;
+import com.geocento.webapps.eobroker.customer.shared.Offer;
+import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.SoftwareDTO;
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
@@ -56,6 +64,8 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     MaterialButton closeMap;
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
+    @UiField
+    MaterialRow offers;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -210,6 +220,30 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     @Override
     public TemplateView getTemplateView() {
         return template;
+    }
+
+    @Override
+    public void setLoadingOffers(boolean loading) {
+        offers.clear();
+        if(loading) {
+            offers.add(new LoadingWidget("Loading..."));
+        }
+    }
+
+    @Override
+    public void setOffers(List<Offer> offers) {
+        this.offers.clear();
+        for(Offer offer : offers) {
+            MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+            this.offers.add(materialColumn);
+            if(offer instanceof ProductServiceDTO) {
+                materialColumn.add(new ProductServiceWidget((ProductServiceDTO) offer));
+            } else if(offer instanceof ProductDatasetDTO) {
+                materialColumn.add(new ProductDatasetWidget((ProductDatasetDTO) offer));
+            } else if(offer instanceof SoftwareDTO) {
+                materialColumn.add(new SoftwareWidget((SoftwareDTO) offer));
+            }
+        }
     }
 
     @UiHandler("closeMap")

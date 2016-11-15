@@ -7,7 +7,7 @@
                 <design:MaterialImage ui:field="iconPreview"/>
             </design:MaterialCardImage>
             <design:MaterialCardContent layoutPosition="RELATIVE">
-                <design:MaterialLabel ui:field="iconName" text="" fontSize="1.5em"/>
+                <design:MaterialLabel ui:field="iconName" text="" fontSize="1.2em" truncate="true"/>
                 <design:MaterialLabel ui:field="iconSize" text="" fontSize="0.8em"/>
                 <design:MaterialProgress ui:field="iconProgress" layoutPosition="ABSOLUTE" bottom="0" left="0" type="DETERMINATE" percent="0" />
                 <design:MaterialButton design:id="cardUpload" layoutPosition="ABSOLUTE" top="-25" right="25" type="FLOATING" backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" iconColor="white"/>

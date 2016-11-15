@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
+import com.geocento.webapps.eobroker.customer.shared.Offer;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.List;
@@ -21,6 +22,10 @@ public interface LandingPageView extends IsWidget {
     void setNewsItems(List<NewsItem> newsItems);
 
     TemplateView getTemplateView();
+
+    void setLoadingOffers(boolean loading);
+
+    void setOffers(List<Offer> offers);
 
     public interface Presenter {
 

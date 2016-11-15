@@ -48,6 +48,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         // check use is logged in
         if(Customer.isLoggedIn()) {
             templateView.displaySignedIn(true);
+            templateView.setUser(Customer.getLoginInfo());
             // load notifications and orders
             if(userRequests == null) {
                 loadUserOrders();

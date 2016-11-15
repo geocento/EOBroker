@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
+import com.geocento.webapps.eobroker.admin.client.Admin;
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.events.LogOut;
 import com.geocento.webapps.eobroker.admin.client.places.*;
+import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -43,7 +45,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     @UiField
     MaterialSideNav sideNav;
     @UiField
-    MaterialContainer mainPanel;
+    MaterialPanel mainPanel;
     @UiField
     HTMLPanel panel;
     @UiField
@@ -51,9 +53,11 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     @UiField
     MaterialNavBar navBar;
     @UiField
-    MaterialLink logOut;
-    @UiField
     MaterialLink newsItems;
+    @UiField
+    MaterialLabel title;
+    @UiField
+    UserWidget userIcon;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -63,23 +67,11 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-/*
-        sideNav.addOpenedHandler(new SideNavOpenedEvent.SideNavOpenedHandler() {
-            @Override
-            public void onSideNavOpened(SideNavOpenedEvent event) {
-                panel.setStyleName(style.navOpened());
-            }
-        });
-        sideNav.addClosedHandler(new SideNavClosedEvent.SideNavClosedHandler() {
-            @Override
-            public void onSideNavClosed(SideNavClosedEvent event) {
-                panel.setStyleName(style.navOpened(), false);
-            }
-        });
-*/
         setLink(companies, new CompaniesPlace());
         setLink(products, new ProductsPlace());
         setLink(newsItems, new NewsItemsPlace());
+
+        userIcon.setUser(Admin.getLoginInfo().getUserName());
 
         onResize(null);
     }
@@ -103,9 +95,13 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         MaterialToast.fireToast(message, "green darken-1");
     }
 
-    @UiHandler("logOut")
+    @UiHandler("userIcon")
     void logOut(ClickEvent clickEvent) {
         clientFactory.getEventBus().fireEvent(new LogOut());
+    }
+
+    public void setTitleText(String titleText) {
+        title.setText(titleText);
     }
 
     @Override

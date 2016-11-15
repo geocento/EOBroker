@@ -4,7 +4,6 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
-             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
 
@@ -59,6 +58,12 @@
         }
 
         .mapPanel {
+        }
+        .mapPanel a {
+            padding: 0px !important;
+        }
+        .mapPanel i {
+            font-size: 1.3rem !important;
         }
 
         .map {
@@ -164,7 +169,7 @@
             <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="blue-grey" ui:field="resultsTitle"/>
             <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.loadingPanel}">
-                <cwidgets:LoadingWidget ui:field="loading"></cwidgets:LoadingWidget>
+                <widgets:LoadingWidget ui:field="loading"></widgets:LoadingWidget>
             </g:HTMLPanel>
             <g:HTMLPanel visible="false" ui:field="requirementsPanel">
                 <p>Can't find what you are looking for? Please <g:Anchor ui:field="sendRequirements">send us</g:Anchor> your requirements!</p>

@@ -17,17 +17,19 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
-        <g:HTMLPanel>
-            <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" ui:field="createNew"></design:MaterialButton>
-            <design:MaterialTitle title="View companies"></design:MaterialTitle>
-        </g:HTMLPanel>
-        <g:HTMLPanel addStyleNames="{style.services}">
+    <views:TemplateView titleText="View companies" ui:field="template">
+        <design:MaterialPanel padding="20">
             <g:HTMLPanel>
-                <design:MaterialTextBox addStyleNames="{style.filter}" placeholder="Search by company name" ui:field="filter"></design:MaterialTextBox>
-                <div style="clear: both;"></div>
+                <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" ui:field="createNew"></design:MaterialButton>
+                <design:MaterialTitle title="View companies"></design:MaterialTitle>
             </g:HTMLPanel>
-            <widgets:CompaniesList ui:field="companies"></widgets:CompaniesList>
-        </g:HTMLPanel>
+            <g:HTMLPanel addStyleNames="{style.services}">
+                <g:HTMLPanel>
+                    <design:MaterialTextBox addStyleNames="{style.filter}" placeholder="Search by name" ui:field="filter"></design:MaterialTextBox>
+                    <div style="clear: both;"></div>
+                </g:HTMLPanel>
+                <widgets:CompaniesList ui:field="companies"></widgets:CompaniesList>
+            </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

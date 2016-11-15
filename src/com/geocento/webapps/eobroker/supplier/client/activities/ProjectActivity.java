@@ -1,10 +1,12 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.ProjectPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProjectView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductProjectDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProjectDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -94,6 +96,38 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
                 projectDTO.setDescription(projectView.getDescription().getText());
                 projectDTO.setFullDescription(projectView.getFullDescription());
                 projectDTO.setProducts(projectView.getSelectedProducts());
+                // do some checks
+                try {
+                    if (projectDTO.getName() == null || projectDTO.getName().length() < 3) {
+                        throw new Exception("Please provide a valid name");
+                    }
+                    if (projectDTO.getImageUrl() == null) {
+                        throw new Exception("Please provide a picture");
+                    }
+                    if (projectDTO.getDescription() == null || projectDTO.getDescription().length() < 3) {
+                        throw new Exception("Please provide a valid description");
+                    }
+                    if (projectDTO.getFullDescription() == null || projectDTO.getFullDescription().length() < 3) {
+                        throw new Exception("Please provide a valid full description");
+                    }
+                    if (projectDTO.getProducts() == null) {
+                        throw new Exception("Please select at least one product");
+                    } else {
+                        projectDTO.setProducts(ListUtil.filterValues(projectDTO.getProducts(), new ListUtil.CheckValue<ProductProjectDTO>() {
+                            @Override
+                            public boolean isValue(ProductProjectDTO value) {
+                                return value.getPitch().length() > 0 && value.getProduct() != null;
+                            }
+                        }));
+                        if(projectDTO.getProducts().size() == 0) {
+                            throw new Exception("Please select at least one product or fill in the missing fields");
+                        }
+                    }
+                } catch (Exception e) {
+                    // TODO - use the view instead
+                    Window.alert(e.getMessage());
+                    return;
+                }
                 displayLoading("Saving project...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {

@@ -98,4 +98,8 @@ public class Admin implements EntryPoint {
     public static void setLoginInfo(LoginInfo loginInfo) {
         Admin.loginInfo = loginInfo;
     }
+
+    public static LoginInfo getLoginInfo() {
+        return Admin.loginInfo;
+    }
 }

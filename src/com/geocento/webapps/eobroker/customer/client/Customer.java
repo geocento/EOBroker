@@ -90,12 +90,15 @@ public class Customer implements EntryPoint {
     }
 
     private boolean requiresLogin(Place place) {
+        return true;
+/*
         return place instanceof RequestsPlace ||
                 place instanceof ImagesResponsePlace ||
                 place instanceof ImageryResponsePlace ||
                 place instanceof ProductResponsePlace ||
                 place instanceof ConversationPlace
                 ;
+*/
     }
 
     private void initialise() {

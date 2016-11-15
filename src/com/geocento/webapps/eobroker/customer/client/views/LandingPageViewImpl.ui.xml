@@ -41,19 +41,6 @@
 
     </ui:style>
     <views:TemplateView titleText="Home" ui:field="template">
-<!--
-        <views:navBar>
-            <m:MaterialLink text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
-        </views:navBar>
-        <views:navBar>
-            <widgets:MaterialSuggestion ui:field="textSearch" height="60px" iconColor="white" backgroundColor="blue-grey" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" textColor="black" active="true" flex="AUTO"/>
-        </views:navBar>
-        <views:header>
-            <m:MaterialDropDown activator="categories" constrainWidth="true" ui:field="categoriesDropdown">
-                <m:MaterialLink waves="DEFAULT" textColor="black" text="All categories" ui:field="allCategories"/>
-            </m:MaterialDropDown>
-        </views:header>
--->
         <g:HTMLPanel addStyleNames="{style.mainPanel}">
             <m:MaterialRow addStyleNames="{style.mapPanel}" ui:field="mapPanel">
                 <maps:ArcGISMap width="100%" ui:field="mapContainer">
@@ -83,42 +70,8 @@
                 <cwidgets:MaterialSlider ui:field="slider" fullscreen="false">
                 </cwidgets:MaterialSlider>
 
-                <m:MaterialRow>
-                    <m:MaterialTitle title="Recommended products for you" />
-                    <m:MaterialColumn grid="l3">
-                        <m:MaterialCard backgroundColor="white">
-                            <m:MaterialCardImage waves="LIGHT">
-                                <m:MaterialImage url="http://assets.materialup.com/uploads/ac9bf2ac-bf1c-4dc0-b655-0e13bf523bc8/20150710-__.png"/>
-                                <m:MaterialCardTitle text="Sample"/>
-                            </m:MaterialCardImage>
-
-                            <m:MaterialCardContent textColor="black">
-                                <m:MaterialLabel text="I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively." />
-                            </m:MaterialCardContent>
-
-                            <m:MaterialCardAction>
-                                <m:MaterialLink text="Link 1" />
-                                <m:MaterialLink text="Link 1" />
-                            </m:MaterialCardAction>
-                        </m:MaterialCard>
-                    </m:MaterialColumn>
-                    <m:MaterialColumn grid="l3">
-                        <m:MaterialCard backgroundColor="white">
-                            <m:MaterialCardImage waves="LIGHT">
-                                <m:MaterialImage url="http://assets.materialup.com/uploads/0a2a2331-daa8-46a1-86e1-3ad154d3c5db/open-uri20150804-3-rnmrsb"/>
-                                <m:MaterialCardTitle text="Sample" />
-                            </m:MaterialCardImage>
-
-                            <m:MaterialCardContent textColor="black">
-                                <m:MaterialLabel text="I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively." />
-                            </m:MaterialCardContent>
-
-                            <m:MaterialCardAction>
-                                <m:MaterialLink text="Link 1"/>
-                                <m:MaterialLink text="Link 1"/>
-                            </m:MaterialCardAction>
-                        </m:MaterialCard>
-                    </m:MaterialColumn>
+                <m:MaterialTitle title="Featured offers" />
+                <m:MaterialRow ui:field="offers">
                 </m:MaterialRow>
             </g:HTMLPanel>
         </g:HTMLPanel>

@@ -1,9 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -36,6 +33,10 @@ public interface FullView extends IsWidget {
     TemplateView getTemplateView();
 
     void displayProductDataset(ProductDatasetDescriptionDTO productDatasetDescriptionDTO);
+
+    void displaySoftware(SoftwareDescriptionDTO softwareDescriptionDTO);
+
+    void displayProject(ProjectDescriptionDTO projectDescriptionDTO);
 
     public interface Presenter {
     }

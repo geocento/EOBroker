@@ -24,17 +24,26 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
-        <g:HTMLPanel addStyleNames="{style.content}">
+    <views:TemplateView titleText="Edit news item" ui:field="template">
+        <design:MaterialPanel padding="20">
             <design:MaterialTitle title="" ui:field="pageTitle"></design:MaterialTitle>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="IMAGE" text="News Item Image"></design:MaterialLink>
-            <widgets:MaterialImageUploader imageWidth="960" imageHeight="400" ui:field="imageUploader"></widgets:MaterialImageUploader>
-            <design:MaterialTextBox placeholder="Title" iconType="ACCOUNT_CIRCLE" ui:field="title"/>
-            <design:MaterialTextArea placeholder="Description" type="TEXT" iconType="DESCRIPTION" ui:field="shortDescription"/>
-            <design:MaterialTextBox placeholder="Link to original story" iconType="ACCOUNT_CIRCLE" ui:field="websiteUrl"/>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12">
+                    <widgets:MaterialImageUploader imageWidth="960" imageHeight="400" ui:field="imageUploader"></widgets:MaterialImageUploader>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Title" iconType="ACCOUNT_CIRCLE" ui:field="title"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextArea placeholder="Description" type="TEXT" iconType="DESCRIPTION" ui:field="shortDescription"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Link to original story" iconType="ACCOUNT_CIRCLE" ui:field="websiteUrl"/>
+                </design:MaterialColumn>
+            </design:MaterialRow>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
                 <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
             </g:HTMLPanel>
-        </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

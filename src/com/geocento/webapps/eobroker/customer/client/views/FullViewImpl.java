@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -474,6 +475,186 @@ public class FullViewImpl extends Composite implements FullView {
                 materialRow.add(materialColumn);
             }
         }
+    }
+
+    @Override
+    public void displaySoftware(SoftwareDescriptionDTO softwareDescriptionDTO) {
+        clearDetails();
+        image.setUrl(softwareDescriptionDTO.getImageUrl());
+        title.setText(softwareDescriptionDTO.getName());
+        description.setText(softwareDescriptionDTO.getDescription());
+        tags.clear();
+        MaterialPanel badges = new MaterialPanel();
+        badges.setPadding(10);
+        {
+            MaterialChip commercial = new MaterialChip();
+            commercial.setText(softwareDescriptionDTO.isCommercial() ? "Commercial" : "Free");
+            commercial.setBackgroundColor(softwareDescriptionDTO.isCommercial() ? "amber" : "green");
+            commercial.setTextColor("white");
+            commercial.setMarginRight(20);
+            badges.add(commercial);
+        }
+        if(softwareDescriptionDTO.isOpenSource()) {
+            MaterialChip commercial = new MaterialChip();
+            commercial.setText("Open Source");
+            commercial.setBackgroundColor("green");
+            commercial.setTextColor("white");
+            commercial.setMarginRight(20);
+            badges.add(commercial);
+        }
+        {
+            MaterialChip company = new MaterialChip();
+            final CompanyDTO companyDTO = softwareDescriptionDTO.getCompanyDTO();
+            company.setText(companyDTO.getName());
+            company.setBackgroundColor("grey");
+            company.setTextColor("white");
+            company.setUrl(companyDTO.getIconURL());
+            company.setMarginRight(20);
+            company.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()));
+                }
+            });
+            company.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
+            badges.add(company);
+        }
+        // add actions
+        {
+            MaterialPanel actionsPanel = new MaterialPanel();
+            details.add(actionsPanel);
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("ASK QUESTION");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new ConversationPlace(
+                                Utils.generateTokens(
+                                        ConversationPlace.TOKENS.companyid.toString(), softwareDescriptionDTO.getCompanyDTO().getId() + "",
+                                        ConversationPlace.TOKENS.topic.toString(), "Information on software solution '" + softwareDescriptionDTO.getName() + "'"))));
+                actionsPanel.add(materialAnchorButton);
+                materialAnchorButton.setMargin(20);
+            }
+        }
+        tags.add(badges);
+        MaterialPanel tabsPanel = createTabsPanel();
+        MaterialTab materialTab = createTabs(tabsPanel);
+        int numTabs = 4;
+        int size = (int) Math.floor(12 / numTabs);
+        addTab(materialTab, tabsPanel, "Description", new HTMLPanel(softwareDescriptionDTO.getFullDescription()), size);
+        // TODO - add other information
+        addTab(materialTab, tabsPanel, "Others", new HTMLPanel("TODO..."), size);
+        // add products tab
+        {
+            MaterialPanel productsPanel = new MaterialPanel();
+            MaterialRow materialRow = new MaterialRow();
+            productsPanel.add(materialRow);
+            List<ProductSoftwareDTO> productsCovered = softwareDescriptionDTO.getProducts();
+            if (productsCovered == null || productsCovered.size() == 0) {
+                addColumnLine(new MaterialLabel("No products..."));
+            } else {
+                for(ProductSoftwareDTO productSoftwareDTO : productsCovered) {
+                    MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+                    ProductWidget productWidget = new ProductWidget(productSoftwareDTO.getProduct());
+                    materialColumn.add(productWidget);
+                    materialRow.add(materialColumn);
+                    materialColumn = new MaterialColumn(6, 8, 9);
+                    materialColumn.add(new HTML("<h4>Pitch</h4><p>" + productSoftwareDTO.getPitch() + "</p>"));
+                    materialRow.add(materialColumn);
+                }
+            }
+            addTab(materialTab, tabsPanel, "Products", productsPanel, size);
+        }
+        // add terms and conditions tab panel
+        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+        // now add the tabs panel
+        details.add(tabsPanel);
+        materialTab.selectTab("fullViewTab0");
+        addColumnSection("You might also be interested in...");
+        MaterialRow materialRow = new MaterialRow();
+        details.add(materialRow);
+        addColumnLine(new MaterialLabel("TODO..."));
+    }
+
+    @Override
+    public void displayProject(ProjectDescriptionDTO projectDescriptionDTO) {
+        clearDetails();
+        image.setUrl(projectDescriptionDTO.getImageUrl());
+        title.setText(projectDescriptionDTO.getName());
+        description.setText(projectDescriptionDTO.getDescription());
+        tags.clear();
+        MaterialPanel badges = new MaterialPanel();
+        badges.setPadding(10);
+        {
+            MaterialChip company = new MaterialChip();
+            final CompanyDTO companyDTO = projectDescriptionDTO.getCompanyDTO();
+            company.setText(companyDTO.getName());
+            company.setBackgroundColor("grey");
+            company.setTextColor("white");
+            company.setUrl(companyDTO.getIconURL());
+            company.setMarginRight(20);
+            company.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()));
+                }
+            });
+            company.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
+            badges.add(company);
+        }
+        // add actions
+        {
+            MaterialPanel actionsPanel = new MaterialPanel();
+            details.add(actionsPanel);
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("ASK QUESTION");
+                materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(
+                        new ConversationPlace(
+                                Utils.generateTokens(
+                                        ConversationPlace.TOKENS.companyid.toString(), projectDescriptionDTO.getCompanyDTO().getId() + "",
+                                        ConversationPlace.TOKENS.topic.toString(), "Information on project '" + projectDescriptionDTO.getName() + "'"))));
+                actionsPanel.add(materialAnchorButton);
+                materialAnchorButton.setMargin(20);
+            }
+        }
+        tags.add(badges);
+        MaterialPanel tabsPanel = createTabsPanel();
+        MaterialTab materialTab = createTabs(tabsPanel);
+        int numTabs = 4;
+        int size = (int) Math.floor(12 / numTabs);
+        addTab(materialTab, tabsPanel, "Description", new HTMLPanel(projectDescriptionDTO.getFullDescription()), size);
+        // add products tab
+        {
+            MaterialPanel productsPanel = new MaterialPanel();
+            MaterialRow materialRow = new MaterialRow();
+            productsPanel.add(materialRow);
+            List<ProductProjectDTO> productsCovered = projectDescriptionDTO.getProducts();
+            if (productsCovered == null || productsCovered.size() == 0) {
+                addColumnLine(new MaterialLabel("No products..."));
+            } else {
+                for (ProductProjectDTO productProjectDTO : productsCovered) {
+                    MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+                    ProductWidget productWidget = new ProductWidget(productProjectDTO.getProduct());
+                    materialColumn.add(productWidget);
+                    materialRow.add(materialColumn);
+                    materialColumn = new MaterialColumn(6, 8, 9);
+                    materialColumn.add(new HTML(productProjectDTO.getPitch()));
+                    materialRow.add(materialColumn);
+                }
+            }
+            addTab(materialTab, tabsPanel, "Products", productsPanel, size);
+        }
+        // TODO - add other information?
+        addTab(materialTab, tabsPanel, "Consortium", new HTMLPanel("TODO..."), size);
+        // add terms and conditions tab panel
+        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+        // now add the tabs panel
+        details.add(tabsPanel);
+        materialTab.selectTab("fullViewTab0");
+        addColumnSection("You might also be interested in...");
+        MaterialRow materialRow = new MaterialRow();
+        details.add(materialRow);
+        addColumnLine(new MaterialLabel("TODO..."));
     }
 
     @Override

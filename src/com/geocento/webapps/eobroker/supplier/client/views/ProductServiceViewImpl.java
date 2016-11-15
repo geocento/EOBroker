@@ -20,11 +20,11 @@ import gwt.material.design.client.ui.MaterialTitle;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class ServicesViewImpl extends Composite implements ServicesView {
+public class ProductServiceViewImpl extends Composite implements ProductServiceView {
 
     private Presenter presenter;
 
-    interface ServicesViewUiBinder extends UiBinder<Widget, ServicesViewImpl> {
+    interface ServicesViewUiBinder extends UiBinder<Widget, ProductServiceViewImpl> {
     }
 
     private static ServicesViewUiBinder ourUiBinder = GWT.create(ServicesViewUiBinder.class);
@@ -53,7 +53,7 @@ public class ServicesViewImpl extends Composite implements ServicesView {
     @UiField
     MaterialTextBox apiURL;
 
-    public ServicesViewImpl(ClientFactoryImpl clientFactory) {
+    public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
 

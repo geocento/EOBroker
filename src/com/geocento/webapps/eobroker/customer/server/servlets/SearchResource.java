@@ -19,6 +19,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.client.utils.CSWUtils;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
+import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
@@ -303,33 +304,6 @@ public class SearchResource implements SearchService {
         productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
         productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
         return productServiceDTO;
-    }
-
-    private static class RankedOffer {
-
-        double rank;
-        Offer offer;
-
-        private RankedOffer(double rank, Offer offer) {
-            this.rank = rank;
-            this.offer = offer;
-        }
-
-        public double getRank() {
-            return rank;
-        }
-
-        public void setRank(double rank) {
-            this.rank = rank;
-        }
-
-        public Offer getOffer() {
-            return offer;
-        }
-
-        public void setOffer(Offer offer) {
-            this.offer = offer;
-        }
     }
 
     @Override

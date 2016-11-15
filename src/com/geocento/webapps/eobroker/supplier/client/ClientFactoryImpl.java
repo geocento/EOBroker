@@ -16,7 +16,7 @@ public class ClientFactoryImpl implements ClientFactory {
     private LoginPageView loginPageView = null;
     private DashboardView dashboardView = null;
     private CompanyView companyView = null;
-    private ServicesView servicesView = null;
+    private ProductServiceView productServiceView = null;
     private OrdersView ordersView = null;
     private OrderView orderView = null;
     private ConversationView conversationView = null;
@@ -65,11 +65,11 @@ public class ClientFactoryImpl implements ClientFactory {
     }
 
     @Override
-    public ServicesView getServicesView() {
-        if(servicesView == null) {
-            servicesView = new ServicesViewImpl(this);
+    public ProductServiceView getProductServiceView() {
+        if(productServiceView == null) {
+            productServiceView = new ProductServiceViewImpl(this);
         }
-        return servicesView;
+        return productServiceView;
     }
 
     @Override

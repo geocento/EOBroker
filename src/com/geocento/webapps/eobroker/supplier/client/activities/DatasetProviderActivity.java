@@ -91,6 +91,22 @@ public class DatasetProviderActivity extends TemplateActivity implements Dataset
                 datasetProviderDTO.setName(datasetProviderView.getName().getText());
                 datasetProviderDTO.setIconURL(datasetProviderView.getIconUrl());
                 datasetProviderDTO.setUri(datasetProviderView.getUri().getText());
+                // do some checks
+                try {
+                    if (datasetProviderDTO.getName() == null || datasetProviderDTO.getName().length() < 3) {
+                        throw new Exception("Please provide a valid name");
+                    }
+                    if (datasetProviderDTO.getIconURL() == null) {
+                        throw new Exception("Please provide a picture");
+                    }
+                    if (datasetProviderDTO.getUri() == null || datasetProviderDTO.getUri().length() < 3) {
+                        throw new Exception("Please provide a valid description");
+                    }
+                } catch (Exception e) {
+                    // TODO - use the view instead
+                    Window.alert(e.getMessage());
+                    return;
+                }
                 displayLoading("Saving dataset...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {

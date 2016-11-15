@@ -1,10 +1,12 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.SoftwarePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.SoftwareView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductSoftwareDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SoftwareDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -94,6 +96,38 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                 softwareDTO.setDescription(softwareView.getDescription().getText());
                 softwareDTO.setFullDescription(softwareView.getFullDescription());
                 softwareDTO.setProducts(softwareView.getSelectedProducts());
+                // do some checks
+                try {
+                    if (softwareDTO.getName() == null || softwareDTO.getName().length() < 3) {
+                        throw new Exception("Please provide a valid name");
+                    }
+                    if (softwareDTO.getImageUrl() == null) {
+                        throw new Exception("Please provide a picture");
+                    }
+                    if (softwareDTO.getDescription() == null || softwareDTO.getDescription().length() < 3) {
+                        throw new Exception("Please provide a valid description");
+                    }
+                    if (softwareDTO.getFullDescription() == null || softwareDTO.getFullDescription().length() < 3) {
+                        throw new Exception("Please provide a valid full description");
+                    }
+                    if (softwareDTO.getProducts() == null) {
+                        throw new Exception("Please select at least one product");
+                    } else {
+                        softwareDTO.setProducts(ListUtil.filterValues(softwareDTO.getProducts(), new ListUtil.CheckValue<ProductSoftwareDTO>() {
+                            @Override
+                            public boolean isValue(ProductSoftwareDTO value) {
+                                return value.getPitch().length() > 0 && value.getProduct() != null;
+                            }
+                        }));
+                        if(softwareDTO.getProducts().size() == 0) {
+                            throw new Exception("Please select at least one product or fill in the missing fields");
+                        }
+                    }
+                } catch (Exception e) {
+                    // TODO - use the view instead
+                    Window.alert(e.getMessage());
+                    return;
+                }
                 displayLoading("Saving software...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {

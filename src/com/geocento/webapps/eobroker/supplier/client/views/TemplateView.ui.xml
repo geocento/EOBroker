@@ -58,6 +58,10 @@
             vertical-align: middle;
         }
 
+        .title {
+            border-left: 1px solid white;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -66,8 +70,8 @@
             <!-- NavBar -->
             <m:MaterialNavBar activates="sideNav" backgroundColor="green" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
                 <m:MaterialNavSection flex="NONE">
-                    <m:MaterialImage height="64px" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
-                    <m:MaterialLabel text="" paddingLeft="50" fontSize="1.5em" ui:field="title"></m:MaterialLabel>
+                    <m:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
+                    <m:MaterialLabel display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
                 </m:MaterialNavSection>
                 <m:MaterialNavSection float="RIGHT">
                     <m:MaterialTooltip text="Orders" position="BOTTOM">

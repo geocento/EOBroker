@@ -19,7 +19,7 @@ public interface ClientFactory {
 
     CompanyView getCompanyView();
 
-    ServicesView getServicesView();
+    ProductServiceView getProductServiceView();
 
     OrdersView getOrdersView();
 

@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ConversationView;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
@@ -125,7 +126,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                             public void onSuccess(Method method, ConversationDTO response) {
                                 hideLoading();
                                 conversationDTO = response;
-                                History.newItem(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId() + ""), false);
+                                History.newItem(PlaceHistoryHelper.convertPlace(new ConversationPlace(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId() + ""))), false);
                                 saveMessage();
                             }
                         }).call(ServicesUtil.ordersService).createConversation(createConversationDTO);

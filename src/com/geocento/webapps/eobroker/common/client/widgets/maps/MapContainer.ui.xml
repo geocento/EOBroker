@@ -19,9 +19,12 @@
         <!-- FAB -->
         <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="60" addStyleNames="{style.fabPanel}" ui:field="editButton">
             <design:MaterialTooltip text="Create" position="LEFT">
-                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE" opacity="1.0"/>
+                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="EDIT" size="LARGE" opacity="1.0" ui:field="fabButton"/>
             </design:MaterialTooltip>
             <design:MaterialFABList>
+                <design:MaterialTooltip text="Upload file" position="LEFT">
+                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="green" iconType="FILE_UPLOAD" ui:field="uploadFile"/>
+                </design:MaterialTooltip>
                 <design:MaterialTooltip text="Draw polygon" position="LEFT">
                     <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
                 </design:MaterialTooltip>

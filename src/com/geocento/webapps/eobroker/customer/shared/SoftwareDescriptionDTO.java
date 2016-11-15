@@ -18,6 +18,8 @@ public class SoftwareDescriptionDTO {
     String fullDescription;
     CompanyDTO companyDTO;
     List<ProductSoftwareDTO> products;
+    private boolean commercial;
+    private boolean openSource;
 
     public SoftwareDescriptionDTO() {
     }
@@ -92,5 +94,21 @@ public class SoftwareDescriptionDTO {
 
     public void setCompanyDTO(CompanyDTO companyDTO) {
         this.companyDTO = companyDTO;
+    }
+
+    public boolean isCommercial() {
+        return commercial;
+    }
+
+    public void setCommercial(boolean commercial) {
+        this.commercial = commercial;
+    }
+
+    public boolean isOpenSource() {
+        return openSource;
+    }
+
+    public void setOpenSource(boolean openSource) {
+        this.openSource = openSource;
     }
 }

@@ -33,31 +33,50 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
-        <g:HTMLPanel addStyleNames="{style.content}">
+    <views:TemplateView titleText="Edit product" ui:field="template">
+        <design:MaterialPanel padding="20">
             <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="IMAGE" text="Product Image"></design:MaterialLink>
-            <widgets:MaterialImageUploader imageWidth="200" imageHeight="100" ui:field="imageUploader"></widgets:MaterialImageUploader>
-            <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Thematic"></design:MaterialLink>
-            <design:MaterialListBox ui:field="thematic"></design:MaterialListBox>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Sector"></design:MaterialLink>
-            <design:MaterialListBox ui:field="sector"></design:MaterialListBox>
-            <design:MaterialTextBox placeholder="Short Description" type="TEXT" iconType="DESCRIPTION" ui:field="shortDescription"/>
-            <design:MaterialLink addStyleNames="{style.label}" text="Full description" iconType="TEXT_FIELDS"/>
-            <richeditor:MaterialRichEditor ui:field="fullDescription"></richeditor:MaterialRichEditor>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Form elements"></design:MaterialLink>
-            <widget:FormEditor addStyleNames="{style.formFields}" ui:field="formFields"></widget:FormEditor>
-            <design:MaterialLabel addStyleNames="{style.explanation}" text="Define the form fields presented to the user when requesting a quote. The user will have to fill these in when submitting a request for quotation."></design:MaterialLabel>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="API fields"></design:MaterialLink>
-            <widget:FormEditor addStyleNames="{style.formFields}" ui:field="apiFormFields"></widget:FormEditor>
-            <design:MaterialLabel addStyleNames="{style.explanation}" text="Define the API fields used for the feasibility query. The user will have to fill these in when checking feasibility of a service."></design:MaterialLabel>
-            <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Recommendation rules"></design:MaterialLink>
-            <widget:CodeEditor height="350px" addStyleNames="{style.formFields}" ui:field="recommendationRule"></widget:CodeEditor>
-            <design:MaterialLabel addStyleNames="{style.explanation}" text="Define an image recommendation rule for this product. The rule should be a javascript piece of code returning an array of objects containing a sensor filter and product constraints. The input is the AoI in geojson format."></design:MaterialLabel>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12">
+                    <widgets:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></widgets:MaterialImageUploader>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Thematic"></design:MaterialLink>
+                    <design:MaterialListBox ui:field="thematic"></design:MaterialListBox>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Sector"></design:MaterialLink>
+                    <design:MaterialListBox ui:field="sector"></design:MaterialListBox>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Short Description" type="TEXT" iconType="DESCRIPTION" ui:field="shortDescription"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" text="Full description" iconType="TEXT_FIELDS"/>
+                    <richeditor:MaterialRichEditor ui:field="fullDescription"></richeditor:MaterialRichEditor>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Form elements"></design:MaterialLink>
+                    <widget:FormEditor addStyleNames="{style.formFields}" ui:field="formFields"></widget:FormEditor>
+                    <design:MaterialLabel addStyleNames="{style.explanation}" text="Define the form fields presented to the user when requesting a quote. The user will have to fill these in when submitting a request for quotation."></design:MaterialLabel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="API fields"></design:MaterialLink>
+                    <widget:FormEditor addStyleNames="{style.formFields}" ui:field="apiFormFields"></widget:FormEditor>
+                    <design:MaterialLabel addStyleNames="{style.explanation}" text="Define the API fields used for the feasibility query. The user will have to fill these in when checking feasibility of a service."></design:MaterialLabel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Recommendation rules"></design:MaterialLink>
+                    <widget:CodeEditor height="350px" addStyleNames="{style.formFields}" ui:field="recommendationRule"></widget:CodeEditor>
+                    <design:MaterialLabel addStyleNames="{style.explanation}" text="Define an image recommendation rule for this product. The rule should be a javascript piece of code returning an array of objects containing a sensor filter and product constraints. The input is the AoI in geojson format."></design:MaterialLabel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
                 <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
             </g:HTMLPanel>
-        </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

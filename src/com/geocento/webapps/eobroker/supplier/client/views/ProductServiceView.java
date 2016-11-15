@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 /**
  * Created by thomas on 09/05/2016.
  */
-public interface ServicesView extends IsWidget {
+public interface ProductServiceView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 

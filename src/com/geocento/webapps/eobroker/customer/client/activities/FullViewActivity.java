@@ -8,10 +8,7 @@ import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.FullView;
-import com.geocento.webapps.eobroker.customer.shared.CompanyDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDescriptionDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDescriptionDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -85,6 +82,20 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             try {
                 Long productDatasetId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productdatasetid.toString()));
                 loadProductDatasetDetails(productDatasetId);
+            } catch (Exception e) {
+
+            }
+        } else if(tokens.containsKey(FullViewPlace.TOKENS.softwareid.toString())) {
+            try {
+                Long softwareId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.softwareid.toString()));
+                loadSoftwareDetails(softwareId);
+            } catch (Exception e) {
+
+            }
+        } else if(tokens.containsKey(FullViewPlace.TOKENS.projectid.toString())) {
+            try {
+                Long projectId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.projectid.toString()));
+                loadProjectDetails(projectId);
             } catch (Exception e) {
 
             }
@@ -179,6 +190,52 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     fullView.displayProductDataset(productDatasetDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductDatasetDescription(productDatasetId);
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadSoftwareDetails(Long softwareId) {
+        fullView.setTitle("Loading software information...");
+        fullView.clearDetails();
+        fullView.displayLoading();
+        try {
+            REST.withCallback(new MethodCallback<SoftwareDescriptionDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    fullView.hideLoading();
+                    fullView.displayError("Could not find software");
+                }
+
+                @Override
+                public void onSuccess(Method method, SoftwareDescriptionDTO softwareDescriptionDTO) {
+                    fullView.hideLoading();
+                    fullView.displayTitle("Software");
+                    fullView.displaySoftware(softwareDescriptionDTO);
+                }
+            }).call(ServicesUtil.assetsService).getSoftwareDescription(softwareId);
+        } catch (RequestException e) {
+        }
+    }
+
+    private void loadProjectDetails(Long projectId) {
+        fullView.setTitle("Loading project information...");
+        fullView.clearDetails();
+        fullView.displayLoading();
+        try {
+            REST.withCallback(new MethodCallback<ProjectDescriptionDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    fullView.hideLoading();
+                    fullView.displayError("Could not find project");
+                }
+
+                @Override
+                public void onSuccess(Method method, ProjectDescriptionDTO projectDescriptionDTO) {
+                    fullView.hideLoading();
+                    fullView.displayTitle("Project");
+                    fullView.displayProject(projectDescriptionDTO);
+                }
+            }).call(ServicesUtil.assetsService).getProjectDescription(projectId);
         } catch (RequestException e) {
         }
     }

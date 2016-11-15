@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="Choose an AoI" ui:field="title"></design:MaterialTitle>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12 m6 l8">
+                    <design:MaterialLabel>List of aois</design:MaterialLabel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m6 l4">
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <widgets:MaterialFileUploader acceptedFiles="image/*" url="./test" maxFileSize="100" backgroundColor="transparent" height="auto" width="auto" shadow="0" ui:field="uploadAoI">
+                <design:MaterialLabel ui:field="iconName" text="" fontSize="1.2em" truncate="true"/>
+                <design:MaterialLabel ui:field="iconSize" text="" fontSize="0.8em"/>
+                <design:MaterialProgress ui:field="iconProgress" layoutPosition="ABSOLUTE" bottom="0" left="0" type="DETERMINATE" percent="0" />
+                <design:MaterialButton layoutPosition="ABSOLUTE" top="-25" right="25" type="FLOATING" backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" iconColor="white"/>
+            </widgets:MaterialFileUploader>
+        </design:MaterialModalContent>
+        <design:MaterialModalFooter>
+
+        </design:MaterialModalFooter>
+    </design:MaterialModal>
+</ui:UiBinder>

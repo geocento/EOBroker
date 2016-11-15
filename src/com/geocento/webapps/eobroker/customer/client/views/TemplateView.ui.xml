@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:m="urn:import:gwt.material.design.client.ui"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets">
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
 
         <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.TemplateView.Style">
 
@@ -74,17 +75,22 @@
                 border-left: 1px solid white;
             }
 
+            .userIcon {
+                display: inline-block; !important;
+                vertical-align: middle;
+            }
+
         </ui:style>
         <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
         <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
         <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
             <header>
-                <g:HTMLPanel ui:field="header">
+                <m:MaterialPanel ui:field="header">
                     <!-- NavBar -->
                     <m:MaterialNavBar addStyleNames="{style.navBar}" activates="sideNav" layoutPosition="FIXED" backgroundColor="blue-grey" ui:field="navBar">
                         <m:MaterialNavSection>
                             <m:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
-                            <m:MaterialLabel visible="true" text="" display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
+                            <m:MaterialLabel text="" display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
                             <m:MaterialLink visible="false" text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
                         </m:MaterialNavSection>
                         <m:MaterialNavSection float="RIGHT">
@@ -102,7 +108,9 @@
                                 <m:MaterialLink iconType="FACE" iconPosition="NONE" ui:field="signIn"/>
                             </m:MaterialTooltip>
                             <m:MaterialTooltip text="Sign-out" position="BOTTOM">
-                                <m:MaterialLink visible="false" ui:field="signOut" iconType="FACE" iconPosition="NONE"/>
+                                <m:MaterialLink ui:field="signOut">
+                                    <cwidgets:UserWidget size="40" display="INLINE_BLOCK" addStyleNames="{style.userIcon}" ui:field="userWidget"/>
+                                </m:MaterialLink>
                             </m:MaterialTooltip>
                         </m:MaterialNavSection>
                         <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
@@ -112,7 +120,7 @@
                     <m:MaterialDropDown activator="categories" constrainWidth="true" ui:field="categoriesDropdown">
                         <m:MaterialLink waves="DEFAULT" textColor="black" text="All categories" ui:field="allCategories"/>
                     </m:MaterialDropDown>
-                </g:HTMLPanel>
+                </m:MaterialPanel>
                 <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
             </header>
             <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">

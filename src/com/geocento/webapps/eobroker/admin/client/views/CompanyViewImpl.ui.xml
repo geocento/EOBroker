@@ -12,18 +12,33 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
-        <design:MaterialTitle title="Edit this company's profile" ui:field="title"></design:MaterialTitle>
-        <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-        <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
-        <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
-        <design:MaterialIcon text="Company logo" textColor="black" iconType="IMAGE"></design:MaterialIcon>
-        <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
-        <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
-        <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
-        <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
-        <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-            <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-        </g:HTMLPanel>
+    <views:TemplateView titleText="Edit company" ui:field="template">
+        <design:MaterialPanel padding="20">
+            <design:MaterialTitle title="Edit this company's profile" ui:field="title"></design:MaterialTitle>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12">
+                    <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
+                    <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+            </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

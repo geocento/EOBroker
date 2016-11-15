@@ -34,22 +34,37 @@
             padding-left: 250px;
         }
 
+        .title {
+            border-left: 1px solid white;
+        }
+
+        .userIcon {
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .mainPanel {
+            max-width: 960px;
+            margin: auto;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
+    <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
         <header>
             <!-- NavBar -->
-            <design:MaterialNavBar activates="sideNav" backgroundColor="grey" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
+            <design:MaterialNavBar activates="sideNav" backgroundColor="purple" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
                 <design:MaterialNavSection>
-                    <design:MaterialImage height="64px" resource="{res.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
-                    <design:MaterialLabel text="Admin dashboard" paddingLeft="50" fontSize="1.5em"></design:MaterialLabel>
+                    <design:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
+                    <design:MaterialLabel text="Admin dashboard" display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
                 </design:MaterialNavSection>
                 <design:MaterialNavSection float="RIGHT">
                     <design:MaterialTooltip text="Notifications" position="BOTTOM">
                         <design:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE"/>
                     </design:MaterialTooltip>
                     <design:MaterialTooltip text="Log out" position="BOTTOM">
-                        <design:MaterialLink iconType="FACE" iconPosition="NONE" ui:field="logOut"/>
+                        <widgets:UserWidget size="40" addStyleNames="{style.userIcon}" ui:field="userIcon"></widgets:UserWidget>
                     </design:MaterialTooltip>
                 </design:MaterialNavSection>
             </design:MaterialNavBar>
@@ -61,7 +76,8 @@
             </widgets:MaterialSideNav>
         </header>
 
-        <design:MaterialContainer fontSize="0.8em" paddingTop="64" ui:field="mainPanel">
+        <design:MaterialContainer fontSize="0.8em" paddingTop="64">
+            <design:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></design:MaterialPanel>
         </design:MaterialContainer>
         <design:MaterialFooter backgroundColor="blue">
             <design:MaterialFooterCopyright>

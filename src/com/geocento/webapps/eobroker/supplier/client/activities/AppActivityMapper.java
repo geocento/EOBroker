@@ -24,7 +24,7 @@ public class AppActivityMapper implements ActivityMapper {
         } else if(place instanceof CompanyPlace) {
             return new CompanyActivity((CompanyPlace) place, clientFactory);
         } else if(place instanceof ServicesPlace) {
-            return new ServicesActivity((ServicesPlace) place, clientFactory);
+            return new ProductServiceActivity((ServicesPlace) place, clientFactory);
         } else if(place instanceof OrdersPlace) {
             return new OrdersActivity((OrdersPlace) place, clientFactory);
         } else if(place instanceof OrderPlace) {

@@ -23,7 +23,7 @@ public interface StyleResources extends ClientBundle {
     @Source({"Style.css"})
     Style style();
 
-    @Source("images/eobe-logo.png")
+    @Source("images/eobe-logo.jpg")
     ImageResource logoEOBroker();
 
     @Source("images/informationIcon.png")

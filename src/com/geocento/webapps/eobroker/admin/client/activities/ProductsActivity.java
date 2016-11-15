@@ -28,7 +28,7 @@ public class ProductsActivity extends TemplateActivity implements ProductsView.P
     private ProductsView productsView;
 
     private int start = 0;
-    private int limit = 10;
+    private int limit = 16;
     private String orderby = "";
     private String filter;
 

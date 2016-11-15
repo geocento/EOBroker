@@ -11,7 +11,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.ButtonSize;
+import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.ui.MaterialAnchorButton;
+import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialFAB;
 
 /**
@@ -36,6 +39,10 @@ public class MapContainer extends Composite {
     MaterialAnchorButton clearAoIs;
     @UiField
     MaterialFAB editButton;
+    @UiField
+    MaterialButton fabButton;
+    @UiField
+    MaterialAnchorButton uploadFile;
 
     private Presenter presenter;
 
@@ -92,6 +99,12 @@ public class MapContainer extends Composite {
                                 presenter.aoiChanged(null);
                             }
                         });
+                        uploadFile.addClickHandler(new ClickHandler() {
+                            @Override
+                            public void onClick(ClickEvent event) {
+                                UploadAoI.getInstance().display();
+                            }
+                        });
                         map.setZoom(3);
                         mapLoaded();
                     }
@@ -109,11 +122,18 @@ public class MapContainer extends Composite {
     public void setWidth(String width) {
         mapContainer.setWidth(width);
     }
+*/
 
     public void setHeight(String height) {
-        mapContainer.setHeight(height);
+        super.setHeight(height);
+        boolean large = getOffsetHeight() > 450;
+        fabButton.setSize(large ? ButtonSize.LARGE : ButtonSize.MEDIUM);
+        IconSize iconSize = large ? IconSize.MEDIUM : IconSize.SMALL;
+        fabButton.setIconSize(iconSize);
+        clearAoIs.setIconSize(iconSize);
+        drawPolygon.setIconSize(iconSize);
+        uploadFile.setIconSize(iconSize);
     }
-*/
 
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
         this.mapLoadedHandler = mapLoadedHandler;

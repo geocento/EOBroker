@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
-
 /**
  * Created by thomas on 07/11/2016.
  */
@@ -9,7 +7,7 @@ public class ProductProjectDTO {
 
     Long id;
     String pitch;
-    com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO product;
+    ProductDTO product;
 
     public ProductProjectDTO() {
     }
@@ -30,7 +28,7 @@ public class ProductProjectDTO {
         this.pitch = pitch;
     }
 
-    public com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO getProduct() {
+    public ProductDTO getProduct() {
         return product;
     }
 
