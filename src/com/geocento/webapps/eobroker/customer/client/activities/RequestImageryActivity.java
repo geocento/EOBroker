@@ -1,8 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
@@ -32,8 +32,6 @@ import java.util.List;
 public class RequestImageryActivity extends TemplateActivity implements RequestImageryView.Presenter {
 
     private RequestImageryView requestImageryView;
-
-    private AoI aoi;
 
     public RequestImageryActivity(RequestImageryPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -80,8 +78,8 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
         setAoI(Customer.currentAoI);
     }
 
-    private void setAoI(AoI aoi) {
-        this.aoi = aoi;
+    public void setAoI(AoIDTO aoi) {
+        super.setAoI(aoi);
         requestImageryView.displayAoI(aoi);
     }
 
@@ -118,7 +116,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
             return;
         }
         ImageRequestDTO imageRequestDTO = new ImageRequestDTO();
-        imageRequestDTO.setAoiWKT(AoIUtil.toWKT(aoi));
+        imageRequestDTO.setAoiWKT(AoIUtil.toWKT(currentAoI));
         imageRequestDTO.setImageType(imageType);
         imageRequestDTO.setStart(start);
         imageRequestDTO.setStop(stop);
@@ -151,7 +149,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
     }
 
     @Override
-    public void aoiChanged(AoI aoi) {
-        this.aoi = aoi;
+    public void aoiChanged(AoIDTO aoi) {
+        setAoI(aoi);
     }
 }

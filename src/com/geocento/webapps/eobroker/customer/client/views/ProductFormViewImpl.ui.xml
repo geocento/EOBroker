@@ -85,22 +85,8 @@
                     <design:MaterialColumn grid="s12 m12 l6">
                         <design:MaterialLabel text="Draw or upload AoI" addStyleNames="{style.section}"></design:MaterialLabel>
                         <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                            <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
-                            </maps:ArcGISMap>
-                            <!-- FAB -->
-                            <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="60">
-                                <design:MaterialTooltip text="Create" position="LEFT">
-                                    <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
-                                </design:MaterialTooltip>
-                                <design:MaterialFABList>
-                                    <design:MaterialTooltip text="Theme" position="LEFT">
-                                        <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
-                                    </design:MaterialTooltip>
-                                    <design:MaterialTooltip text="Mail " position="LEFT">
-                                        <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
-                                    </design:MaterialTooltip>
-                                </design:MaterialFABList>
-                            </design:MaterialFAB>
+                            <maps:MapContainer width="100%" height="300px" ui:field="mapContainer">
+                            </maps:MapContainer>
                         </g:HTMLPanel>
                     </design:MaterialColumn>
                 </design:MaterialRow>

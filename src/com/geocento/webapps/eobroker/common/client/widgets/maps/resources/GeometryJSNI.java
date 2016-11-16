@@ -21,4 +21,9 @@ public class GeometryJSNI extends JavaScriptObject {
     public final native void setSpatialReference(int wktid) /*-{
         this.setSpatialReference(new $wnd['esri'].SpatialReference(wktid));
     }-*/;
+
+    public final native ExtentJSNI getExtent() /*-{
+        return this.getExtent();
+    }-*/;
+
 }

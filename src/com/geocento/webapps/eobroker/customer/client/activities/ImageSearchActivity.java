@@ -3,8 +3,11 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -13,7 +16,7 @@ import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImageSearchView;
 import com.geocento.webapps.eobroker.customer.shared.ImagesRequestDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -36,7 +39,6 @@ import java.util.List;
 public class ImageSearchActivity extends TemplateActivity implements ImageSearchView.Presenter {
 
     private ImageSearchView imageSearchView;
-    private AoI aoi;
     private String sensors;
     private Date startDate;
     private Date stopDate;
@@ -129,7 +131,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                     public void onSuccess(Method method, ProductDTO productDTO) {
                         setSensors("Suitable for '" + productDTO.getName() + "'");
                         enableUpdateMaybe();
-                        if(aoi != null && text != null && text.length() > 0) {
+                        if(currentAoI != null && text != null && text.length() > 0) {
                             updateSearch();
                         }
                     }
@@ -140,7 +142,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         } else {
             setSensors(text);
             enableUpdateMaybe();
-            if(aoi != null && text != null && text.length() > 0) {
+            if(currentAoI != null && text != null && text.length() > 0) {
                 updateSearch();
             }
         }
@@ -184,7 +186,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                 List<Product> products = imageSearchView.getSelectedProducts();
                 ImagesRequestDTO imagesRequestDTO = new ImagesRequestDTO();
                 imagesRequestDTO.setImageServiceId(selectedImageService.getId());
-                imagesRequestDTO.setAoiWKT(AoIUtil.toWKT(aoi));
+                imagesRequestDTO.setAoiWKT(AoIUtil.toWKT(currentAoI));
                 imagesRequestDTO.setProducts(products);
                 try {
                     REST.withCallback(new MethodCallback<RequestDTO>() {
@@ -254,7 +256,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     private void updateSearch() {
         // check current suggestion
         SearchQuery searchQuery = new SearchQuery();
-        searchQuery.setAoiWKT("POLYGON((" + ((AoIPolygon) aoi).getWktRings() + "))");
+        searchQuery.setAoiWKT(currentAoI.getWktGeometry());
         if(selectedSuggestion != null) {
             if(selectedSuggestion.getCategory() == Category.imagery) {
                 searchQuery.setSensors(selectedSuggestion.getName());
@@ -267,7 +269,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         searchQuery.setStart((long) (startDate.getTime() / 1000.0));
         searchQuery.setStop((long) (stopDate.getTime() / 1000.0));
         imageSearchView.clearMap();
-        imageSearchView.displayAoI(aoi);
+        imageSearchView.displayAoI(currentAoI);
         imageSearchView.displayLoadingResults("Searching products...");
         enableUpdate(false);
         try {
@@ -290,15 +292,14 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     }
 
     @Override
-    public void aoiChanged(AoI aoi) {
-        this.aoi = aoi;
-        Customer.setAoI(aoi);
+    public void aoiChanged(AoIDTO aoi) {
+        setAoi(aoi);
         enableUpdateMaybe();
     }
 
     private void enableUpdateMaybe() {
-        if(aoi == null) {
-            MaterialToast.fireToast("Please select AoI");
+        if(currentAoI == null) {
+            MaterialToast.fireToast("Please select AoIDTO");
             enableUpdate(false);
             return;
         }
@@ -350,8 +351,8 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         enableUpdateMaybe();
     }
 
-    public void setAoi(AoI aoi) {
-        this.aoi = aoi;
+    public void setAoi(AoIDTO aoi) {
+        super.setAoI(aoi);
         imageSearchView.displayAoI(aoi);
     }
 

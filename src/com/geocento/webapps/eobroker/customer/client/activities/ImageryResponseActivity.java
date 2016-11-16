@@ -145,18 +145,6 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
 
     }
 
-    private void displayError(String message) {
-        imageryResponseView.getTemplateView().displayError(message);
-    }
-
-    private void hideLoading() {
-        imageryResponseView.getTemplateView().hideLoading();
-    }
-
-    private void displayLoading() {
-        imageryResponseView.getTemplateView().displayLoading();;
-    }
-
     private void addMessage(MessageDTO messageDTO) {
         selectedResponse.getMessages().add(messageDTO);
         String userName = Customer.getLoginInfo().getUserName();

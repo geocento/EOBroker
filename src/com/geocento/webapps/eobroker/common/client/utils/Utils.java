@@ -42,4 +42,7 @@ public class Utils {
         return tokens;
     }
 
+    public static String getImageMaybe(String imageUrl) {
+        return imageUrl == null ? "./images/noImage.png" : imageUrl;
+    }
 }

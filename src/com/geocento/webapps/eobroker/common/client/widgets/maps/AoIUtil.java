@@ -2,45 +2,38 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.GeometryJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.PolygonJSNI;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.AoIPolygon;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 
 /**
  * Created by thomas on 03/06/2016.
  */
 public class AoIUtil {
 
-    public static AoI createAoI(GeometryJSNI geometry) {
+    public static AoIDTO createAoI(GeometryJSNI geometry) {
+        AoIDTO aoIDTO = new AoIDTO();
         switch(geometry.getType()) {
             case "polygon":
-                AoIPolygon aoiPolygon = new AoIPolygon();
-                aoiPolygon.setWktRings(((PolygonJSNI) geometry).getRings());
-                return aoiPolygon;
+                aoIDTO.setWktGeometry("POLYGON((" + ((PolygonJSNI) geometry).getRings() + "))");
+                return aoIDTO;
         }
         return null;
     }
 
-    public static String toWKT(AoI aoi) {
-        if(aoi instanceof AoIPolygon) {
-            return "POLYGON((" + ((AoIPolygon) aoi).getWktRings() + "))";
-        }
-        return null;
+    public static String toWKT(AoIDTO aoi) {
+        return aoi.getWktGeometry();
     }
 
-    public static AoI fromWKT(String aoiWKT) {
+    public static AoIDTO fromWKT(String aoiWKT) {
         if(aoiWKT == null) {
             return null;
         }
-        if(aoiWKT.startsWith("POLYGON((")) {
-            AoIPolygon aoIPolygon = new AoIPolygon();
-            aoIPolygon.setWktRings(aoiWKT.replace("POLYGON((", "").replace("))", ""));
-            return aoIPolygon;
-        }
-        return null;
+        AoIDTO aoIDTO = new AoIDTO();
+        aoIDTO.setWktGeometry(aoiWKT);
+        return aoIDTO;
     }
 
-    public static Extent getExtent(AoI aoi) {
+    public static Extent getExtent(AoIDTO aoi) {
         return null;
     }
 }

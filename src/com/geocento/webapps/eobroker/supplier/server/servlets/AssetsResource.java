@@ -8,7 +8,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
-import com.geocento.webapps.eobroker.common.shared.entities.utils.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
@@ -545,7 +544,13 @@ public class AssetsResource implements AssetsService {
                 extent.setNorth(90.0);
                 extent.setEast(180.0);
                 extent.setWest(-180.0);
-                extentWKT = AoIUtil.toWKT(new AoIRectangle(extent));
+                extentWKT = "POLYGON((" +
+                        extent.getEast() + " " + extent.getNorth() + "," +
+                        extent.getWest() + " " + extent.getNorth() + "," +
+                        extent.getWest() + " " + extent.getSouth() + "," +
+                        extent.getEast() + " " + extent.getSouth() + "," +
+                        extent.getEast() + " " + extent.getNorth() +
+                        "))";
             }
             productDataset.setExtent(extentWKT);
             // update the data access

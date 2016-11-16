@@ -1,8 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -20,7 +20,7 @@ public interface ImageSearchView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void displayAoI(AoI aoi);
+    void displayAoI(AoIDTO aoi);
 
     void setText(String text);
 
@@ -64,7 +64,7 @@ public interface ImageSearchView extends IsWidget {
 
     public interface Presenter {
 
-        void aoiChanged(AoI aoi);
+        void aoiChanged(AoIDTO aoi);
 
         void onProviderChanged(ImageService imageService);
 

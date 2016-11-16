@@ -1,0 +1,27 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .pitch {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            font-size: 1.2em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #333;
+        }
+
+    </ui:style>
+    <design:MaterialPanel height="6em" backgroundColor="white" padding="0" margin="0">
+        <design:MaterialPanel height="100%" backgroundColor="green" float="LEFT">
+            <design:MaterialIcon iconSize="LARGE" backgroundColor="green" textColor="white" ui:field="image"/>
+        </design:MaterialPanel>
+        <design:MaterialPanel height="100%" padding="10">
+            <design:MaterialButton float="RIGHT" target="_blank" text="SELECT" ui:field="action"></design:MaterialButton>
+            <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" ui:field="name"></design:MaterialLabel>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+</ui:UiBinder>

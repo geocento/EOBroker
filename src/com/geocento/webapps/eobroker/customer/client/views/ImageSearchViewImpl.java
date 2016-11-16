@@ -3,12 +3,13 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
@@ -71,11 +72,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @UiField
     MaterialLink providersLink;
     @UiField
-    ArcGISMap mapContainer;
-    @UiField
-    MaterialAnchorButton drawPolygon;
-    @UiField
-    MaterialAnchorButton clearAoIs;
+    MapContainer mapContainer;
     @UiField
     MaterialTab tab;
     @UiField
@@ -99,17 +96,9 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     private Presenter presenter;
 
-    private Callback<Void, Exception> mapLoadedHandler = null;
-
-    private MapJSNI map;
-
-    private GraphicJSNI aoiRendering;
-
     private Product outlinedProduct;
 
     private GraphicJSNI outlinedProductGraphicJSNI;
-
-    private boolean mapLoaded = false;
 
     private DataGrid<Product> resultsTable;
 
@@ -134,50 +123,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
-            @Override
-            public void onFailure(Exception reason) {
-
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                mapContainer.createMap("streets", new LatLng(40.0, -4.0), 3, new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<MapJSNI>() {
-
-                    @Override
-                    public void callback(final MapJSNI mapJSNI) {
-                        final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
-                        ImageSearchViewImpl.this.map = mapJSNI;
-                        final DrawJSNI drawJSNI = arcgisMap.createDraw(mapJSNI);
-                        drawJSNI.onDrawEnd(new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<DrawEventJSNI>() {
-
-                            @Override
-                            public void callback(DrawEventJSNI result) {
-                                drawJSNI.deactivate();
-                                AoI aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
-                                displayAoI(aoi);
-                                presenter.aoiChanged(aoi);
-                            }
-                        });
-                        drawPolygon.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                mapJSNI.getGraphics().clear();
-                                drawJSNI.activate("polygon");
-                            }
-                        });
-                        clearAoIs.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                mapJSNI.getGraphics().clear();
-                                presenter.aoiChanged(null);
-                            }
-                        });
-                        mapLoaded();
-                    }
-                });
-            }
-        });
         tab.setBackgroundColor("teal lighten-2");
         //tab.setIndicatorColor("yellow");
 
@@ -211,29 +156,14 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         });
     }
 
-    private void mapLoaded() {
-        mapLoaded = true;
-        if(mapLoadedHandler != null) {
-            mapLoadedHandler.onSuccess(null);
-        }
-    }
-
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
-        this.mapLoadedHandler = mapLoadedHandler;
-        if(mapLoaded) {
-            mapLoadedHandler.onSuccess(null);
-        }
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
     @Override
-    public void displayAoI(AoI aoi) {
-        if(aoiRendering != null) {
-            map.getGraphics().remove(aoiRendering);
-        }
-        if(aoi != null) {
-            aoiRendering = map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
-        }
+    public void displayAoI(AoIDTO aoi) {
+        mapContainer.displayAoI(aoi);
     }
 
     @Override
@@ -260,12 +190,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         // create table
         resultsTable = new DataGrid<Product>(1000, MyDataGridResources.INSTANCE);
         resultsTable.setSize("100%", "100%");
-        //resultsTable.setStyleName("striped");
-/*
-        SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
-        SimplePager pager = new SimplePager(SimplePager.TextLocation.CENTER, pagerResources, false, 0, true);
-        pager.setDisplay(resultsTable);
-*/
         // create the list data provider
         imagesList = new ListDataProvider<Product>();
         imagesList.setList(new ArrayList<Product>());
@@ -404,25 +328,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
             }
         });
 
-/*
-        Column<Product, Boolean> actionColumn = new Column<Product, Boolean>(new ClickableImageCell<Boolean>() {
-            @Override
-            protected void performAction(String action, Boolean value, NativeEvent event) {
-
-            }
-
-            @Override
-            public void render(Context context, Boolean value, SafeHtmlBuilder sb) {
-                sb.append(templates.cell("Show information on this product", "Show information on this product", imgStyle, makeImage(StyleResources.INSTANCE.info())));
-            }
-        }) {
-            @Override
-            public Boolean getValue(Product object) {
-                return object != null;
-            }
-        };
-*/
-
         // set the row styles based on type of product
         resultsTable.setRowStyles(new RowStyles<Product>() {
             @Override
@@ -454,24 +359,22 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         imagesList.getList().clear();
         imagesList.getList().addAll(imageProductDTOs == null ? new ArrayList<Product>() : imageProductDTOs);
         imagesList.refresh();
-/*
-        resultsTable.setRowCount(imageProductDTOs.size());
-        resultsTable.setRowData(0, imageProductDTOs);
-*/
         // refresh map
         refreshMap();
     }
 
     private void refreshMap() {
+        ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
+        MapJSNI map = mapContainer.map;
         // refresh products display on map
         for(Product product : imagesList.getList()) {
             boolean toRender = selectedProducts.contains(product);
             boolean rendered = renderedProducts.containsKey(product);
             if(toRender && !rendered) {
                 ProductRendering productRendering = new ProductRendering();
-                PolygonJSNI polygon = mapContainer.arcgisMap.createPolygon(product.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
+                PolygonJSNI polygon = arcgisMap.createPolygon(product.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
                 productRendering.footprint = map.getGraphics().addGraphic(polygon,
-                        mapContainer.arcgisMap.createFillSymbol(product.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff", 2, "rgba(0,0,0,0.0)"));
+                        arcgisMap.createFillSymbol(product.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff", 2, "rgba(0,0,0,0.0)"));
                 // add wms layer
                 if (product.getType() == Product.TYPE.ARCHIVE && product.getQl() != null) {
                     productRendering.overlay = map.addWMSLayer(product.getQl(), WMSLayerInfoJSNI.createInfo(product.getSatelliteName(), product.getSatelliteName()), polygon.getExtent());
@@ -494,8 +397,8 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         }
         // add outlined product on top
         if(outlinedProduct != null) {
-            outlinedProductGraphicJSNI = map.getGraphics().addGraphic(mapContainer.arcgisMap.createPolygon(outlinedProduct.getCoordinatesWKT().replace("POLYGON((", "").replace("))", "")),
-                    mapContainer.arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
+            outlinedProductGraphicJSNI = map.getGraphics().addGraphic(arcgisMap.createPolygon(outlinedProduct.getCoordinatesWKT().replace("POLYGON((", "").replace("))", "")),
+                    arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
         }
     }
 
@@ -569,13 +472,9 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     @Override
     public void clearMap() {
-        if(map != null) {
-            if(map.getGraphics() != null) {
-                if(aoiRendering != null) {
-                    map.getGraphics().remove(aoiRendering);
-                }
-                clearProductsSelection();
-            }
+        if(mapContainer != null) {
+            mapContainer.clearAoI();
+            clearProductsSelection();
         }
     }
 
@@ -596,6 +495,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     @Override
     public void clearProductsSelection() {
+        MapJSNI map = mapContainer.map;
         if(renderedProducts.size() > 0) {
             for(ProductRendering productRendering : renderedProducts.values()) {
                 map.getGraphics().remove(productRendering.footprint);

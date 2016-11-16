@@ -55,4 +55,13 @@ public class MapJSNI extends JavaScriptObject {
         });
     }-*/;
 
+    public static final native ExtentJSNI createExtent(double minx, double miny, double maxx, double maxy, int wkid) /*-{
+        return new $wnd['esri'].geometry.Extent(minx, miny, maxx, maxy, {
+            wkid: wkid
+        });
+    }-*/;
+
+    public final native void setExtent(ExtentJSNI extent) /*-{
+        this.setExtent(extent);
+    }-*/;
 }

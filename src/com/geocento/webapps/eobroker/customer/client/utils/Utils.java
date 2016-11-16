@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.utils;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.google.gwt.storage.client.Storage;
 
 /**
@@ -14,7 +14,7 @@ public class Utils {
         stockStore = Storage.getLocalStorageIfSupported();
     }
 
-    public static void saveAoI(AoI aoi) {
+    public static void saveAoI(AoIDTO aoi) {
         saveLocalStorage("aoi", AoIUtil.toWKT(aoi));
     }
 
@@ -31,7 +31,7 @@ public class Utils {
         return null;
     }
 
-    public static AoI getAoI() {
+    public static AoIDTO getAoI() {
         return AoIUtil.fromWKT(getLocalStorage("aoi"));
     }
 }

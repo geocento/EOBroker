@@ -4,12 +4,13 @@ import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawEventJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
@@ -68,21 +69,11 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @UiField
     HTMLPanel mapPanel;
     @UiField
-    ArcGISMap mapContainer;
-    @UiField
-    MaterialAnchorButton drawPolygon;
-    @UiField
-    MaterialAnchorButton clearAoIs;
+    MapContainer mapContainer;
     @UiField
     MaterialChip information;
 
     private Presenter presenter;
-
-    private Callback<Void, Exception> mapLoadedHandler = null;
-
-    public MapJSNI map;
-
-    private boolean mapLoaded = false;
 
     public ProductFormViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -92,72 +83,16 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
 
         template.setTitleText("Product form");
 
-        mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
-            @Override
-            public void onFailure(Exception reason) {
-
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                mapContainer.createMap("streets", new LatLng(40.0, -4.0), 3, new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<MapJSNI>() {
-
-                    @Override
-                    public void callback(final MapJSNI mapJSNI) {
-                        final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
-                        final DrawJSNI drawJSNI = arcgisMap.createDraw(mapJSNI);
-                        drawJSNI.onDrawEnd(new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<DrawEventJSNI>() {
-
-                            @Override
-                            public void callback(DrawEventJSNI result) {
-                                drawJSNI.deactivate();
-                                AoI aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
-                                displayAoI(aoi);
-                            }
-                        });
-                        drawPolygon.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                mapJSNI.getGraphics().clear();
-                                drawJSNI.activate("polygon");
-                            }
-                        });
-                        clearAoIs.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                mapJSNI.getGraphics().clear();
-                            }
-                        });
-                        ProductFormViewImpl.this.map = mapJSNI;
-                        map.setZoom(3);
-                        mapLoaded();
-                    }
-                });
-            }
-        });
     }
 
     @Override
-    public void displayAoI(AoI aoi) {
-        map.getGraphics().clear();
-        if(aoi != null) {
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
-        }
+    public void displayAoI(AoIDTO aoi) {
+        mapContainer.displayAoI(aoi);
     }
 
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
-        this.mapLoadedHandler = mapLoadedHandler;
-        if(mapLoaded) {
-            mapLoadedHandler.onSuccess(null);
-        }
-    }
-
-    private void mapLoaded() {
-        mapLoaded = true;
-        if(mapLoadedHandler != null) {
-            mapLoadedHandler.onSuccess(null);
-        }
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
     @Override

@@ -2,7 +2,8 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.customer.client.widgets.UploadAoI;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,7 +29,8 @@ public class MapContainer extends Composite {
     private static MapContainerUiBinder ourUiBinder = GWT.create(MapContainerUiBinder.class);
 
     public static interface Presenter {
-        void aoiChanged(AoI aoi);
+        void aoiChanged(AoIDTO aoi);
+        void uploadAoI();
     }
 
     @UiField
@@ -54,7 +56,7 @@ public class MapContainer extends Composite {
 
     private GraphicJSNI aoiRendering;
 
-    private AoI aoi;
+    private AoIDTO aoi;
 
     public MapContainer() {
 
@@ -80,7 +82,7 @@ public class MapContainer extends Composite {
                             @Override
                             public void callback(DrawEventJSNI result) {
                                 drawJSNI.deactivate();
-                                AoI aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
+                                AoIDTO aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
                                 displayAoI(aoi);
                                 presenter.aoiChanged(aoi);
                             }
@@ -102,7 +104,7 @@ public class MapContainer extends Composite {
                         uploadFile.addClickHandler(new ClickHandler() {
                             @Override
                             public void onClick(ClickEvent event) {
-                                UploadAoI.getInstance().display();
+                                presenter.uploadAoI();
                             }
                         });
                         map.setZoom(3);
@@ -117,12 +119,6 @@ public class MapContainer extends Composite {
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
     }
-
-/*
-    public void setWidth(String width) {
-        mapContainer.setWidth(width);
-    }
-*/
 
     public void setHeight(String height) {
         super.setHeight(height);
@@ -149,7 +145,7 @@ public class MapContainer extends Composite {
         }
     }
 
-    public void displayAoI(AoI aoi) {
+    public void displayAoI(AoIDTO aoi) {
         if(aoiRendering != null) {
             map.getGraphics().remove(aoiRendering);
         }
@@ -159,12 +155,28 @@ public class MapContainer extends Composite {
         this.aoi = aoi;
     }
 
-    public AoI getAoi() {
+    public AoIDTO getAoi() {
         return aoi;
+    }
+
+    public void centerOnAoI() {
+        if(aoi != null) {
+            map.setExtent(mapContainer.arcgisMap.createGeometryFromAoI(aoi).getExtent());
+        }
+    }
+
+    public ArcgisMapJSNI getArcgisMap() {
+        return mapContainer.arcgisMap;
     }
 
     public void setEdit(boolean display) {
         editButton.setVisible(display);
+    }
+
+    public void clearAoI() {
+        if(map != null && aoiRendering != null) {
+            map.getGraphics().remove(aoiRendering);
+        }
     }
 
 }

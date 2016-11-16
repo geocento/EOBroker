@@ -2,9 +2,9 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImagery;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImageryHandler;
 import com.geocento.webapps.eobroker.customer.client.events.SearchImagery;
@@ -210,9 +210,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
             @Override
             public void onSuccess(Void result) {
-                if (Customer.currentAoI != null) {
-                    searchPageView.displayAoI(Customer.currentAoI);
-                }
+                searchPageView.displayAoI(currentAoI);
             }
         });
 
@@ -233,7 +231,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProducts(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProducts(text, start, limit, aoi == null ? null : aoi.getId());
+            }).call(ServicesUtil.searchService).listProducts(text, start, limit, currentAoI == null ? null : currentAoI.getId());
         } catch (RequestException e) {
         }
     }
@@ -253,7 +251,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProductServices(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProductServices(text, start, limit, aoi == null ? null : aoi.getId());
+            }).call(ServicesUtil.searchService).listProductServices(text, start, limit, currentAoI == null ? null : currentAoI.getId());
         } catch (RequestException e) {
         }
     }
@@ -273,7 +271,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProductDatasets(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, aoi == null ? null : aoi.getId());
+            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, currentAoI == null ? null : currentAoI.getId());
         } catch (RequestException e) {
         }
     }
@@ -293,7 +291,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addSoftware(softwareDTOs, start, softwareDTOs != null && softwareDTOs.size() != 0 && softwareDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, aoi == null ? null : aoi.getId());
+            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, currentAoI == null ? null : currentAoI.getId());
         } catch (RequestException e) {
         }
     }
@@ -313,7 +311,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProjects(projectDTOs, start, projectDTOs != null && projectDTOs.size() != 0 && projectDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProjects(text, start, limit, aoi == null ? null : aoi.getId());
+            }).call(ServicesUtil.searchService).listProjects(text, start, limit, currentAoI == null ? null : currentAoI.getId());
         } catch (RequestException e) {
         }
     }
@@ -332,7 +330,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addCompanies(companyDTOs, start, companyDTOs != null && companyDTOs.size() != 0 && companyDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listCompanies(text, start, limit, aoi == null ? null : aoi.getId());
+            }).call(ServicesUtil.searchService).listCompanies(text, start, limit, currentAoI == null ? null : currentAoI.getId());
         } catch (RequestException e) {
         }
     }
@@ -382,4 +380,31 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         start += limit;
         loadProjects(text, start, limit);
     }
+
+    @Override
+    public void aoiChanged(final AoIDTO aoi) {
+        displayLoading();
+        try {
+            REST.withCallback(new MethodCallback<AoIDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideLoading();
+                }
+
+                @Override
+                public void onSuccess(Method method, AoIDTO aoIDTO) {
+                    hideLoading();
+                    setAoI(aoIDTO);
+                }
+            }).call(ServicesUtil.assetsService).updateAoI(aoi);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void setAoI(AoIDTO aoIDTO) {
+        super.setAoI(aoIDTO);
+        searchPageView.displayAoI(aoIDTO);
+    }
+
 }

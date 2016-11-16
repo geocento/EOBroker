@@ -79,7 +79,7 @@
                         </design:MaterialColumn>
                         <design:MaterialColumn grid="s12 m12 l12">
                             <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                                <widgets:ProgressButton text="SUBMIT" ui:field="submitMessage">
+                                <widgets:ProgressButton text="SEND MESSAGE" ui:field="submitMessage">
                                 </widgets:ProgressButton>
                             </g:HTMLPanel>
                         </design:MaterialColumn>

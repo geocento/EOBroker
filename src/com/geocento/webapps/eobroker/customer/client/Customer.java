@@ -1,9 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.activities.AppActivityMapper;
-import com.geocento.webapps.eobroker.customer.client.places.*;
+import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMapper;
+import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.utils.Utils;
@@ -29,7 +30,7 @@ import org.fusesource.restygwt.client.REST;
  */
 public class Customer implements EntryPoint {
 
-    public static AoI currentAoI;
+    public static AoIDTO currentAoI;
 
     private static LoginInfo loginInfo;
 
@@ -114,12 +115,12 @@ public class Customer implements EntryPoint {
         Customer.loginInfo = loginInfo;
     }
 
-    public static void setAoI(AoI aoi) {
+    public static void setAoI(AoIDTO aoi) {
         currentAoI = aoi;
         Utils.saveAoI(aoi);
     }
 
-    public static AoI getAoI() {
+    public static AoIDTO getAoI() {
         return currentAoI;
     }
 

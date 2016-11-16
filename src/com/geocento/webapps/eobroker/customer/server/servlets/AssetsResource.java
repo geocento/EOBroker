@@ -40,6 +40,36 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public List<AoIDTO> listAoIs() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user", AoI.class);
+            query.setParameter("user", user);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<AoI, AoIDTO>() {
+                @Override
+                public AoIDTO mutate(AoI aoi) {
+                    return createAoIDTO(aoi);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading product datasets");
+        } finally {
+            em.close();
+        }
+    }
+
+    private AoIDTO createAoIDTO(AoI aoi) {
+        AoIDTO aoIDTO = new AoIDTO();
+        aoIDTO.setId(aoi.getId());
+        aoIDTO.setName(aoi.getName());
+        aoIDTO.setWktGeometry(aoi.getGeometry());
+        return aoIDTO;
+    }
+
+    @Override
     public AoIDTO getAoI(Long id) {
         return new AoIPolygonDTO();
     }
@@ -50,8 +80,39 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public void updateAoI(AoIDTO aoi) {
-
+    public AoIDTO updateAoI(AoIDTO aoi) throws RequestException{
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            AoI dbAoI = null;
+            if(aoi.getId() == null) {
+                dbAoI = new AoI();
+                User user = em.find(User.class, userName);
+                dbAoI.setUser(user);
+                em.persist(dbAoI);
+            } else {
+                dbAoI = em.find(AoI.class, aoi.getId());
+                if(dbAoI == null) {
+                    throw new RequestException("Unknown AoI");
+                }
+                if(!dbAoI.getUser().getUsername().contentEquals(userName)) {
+                    throw new RequestException("Not authorised");
+                }
+            }
+            dbAoI.setName(aoi.getName());
+            dbAoI.setGeometry(aoi.getWktGeometry());
+            em.getTransaction().commit();
+            return createAoIDTO(dbAoI);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -97,7 +158,7 @@ public class AssetsResource implements AssetsService {
                     ProductServiceFeasibilityDTO productServiceFeasibilityDTO = new ProductServiceFeasibilityDTO();
                     productServiceFeasibilityDTO.setId(productService.getId());
                     productServiceFeasibilityDTO.setName(productService.getName());
-                    productServiceFeasibilityDTO.setCompanyName(productService.getCompany().getName());
+                    productServiceFeasibilityDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
                     productServiceFeasibilityDTO.setApiURL(productService.getApiUrl());
                     return productServiceFeasibilityDTO;
                 }

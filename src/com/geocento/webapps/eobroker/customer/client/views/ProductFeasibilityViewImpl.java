@@ -4,9 +4,10 @@ import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
@@ -45,7 +46,7 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
-import gwt.material.design.client.constants.ButtonType;
+import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
@@ -82,11 +83,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @UiField
     MaterialLink servicesLink;
     @UiField
-    ArcGISMap mapContainer;
-    @UiField
-    MaterialAnchorButton drawPolygon;
-    @UiField
-    MaterialAnchorButton clearAoIs;
+    MapContainer mapContainer;
     @UiField
     MaterialTab tab;
     @UiField
@@ -113,28 +110,12 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     HTMLPanel chartsArea;
     @UiField
     MaterialLink resultsTab;
-/*
     @UiField
-    MaterialImage image;
-*/
+    MaterialAnchorButton contact;
+    @UiField
+    MaterialAnchorButton request;
 
     private Presenter presenter;
-
-    private Callback<Void, Exception> mapLoadedHandler = null;
-
-    private MapJSNI map;
-
-    private boolean mapLoaded = false;
-
-    private CellTable<Product> resultsTable;
-
-    private final ProvidesKey<Product> KEY_PROVIDER = new ProvidesKey<Product>() {
-        @Override
-        public Object getKey(Product item) {
-            return item.getProductId();
-        }
-    };
-    private final SelectionModel<Product> selectionModel = new MultiSelectionModel<Product>(KEY_PROVIDER);
 
     private GraphicJSNI coverageGraphics = null;
 
@@ -144,50 +125,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
-            @Override
-            public void onFailure(Exception reason) {
-
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                mapContainer.createMap("streets", new LatLng(40.0, -4.0), 3, new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<MapJSNI>() {
-
-                    @Override
-                    public void callback(final MapJSNI mapJSNI) {
-                        final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
-                        ProductFeasibilityViewImpl.this.map = mapJSNI;
-                        final DrawJSNI drawJSNI = arcgisMap.createDraw(mapJSNI);
-                        drawJSNI.onDrawEnd(new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<DrawEventJSNI>() {
-
-                            @Override
-                            public void callback(DrawEventJSNI result) {
-                                drawJSNI.deactivate();
-                                AoI aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
-                                displayAoI(aoi);
-                                presenter.aoiChanged(aoi);
-                            }
-                        });
-                        drawPolygon.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                mapJSNI.getGraphics().clear();
-                                drawJSNI.activate("polygon");
-                            }
-                        });
-                        clearAoIs.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                mapJSNI.getGraphics().clear();
-                                presenter.aoiChanged(null);
-                            }
-                        });
-                        mapLoaded();
-                    }
-                });
-            }
-        });
         tab.setBackgroundColor("teal lighten-2");
         resultsTab.setVisible(false);
 
@@ -214,27 +151,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         });
     }
 
-    private void mapLoaded() {
-        mapLoaded = true;
-        if(mapLoadedHandler != null) {
-            mapLoadedHandler.onSuccess(null);
-        }
-    }
-
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
-        this.mapLoadedHandler = mapLoadedHandler;
-        if(mapLoaded) {
-            mapLoadedHandler.onSuccess(null);
-        }
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
     @Override
-    public void displayAoI(AoI aoi) {
-        map.getGraphics().clear();
-        if(aoi != null) {
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
-        }
+    public void displayAoI(AoIDTO aoi) {
+        mapContainer.displayAoI(aoi);
     }
 
     @Override
@@ -274,7 +198,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void clearMap() {
-        map.getGraphics().clear();
+        mapContainer.map.getGraphics().clear();
     }
 
     @Override
@@ -289,7 +213,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             MaterialLink materialLink = new MaterialLink(productServiceFeasibilityDTO.getName());
             materialLink.setBackgroundColor("white");
             materialLink.setTextColor("black");
-            materialLink.setTooltip("Service provided by " + productServiceFeasibilityDTO.getCompanyName());
+            materialLink.setTooltip("Service provided by " + productServiceFeasibilityDTO.getCompanyDTO().getName());
             materialLink.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -417,7 +341,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             });
             valuesPanel.add(sensorsUsed);
             final FeasibilityHeader imageCoverage = new FeasibilityHeader();
-            imageCoverage.setHeaderText("AoI coverage");
+            imageCoverage.setHeaderText("AoIDTO coverage");
             imageCoverage.setIndicatorText(NumberFormat.getFormat(".#").format(response.getBestCoverageValue() * 100.0) + "%");
             imageCoverage.addClickHandler(new ClickHandler() {
                 @Override
@@ -436,13 +360,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                 }
             });
             valuesPanel.add(revisitRate);
+            // add coverage
+            MapJSNI map = mapContainer.map;
+            ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
             if(coverageGraphics != null) {
                 map.getGraphics().remove(coverageGraphics);
             }
-            coverageGraphics = map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometry(response.getCoverages().get(0).getWktValue()), mapContainer.arcgisMap.createFillSymbol("#ffff00", 2, "rgba(0,255,0,0.5)"));
-/*
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createPolygon("-16.81223216085422 49.05194290024209, -16.5790489494 49.0826497873, -16.5423974816 48.9586665005, -16.4235627988 48.5540737686, -16.3058519277 48.1493942312, -16.1892300464 47.7446292693, -16.0736629334 47.3397802221, -16.6984677846 47.2553208808, -16.71110900596498 47.297803281945534, -17.0006058124 47.2656723917, -17.020966988398822 47.34970314429434, -17.0266160406 47.3260191601, -17.5207610899 47.3800108112, -17.5011721643 47.4655540906, -17.4081102472 47.8704668722, -17.3144860075 48.2753232278, -17.281477719774465 48.41715789630319, -17.2970527679 48.4805363036, -17.3972709915 48.8853667779, -17.4175257765 48.9668194183, -17.222494284395058 48.98766414768615, -17.2255361119 48.9975166932, -17.14339717383268 49.00833321416032, -17.1254698632 49.0848647921, -16.81223216085422 49.05194290024209"), mapContainer.arcgisMap.createFillSymbol("#ffff00", 2, "rgba(0,255,0,0.5)"));
-*/
+            coverageGraphics = map.getGraphics().addGraphic(arcgisMap.createGeometry(response.getCoverages().get(0).getWktValue()),
+                    arcgisMap.createFillSymbol("#ffff00", 2, "rgba(0,255,0,0.5)"));
         }
         {
             MaterialCollapsibleItem materialCollapsibleItem = new MaterialCollapsibleItem();
@@ -601,6 +526,16 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void showQuery() {
         tab.selectTab("query");
+    }
+
+    @Override
+    public HasHref getRequestButton() {
+        return request;
+    }
+
+    @Override
+    public HasHref getContactButton() {
+        return contact;
     }
 
     @Override

@@ -163,18 +163,6 @@ public class ConversationActivity extends TemplateActivity implements Conversati
         }
     }
 
-    private void displayError(String message) {
-        conversationView.getTemplateView().displayError(message);
-    }
-
-    private void hideLoading() {
-        conversationView.getTemplateView().hideLoading();
-    }
-
-    private void displayLoading() {
-        conversationView.getTemplateView().displayLoading();;
-    }
-
     private void addMessage(MessageDTO messageDTO) {
         String userName = Customer.getLoginInfo().getUserName();
         boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());

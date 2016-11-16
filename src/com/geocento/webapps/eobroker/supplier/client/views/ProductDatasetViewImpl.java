@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
@@ -197,12 +198,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     @Override
-    public void setExtent(AoI extent) {
+    public void setExtent(AoIDTO extent) {
         mapContainer.displayAoI(extent);
     }
 
     @Override
-    public AoI getExtent() {
+    public AoIDTO getExtent() {
         return mapContainer.getAoi();
     }
 

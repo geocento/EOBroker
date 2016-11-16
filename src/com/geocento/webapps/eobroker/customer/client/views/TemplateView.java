@@ -3,8 +3,8 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
@@ -47,8 +47,6 @@ public class TemplateView extends Composite implements HasWidgets {
     public static interface Presenter {
 
         void categoryChanged(Category category);
-
-        void aoiChanged(AoI aoi);
 
         void textChanged(String text);
 

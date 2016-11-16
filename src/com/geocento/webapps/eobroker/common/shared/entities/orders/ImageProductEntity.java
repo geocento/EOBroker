@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
+import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 
 import javax.persistence.*;
@@ -13,29 +14,47 @@ public class ImageProductEntity {
 	Long id;
 	
     String productId;
+
     @Enumerated(EnumType.STRING)
     Product.TYPE type;
+
+    @Convert(converter = GeometryConverter.class)
     String coordinatesWKT;
+
     String satelliteName;
+
     String instrumentName;
+
     String modeName;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date start;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date stop;
+
     Integer orbit;
+
     Double centerLat;
+
     Double centerLon;
+
     String orbitDirection;
+
     String ascendingNodeDate;
+
     String startTimeFromAscendingNode;
+
     String completionTimeFromAscendingNodeDate;
+
     String productType;
 	
     // statistics
 	double observationCoverage;
+
     double coveragePercent;
-	double usefulAreaPercent;
+
+    double usefulAreaPercent;
     
 	// json string according to sensor vendorAttributes
     @Column(length = 1000)

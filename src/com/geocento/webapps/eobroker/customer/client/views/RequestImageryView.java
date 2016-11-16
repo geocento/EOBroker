@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -16,7 +16,7 @@ public interface RequestImageryView extends IsWidget {
 
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
-    void displayAoI(AoI aoi);
+    void displayAoI(AoIDTO aoi);
 
     void setPresenter(Presenter presenter);
 
@@ -49,7 +49,7 @@ public interface RequestImageryView extends IsWidget {
     void displayFormError(String message);
 
     public interface Presenter {
-        void aoiChanged(AoI aoi);
+        void aoiChanged(AoIDTO aoi);
     }
 
 }

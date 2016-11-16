@@ -505,6 +505,9 @@ public class SearchResource implements SearchService {
         String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
                 "          FROM " + tableName + ", to_tsquery('" + keywords + "') AS keywords\n" +
                 "          WHERE tsv @@ keywords\n" +
+/*
+                (aoiId == null ? "" : " and ST_Intersects()")
+*/
                 "          ORDER BY rank DESC;";
         Query q = em.createNativeQuery(sqlStatement);
         q.setFirstResult(start);

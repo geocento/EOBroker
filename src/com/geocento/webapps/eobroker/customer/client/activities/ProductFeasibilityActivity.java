@@ -2,19 +2,21 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
+import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityView;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -43,7 +45,6 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     private Date stop;
     private List<FormElementValue> formElementValues;
     private ProductServiceFeasibilityDTO productFeasibilityService;
-    private AoI aoi;
 
     public ProductFeasibilityActivity(ProductFeasibilityPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -75,20 +76,6 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-/*
-        Long productId = null;
-        if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.product.toString())) {
-            try {
-                productId = Long.parseLong(tokens.get(ProductFeasibilityPlace.TOKENS.product.toString()));
-            } catch (Exception e) {
-
-            }
-        }
-        if(productId == null) {
-            Window.alert("Product id cannot be null");
-            clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
-        }
-*/
         Long productServiceId = null;
         if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.productservice.toString())) {
             try {
@@ -125,13 +112,12 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
             setStop(new Date(start.getTime() + 10 * 24 * 3600 * 1000L));
         }
         loadProduct(productServiceId);
-        setAoI(Customer.currentAoI);
+        setAoI(currentAoI);
         enableUpdateMaybe();
     }
 
-    private void setAoI(AoI aoi) {
-        this.aoi = aoi;
-        Customer.setAoI(aoi);
+    public void setAoI(AoIDTO aoi) {
+        super.setAoI(aoi);
         productFeasibilityView.displayAoI(aoi);
     }
 
@@ -169,6 +155,14 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     private void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         this.productFeasibilityService = productServiceFeasibilityDTO;
         productFeasibilityView.selectService(productServiceFeasibilityDTO);
+        productFeasibilityView.getRequestButton().setHref("#" + PlaceHistoryHelper.convertPlace(
+                new ProductFormPlace(
+                        ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceFeasibilityDTO.getId())));
+        productFeasibilityView.getContactButton().setHref("#" + PlaceHistoryHelper.convertPlace(
+                new ConversationPlace(
+                        Utils.generateTokens(
+                                ConversationPlace.TOKENS.companyid.toString(), productServiceFeasibilityDTO.getCompanyDTO().getId() + "",
+                                ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productServiceFeasibilityDTO.getName() + "'"))));
     }
 
     public void setStart(Date start) {
@@ -197,7 +191,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 // create request
                 FeasibilityRequestDTO feasibilityRequestDTO = new FeasibilityRequestDTO();
                 feasibilityRequestDTO.setProductServiceId(productFeasibilityService.getId());
-                feasibilityRequestDTO.setAoiWKT(AoIUtil.toWKT(aoi));
+                feasibilityRequestDTO.setAoiWKT(AoIUtil.toWKT(currentAoI));
                 feasibilityRequestDTO.setStart(start);
                 feasibilityRequestDTO.setStop(stop);
                 feasibilityRequestDTO.setFormElementValues(formElementValues);
@@ -223,14 +217,14 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     }
 
     @Override
-    public void aoiChanged(AoI aoi) {
+    public void aoiChanged(AoIDTO aoi) {
         setAoI(aoi);
         enableUpdateMaybe();
     }
 
     private void enableUpdateMaybe() {
-        if(aoi == null) {
-            MaterialToast.fireToast("Please select AoI");
+        if(currentAoI == null) {
+            MaterialToast.fireToast("Please select AoIDTO");
             enableUpdate(false);
             return;
         }

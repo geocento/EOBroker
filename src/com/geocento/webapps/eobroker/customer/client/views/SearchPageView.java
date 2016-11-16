@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
@@ -21,7 +21,7 @@ public interface SearchPageView extends IsWidget {
 
     void setSearchText(String search);
 
-    void displayAoI(AoI aoi);
+    void displayAoI(AoIDTO aoi);
 
     void displayLoadingResults(String message);
 
@@ -47,7 +47,7 @@ public interface SearchPageView extends IsWidget {
 
     TemplateView getTemplateView();
 
-    void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi);
+    void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoIDTO aoi);
 
     void setResultsTitle(String message);
 
@@ -88,6 +88,8 @@ public interface SearchPageView extends IsWidget {
         void loadMoreSofware();
 
         void loadMoreProjects();
+
+        void aoiChanged(AoIDTO aoi);
     }
 
 }

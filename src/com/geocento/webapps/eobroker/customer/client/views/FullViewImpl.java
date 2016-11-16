@@ -11,7 +11,6 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -110,7 +109,7 @@ public class FullViewImpl extends Composite implements FullView {
     @Override
     public void displayProduct(ProductDescriptionDTO productDescriptionDTO) {
         clearDetails();
-        image.setUrl(productDescriptionDTO.getImageUrl());
+        image.setUrl(Utils.getImageMaybe(productDescriptionDTO.getImageUrl()));
         title.setText(productDescriptionDTO.getName());
         description.setText(productDescriptionDTO.getShortDescription());
         tags.clear();
@@ -231,7 +230,7 @@ public class FullViewImpl extends Composite implements FullView {
     @Override
     public void displayProductService(final ProductServiceDescriptionDTO productServiceDescriptionDTO) {
         clearDetails();
-        image.setUrl(productServiceDescriptionDTO.getServiceImage());
+        image.setUrl(Utils.getImageMaybe(productServiceDescriptionDTO.getServiceImage()));
         title.setText(productServiceDescriptionDTO.getName());
         description.setText(productServiceDescriptionDTO.getDescription());
         tags.clear();
@@ -242,7 +241,7 @@ public class FullViewImpl extends Composite implements FullView {
         company.setText(companyDTO.getName());
         company.setBackgroundColor("grey");
         company.setTextColor("white");
-        company.setUrl(companyDTO.getIconURL());
+        company.setUrl(Utils.getImageMaybe(companyDTO.getIconURL()));
         company.setMarginRight(20);
         company.addClickHandler(new ClickHandler() {
             @Override
@@ -257,7 +256,7 @@ public class FullViewImpl extends Composite implements FullView {
         product.setText(productDTO.getName());
         product.setBackgroundColor("grey");
         product.setTextColor("white");
-        product.setUrl(productDTO.getImageUrl());
+        product.setUrl(Utils.getImageMaybe(productDTO.getImageUrl()));
         product.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -326,7 +325,12 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         materialColumn.add(mapContainer);
-        addTab(materialTab, tabsPanel, "Features", featuresPanel, size);
+        // add perfomances
+        materialColumn = new MaterialColumn(12, 6, 6);
+        featuresPanel.add(materialColumn);
+        materialColumn.add(createSubsection("Performances"));
+        materialColumn.add(new MaterialLabel("TODO - add list of performance indicators like spatial resolution, etc..."));
+        addTab(materialTab, tabsPanel, "Characteristics", featuresPanel, size);
         // create tab panel for services
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
         addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
@@ -350,7 +354,7 @@ public class FullViewImpl extends Composite implements FullView {
     @Override
     public void displayProductDataset(final ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
         clearDetails();
-        image.setUrl(productDatasetDescriptionDTO.getImageUrl());
+        image.setUrl(Utils.getImageMaybe(productDatasetDescriptionDTO.getImageUrl()));
         title.setText(productDatasetDescriptionDTO.getName());
         description.setText(productDatasetDescriptionDTO.getDescription());
         tags.clear();
@@ -370,7 +374,7 @@ public class FullViewImpl extends Composite implements FullView {
             company.setText(companyDTO.getName());
             company.setBackgroundColor("grey");
             company.setTextColor("white");
-            company.setUrl(companyDTO.getIconURL());
+            company.setUrl(Utils.getImageMaybe(companyDTO.getIconURL()));
             company.setMarginRight(20);
             company.addClickHandler(new ClickHandler() {
                 @Override
@@ -387,7 +391,7 @@ public class FullViewImpl extends Composite implements FullView {
             product.setText(productDTO.getName());
             product.setBackgroundColor("grey");
             product.setTextColor("white");
-            product.setUrl(productDTO.getImageUrl() == null ? "./images/noImage.png" : productDTO.getImageUrl());
+            product.setUrl(Utils.getImageMaybe(Utils.getImageMaybe(productDTO.getImageUrl())));
             product.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -439,10 +443,16 @@ public class FullViewImpl extends Composite implements FullView {
             @Override
             public void onSuccess(Void result) {
                 mapContainer.displayAoI(AoIUtil.fromWKT(productDatasetDescriptionDTO.getExtent()));
+                mapContainer.centerOnAoI();
             }
         });
         materialColumn.add(mapContainer);
-        addTab(materialTab, tabsPanel, "Features", featuresPanel, size);
+        // add perfomances
+        materialColumn = new MaterialColumn(12, 6, 6);
+        featuresPanel.add(materialColumn);
+        materialColumn.add(createSubsection("Performances"));
+        materialColumn.add(new MaterialLabel("TODO - add list of performance indicators like spatial resolution, etc..."));
+        addTab(materialTab, tabsPanel, "Characteristics", featuresPanel, size);
         // add access panel
         {
             MaterialPanel accessPanel = new MaterialPanel();
@@ -480,7 +490,7 @@ public class FullViewImpl extends Composite implements FullView {
     @Override
     public void displaySoftware(SoftwareDescriptionDTO softwareDescriptionDTO) {
         clearDetails();
-        image.setUrl(softwareDescriptionDTO.getImageUrl());
+        image.setUrl(Utils.getImageMaybe(softwareDescriptionDTO.getImageUrl()));
         title.setText(softwareDescriptionDTO.getName());
         description.setText(softwareDescriptionDTO.getDescription());
         tags.clear();
@@ -508,7 +518,7 @@ public class FullViewImpl extends Composite implements FullView {
             company.setText(companyDTO.getName());
             company.setBackgroundColor("grey");
             company.setTextColor("white");
-            company.setUrl(companyDTO.getIconURL());
+            company.setUrl(Utils.getImageMaybe(companyDTO.getIconURL()));
             company.setMarginRight(20);
             company.addClickHandler(new ClickHandler() {
                 @Override
@@ -578,7 +588,7 @@ public class FullViewImpl extends Composite implements FullView {
     @Override
     public void displayProject(ProjectDescriptionDTO projectDescriptionDTO) {
         clearDetails();
-        image.setUrl(projectDescriptionDTO.getImageUrl());
+        image.setUrl(Utils.getImageMaybe(projectDescriptionDTO.getImageUrl()));
         title.setText(projectDescriptionDTO.getName());
         description.setText(projectDescriptionDTO.getDescription());
         tags.clear();
@@ -590,7 +600,7 @@ public class FullViewImpl extends Composite implements FullView {
             company.setText(companyDTO.getName());
             company.setBackgroundColor("grey");
             company.setTextColor("white");
-            company.setUrl(companyDTO.getIconURL());
+            company.setUrl(Utils.getImageMaybe(companyDTO.getIconURL()));
             company.setMarginRight(20);
             company.addClickHandler(new ClickHandler() {
                 @Override
@@ -660,7 +670,7 @@ public class FullViewImpl extends Composite implements FullView {
     @Override
     public void displayCompany(final CompanyDescriptionDTO companyDescriptionDTO) {
         clearDetails();
-        image.setUrl(companyDescriptionDTO.getIconURL());
+        image.setUrl(Utils.getImageMaybe(companyDescriptionDTO.getIconURL()));
         title.setText(companyDescriptionDTO.getName());
         description.setText(companyDescriptionDTO.getDescription());
         tags.clear();
@@ -736,20 +746,6 @@ public class FullViewImpl extends Composite implements FullView {
 */
         } else {
             offerCount += companyDescriptionDTO.getProductDatasets().size();
-/*
-            servicesPanel.add(createSubsection("Off-the-shelf data provided"));
-            MaterialRow materialRow = new MaterialRow();
-            servicesPanel.add(materialRow);
-*/
-/*
-            MaterialLabel materialLabel = new MaterialLabel("Test");
-            materialLabel.addStyleName(style.vertical());
-            materialLabel.setBackgroundColor("green");
-            materialLabel.setTextColor("white");
-            MaterialColumn materialLabelColumn = new MaterialColumn(1, 1, 1);
-            materialLabelColumn.add(materialLabel);
-            materialRow.add(materialLabelColumn);
-*/
             for(ProductDatasetDTO productDatasetDTO : companyDescriptionDTO.getProductDatasets()) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
@@ -757,16 +753,8 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         if(companyDescriptionDTO.getSoftware().size() == 0) {
-/*
-            servicesPanel.add(createSubsection("This company does not provide software solutions"));
-*/
         } else {
             offerCount += companyDescriptionDTO.getSoftware().size();
-/*
-            servicesPanel.add(createSubsection("Software solutions provided"));
-            MaterialRow materialRow = new MaterialRow();
-            servicesPanel.add(materialRow);
-*/
             for(SoftwareDTO softwareDTO : companyDescriptionDTO.getSoftware()) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 materialColumn.add(new SoftwareWidget(softwareDTO));
@@ -774,16 +762,8 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         if(companyDescriptionDTO.getProject().size() == 0) {
-/*
-            servicesPanel.add(createSubsection("This company does not manage any project"));
-*/
         } else {
             offerCount += companyDescriptionDTO.getProject().size();
-/*
-            servicesPanel.add(createSubsection("Project managed"));
-            MaterialRow materialRow = new MaterialRow();
-            servicesPanel.add(materialRow);
-*/
             for(ProjectDTO projectDTO : companyDescriptionDTO.getProject()) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 materialColumn.add(new ProjectWidget(projectDTO));

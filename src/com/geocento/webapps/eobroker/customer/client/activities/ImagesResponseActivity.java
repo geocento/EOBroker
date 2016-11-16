@@ -118,18 +118,6 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
 
     }
 
-    private void displayError(String message) {
-        imagesResponseView.getTemplateView().displayError(message);
-    }
-
-    private void hideLoading() {
-        imagesResponseView.getTemplateView().hideLoading();
-    }
-
-    private void displayLoading() {
-        imagesResponseView.getTemplateView().displayLoading();;
-    }
-
     private void addMessage(MessageDTO messageDTO) {
         String userName = Customer.getLoginInfo().getUserName();
         boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());

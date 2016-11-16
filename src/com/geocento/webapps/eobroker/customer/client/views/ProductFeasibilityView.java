@@ -1,13 +1,14 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
+import gwt.material.design.client.base.HasHref;
 
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,7 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void displayAoI(AoI aoi);
+    void displayAoI(AoIDTO aoi);
 
     void setText(String text);
 
@@ -63,9 +64,13 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void showQuery();
 
+    HasHref getRequestButton();
+
+    HasHref getContactButton();
+
     public interface Presenter {
 
-        void aoiChanged(AoI aoi);
+        void aoiChanged(AoIDTO aoi);
 
         void onServiceChanged(ProductServiceFeasibilityDTO imageryService);
 

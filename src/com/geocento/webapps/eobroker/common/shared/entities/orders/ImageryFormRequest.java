@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
+import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 
 import javax.persistence.*;
@@ -18,7 +19,7 @@ public class ImageryFormRequest {
     @ManyToOne
     User customer;
 
-    @Column(length = 1000)
+    @Convert(converter = GeometryConverter.class)
     String aoiWKT;
 
     @Column(length = 1000)

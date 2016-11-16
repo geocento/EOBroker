@@ -1,8 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -12,6 +12,7 @@ import com.geocento.webapps.eobroker.customer.client.events.LogOutHandler;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.customer.client.utils.Utils;
 import com.geocento.webapps.eobroker.customer.client.views.TemplateView;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.http.client.RequestException;
@@ -37,7 +38,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     private int lastCall = 0;
     protected Category category = null;
-    protected AoI aoi;
+    static protected AoIDTO currentAoI = Utils.getAoI();
 
     public TemplateActivity(ClientFactory clientFactory) {
         super(clientFactory);
@@ -139,11 +140,6 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     }
 
     @Override
-    public void aoiChanged(AoI aoi) {
-
-    }
-
-    @Override
     public void textChanged(String text) {
         this.text = text;
         updateSuggestions();
@@ -168,7 +164,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                         templateView.displayListSuggestions(response);
                     }
                 }
-            }).call(ServicesUtil.searchService).complete(text, category, toWkt(aoi));
+            }).call(ServicesUtil.searchService).complete(text, category, toWkt(currentAoI));
         } else {
             // TODO - move to the server side
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
@@ -188,8 +184,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         }
     }
 
-    private String toWkt(AoI aoi) {
-        return null;
+    private String toWkt(AoIDTO aoi) {
+        return aoi.getWktGeometry();
     }
 
     private List<Suggestion> getSuggestion(Category category) {
@@ -223,7 +219,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             case imagery: {
                 if (action.contentEquals("search")) {
                     searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
-                            (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId()));
                     //setText(parameters);
                 } else if (action.contentEquals("request")) {
                     searchPlace = new RequestImageryPlace(parameters);
@@ -241,8 +237,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-                    if (aoi != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
                     searchPlace = new SearchPagePlace(token);
                 } else {
@@ -250,8 +246,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-                    if (aoi != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
                     searchPlace = new SearchPagePlace(token);
                 }
@@ -266,8 +262,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-                    if (aoi != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
                     searchPlace = new SearchPagePlace(token);
                 } else {
@@ -275,8 +271,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-                    if (aoi != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
                     searchPlace = new SearchPagePlace(token);
                 }
@@ -303,15 +299,15 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             if(category != null) {
                 token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
             }
-            if(aoi != null) {
-                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+            if(currentAoI != null) {
+                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
             }
             eoBrokerPlace = new SearchPagePlace(token);
         } else {
             switch (category) {
                 case imagery:
                     eoBrokerPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + text +
-                            (aoi == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + aoi.getId()));
+                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId()));
                     break;
                 case products:
                 case companies:
@@ -321,8 +317,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     String token = "";
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-                    if(aoi != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + aoi.getId();
+                    if(currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
                     eoBrokerPlace = new SearchPagePlace(token);
             }
@@ -332,6 +328,23 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         } else {
             templateView.displaySearchError("Sorry I could not understand your request...");
         }
+    }
+
+    public void setAoI(AoIDTO aoi) {
+        this.currentAoI = aoi;
+        Utils.saveAoI(currentAoI);
+    }
+
+    protected void displayLoading() {
+        templateView.displayLoading();
+    }
+
+    protected void hideLoading() {
+        templateView.hideLoading();
+    }
+
+    protected void displayError(String message) {
+        templateView.displayError(message);
     }
 
 }

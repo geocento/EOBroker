@@ -1,9 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.ServiceType;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -45,11 +45,11 @@ public interface ProductDatasetView extends IsWidget {
 
     TemplateView getTemplateView();
 
-    void setExtent(AoI aoi);
+    void setExtent(AoIDTO aoi);
 
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
-    AoI getExtent();
+    AoIDTO getExtent();
 
     void setDataAccess(List<DatasetAccess> datasetAccesses);
 

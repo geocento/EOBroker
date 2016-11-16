@@ -7,7 +7,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
@@ -209,6 +209,7 @@ public class OrderViewImpl extends Composite implements OrderView {
         userWidget.setMarginTop(8);
         userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
         userWidget.setSize(40);
+        materialRow.add(userWidget);
         MaterialBubble materialBubble = new MaterialBubble();
         materialBubble.setBackgroundColor(colour);
         materialBubble.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
@@ -228,7 +229,7 @@ public class OrderViewImpl extends Composite implements OrderView {
         materialBubble.add(materialLabel);
     }
 
-    private void displayAoI(AoI aoi) {
+    private void displayAoI(AoIDTO aoi) {
         map.getGraphics().clear();
         if(aoi != null) {
             map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));

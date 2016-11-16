@@ -7,6 +7,7 @@
             <design:MaterialRow>
                 <design:MaterialColumn grid="s12 m6 l8">
                     <design:MaterialLabel>List of aois</design:MaterialLabel>
+                    <design:MaterialPanel padding="10" ui:field="listOfAoIs"></design:MaterialPanel>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12 m6 l4">
                 </design:MaterialColumn>
@@ -19,7 +20,6 @@
             </widgets:MaterialFileUploader>
         </design:MaterialModalContent>
         <design:MaterialModalFooter>
-
         </design:MaterialModalFooter>
     </design:MaterialModal>
 </ui:UiBinder>

@@ -2,13 +2,12 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
@@ -16,8 +15,8 @@ import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -41,8 +40,6 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
     private Long productId;
 
-    private AoI aoi;
-
     public ProductFormActivity(ProductFormPlace place, ClientFactory clientFactory) {
         super(clientFactory);
         this.place = place;
@@ -65,7 +62,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
             @Override
             public void onSuccess(Void result) {
-                setAoI(Customer.currentAoI);
+                setAoI(currentAoI);
                 handleHistory();
             }
         });
@@ -95,7 +92,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 productFormView.displayLoading("Submitting requests");
                 ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
                 productServiceRequestDTO.setProductId(productId);
-                productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(aoi));
+                productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(currentAoI));
                 productServiceRequestDTO.setProductServiceIds(productServiceIds);
                 productServiceRequestDTO.setValues(values);
                 REST.withCallback(new MethodCallback<RequestDTO>() {
@@ -174,8 +171,8 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
     }
 
-    private void setAoI(AoI aoi) {
-        this.aoi = aoi;
+    public void setAoI(AoIDTO aoi) {
+        super.setAoI(aoi);
         productFormView.displayAoI(aoi);
     }
 

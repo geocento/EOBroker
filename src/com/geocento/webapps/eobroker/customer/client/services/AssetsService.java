@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
+import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -15,6 +16,11 @@ import java.util.List;
 public interface AssetsService extends DirectRestService {
 
     @GET
+    @Path("/assets/aoi/")
+    @Produces("application/json")
+    public List<AoIDTO> listAoIs() throws AuthorizationException, RequestException;
+
+    @GET
     @Path("/assets/aoi/{id}")
     @Produces("application/json")
     public AoIDTO getAoI(@PathParam("id") Long id);
@@ -27,7 +33,7 @@ public interface AssetsService extends DirectRestService {
     @PUT
     @Path("/assets/aoi/")
     @Produces("application/json")
-    public void updateAoI(AoIDTO aoi);
+    public AoIDTO updateAoI(AoIDTO aoi) throws RequestException;
 
     @GET
     @Path("/assets/product/{id}")

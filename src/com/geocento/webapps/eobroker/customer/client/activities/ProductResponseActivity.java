@@ -144,18 +144,6 @@ public class ProductResponseActivity extends TemplateActivity implements Product
 
     }
 
-    private void displayError(String message) {
-        productResponseView.getTemplateView().displayError(message);
-    }
-
-    private void hideLoading() {
-        productResponseView.getTemplateView().hideLoading();
-    }
-
-    private void displayLoading() {
-        productResponseView.getTemplateView().displayLoading();;
-    }
-
     private void addMessage(MessageDTO messageDTO) {
         String userName = Customer.getLoginInfo().getUserName();
         boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());

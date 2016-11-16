@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.shared.Offer;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -12,8 +10,6 @@ import java.util.List;
  * Created by thomas on 09/05/2016.
  */
 public interface LandingPageView extends IsWidget {
-
-    void displayAoI(AoI aoi);
 
     void setPresenter(Presenter presenter);
 
@@ -28,12 +24,6 @@ public interface LandingPageView extends IsWidget {
     void setOffers(List<Offer> offers);
 
     public interface Presenter {
-
-        void categoryChanged(Category category);
-
-        void aoiChanged(AoI aoi);
-
-        void textChanged(String text);
     }
 
 }

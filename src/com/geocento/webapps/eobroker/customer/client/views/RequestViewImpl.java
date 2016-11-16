@@ -7,7 +7,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
@@ -191,7 +191,7 @@ public class RequestViewImpl extends Composite implements RequestView {
         materialBubble.add(materialLabel);
     }
 
-    protected void displayAoI(AoI aoi) {
+    protected void displayAoI(AoIDTO aoi) {
         map.getGraphics().clear();
         if(aoi != null) {
             map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));

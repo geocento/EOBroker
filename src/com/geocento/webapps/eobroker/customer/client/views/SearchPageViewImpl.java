@@ -5,12 +5,12 @@ import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -124,6 +124,20 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         // hide the send requirements panel
         displaySendRequirements(false);
 
+        // TODO - move to activity or to a generic map container for customer
+        // save AoI
+        mapContainer.setPresenter(new MapContainer.Presenter() {
+            @Override
+            public void aoiChanged(AoIDTO aoi) {
+                presenter.aoiChanged(aoi);
+            }
+
+            @Override
+            public void uploadAoI() {
+                UploadAoI.getInstance().display();
+            }
+        });
+
         onResize(null);
     }
 
@@ -153,7 +167,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void displayAoI(AoI aoi) {
+    public void displayAoI(AoIDTO aoi) {
         mapContainer.displayAoI(aoi);
     }
 
@@ -316,7 +330,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoI aoi) {
+    public void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoIDTO aoi) {
         MaterialRow datasetsRow = new MaterialRow();
         container.add(datasetsRow);
         boolean more = datasetProviderDTOs != null && datasetProviderDTOs.size() > 4;
@@ -340,28 +354,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             uri = uri.substring(uri.indexOf(":") + 1);
             switch(protocol) {
                 case "csw":
-/*
-                    CSWUtils.getRecordsResponse(uri, text, AoIUtil.getExtent(aoi), new AsyncCallback<CSWGetRecordsResponse>() {
-                        @Override
-                        public void onFailure(Throwable caught) {
-                            Window.alert(caught.getMessage());
-                        }
-
-                        @Override
-                        public void onSuccess(CSWGetRecordsResponse result) {
-                            datasetsRow.remove(loadingWidget);
-                            datasetsRow.add(new MaterialLabel("Datasets for " + datasetProviderDTO.getName()));
-                            for(CSWBriefRecord cswBriefRecord : result.getRecords()) {
-                                MaterialColumn datasetColumn = new MaterialColumn(12, 6, 4);
-                                datasetsRow.add(datasetColumn);
-                                datasetColumn.add(new DatasetWidget(cswBriefRecord));
-                            }
-                            if(result.getNextRecord() != 0) {
-                                datasetsRow.add(new MaterialLabel("View all datasets (" + result.getNumberOfRecordsMatched() + " found)"));
-                            }
-                        }
-                    });
-*/
                     try {
                         CSWGetRecordsRequestDTO request = new CSWGetRecordsRequestDTO(uri, text, AoIUtil.getExtent(aoi));
                         REST.withCallback(new MethodCallback<CSWGetRecordsResponse>() {

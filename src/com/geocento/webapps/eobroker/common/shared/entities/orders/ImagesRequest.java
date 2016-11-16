@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
+import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.Message;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
@@ -23,7 +24,7 @@ public class ImagesRequest {
     @ManyToOne
     ImageService imageService;
 
-    @Column(length = 1000)
+    @Convert(converter = GeometryConverter.class)
     String aoiWKT;
 
     @OneToMany(cascade = CascadeType.ALL)

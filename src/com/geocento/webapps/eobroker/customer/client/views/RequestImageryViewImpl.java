@@ -3,9 +3,10 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
-import com.geocento.webapps.eobroker.common.shared.entities.AoI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.widgets.UploadAoI;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -84,8 +85,13 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
         mapContainer.setHeight("100%");
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
-            public void aoiChanged(AoI aoi) {
+            public void aoiChanged(AoIDTO aoi) {
                 presenter.aoiChanged(aoi);
+            }
+
+            @Override
+            public void uploadAoI() {
+                UploadAoI.getInstance().display();
             }
         });
     }
@@ -96,7 +102,7 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     }
 
     @Override
-    public void displayAoI(AoI aoi) {
+    public void displayAoI(AoIDTO aoi) {
         mapContainer.displayAoI(aoi);
     }
 

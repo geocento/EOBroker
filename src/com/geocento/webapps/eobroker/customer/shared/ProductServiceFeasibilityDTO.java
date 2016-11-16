@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+
 /**
  * Created by thomas on 06/06/2016.
  */
@@ -7,8 +9,8 @@ public class ProductServiceFeasibilityDTO {
 
     Long id;
     String name;
-    String companyName;
     String apiURL;
+    CompanyDTO companyDTO;
 
     public ProductServiceFeasibilityDTO() {
     }
@@ -29,12 +31,12 @@ public class ProductServiceFeasibilityDTO {
         this.name = name;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public CompanyDTO getCompanyDTO() {
+        return companyDTO;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setCompany(CompanyDTO companyDTO) {
+        this.companyDTO = companyDTO;
     }
 
     public String getApiURL() {

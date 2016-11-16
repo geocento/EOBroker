@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -11,17 +10,7 @@ import javax.persistence.Entity;
 @DiscriminatorValue("P")
 public class AoIPolygon extends AoI {
 
-    @Column(length = 10000)
-    String wktRings;
-
     public AoIPolygon() {
     }
 
-    public String getWktRings() {
-        return wktRings;
-    }
-
-    public void setWktRings(String wktRings) {
-        this.wktRings = wktRings;
-    }
 }
