@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
+import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
+
 import javax.persistence.*;
 
 /**
@@ -19,22 +21,25 @@ public class ProductService {
     Product product;
 
     @Column(length = 1000)
+    String imageUrl;
+
+    @Column(length = 1000)
     String name;
 
     @Column(length = 10000)
     String description;
 
-    @Column(length = 1000)
-    String imageUrl;
+    @Column(length = 100000)
+    String fullDescription;
+
+    @Convert(converter = GeometryConverter.class)
+    String extent;
 
     @Column(length = 1000)
     String email;
 
     @Column(length = 1000)
     String website;
-
-    @Column(length = 100000)
-    String fullDescription;
 
     @Column(length = 1000)
     String apiUrl;

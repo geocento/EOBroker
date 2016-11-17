@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import gwt.material.design.client.base.HasHref;
 
@@ -77,6 +78,8 @@ public interface SearchPageView extends IsWidget {
 
     void addCompanies(List<CompanyDTO> companyDTOs, int start, boolean hasMore, String text);
 
+    HasValue<Boolean> getFilterByAoI();
+
     public interface Presenter {
 
         void loadMoreProducts();
@@ -90,6 +93,10 @@ public interface SearchPageView extends IsWidget {
         void loadMoreProjects();
 
         void aoiChanged(AoIDTO aoi);
+
+        void filtersChanged();
+
+        void aoiSelected(AoIDTO aoi);
     }
 
 }

@@ -3,25 +3,22 @@
     <ui:style>
 
         .pitch {
-            overflow: hidden;
-            line-height: 1.2em;
-            height: 2.4em;
             font-size: 1.2em;
-            /* TODO - find something more cross browser */
-            -webkit-line-clamp: 2;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
             color: #333;
         }
 
+        .panel {
+            line-height: 3em;
+            height: 3em;
+            border-bottom: 1px solid grey;
+        }
+
     </ui:style>
-    <design:MaterialPanel height="6em" backgroundColor="white" padding="0" margin="0">
-        <design:MaterialPanel height="100%" backgroundColor="green" float="LEFT">
-            <design:MaterialIcon iconSize="LARGE" backgroundColor="green" textColor="white" ui:field="image"/>
+    <design:MaterialPanel backgroundColor="white" padding="0" marginBottom="10" shadow="0" addStyleNames="{style.panel}">
+        <design:MaterialPanel float="RIGHT">
+            <design:MaterialButton type="FLOATING" iconType="DELETE" backgroundColor="white" shadow="0" iconColor="blue" marginRight="10" ui:field="delete"></design:MaterialButton>
+            <design:MaterialButton type="FLOATING" iconType="ADD" backgroundColor="green" shadow="0" iconColor="white" marginRight="10" ui:field="select"></design:MaterialButton>
         </design:MaterialPanel>
-        <design:MaterialPanel height="100%" padding="10">
-            <design:MaterialButton float="RIGHT" target="_blank" text="SELECT" ui:field="action"></design:MaterialButton>
-            <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" ui:field="name"></design:MaterialLabel>
-        </design:MaterialPanel>
+        <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" truncate="true" ui:field="name"></design:MaterialLabel>
     </design:MaterialPanel>
 </ui:UiBinder>

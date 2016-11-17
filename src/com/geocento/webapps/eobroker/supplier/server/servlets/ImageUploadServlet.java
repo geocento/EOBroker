@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -32,6 +33,7 @@ public class ImageUploadServlet extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter writer = response.getWriter();
 		try {
+            String userName = UserUtils.verifyUser(request);
 	        System.out.println("Start");
 			// default values for width and height
 			int width = 50;

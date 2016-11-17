@@ -1,16 +1,23 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.AoIWidget;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import gwt.material.design.addins.client.fileuploader.base.UploadFile;
 import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
+import gwt.material.design.addins.client.fileuploader.events.ErrorEvent;
 import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
 import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.client.ui.MaterialLabel;
@@ -35,7 +42,10 @@ public class UploadAoI {
 
     private static UploadAoIUiBinder ourUiBinder = GWT.create(UploadAoIUiBinder.class);
 
-    private final MaterialModal materialModal;
+    public static interface Presenter {
+        void aoiSelected(AoIDTO aoIDTO);
+    }
+
     @UiField
     MaterialFileUploader uploadAoI;
     @UiField
@@ -47,16 +57,17 @@ public class UploadAoI {
     @UiField
     MaterialPanel listOfAoIs;
 
+    private final MaterialModal materialModal;
+
     private static UploadAoI instance = null;
+
+    private Presenter presenter;
 
     public UploadAoI() {
 
         materialModal = ourUiBinder.createAndBindUi(this);
 
-        // add to document
-        RootPanel.get().add(materialModal);
-
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/image/";
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/geometry/";
         uploadAoI.setUrl(uploadUrl);
         // Added the progress to card uploader
         uploadAoI.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
@@ -71,6 +82,20 @@ public class UploadAoI {
             public void onSuccess(SuccessEvent<UploadFile> event) {
                 iconName.setText(event.getTarget().getName());
                 iconSize.setText(event.getTarget().getType());
+                String response = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
+                AoIDTO aoIDTO = new AoIDTO();
+                JSONObject aoiJson = JSONParser.parseLenient(response).isObject();
+                aoIDTO.setId((long) aoiJson.get("id").isNumber().doubleValue());
+                aoIDTO.setName(aoiJson.get("name").isString().stringValue());
+                aoIDTO.setWktGeometry(aoiJson.get("wktGeometry").isString().stringValue());
+                presenter.aoiSelected(aoIDTO);
+            }
+        });
+
+        uploadAoI.addErrorHandler(new ErrorEvent.ErrorHandler<UploadFile>() {
+            @Override
+            public void onError(ErrorEvent<UploadFile> event) {
+                Window.alert("Error loading file, message is " + event.getResponse());
             }
         });
 
@@ -80,6 +105,10 @@ public class UploadAoI {
                 MaterialAnimator.animate(Transition.RUBBERBAND, uploadAoI, 0);
             }
         });
+
+        // add to document
+        RootPanel.get().add(materialModal);
+
     }
 
     public static UploadAoI getInstance() {
@@ -89,7 +118,9 @@ public class UploadAoI {
         return instance;
     }
 
-    public void display() {
+    // TODO - clean the dropzone?
+    public void display(final Presenter presenter) {
+        this.presenter = presenter;
         materialModal.openModal();
         listOfAoIs.clear();
         listOfAoIs.add(new LoadingWidget("Loading AoIs..."));
@@ -108,8 +139,15 @@ public class UploadAoI {
                     if(aoIDTOs.size() == 0) {
                         listOfAoIs.add(new MaterialLabel("No AoIs defined..."));
                     } else {
-                        for(AoIDTO aoIDTO : aoIDTOs) {
+                        for(final AoIDTO aoIDTO : aoIDTOs) {
                             AoIWidget aoIWidget = new AoIWidget(aoIDTO);
+                            aoIWidget.getSelect().addClickHandler(new ClickHandler() {
+                                @Override
+                                public void onClick(ClickEvent event) {
+                                    presenter.aoiSelected(aoIDTO);
+                                    hide();
+                                }
+                            });
                             listOfAoIs.add(aoIWidget);
                         }
                     }
@@ -118,6 +156,10 @@ public class UploadAoI {
         } catch (Exception e) {
 
         }
+    }
+
+    private void hide() {
+        materialModal.closeModal();
     }
 
 }

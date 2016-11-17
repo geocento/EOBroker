@@ -94,16 +94,43 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             clientFactory.getPlaceController().goTo(new LandingPagePlace());
             return;
         }
-        this.text = text;
-        this.category = category;
         this.start = 0;
         this.limit = 24;
         // now start the search
-        searchPageView.clearResults();
-        searchPageView.setSearchText(text);
+        setSearchText(text);
         showCategories(true, text);
-        searchPageView.selectCategory(category);
+        selectCategory(category);
         searchPageView.displayFilters(category);
+
+        // add current AoI
+        searchPageView.setMapLoadedHandler(new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(Exception reason) {
+                Window.alert("Error " + reason.getMessage());
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                searchPageView.displayAoI(currentAoI);
+            }
+        });
+
+        updateSearchResults();
+
+    }
+
+    private void selectCategory(Category category) {
+        this.category = category;
+        searchPageView.selectCategory(category);
+    }
+
+    private void setSearchText(String text) {
+        this.text = text;
+        searchPageView.setSearchText(text);
+    }
+
+    private void updateSearchResults() {
+        searchPageView.clearResults();
         if(category != null) {
             // search using the category
             switch (category) {
@@ -200,20 +227,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             } catch (RequestException e) {
             }
         }
-
-        // add current AoI
-        searchPageView.setMapLoadedHandler(new Callback<Void, Exception>() {
-            @Override
-            public void onFailure(Exception reason) {
-                Window.alert("Error " + reason.getMessage());
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                searchPageView.displayAoI(currentAoI);
-            }
-        });
-
     }
 
     private void loadProducts(final String text, final int start, final int limit) {
@@ -239,6 +252,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private void loadProductServices(final String text, final int start, final int limit) {
         try {
             searchPageView.displayLoadingResults("Loading services...");
+            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
             REST.withCallback(new MethodCallback<List<ProductServiceDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -251,7 +265,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProductServices(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProductServices(text, start, limit, currentAoI == null ? null : currentAoI.getId());
+            }).call(ServicesUtil.searchService).listProductServices(text, start, limit, filterByAoI ? currentAoI.getId() : null);
         } catch (RequestException e) {
         }
     }
@@ -259,6 +273,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private void loadProductDatasets(final String text, final int start, final int limit) {
         try {
             searchPageView.displayLoadingResults("Loading data...");
+            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -271,7 +286,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProductDatasets(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, currentAoI == null ? null : currentAoI.getId());
+            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, filterByAoI ? currentAoI.getId() : null);
         } catch (RequestException e) {
         }
     }
@@ -399,6 +414,21 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             }).call(ServicesUtil.assetsService).updateAoI(aoi);
         } catch (Exception e) {
 
+        }
+    }
+
+    @Override
+    public void filtersChanged() {
+        // filters have changed so update results based on new filters
+        start = 0;
+        updateSearchResults();
+    }
+
+    @Override
+    public void aoiSelected(AoIDTO aoi) {
+        setAoI(aoi);
+        if(searchPageView.getFilterByAoI().getValue()) {
+            filtersChanged();
         }
     }
 

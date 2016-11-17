@@ -90,8 +90,12 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
             }
 
             @Override
-            public void uploadAoI() {
-                UploadAoI.getInstance().display();
+            public void selectAoI() {
+                UploadAoI.getInstance().display(new UploadAoI.Presenter() {
+                    @Override
+                    public void aoiSelected(AoIDTO aoIDTO) {
+                    }
+                });
             }
         });
     }

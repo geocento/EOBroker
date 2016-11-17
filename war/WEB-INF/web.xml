@@ -70,6 +70,10 @@
         <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.FileServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GeometryUploadServlet</servlet-name>
+        <servlet-class>com.geocento.webapps.eobroker.common.server.servlets.GeometryUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ImageUploadServlet</servlet-name>
         <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.ImageUploadServlet</servlet-class>
     </servlet>
@@ -92,6 +96,10 @@
     <servlet-mapping>
         <servlet-name>FileServlet</servlet-name>
         <url-pattern>/uploaded/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GeometryUploadServlet</servlet-name>
+        <url-pattern>/upload/geometry/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImageUploadServlet</servlet-name>

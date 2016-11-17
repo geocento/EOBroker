@@ -4,6 +4,7 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
 
@@ -154,7 +155,7 @@
                             <g:HTMLPanel ui:field="settings">
                             </g:HTMLPanel>
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
-                            <maps:MapContainer addStyleNames="{style.mapPanel}" height="200px" ui:field="mapContainer"></maps:MapContainer>
+                            <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="200px" ui:field="mapContainer"></cmaps:MapContainer>
                             <g:HTMLPanel ui:field="timeFrame">
                                 <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
                                 <design:MaterialDatePicker placeholder="Start date" ui:field="start"></design:MaterialDatePicker>

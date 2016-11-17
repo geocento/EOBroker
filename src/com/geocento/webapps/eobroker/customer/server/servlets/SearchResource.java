@@ -491,24 +491,29 @@ public class SearchResource implements SearchService {
         return searchResult;
     }
 
-    private List<Long> getFilteredIds(EntityManager em, String tableName, String textFilter, Integer start, Integer limit, Long aoiId) {
-        // check if last character is a space
-        boolean partialMatch = !textFilter.endsWith(" ");
-        textFilter.trim();
-        // break down text into sub words
-        String[] words = textFilter.split(" ");
-        String keywords = StringUtils.join(words, " | ");
-        if (partialMatch) {
-            keywords += ":*";
+    private List<Long> getFilteredIds(EntityManager em, String tableName, String textFilter, Integer start, Integer limit, String additionalStatement) {
+        String sqlStatement = "";
+        if(textFilter != null && textFilter.length() > 0) {
+            // check if last character is a space
+            boolean partialMatch = !textFilter.endsWith(" ");
+            textFilter.trim();
+            // break down text into sub words
+            String[] words = textFilter.split(" ");
+            String keywords = StringUtils.join(words, " | ");
+            if (partialMatch) {
+                keywords += ":*";
+            }
+            // change the last word so that it allows for partial match
+            sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
+                    "          FROM " + tableName + ", to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          WHERE tsv @@ keywords\n" +
+                    (additionalStatement == null ? "" : (" AND " + additionalStatement)) +
+                    "          ORDER BY rank DESC;";
+        } else {
+            sqlStatement = "SELECT id, 'dummy'\n" +
+                    "          FROM " + tableName +
+                    (additionalStatement == null ? "" : (" WHERE " + additionalStatement));
         }
-        // change the last word so that it allows for partial match
-        String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
-                "          FROM " + tableName + ", to_tsquery('" + keywords + "') AS keywords\n" +
-                "          WHERE tsv @@ keywords\n" +
-/*
-                (aoiId == null ? "" : " and ST_Intersects()")
-*/
-                "          ORDER BY rank DESC;";
         Query q = em.createNativeQuery(sqlStatement);
         q.setFirstResult(start);
         q.setMaxResults(limit);
@@ -525,7 +530,7 @@ public class SearchResource implements SearchService {
         List<Product> products = null;
         EntityManager em = EMF.get().createEntityManager();
         if(textFilter != null && textFilter.length() > 0) {
-            List<Long> productIds = getFilteredIds(em, "product", textFilter, start, limit, aoiId);
+            List<Long> productIds = getFilteredIds(em, "product", textFilter, start, limit, null);
             if(productIds.size() > 0) {
                 TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
                 productQuery.setParameter("productIds", productIds);
@@ -552,20 +557,20 @@ public class SearchResource implements SearchService {
     public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
         List<ProductService> productServices = null;
         EntityManager em = EMF.get().createEntityManager();
-        if(textFilter != null && textFilter.length() > 0) {
-            List<Long> productIds = getFilteredIds(em, "productservice", textFilter, start, limit, aoiId);
-            if(productIds.size() > 0) {
-                TypedQuery<ProductService> productQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
-                productQuery.setParameter("productIds", productIds);
-                productServices = productQuery.getResultList();
-            } else {
-                productServices = new ArrayList<ProductService>();
+        String additionalStatement = null;
+        if(aoiId != null) {
+            AoI aoi = em.find(AoI.class, aoiId);
+            if(aoi != null) {
+                additionalStatement = "ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'";
             }
-        } else {
-            TypedQuery<ProductService> productQuery = em.createQuery("select p from ProductService p order by p.name", ProductService.class);
-            productQuery.setFirstResult(start);
-            productQuery.setMaxResults(limit);
+        }
+        List<Long> productIds = getFilteredIds(em, "productservice", textFilter, start, limit, additionalStatement);
+        if(productIds.size() > 0) {
+            TypedQuery<ProductService> productQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
+            productQuery.setParameter("productIds", productIds);
             productServices = productQuery.getResultList();
+        } else {
+            productServices = new ArrayList<ProductService>();
         }
         em.close();
         return ListUtil.mutate(productServices, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
@@ -580,20 +585,20 @@ public class SearchResource implements SearchService {
     public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
-        if(textFilter != null && textFilter.length() > 0) {
-            List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit, aoiId);
-            if(productIds.size() > 0) {
-                TypedQuery<ProductDataset> productQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
-                productQuery.setParameter("productIds", productIds);
-                productDatasets = productQuery.getResultList();
-            } else {
-                productDatasets = new ArrayList<ProductDataset>();
+        String additionalStatement = null;
+        if(aoiId != null) {
+            AoI aoi = em.find(AoI.class, aoiId);
+            if(aoi != null) {
+                additionalStatement = "ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'";
             }
-        } else {
-            TypedQuery<ProductDataset> productQuery = em.createQuery("select p from ProductDataset p order by p.name", ProductDataset.class);
-            productQuery.setFirstResult(start);
-            productQuery.setMaxResults(limit);
+        }
+        List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit, additionalStatement);
+        if(productIds.size() > 0) {
+            TypedQuery<ProductDataset> productQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
+            productQuery.setParameter("productIds", productIds);
             productDatasets = productQuery.getResultList();
+        } else {
+            productDatasets = new ArrayList<ProductDataset>();
         }
         em.close();
         return ListUtil.mutate(productDatasets, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
@@ -609,7 +614,7 @@ public class SearchResource implements SearchService {
         List<Software> softwares = null;
         EntityManager em = EMF.get().createEntityManager();
         if(textFilter != null && textFilter.length() > 0) {
-            List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit, aoiId);
+            List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit, null);
             if(softwareIds.size() > 0) {
                 TypedQuery<Software> softwareQuery = em.createQuery("select p from Software p where p.id IN :softwareIds", Software.class);
                 softwareQuery.setParameter("softwareIds", softwareIds);
@@ -657,7 +662,7 @@ public class SearchResource implements SearchService {
         List<Project> projects = null;
         EntityManager em = EMF.get().createEntityManager();
         if(textFilter != null && textFilter.length() > 0) {
-            List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit, aoiId);
+            List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit, null);
             if(projectIds.size() > 0) {
                 TypedQuery<Project> projectQuery = em.createQuery("select p from Project p where p.id IN :projectIds", Project.class);
                 projectQuery.setParameter("projectIds", projectIds);

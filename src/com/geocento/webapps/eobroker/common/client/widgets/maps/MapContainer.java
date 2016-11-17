@@ -3,7 +3,6 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.customer.client.widgets.UploadAoI;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,7 +29,7 @@ public class MapContainer extends Composite {
 
     public static interface Presenter {
         void aoiChanged(AoIDTO aoi);
-        void uploadAoI();
+        void selectAoI();
     }
 
     @UiField
@@ -104,7 +103,7 @@ public class MapContainer extends Composite {
                         uploadFile.addClickHandler(new ClickHandler() {
                             @Override
                             public void onClick(ClickEvent event) {
-                                presenter.uploadAoI();
+                                presenter.selectAoI();
                             }
                         });
                         map.setZoom(3);
