@@ -1,14 +1,18 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,11 +20,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
+import gwt.material.design.client.constants.ButtonType;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.Position;
-import gwt.material.design.client.ui.MaterialLabel;
-import gwt.material.design.client.ui.MaterialRow;
-import gwt.material.design.client.ui.MaterialTextArea;
-import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.ui.*;
 
 import java.util.Date;
 import java.util.List;
@@ -49,6 +52,8 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     UserWidget userImage;
     @UiField
     MaterialLabel comment;
+    @UiField
+    MaterialRow previousConversations;
 
     public ConversationViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -72,6 +77,53 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @Override
     public void setPresenter(Presenter presenter) {
 
+    }
+
+    @Override
+    public void displayConversationError(String message) {
+        comment.setVisible(true);
+        comment.setText(message);
+    }
+
+    @Override
+    public void displayConversationsError(String message) {
+        previousConversations.clear();
+        previousConversations.add(new MaterialLabel(message));
+    }
+
+    @Override
+    public void displayConversations(List<ConversationDTO> conversationDTOs) {
+        previousConversations.clear();
+        if(conversationDTOs == null || conversationDTOs.size() == 0) {
+            previousConversations.add(new MaterialLabel("No previous conversations with this company..."));
+        } else {
+            for (final ConversationDTO conversationDTO : conversationDTOs) {
+                MaterialBubble materialBubble = new MaterialBubble();
+                materialBubble.setBackgroundColor("white");
+                materialBubble.setFloat(Style.Float.LEFT);
+                materialBubble.setPosition(Position.LEFT);
+                materialBubble.setMarginLeft(12);
+                materialBubble.setWidth("50%");
+                // add content
+                MaterialButton materialButton = new MaterialButton(ButtonType.FLOATING);
+                materialButton.setIconType(IconType.OPEN_IN_BROWSER);
+                materialButton.setFloat(Style.Float.RIGHT);
+                materialButton.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        template.getClientFactory().getPlaceController().goTo(new ConversationPlace(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId())));
+                    }
+                });
+                materialBubble.add(materialButton);
+                MaterialLabel materialLabel = new MaterialLabel("Conversation '" + conversationDTO.getTopic() + "'");
+                materialLabel.setFontSize(1.2, Style.Unit.EM);
+                materialBubble.add(materialLabel);
+                materialLabel = new MaterialLabel("Created on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
+                materialLabel.setFontSize(0.8, Style.Unit.EM);
+                materialBubble.add(materialLabel);
+                previousConversations.add(materialBubble);
+            }
+        }
     }
 
     @Override

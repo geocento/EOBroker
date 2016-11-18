@@ -104,5 +104,4 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/notifications/")
     @Produces("application/json")
     List<NotificationDTO> getNotifications() throws RequestException;
-
 }

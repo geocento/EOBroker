@@ -292,6 +292,8 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setWebsite(productService.getWebsite());
             productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
             productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+            productServiceDescriptionDTO.setGeoinformation(productService.getGeoinformation());
+            productServiceDescriptionDTO.setExtent(productService.getExtent());
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
             // add suggestions
             // for now make it simple and just add the same product services

@@ -170,29 +170,55 @@ public class SearchResource implements SearchService {
     public SearchResult getMatchingServices(String text, Long aoiId) throws RequestException {
         SearchResult searchResult = new SearchResult();
         // start with products
-        List<ProductDTO> products = listProducts(text, 0, 5, aoiId);
-        boolean more = products.size() > 4;
-        if(more) {
-            products = products.subList(0, 4);
+        {
+            List<ProductDTO> products = listProducts(text, 0, 5, aoiId, Sector.all, Thematic.all);
+            boolean more = products.size() > 4;
+            if (more) {
+                products = products.subList(0, 4);
+            }
+            searchResult.setProducts(products);
+            searchResult.setMoreProducts(more);
         }
-        searchResult.setProducts(products);
-        searchResult.setMoreProducts(more);
         // now search for services
-        List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, aoiId);
-        more = productServiceDTOs.size() > 4;
-        if(more) {
-            productServiceDTOs = productServiceDTOs.subList(0, 4);
+        {
+            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, aoiId);
+            boolean more = productServiceDTOs.size() > 4;
+            if (more) {
+                productServiceDTOs = productServiceDTOs.subList(0, 4);
+            }
+            searchResult.setProductServices(productServiceDTOs);
+            searchResult.setMoreProductServices(more);
         }
-        searchResult.setProductServices(productServiceDTOs);
-        searchResult.setMoreProductServices(more);
         // now search for datasets
-        List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, aoiId);
-        more = productDatasetDTOs.size() > 4;
-        if(more) {
-            productDatasetDTOs = productDatasetDTOs.subList(0, 4);
+        {
+            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, aoiId);
+            boolean more = productDatasetDTOs.size() > 4;
+            if (more) {
+                productDatasetDTOs = productDatasetDTOs.subList(0, 4);
+            }
+            searchResult.setProductDatasets(productDatasetDTOs);
+            searchResult.setMoreProductDatasets(more);
         }
-        searchResult.setProductDatasets(productDatasetDTOs);
-        searchResult.setMoreProductDatasets(more);
+        // now search for software
+        {
+            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, aoiId);
+            boolean more = softwareDTOs.size() > 4;
+            if (more) {
+                softwareDTOs = softwareDTOs.subList(0, 4);
+            }
+            searchResult.setSoftwares(softwareDTOs);
+            searchResult.setMoreSoftware(more);
+        }
+        // now search for projects
+        {
+            List<ProjectDTO> projectDTOs = listProjects(text, 0, 5, aoiId);
+            boolean more = projectDTOs.size() > 4;
+            if (more) {
+                projectDTOs = projectDTOs.subList(0, 4);
+            }
+            searchResult.setProjects(projectDTOs);
+            searchResult.setMoreProjects(more);
+        }
         return searchResult;
 /*
         // check if last character is a space
@@ -512,7 +538,11 @@ public class SearchResource implements SearchService {
         } else {
             sqlStatement = "SELECT id, 'dummy'\n" +
                     "          FROM " + tableName +
-                    (additionalStatement == null ? "" : (" WHERE " + additionalStatement));
+                    (additionalStatement == null ? "" : (" WHERE " + additionalStatement)) +
+                    " ORDER BY name ASC";
+/*
+                    (alternateOrder == null ? "" : " ORDER BY " + alternateOrder);
+*/
         }
         Query q = em.createNativeQuery(sqlStatement);
         q.setFirstResult(start);
@@ -526,26 +556,39 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ProductDTO> listProducts(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+    public List<ProductDTO> listProducts(String textFilter, Integer start, Integer limit, Long aoiId, Sector sector, Thematic thematic) throws RequestException {
         List<Product> products = null;
         EntityManager em = EMF.get().createEntityManager();
-        if(textFilter != null && textFilter.length() > 0) {
-            List<Long> productIds = getFilteredIds(em, "product", textFilter, start, limit, null);
-            if(productIds.size() > 0) {
-                TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
-                productQuery.setParameter("productIds", productIds);
-                products = productQuery.getResultList();
-            } else {
-                products = new ArrayList<Product>();
-            }
-        } else {
-            TypedQuery<Product> productQuery = em.createQuery("select p from Product p order by p.name", Product.class);
-            productQuery.setFirstResult(start);
-            productQuery.setMaxResults(limit);
+        String additionalStatement = null;
+        boolean hasSector = sector != null && sector != Sector.all;
+        boolean hasThematic = thematic != null && thematic != Thematic.all;
+        if(hasSector) {
+            additionalStatement = "sector = '" + sector.toString() + "'";
+        }
+        if(hasThematic) {
+            additionalStatement = (additionalStatement == null ? "" : additionalStatement + " AND ") +
+                    "thematic = '" + thematic.toString() + "'";
+        }
+        List<Long> productIds = getFilteredIds(em, "product", textFilter, start, limit, additionalStatement);
+        if(productIds.size() > 0) {
+            TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
+            productQuery.setParameter("productIds", productIds);
             products = productQuery.getResultList();
+        } else {
+            products = new ArrayList<Product>();
         }
         em.close();
-        return ListUtil.mutate(products, new ListUtil.Mutate<Product, ProductDTO>() {
+        // make sure order has stayed the same
+        List<Product> sortedProducts = new ArrayList<Product>();
+        for(final Long id : productIds) {
+            sortedProducts.add(ListUtil.findValue(products, new ListUtil.CheckValue<Product>() {
+                @Override
+                public boolean isValue(Product value) {
+                    return value.getId().equals(id);
+                }
+            }));
+        }
+        return ListUtil.mutate(sortedProducts, new ListUtil.Mutate<Product, ProductDTO>() {
             @Override
             public ProductDTO mutate(Product product) {
                 return ProductHelper.createProductDTO(product);
@@ -573,7 +616,17 @@ public class SearchResource implements SearchService {
             productServices = new ArrayList<ProductService>();
         }
         em.close();
-        return ListUtil.mutate(productServices, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+        // make sure order has stayed the same
+                List<ProductService> sortedItems = new ArrayList<ProductService>();
+        for(final Long id : productIds) {
+            sortedItems.add(ListUtil.findValue(productServices, new ListUtil.CheckValue<ProductService>() {
+                @Override
+                public boolean isValue(ProductService value) {
+                    return value.getId().equals(id);
+                }
+            }));
+        }
+        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
             @Override
             public ProductServiceDTO mutate(ProductService productService) {
                 return createProductServiceDTO(productService);
@@ -601,7 +654,17 @@ public class SearchResource implements SearchService {
             productDatasets = new ArrayList<ProductDataset>();
         }
         em.close();
-        return ListUtil.mutate(productDatasets, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+        // make sure order has stayed the same
+        List<ProductDataset> sortedItems = new ArrayList<ProductDataset>();
+        for(final Long id : productIds) {
+            sortedItems.add(ListUtil.findValue(productDatasets, new ListUtil.CheckValue<ProductDataset>() {
+                @Override
+                public boolean isValue(ProductDataset value) {
+                    return value.getId().equals(id);
+                }
+            }));
+        }
+        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
             @Override
             public ProductDatasetDTO mutate(ProductDataset productDataset) {
                 return createProductDatasetDTO(productDataset);
@@ -613,23 +676,26 @@ public class SearchResource implements SearchService {
     public List<SoftwareDTO> listSoftware(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
         List<Software> softwares = null;
         EntityManager em = EMF.get().createEntityManager();
-        if(textFilter != null && textFilter.length() > 0) {
-            List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit, null);
-            if(softwareIds.size() > 0) {
-                TypedQuery<Software> softwareQuery = em.createQuery("select p from Software p where p.id IN :softwareIds", Software.class);
-                softwareQuery.setParameter("softwareIds", softwareIds);
-                softwares = softwareQuery.getResultList();
-            } else {
-                softwares = new ArrayList<Software>();
-            }
+        List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit, null);
+        if(softwareIds.size() > 0) {
+            TypedQuery<Software> softwareQuery = em.createQuery("select p from Software p where p.id IN :softwareIds", Software.class);
+            softwareQuery.setParameter("softwareIds", softwareIds);
+            softwares = softwareQuery.getResultList();
         } else {
-            TypedQuery<Software> productQuery = em.createQuery("select p from Software p order by p.name", Software.class);
-            productQuery.setFirstResult(start);
-            productQuery.setMaxResults(limit);
-            softwares = productQuery.getResultList();
+            softwares = new ArrayList<Software>();
         }
         em.close();
-        return ListUtil.mutate(softwares, new ListUtil.Mutate<Software, SoftwareDTO>() {
+        // make sure order has stayed the same
+        List<Software> sortedItems = new ArrayList<Software>();
+        for(final Long id : softwareIds) {
+            sortedItems.add(ListUtil.findValue(softwares, new ListUtil.CheckValue<Software>() {
+                @Override
+                public boolean isValue(Software value) {
+                    return value.getId().equals(id);
+                }
+            }));
+        }
+        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<Software, SoftwareDTO>() {
             @Override
             public SoftwareDTO mutate(Software software) {
                 return createSoftwareDTO(software);
@@ -661,23 +727,26 @@ public class SearchResource implements SearchService {
     public List<ProjectDTO> listProjects(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
         List<Project> projects = null;
         EntityManager em = EMF.get().createEntityManager();
-        if(textFilter != null && textFilter.length() > 0) {
-            List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit, null);
-            if(projectIds.size() > 0) {
-                TypedQuery<Project> projectQuery = em.createQuery("select p from Project p where p.id IN :projectIds", Project.class);
-                projectQuery.setParameter("projectIds", projectIds);
-                projects = projectQuery.getResultList();
-            } else {
-                projects = new ArrayList<Project>();
-            }
+        List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit, null);
+        if(projectIds.size() > 0) {
+            TypedQuery<Project> projectQuery = em.createQuery("select p from Project p where p.id IN :projectIds", Project.class);
+            projectQuery.setParameter("projectIds", projectIds);
+            projects = projectQuery.getResultList();
         } else {
-            TypedQuery<Project> productQuery = em.createQuery("select p from Project p order by p.name", Project.class);
-            productQuery.setFirstResult(start);
-            productQuery.setMaxResults(limit);
-            projects = productQuery.getResultList();
+            projects = new ArrayList<Project>();
         }
         em.close();
-        return ListUtil.mutate(projects, new ListUtil.Mutate<Project, ProjectDTO>() {
+        // make sure order has stayed the same
+        List<Project> sortedItems = new ArrayList<Project>();
+        for(final Long id : projectIds) {
+            sortedItems.add(ListUtil.findValue(projects, new ListUtil.CheckValue<Project>() {
+                @Override
+                public boolean isValue(Project value) {
+                    return value.getId().equals(id);
+                }
+            }));
+        }
+        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<Project, ProjectDTO>() {
             @Override
             public ProjectDTO mutate(Project project) {
                 return createProjectDTO(project);

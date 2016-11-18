@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRec
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
@@ -35,10 +36,14 @@ import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.html.Option;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -103,6 +108,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     LoadingWidget loading;
     @UiField
     HTMLPanel requirementsPanel;
+
+    // possible filters
+    private MaterialListBox sectorSelection;
+    private MaterialListBox thematicSelection;
 
     private Presenter presenter;
 
@@ -659,27 +668,63 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     private void displayProductFilters() {
         settings.clear();
         // add sector selection
-        MaterialLabel materialLabel = new MaterialLabel("Sector");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        MaterialListBox sectorSelection = new MaterialListBox();
-        sectorSelection.addStyleName(style.option());
-        sectorSelection.addItem("All");
-        for(Sector option : Sector.values()) {
-            sectorSelection.addItem(option.toString());
+        {
+            MaterialLabel materialLabel = new MaterialLabel("Sector");
+            materialLabel.addStyleName(style.optionTitle());
+            settings.add(materialLabel);
+            sectorSelection = new MaterialListBox();
+            sectorSelection.addStyleName(style.option());
+            List<Sector> sortedValues = ListUtil.toList(Sector.values());
+            Collections.sort(sortedValues, new Comparator<Sector>() {
+                @Override
+                public int compare(Sector o1, Sector o2) {
+                    return o1 == Sector.all ? -1 :
+                            o1.getName().compareTo(o2.getName());
+                }
+            });
+            for (Sector option : sortedValues) {
+                Option optionWidget = new Option();
+                optionWidget.setText(option.getName());
+                optionWidget.setValue(option.toString());
+                sectorSelection.add(optionWidget);
+            }
+            sectorSelection.addValueChangeHandler(new ValueChangeHandler<String>() {
+                @Override
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    presenter.filtersChanged();
+                }
+            });
+            settings.add(sectorSelection);
         }
-        settings.add(sectorSelection);
         // add thematic selection
-        materialLabel = new MaterialLabel("Thematic");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        MaterialListBox thematicSelection = new MaterialListBox();
-        thematicSelection.addStyleName(style.option());
-        thematicSelection.addItem("All");
-        for(Thematic option : Thematic.values()) {
-            thematicSelection.addItem(option.toString());
+        {
+            MaterialLabel materialLabel = new MaterialLabel("Thematic");
+            materialLabel.addStyleName(style.optionTitle());
+            settings.add(materialLabel);
+            thematicSelection = new MaterialListBox();
+            thematicSelection.addStyleName(style.option());
+            List<Thematic> sortedValues = ListUtil.toList(Thematic.values());
+            Collections.sort(sortedValues, new Comparator<Thematic>() {
+                @Override
+                public int compare(Thematic o1, Thematic o2) {
+                    return o1 == Thematic.all ? -1 :
+                            o1.getName().compareTo(o2.getName());
+                }
+            });
+            for (Thematic option : sortedValues) {
+                Option optionWidget = new Option();
+                optionWidget.setText(option.getName());
+                optionWidget.setValue(option.toString());
+                thematicSelection.add(optionWidget);
+            }
+            thematicSelection.addValueChangeHandler(new ValueChangeHandler<String>() {
+                @Override
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    presenter.filtersChanged();
+                }
+            });
+            settings.add(thematicSelection);
         }
-        settings.add(thematicSelection);
     }
 
     private void displayCompaniesFilters() {
@@ -721,6 +766,16 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public HasValue<Boolean> getFilterByAoI() {
         return filterByAoI;
+    }
+
+    @Override
+    public Sector getSectorFilter() {
+        return sectorSelection.getSelectedValue() == null ? null : Sector.valueOf(sectorSelection.getSelectedValue());
+    }
+
+    @Override
+    public Thematic getThematicFilter() {
+        return thematicSelection.getSelectedValue() == null ? null : Thematic.valueOf(thematicSelection.getSelectedValue());
     }
 
     @Override

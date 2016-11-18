@@ -12,6 +12,11 @@
             -webkit-box-orient: vertical;
             color: #ccc;
         }
+
+        .stars > i {
+            margin-right: 5px !important;
+        }
+
     </ui:style>
     <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL">
         <design:MaterialCardImage backgroundColor="white">
@@ -22,6 +27,9 @@
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction padding="10">
+            <design:MaterialTooltip text="Favourited 0 times" ui:field="starsTooltip">
+                <design:MaterialLink text="0" float="RIGHT" textColor="LIME" iconType="STAR" iconColor="LIME" marginRight="0" addStyleNames="{style.stars}" ui:field="stars"></design:MaterialLink>
+            </design:MaterialTooltip>
             <design:MaterialLink text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>

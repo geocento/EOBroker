@@ -1,5 +1,10 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+
+import java.util.List;
+
 /**
  * Created by thomas on 06/06/2016.
  */
@@ -13,8 +18,12 @@ public class ProductServiceEditDTO {
     String email;
     String website;
     String fullDescription;
+    String extent;
+    List<FeatureDescription> productFeatures;
+    List<Long> selectedFeatures;
     String apiURL;
     String sampleWmsUrl;
+    private List<DatasetAccess> samples;
 
     public ProductServiceEditDTO() {
     }
@@ -83,6 +92,30 @@ public class ProductServiceEditDTO {
         return fullDescription;
     }
 
+    public String getExtent() {
+        return extent;
+    }
+
+    public void setExtent(String extent) {
+        this.extent = extent;
+    }
+
+    public List<FeatureDescription> getProductFeatures() {
+        return productFeatures;
+    }
+
+    public void setProductFeatures(List<FeatureDescription> productFeatures) {
+        this.productFeatures = productFeatures;
+    }
+
+    public List<Long> getSelectedFeatures() {
+        return selectedFeatures;
+    }
+
+    public void setSelectedFeatures(List<Long> selectedFeatures) {
+        this.selectedFeatures = selectedFeatures;
+    }
+
     public String getApiURL() {
         return apiURL;
     }
@@ -97,5 +130,13 @@ public class ProductServiceEditDTO {
 
     public void setSampleWmsUrl(String sampleWmsUrl) {
         this.sampleWmsUrl = sampleWmsUrl;
+    }
+
+    public void setSamples(List<DatasetAccess> samples) {
+        this.samples = samples;
+    }
+
+    public List<DatasetAccess> getSamples() {
+        return samples;
     }
 }

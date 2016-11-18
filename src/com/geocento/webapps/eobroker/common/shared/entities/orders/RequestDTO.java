@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities.orders;
 
+import java.util.Date;
+
 /**
  * Created by thomas on 06/07/2016.
  */
@@ -10,6 +12,7 @@ public class RequestDTO {
     String id;
     String description;
     TYPE type;
+    Date creationTime;
 
     public RequestDTO() {
     }
@@ -36,5 +39,13 @@ public class RequestDTO {
 
     public void setType(TYPE type) {
         this.type = type;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
     }
 }

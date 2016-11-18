@@ -93,7 +93,12 @@ public class OrdersResource implements OrdersService {
         RequestDTO requestDTO = new RequestDTO();
         requestDTO.setId(imageryFormRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.imageservice);
-        requestDTO.setDescription("Form request for imagery service");
+        boolean severalCompanies = imageryFormRequest.getImageServiceRequests().size() > 1;
+        requestDTO.setDescription("Form request for imagery service - " +
+            (severalCompanies ? (" (" + imageryFormRequest.getImageServiceRequests().size() + " companies)") :
+                    " (company '" + imageryFormRequest.getImageServiceRequests().get(0).getImageService().getCompany().getName() + "')")
+        );
+        requestDTO.setCreationTime(imageryFormRequest.getCreationDate());
         return requestDTO;
     }
 
@@ -101,7 +106,8 @@ public class OrdersResource implements OrdersService {
         RequestDTO requestDTO = new RequestDTO();
         requestDTO.setId(imagesRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.image);
-        requestDTO.setDescription("Request for " + imagesRequest.getProductRequests().size() + " products");
+        requestDTO.setDescription("Request for " + imagesRequest.getProductRequests().size() + " products (company '" + imagesRequest.getImageService().getCompany().getName() + "')");
+        requestDTO.setCreationTime(imagesRequest.getCreationDate());
         return requestDTO;
     }
 
@@ -109,7 +115,12 @@ public class OrdersResource implements OrdersService {
         RequestDTO requestDTO = new RequestDTO();
         requestDTO.setId(productServiceRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.product);
-        requestDTO.setDescription("Request for product '" + productServiceRequest.getProduct().getName() + "'");
+        boolean severalCompanies = productServiceRequest.getSupplierRequests().size() > 1;
+        requestDTO.setDescription("Request for product '" + productServiceRequest.getProduct().getName() + "'" +
+                (severalCompanies ? (" (" + productServiceRequest.getSupplierRequests().size() + " companies)") :
+                        " (company '" + productServiceRequest.getSupplierRequests().get(0).getProductService().getCompany().getName() + "')")
+        );
+        requestDTO.setCreationTime(productServiceRequest.getCreationDate());
         return requestDTO;
     }
 
@@ -542,6 +553,38 @@ public class OrdersResource implements OrdersService {
             imagesRequest.getMessages().add(message);
             em.getTransaction().commit();
             return MessageHelper.convertToDTO(message);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<ConversationDTO> listConversations(Long companyId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Conversation> query = em.createQuery("select c from Conversation c where c.company.id = :companyId and c.customer = :user order by c.creationDate desc", Conversation.class);
+            query.setParameter("companyId", companyId);
+            query.setParameter("user", user);
+            query.setFirstResult(0);
+            query.setMaxResults(10);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Conversation, ConversationDTO>() {
+                @Override
+                public ConversationDTO mutate(Conversation conversation) {
+                    ConversationDTO conversationDTO = new ConversationDTO();
+                    conversationDTO.setId(conversation.getId());
+                    conversationDTO.setTopic(conversation.getTopic());
+                    conversationDTO.setCreationDate(conversation.getCreationDate());
+                    return conversationDTO;
+                }
+            });
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

@@ -31,9 +31,16 @@
             margin-bottom: 20px;
         }
 
+        .sectionPanel {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid grey;
+            margin-bottom: 20px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
-    <views:TemplateView ui:field="template">
+    <views:TemplateView titleText="Off the shelf data" ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
@@ -51,33 +58,38 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
-                <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Dataset product" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-                <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Dataset features" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel ui:field="features">
-                    <design:MaterialLabel>TODO, add list of features from product definition</design:MaterialLabel>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
+                    <design:MaterialLabel margin="10" text="Select geoinformation provided"></design:MaterialLabel>
+                    <design:MaterialPanel padding="10" ui:field="geoinformation"></design:MaterialPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Dataset extent" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-                <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full data access" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="dataAccessMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="dataAccess"></design:MaterialRow>
-                    <design:MaterialButton text="Add data access" ui:field="addDataAccess"></design:MaterialButton>
+                    <design:MaterialPanel>
+                        <design:MaterialListBox marginRight="10" display="INLINE_BLOCK" ui:field="datasetAccessType"></design:MaterialListBox>
+                        <design:MaterialButton text="Add data access" ui:field="addDataAccess"></design:MaterialButton>
+                    </design:MaterialPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Samples" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="samples"></design:MaterialRow>
                     <design:MaterialRow>
@@ -89,7 +101,7 @@
                         </design:MaterialColumn>
                         <design:MaterialColumn grid="s12 m4 l4">
                             <c:MaterialFileUploader acceptedFiles="image/*" url="" height="auto" shadow="1" padding="20" ui:field="sampleUploader">
-                                <design:MaterialListBox ui:field="type"></design:MaterialListBox>
+                                <design:MaterialListBox ui:field="sampleAccessType"></design:MaterialListBox>
                                 <design:MaterialTextBox placeholder="Name of resource" ui:field="resourceName"></design:MaterialTextBox>
                                 <design:MaterialRow>
                                     <design:MaterialColumn>

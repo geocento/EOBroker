@@ -14,7 +14,7 @@
                     <widgets:MaterialFileUploader url="./test" maxFileSize="100" height="auto" width="auto" shadow="0" ui:field="uploadAoI">
                         <design:MaterialPanel layoutPosition="RELATIVE" padding="10" paddingBottom="50" backgroundColor="white">
                             <design:MaterialLabel ui:field="iconName" text="Upload a file" fontSize="1.2em" truncate="true"/>
-                            <design:MaterialLabel ui:field="iconSize" text="Upload kml or shapefile (zip) with ONE polygon only. Polygon with more than 50 points will be automatically simplified." fontSize="0.8em"/>
+                            <design:MaterialLabel ui:field="iconSize" text="Upload kml, the first polygon only will be selected. Polygon with more than 50 points will be automatically simplified." fontSize="0.8em"/>
                             <design:MaterialProgress ui:field="iconProgress" layoutPosition="ABSOLUTE" bottom="0" left="0" type="DETERMINATE" percent="0" />
                             <design:MaterialButton layoutPosition="ABSOLUTE" bottom="5" right="25" type="FLOATING" backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" iconColor="white"/>
                         </design:MaterialPanel>

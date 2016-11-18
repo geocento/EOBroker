@@ -77,6 +77,12 @@ public class AssetsResource implements AssetsService {
             product.setDescription(productDTO.getDescription());
             product.setSector(productDTO.getSector());
             product.setThematic(productDTO.getThematic());
+            product.setGeoinformation(productDTO.getGeoinformation());
+            for(FeatureDescription featureDescription : productDTO.getGeoinformation()) {
+                if(featureDescription.getId() == null) {
+                    em.persist(featureDescription);
+                }
+            }
             product.setFormFields(productDTO.getFormFields());
             for(FormElement formElement : product.getFormFields()) {
                 if(formElement.getId() == null) {
@@ -118,7 +124,7 @@ public class AssetsResource implements AssetsService {
     }
 
     private static String getProductTSV(Product product) {
-        return "setweight(to_tsvector('english','product " + product.getSector().toString() + " " + product.getThematic().toString() + " " + product.getName() + "'), 'A') " +
+        return "setweight(to_tsvector('english','product " + product.getSector().getName() + " " + product.getThematic().getName() + " " + product.getName() + "'), 'A') " +
                 "|| setweight(to_tsvector('english','" + product.getShortDescription() + "'), 'B')";
     }
 

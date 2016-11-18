@@ -4,11 +4,9 @@ package com.geocento.webapps.eobroker.common.shared.entities;
  * Created by thomas on 10/11/2016.
  */
 public enum AccessType {
-    webapplication("Web application"),
-    download("Downloadable file"),
-    wms("OGC WMS access"),
-    wfs("OGC WFS access"),
-    wcs("OGC WCS access"),
+    application("Web application"),
+    file("Downloadable file"),
+    ogc("OGC OWS services"),
     api("API access");
 
     String name;

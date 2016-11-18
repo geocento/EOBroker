@@ -3,24 +3,26 @@ package com.geocento.webapps.eobroker.admin.client.views;
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.widgets.CodeEditor;
 import com.geocento.webapps.eobroker.admin.client.widgets.FormEditor;
+import com.geocento.webapps.eobroker.admin.client.widgets.GeoinformationWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialListBox;
-import gwt.material.design.client.ui.MaterialTextBox;
-import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.ui.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,6 +65,12 @@ public class ProductViewImpl extends Composite implements ProductView {
     CodeEditor recommendationRule;
     @UiField
     FormEditor apiFormFields;
+    @UiField
+    MaterialButton addGeoinformation;
+    @UiField
+    MaterialRow geoinformation;
+    @UiField
+    MaterialLabel geoinformationMessage;
 
     private Presenter presenter;
 
@@ -73,11 +81,11 @@ public class ProductViewImpl extends Composite implements ProductView {
         initWidget(ourUiBinder.createAndBindUi(this));
 
         for(Sector sector : Sector.values()) {
-            this.sector.addItem(sector.toString(), sector.name());
+            this.sector.addItem(sector.getName(), sector.toString());
         }
 
         for(Thematic thematic : Thematic.values()) {
-            this.thematic.addItem(thematic.toString(), thematic.name());
+            this.thematic.addItem(thematic.getName(), thematic.toString());
         }
 
     }
@@ -198,6 +206,44 @@ public class ProductViewImpl extends Composite implements ProductView {
     @Override
     public String getRecommendationRule() {
         return recommendationRule.getCode();
+    }
+
+    @Override
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation.clear();
+        if(geoinformation != null) {
+            for(FeatureDescription featureDescription : geoinformation) {
+                addFeatureDescription(featureDescription);
+            }
+        }
+        updateDataAccessMessage();
+    }
+
+    private void addFeatureDescription(FeatureDescription featureDescription) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        this.geoinformation.add(materialColumn);
+        GeoinformationWidget geoinformationWidget = new GeoinformationWidget(featureDescription);
+        materialColumn.add(geoinformationWidget);
+    }
+
+    private void updateDataAccessMessage() {
+        List<FeatureDescription> geoinformations = getGeoinformation();
+        geoinformationMessage.setText(geoinformations.size() == 0 ? "No geoinformation provided, add new geoinformation using the button below" :
+                geoinformations.size() + " geoinformation defined, add more using the add button below");
+    }
+
+    @Override
+    public List<FeatureDescription> getGeoinformation() {
+        List<FeatureDescription> featureDescriptions = new ArrayList<FeatureDescription>();
+        for(int index = 0; index < geoinformation.getWidgetCount(); index++) {
+            featureDescriptions.add(((GeoinformationWidget) ((MaterialColumn) geoinformation.getWidget(index)).getWidget(0)).getFeatureDescription());
+        }
+        return featureDescriptions;
+    }
+
+    @UiHandler("addGeoinformation")
+    void addGeoInformation(ClickEvent clickEvent) {
+        addFeatureDescription(new FeatureDescription());
     }
 
 }

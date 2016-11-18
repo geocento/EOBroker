@@ -13,11 +13,16 @@
             color: #ccc;
         }
 
+        .creationDate {
+
+        }
+
     </ui:style>
     <design:MaterialCard backgroundColor="white" axis="VERTICAL">
         <design:MaterialCardContent textColor="white" backgroundColor="grey" ui:field="content">
             <design:MaterialLabel fontSize="1.4em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+            <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.creationDate}" ui:field="creationdate"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action">
             <design:MaterialButton text="View Request" backgroundColor="blue-grey" textColor="white" ui:field="request"></design:MaterialButton>

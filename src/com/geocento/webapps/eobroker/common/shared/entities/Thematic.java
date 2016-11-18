@@ -18,6 +18,11 @@ public enum Thematic {
         name = s;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /*
     public boolean equalsName(String otherName) {
         return (otherName == null) ? false : name.equals(otherName);
     }
@@ -34,4 +39,5 @@ public enum Thematic {
         }
         return null;
     }
+*/
 }

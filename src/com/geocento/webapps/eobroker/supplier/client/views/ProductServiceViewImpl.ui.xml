@@ -5,6 +5,7 @@
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
              xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
         >
     <ui:style>
         .panel header {
@@ -73,6 +74,26 @@
             margin-bottom: 20px;
         }
 
+        .mapContainer {
+            margin: 20px 0px;
+        }
+
+        .sectionPanel {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid grey;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            display: block;
+            margin: 20px 0px;
+        }
+
+        .message {
+            margin: 20px 0px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Product Service" ui:field="template">
@@ -91,15 +112,27 @@
                 <design:MaterialTextBox placeholder="Service website" type="URL" iconType="WEB" ui:field="website"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Service product" textColor="black" iconType="MAP"/>
-                <cwidgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></cwidgets:ProductTextBox>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
                 <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS"/>
-                <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Service extent" textColor="black" iconType="MAP"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Service product" textColor="black" iconType="MAP"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <cwidgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></cwidgets:ProductTextBox>
+                    <design:MaterialLabel margin="10" text="Select geoinformation provided"></design:MaterialLabel>
+                    <design:MaterialPanel padding="10" ui:field="geoinformation"></design:MaterialPanel>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink addStyleNames="{style.label}" text="API URL" textColor="black" iconType="SETTINGS"/>
@@ -107,9 +140,33 @@
                 <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the API URL conforming to the product API specifications. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink addStyleNames="{style.label}" text="Sample data URL" textColor="black" iconType="SETTINGS"/>
-                <design:MaterialTextBox type="URL" ui:field="sampleWmsUrl"/>
-                <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the sample WMS URL for users to be able to view the product samples on a map. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
+                <design:MaterialLink text="Samples" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
+                    <design:MaterialRow ui:field="samples"></design:MaterialRow>
+                    <design:MaterialRow>
+                        <design:MaterialColumn grid="s12 m4 l4">
+                            <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn>
+                            <design:MaterialLabel>Or upload to server</design:MaterialLabel>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12 m4 l4">
+                            <widgets:MaterialFileUploader acceptedFiles="image/*" url="" height="auto" shadow="1" padding="20" ui:field="sampleUploader">
+                                <design:MaterialListBox ui:field="sampleAccessType"></design:MaterialListBox>
+                                <design:MaterialTextBox placeholder="Name of resource" ui:field="resourceName"></design:MaterialTextBox>
+                                <design:MaterialRow>
+                                    <design:MaterialColumn>
+                                        <design:MaterialLabel>Create sample</design:MaterialLabel>
+                                    </design:MaterialColumn>
+                                    <design:MaterialColumn>
+                                        <design:MaterialButton backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
+                                    </design:MaterialColumn>
+                                </design:MaterialRow>
+                            </widgets:MaterialFileUploader>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
+                </design:MaterialPanel>
             </design:MaterialColumn>
         </design:MaterialRow>
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">

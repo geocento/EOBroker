@@ -2,7 +2,7 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFormViewImpl.Style">
         .formPanel {

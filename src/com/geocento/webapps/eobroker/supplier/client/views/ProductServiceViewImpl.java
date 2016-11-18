@@ -1,9 +1,16 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,10 +19,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialTextArea;
-import gwt.material.design.client.ui.MaterialTextBox;
-import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.events.SearchFinishEvent;
+import gwt.material.design.client.ui.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -28,6 +36,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     }
 
     private static ServicesViewUiBinder ourUiBinder = GWT.create(ServicesViewUiBinder.class);
+
     @UiField
     MaterialTitle title;
     @UiField
@@ -49,9 +58,15 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    MaterialTextBox sampleWmsUrl;
-    @UiField
     MaterialTextBox apiURL;
+    @UiField
+    MaterialPanel geoinformation;
+    @UiField
+    MapContainer mapContainer;
+    @UiField
+    MaterialLabel samplesMessage;
+    @UiField
+    MaterialRow samples;
 
     public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -59,6 +74,12 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        product.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
+            @Override
+            public void onSearchFinish(SearchFinishEvent event) {
+                presenter.productChanged();
+            }
+        });
     }
 
     @Override
@@ -107,8 +128,8 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     }
 
     @Override
-    public HasClickHandlers getSubmit() {
-        return submit;
+    public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
     @Override
@@ -122,7 +143,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     }
 
     @Override
-    public ProductDTO getSelectProduct() {
+    public ProductDTO getSelectedProduct() {
         return product.getProduct();
     }
 
@@ -132,18 +153,108 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     }
 
     @Override
+    public List<FeatureDescription> getSelectedGeoinformation() {
+        List<FeatureDescription> selectedFeatures = new ArrayList<FeatureDescription>();
+        for(int index = 0; index < geoinformation.getWidgetCount(); index++) {
+            Widget widget = geoinformation.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                MaterialCheckBox materialCheckBox = (MaterialCheckBox) widget;
+                if(materialCheckBox.getValue()) {
+                    selectedFeatures.add((FeatureDescription) materialCheckBox.getObject());
+                }
+            }
+        }
+        return selectedFeatures;
+    }
+
+    @Override
+    public void setProductGeoinformation(List<FeatureDescription> featureDescriptions) {
+        geoinformation.clear();
+        if(featureDescriptions == null || featureDescriptions.size() == 0) {
+            geoinformation.add(new MaterialLabel("No geoinformation associated to this product"));
+        } else {
+            for (FeatureDescription featureDescription : featureDescriptions) {
+                MaterialCheckBox materialCheckBox = new MaterialCheckBox(featureDescription.getName());
+                materialCheckBox.setObject(featureDescription);
+                MaterialTooltip materialTooltip = new MaterialTooltip(materialCheckBox, featureDescription.getDescription());
+                geoinformation.add(materialTooltip);
+            }
+        }
+    }
+
+    @Override
+    public void setSelectedGeoinformation(List<FeatureDescription> featureDescriptions) {
+        List<Long> selectedFeatures = ListUtil.mutate(featureDescriptions, new ListUtil.Mutate<FeatureDescription, Long>() {
+            @Override
+            public Long mutate(FeatureDescription object) {
+                return object.getId();
+            }
+        });
+        for(int index = 0; index < geoinformation.getWidgetCount(); index++) {
+            Widget widget = geoinformation.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                MaterialCheckBox materialCheckBox = (MaterialCheckBox) widget;
+                materialCheckBox.setValue(selectedFeatures.contains(((FeatureDescription) materialCheckBox.getObject()).getId()));
+            }
+        }
+    }
+
+    @Override
+    public void setExtent(AoIDTO extent) {
+        mapContainer.displayAoI(extent);
+    }
+
+    @Override
+    public AoIDTO getExtent() {
+        return mapContainer.getAoi();
+    }
+
+    @Override
     public HasText getAPIUrl() {
         return apiURL;
     }
 
     @Override
-    public HasText getSampleWmsUrl() {
-        return sampleWmsUrl;
+    public HasClickHandlers getSubmit() {
+        return submit;
     }
 
     @Override
     public TemplateView getTemplateView() {
         return template;
+    }
+
+    @Override
+    public void setSampleDataAccess(List<DatasetAccess> samples) {
+        this.samples.clear();
+        if(samples != null) {
+            for(DatasetAccess datasetAccess : samples) {
+                addSample(datasetAccess);
+            }
+        }
+        updateSamplesMessage();
+    }
+
+    private void addSample(DatasetAccess datasetAccess) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        this.samples.add(materialColumn);
+        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess);
+        materialColumn.add(dataAccessWidget);
+    }
+
+    private void updateSamplesMessage() {
+        List<DatasetAccess> dataAccess = getSamples();
+        samplesMessage.setText(dataAccess.size() == 0 ? "No samples provided, add new samples using the button below" :
+                dataAccess.size() + " samples defined, add more using the add button below");
+    }
+
+    @Override
+    public List<DatasetAccess> getSamples() {
+        List<DatasetAccess> dataAccesses = new ArrayList<DatasetAccess>();
+        for(int index = 0; index < samples.getWidgetCount(); index++) {
+            dataAccesses.add(((DataAccessWidget)((MaterialColumn) samples.getWidget(index)).getWidget(0)).getDatasetAccess());
+        }
+        return dataAccesses;
     }
 
 }

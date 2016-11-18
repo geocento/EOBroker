@@ -39,7 +39,7 @@ public interface ProductDatasetView extends IsWidget {
 
     void setFullDescription(String fullDescription);
 
-    ProductDTO getSelectProduct();
+    ProductDTO getSelectedProduct();
 
     void setSelectedProduct(ProductDTO productDTO);
 
@@ -57,13 +57,16 @@ public interface ProductDatasetView extends IsWidget {
 
     void setSampleDataAccess(List<DatasetAccess> samples);
 
-    void setFeatures(List<FeatureDescription> features);
+    List<FeatureDescription> getSelectedGeoinformation();
+
+    void setProductGeoinformation(List<FeatureDescription> featureDescriptions);
+
+    void setSelectedGeoinformation(List<FeatureDescription> featureDescriptions);
 
     List<DatasetAccess> getSamples();
 
-    List<FeatureDescription> getFeatures();
-
     public interface Presenter {
+        void productChanged();
     }
 
 }

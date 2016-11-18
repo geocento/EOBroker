@@ -50,7 +50,7 @@ public class ProductHelper {
     }
 
     private static String getProductTSV(Product product) {
-        return "setweight(to_tsvector('english','product " + product.getSector().toString() + " " + product.getThematic().toString() + " " + product.getName() + "'), 'A') " +
+        return "setweight(to_tsvector('english','product " + product.getSector().getName() + " " + product.getThematic().getName() + " " + product.getName() + "'), 'A') " +
                 "|| setweight(to_tsvector('english','" + product.getShortDescription() + "'), 'B')";
     }
 

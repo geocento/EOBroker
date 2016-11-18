@@ -95,6 +95,26 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public List<FeatureDescription> getProductGeoinformation(Long productId) throws RequestException {
+        UserUtils.verifyUserSupplier(request);
+        if(productId == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Product product = em.find(Product.class, productId);
+            if(product == null) {
+                throw new RequestException("Unknown product");
+            }
+            return product.getGeoinformation();
+        } catch (Exception e) {
+            throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ProductServiceEditDTO getProductService(Long id) throws RequestException {
         UserUtils.verifyUserSupplier(request);
         if(id == null) {
@@ -114,8 +134,17 @@ public class AssetsResource implements AssetsService {
             productServiceDTO.setEmail(productService.getEmail());
             productServiceDTO.setWebsite(productService.getWebsite());
             productServiceDTO.setServiceImage(productService.getImageUrl());
+            productServiceDTO.setExtent(productService.getExtent());
             productServiceDTO.setProduct(productService.getProduct() == null ? null : ProductHelper.createProductDTO(productService.getProduct()));
+            productServiceDTO.setProductFeatures(productService.getProduct() == null ? null : productService.getProduct().getGeoinformation());
+            productServiceDTO.setSelectedFeatures(ListUtil.mutate(productService.getGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
+                @Override
+                public Long mutate(FeatureDescription featureDescription) {
+                    return featureDescription.getId();
+                }
+            }));
             productServiceDTO.setApiURL(productService.getApiUrl());
+            productServiceDTO.setSamples(productService.getSamples());
             productServiceDTO.setSampleWmsUrl(productService.getSampleWmsUrl());
             return productServiceDTO;
         } catch (Exception e) {
@@ -154,12 +183,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Long addProductService(ProductServiceDTO productService) {
-        return null;
-    }
-
-    @Override
-    public void updateProductService(ProductServiceEditDTO productServiceDTO) throws RequestException {
+    public void updateProductService(final ProductServiceEditDTO productServiceDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         if(productServiceDTO == null ) {
             throw new RequestException("Product service cannot be null");
@@ -199,7 +223,13 @@ public class AssetsResource implements AssetsService {
             productService.setEmail(productServiceDTO.getEmail());
             productService.setWebsite(productServiceDTO.getWebsite());
             productService.setFullDescription(productServiceDTO.getFullDescription());
-            productService.getCompany().getServices().add(productService);
+            productService.setExtent(productServiceDTO.getExtent());
+            productService.setGeoinformation(ListUtil.filterValues(productService.getProduct().getGeoinformation(), new ListUtil.CheckValue<FeatureDescription>() {
+                @Override
+                public boolean isValue(FeatureDescription value) {
+                    return productServiceDTO.getSelectedFeatures().contains(value.getId());
+                }
+            }));
             productService.setApiUrl(productServiceDTO.getApiURL());
             productService.setSampleWmsUrl(productServiceDTO.getSampleWmsUrl());
             // update the keyphrases
@@ -490,6 +520,13 @@ public class AssetsResource implements AssetsService {
             ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
             productDatasetDTO.setFullDescription(productDataset.getFullDescription());
             productDatasetDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            productDatasetDTO.setProductFeatures(productDataset.getProduct() == null ? null : productDataset.getProduct().getGeoinformation());
+            productDatasetDTO.setSelectedFeatures(ListUtil.mutate(productDataset.getGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
+                @Override
+                public Long mutate(FeatureDescription featureDescription) {
+                    return featureDescription.getId();
+                }
+            }));
             productDatasetDTO.setExtent(productDataset.getExtent());
             productDatasetDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             return productDatasetDTO;
@@ -502,7 +539,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Long saveProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException {
+    public Long saveProductDataset(final ProductDatasetDTO productDatasetDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -553,6 +590,13 @@ public class AssetsResource implements AssetsService {
                         "))";
             }
             productDataset.setExtent(extentWKT);
+            // set selected features
+            productDataset.setGeoinformation(ListUtil.filterValues(productDataset.getProduct().getGeoinformation(), new ListUtil.CheckValue<FeatureDescription>() {
+                @Override
+                public boolean isValue(FeatureDescription value) {
+                    return productDatasetDTO.getSelectedFeatures().contains(value.getId());
+                }
+            }));
             // update the data access
             {
                 List<DatasetAccess> datasetAccesses = productDatasetDTO.getDatasetAccesses();
@@ -572,7 +616,6 @@ public class AssetsResource implements AssetsService {
                             em.persist(datasetAccess);
                             dbDatasetAccess = datasetAccess;
                         }
-                        dbDatasetAccess.setAccessType(datasetAccess.getAccessType());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbDatasetAccesses.add(dbDatasetAccess);
@@ -599,7 +642,6 @@ public class AssetsResource implements AssetsService {
                             em.persist(datasetAccess);
                             dbDatasetAccess = datasetAccess;
                         }
-                        dbDatasetAccess.setAccessType(datasetAccess.getAccessType());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbSamples.add(dbDatasetAccess);

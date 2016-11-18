@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.google.gwt.core.client.GWT;
@@ -38,29 +38,22 @@ public class DataAccessWidget extends Composite {
         String text = "Unknown";
         String url = "";
         if(isFree) {
-            switch (datasetAccess.getAccessType()) {
-                case download:
-                    iconType = IconType.GET_APP;
-                    text = "Download File";
-                    url = datasetAccess.getUri();
-                    break;
-                case webapplication:
-                    iconType = IconType.WEB;
-                    text = "Open URL";
-                    url = datasetAccess.getUri();
-                    break;
-                case wms:
-                case wfs:
-                case wcs:
-                    iconType = IconType.LAYERS;
-                    text = "View in map";
-                    url = "#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(
-                            Utils.generateTokens(VisualisationPlace.TOKENS.uri.toString(), URL.encodeQueryString(datasetAccess.getUri()))));
-                    break;
-                case api:
-                    iconType = IconType.CLOUD_CIRCLE;
-                    text = "Copy URL";
-                    break;
+            if(datasetAccess instanceof DatasetAccessFile) {
+                iconType = IconType.GET_APP;
+                text = "Download File";
+                url = datasetAccess.getUri();
+            } else if(datasetAccess instanceof DatasetAccessAPP) {
+                iconType = IconType.WEB;
+                text = "Open URL";
+                url = datasetAccess.getUri();
+            } else if(datasetAccess instanceof DatasetAccessOGC) {
+                iconType = IconType.LAYERS;
+                text = "View in map";
+                url = "#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(
+                        Utils.generateTokens(VisualisationPlace.TOKENS.uri.toString(), URL.encodeQueryString(datasetAccess.getUri()))));
+            } else if(datasetAccess instanceof DatasetAccessAPI) {
+                iconType = IconType.CLOUD_CIRCLE;
+                text = "Copy URL";
             }
         }
         action.setText(text);

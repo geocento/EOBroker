@@ -57,6 +57,8 @@
                     </g:HTMLPanel>
                 </design:MaterialColumn>
             </design:MaterialRow>
+            <design:MaterialLabel fontSize="1.2em" marginTop="50" text="Previous conversations"></design:MaterialLabel>
+            <design:MaterialRow marginTop="20" ui:field="previousConversations"></design:MaterialRow>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

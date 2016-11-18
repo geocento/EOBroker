@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
@@ -25,6 +26,7 @@ import org.fusesource.restygwt.client.REST;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -62,44 +64,66 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                 REST.withCallback(new MethodCallback<ConversationDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        conversationView.displayConversationError("Conversation could not be loaded...");
                     }
 
                     @Override
                     public void onSuccess(Method method, ConversationDTO conversationDTO) {
                         ConversationActivity.this.conversationDTO = conversationDTO;
                         conversationView.displayConversation(conversationDTO);
+                        loadPreviousConversations(conversationDTO.getCompany().getId(), conversationDTO.getId());
                     }
                 }).call(ServicesUtil.ordersService).getConversation(conversationid);
             } catch (Exception e) {
-
             }
-            return;
+        } else {
+            final String topic = tokens.get(ConversationPlace.TOKENS.topic.toString());
+            String companyId = tokens.get(ConversationPlace.TOKENS.companyid.toString());
+            if (topic != null && companyId != null) {
+                try {
+                    REST.withCallback(new MethodCallback<CompanyDTO>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            conversationView.displayConversationError("Conversation could not be created...");
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, CompanyDTO companyDTO) {
+                            conversationDTO = new ConversationDTO();
+                            conversationDTO.setTopic(topic);
+                            conversationDTO.setCompany(companyDTO);
+                            conversationDTO.setMessages(new ArrayList<MessageDTO>());
+                            conversationDTO.setCreationDate(new Date());
+                            conversationView.displayConversation(conversationDTO);
+                            loadPreviousConversations(companyDTO.getId(), conversationDTO.getId());
+                        }
+                    }).call(ServicesUtil.assetsService).getCompany(Long.parseLong(companyId));
+                } catch (Exception e) {
+                }
+            }
         }
-        final String topic = tokens.get(ConversationPlace.TOKENS.topic.toString());
-        String companyId = tokens.get(ConversationPlace.TOKENS.companyid.toString());
-        if(topic != null && companyId != null) {
-            try {
-                REST.withCallback(new MethodCallback<CompanyDTO>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        Window.alert("Company does not exist");
-                        History.back();
-                    }
+    }
 
-                    @Override
-                    public void onSuccess(Method method, CompanyDTO companyDTO) {
-                        conversationDTO = new ConversationDTO();
-                        conversationDTO.setTopic(topic);
-                        conversationDTO.setCompany(companyDTO);
-                        conversationDTO.setMessages(new ArrayList<MessageDTO>());
-                        conversationDTO.setCreationDate(new Date());
-                        conversationView.displayConversation(conversationDTO);
-                    }
-                }).call(ServicesUtil.assetsService).getCompany(Long.parseLong(companyId));
-            } catch (Exception e) {
-                Window.alert("Invalid company id");
-            }
+    private void loadPreviousConversations(Long companyId, final String conversationId) {
+        // now load previous conversations
+        try {
+            REST.withCallback(new MethodCallback<List<ConversationDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    conversationView.displayConversationsError("Conversations could not be loaded...");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ConversationDTO> conversationDTOs) {
+                    conversationView.displayConversations(ListUtil.filterValues(conversationDTOs, new ListUtil.CheckValue<ConversationDTO>() {
+                        @Override
+                        public boolean isValue(ConversationDTO value) {
+                            return !value.getId().equals(conversationId);
+                        }
+                    }));
+                }
+            }).call(ServicesUtil.ordersService).listConversations(companyId);
+        } catch (Exception e) {
         }
     }
 

@@ -89,6 +89,7 @@ public class UploadAoI {
                 aoIDTO.setName(aoiJson.get("name").isString().stringValue());
                 aoIDTO.setWktGeometry(aoiJson.get("wktGeometry").isString().stringValue());
                 presenter.aoiSelected(aoIDTO);
+                hide();
             }
         });
 

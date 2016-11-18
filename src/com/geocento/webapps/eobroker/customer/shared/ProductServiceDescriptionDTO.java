@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 import java.util.List;
@@ -20,6 +21,8 @@ public class ProductServiceDescriptionDTO {
     CompanyDTO company;
     boolean hasFeasibility;
     List<ProductServiceDTO> suggestedServices;
+    private List<FeatureDescription> geoinformation;
+    private String extent;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -110,5 +113,21 @@ public class ProductServiceDescriptionDTO {
 
     public void setSuggestedServices(List<ProductServiceDTO> suggestedServices) {
         this.suggestedServices = suggestedServices;
+    }
+
+    public List<FeatureDescription> getGeoinformation() {
+        return geoinformation;
+    }
+
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation = geoinformation;
+    }
+
+    public void setExtent(String extent) {
+        this.extent = extent;
+    }
+
+    public String getExtent() {
+        return extent;
     }
 }

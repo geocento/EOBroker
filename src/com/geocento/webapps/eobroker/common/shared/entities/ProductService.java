@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.common.shared.entities;
 import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -35,6 +36,9 @@ public class ProductService {
     @Convert(converter = GeometryConverter.class)
     String extent;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<FeatureDescription> geoinformation;
+
     @Column(length = 1000)
     String email;
 
@@ -43,6 +47,10 @@ public class ProductService {
 
     @Column(length = 1000)
     String apiUrl;
+
+    @JoinTable(name = "productservice_samples")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<DatasetAccess> samples;
 
     @Column(length = 1000)
     String sampleWmsUrl;
@@ -122,12 +130,36 @@ public class ProductService {
         this.fullDescription = fullDescription;
     }
 
+    public String getExtent() {
+        return extent;
+    }
+
+    public void setExtent(String extent) {
+        this.extent = extent;
+    }
+
+    public List<FeatureDescription> getGeoinformation() {
+        return geoinformation;
+    }
+
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation = geoinformation;
+    }
+
     public String getApiUrl() {
         return apiUrl;
     }
 
     public void setApiUrl(String apiUrl) {
         this.apiUrl = apiUrl;
+    }
+
+    public List<DatasetAccess> getSamples() {
+        return samples;
+    }
+
+    public void setSamples(List<DatasetAccess> samples) {
+        this.samples = samples;
     }
 
     public String getSampleWmsUrl() {

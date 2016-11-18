@@ -83,7 +83,9 @@ public class MapContainer extends Composite {
                                 drawJSNI.deactivate();
                                 AoIDTO aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
                                 displayAoI(aoi);
-                                presenter.aoiChanged(aoi);
+                                if(presenter != null) {
+                                    presenter.aoiChanged(aoi);
+                                }
                             }
                         });
                         drawPolygon.addClickHandler(new ClickHandler() {
@@ -97,13 +99,17 @@ public class MapContainer extends Composite {
                             @Override
                             public void onClick(ClickEvent event) {
                                 mapJSNI.getGraphics().clear();
-                                presenter.aoiChanged(null);
+                                if(presenter != null) {
+                                    presenter.aoiChanged(null);
+                                }
                             }
                         });
                         uploadFile.addClickHandler(new ClickHandler() {
                             @Override
                             public void onClick(ClickEvent event) {
-                                presenter.selectAoI();
+                                if(presenter != null) {
+                                    presenter.selectAoI();
+                                }
                             }
                         });
                         map.setZoom(3);

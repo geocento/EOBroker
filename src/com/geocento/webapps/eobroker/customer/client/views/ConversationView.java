@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -23,6 +24,12 @@ public interface ConversationView extends IsWidget {
     void displayConversation(ConversationDTO conversationDTO);
 
     void setPresenter(Presenter presenter);
+
+    void displayConversationError(String message);
+
+    void displayConversationsError(String message);
+
+    void displayConversations(List<ConversationDTO> conversationDTOs);
 
     public interface Presenter {
     }

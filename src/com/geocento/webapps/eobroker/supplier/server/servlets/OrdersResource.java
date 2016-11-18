@@ -361,6 +361,7 @@ public class OrdersResource implements OrdersService {
         requestDTO.setId(imageryFormRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.imageservice);
         requestDTO.setDescription("User '" + imageryFormRequest.getCustomer().getUsername() + "' - Form request for imagery service");
+        requestDTO.setCreationTime(imageryFormRequest.getCreationDate());
         return requestDTO;
     }
 
@@ -369,6 +370,7 @@ public class OrdersResource implements OrdersService {
         requestDTO.setId(imagesRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.image);
         requestDTO.setDescription("User '" + imagesRequest.getCustomer().getUsername() + "' - Request for " + imagesRequest.getProductRequests().size() + " products");
+        requestDTO.setCreationTime(imagesRequest.getCreationDate());
         return requestDTO;
     }
 
@@ -377,6 +379,7 @@ public class OrdersResource implements OrdersService {
         requestDTO.setId(productServiceRequest.getId());
         requestDTO.setType(RequestDTO.TYPE.product);
         requestDTO.setDescription("User '" + productServiceRequest.getCustomer().getUsername() + "' - Request for product '" + productServiceRequest.getProduct().getName() + "'");
+        requestDTO.setCreationTime(productServiceRequest.getCreationDate());
         return requestDTO;
     }
 

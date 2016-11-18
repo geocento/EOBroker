@@ -2,23 +2,14 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawEventJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.DrawJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
-import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -83,6 +74,17 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
 
         template.setTitleText("Product form");
 
+        mapContainer.setPresenter(new MapContainer.Presenter() {
+            @Override
+            public void aoiChanged(AoIDTO aoi) {
+                displayAoI(aoi);
+            }
+
+            @Override
+            public void aoiSelected(AoIDTO aoi) {
+                displayAoI(aoi);
+            }
+        });
     }
 
     @Override

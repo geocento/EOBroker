@@ -1,9 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by thomas on 10/11/2016.
@@ -14,6 +11,9 @@ public class FeatureDescription {
     @Id
     @GeneratedValue
     Long id;
+
+    @Enumerated(EnumType.STRING)
+    FeatureType featureType;
 
     @Column(length = 1000)
     String name;
@@ -30,6 +30,14 @@ public class FeatureDescription {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public FeatureType getFeatureType() {
+        return featureType;
+    }
+
+    public void setFeatureType(FeatureType featureType) {
+        this.featureType = featureType;
     }
 
     public String getName() {

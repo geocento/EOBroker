@@ -55,8 +55,6 @@ public class TemplateView extends Composite implements HasWidgets {
         void textSelected(String text);
     }
 
-
-
     @UiField
     Style style;
 

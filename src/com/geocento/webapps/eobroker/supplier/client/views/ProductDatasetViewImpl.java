@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
@@ -25,9 +26,11 @@ import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
 import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.base.SearchObject;
+import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
 import gwt.material.design.client.ui.animate.Transition;
+import gwt.material.design.client.ui.html.Option;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +77,17 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField
     MaterialFileUploader sampleUploader;
     @UiField
-    MaterialListBox type;
+    MaterialListBox sampleAccessType;
     @UiField
     MaterialTextBox resourceName;
     @UiField
     MaterialRow samples;
     @UiField
     MaterialLabel samplesMessage;
+    @UiField
+    MaterialListBox datasetAccessType;
+    @UiField
+    MaterialPanel geoinformation;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -92,6 +99,28 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             this.serviceType.addItem(serviceType.getName(), serviceType.toString());
         }
 
+        product.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
+            @Override
+            public void onSearchFinish(SearchFinishEvent event) {
+                presenter.productChanged();
+            }
+        });
+
+        for(AccessType accessType : AccessType.values()) {
+            Option optionWidget = new Option();
+            optionWidget.setText(accessType.getName());
+            optionWidget.setValue(accessType.toString());
+            datasetAccessType.add(optionWidget);
+        }
+
+        for(AccessType accessType : new AccessType[] {AccessType.file, AccessType.ogc}) {
+            Option optionWidget = new Option();
+            optionWidget.setText(accessType.getName());
+            optionWidget.setValue(accessType.toString());
+            sampleAccessType.add(optionWidget);
+        }
+
+        // configure the sample uploader
         final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
         sampleUploader.setUrl(uploadUrl);
         // Added the progress to card uploader
@@ -114,10 +143,6 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 MaterialAnimator.animate(Transition.RUBBERBAND, sampleUploader, 0);
             }
         });
-
-        for(AccessType accessType : new AccessType[] {AccessType.download, AccessType.wms, AccessType.wfs}) {
-            type.addItem(accessType.getName(), accessType.toString());
-        }
 
     }
 
@@ -182,7 +207,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     @Override
-    public ProductDTO getSelectProduct() {
+    public ProductDTO getSelectedProduct() {
         return (ProductDTO) product.getSelectedObject().getO();
     }
 
@@ -279,18 +304,71 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     @Override
-    public void setFeatures(List<FeatureDescription> features) {
-
+    public List<FeatureDescription> getSelectedGeoinformation() {
+        List<FeatureDescription> selectedFeatures = new ArrayList<FeatureDescription>();
+        for(int index = 0; index < geoinformation.getWidgetCount(); index++) {
+            Widget widget = geoinformation.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                MaterialCheckBox materialCheckBox = (MaterialCheckBox) widget;
+                if(materialCheckBox.getValue()) {
+                    selectedFeatures.add((FeatureDescription) materialCheckBox.getObject());
+                }
+            }
+        }
+        return selectedFeatures;
     }
 
     @Override
-    public List<FeatureDescription> getFeatures() {
-        return null;
+    public void setProductGeoinformation(List<FeatureDescription> featureDescriptions) {
+        geoinformation.clear();
+        if(featureDescriptions == null || featureDescriptions.size() == 0) {
+            geoinformation.add(new MaterialLabel("No geoinformation associated to this product"));
+        } else {
+            for (FeatureDescription featureDescription : featureDescriptions) {
+                MaterialCheckBox materialCheckBox = new MaterialCheckBox(featureDescription.getName());
+                materialCheckBox.setObject(featureDescription);
+                MaterialTooltip materialTooltip = new MaterialTooltip(materialCheckBox, featureDescription.getDescription());
+                geoinformation.add(materialTooltip);
+            }
+        }
+    }
+
+    @Override
+    public void setSelectedGeoinformation(List<FeatureDescription> featureDescriptions) {
+        List<Long> selectedFeatures = ListUtil.mutate(featureDescriptions, new ListUtil.Mutate<FeatureDescription, Long>() {
+            @Override
+            public Long mutate(FeatureDescription object) {
+                return object.getId();
+            }
+        });
+        for(int index = 0; index < geoinformation.getWidgetCount(); index++) {
+            Widget widget = geoinformation.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                MaterialCheckBox materialCheckBox = (MaterialCheckBox) widget;
+                materialCheckBox.setValue(selectedFeatures.contains(((FeatureDescription) materialCheckBox.getObject()).getId()));
+            }
+        }
     }
 
     @UiHandler("addDataAccess")
     void addDataAccess(ClickEvent clickEvent) {
-        addDataAccess(new DatasetAccess());
+        AccessType selectedType = AccessType.valueOf(datasetAccessType.getValue());
+        DatasetAccess datasetAccess = null;
+        switch(selectedType) {
+            case file:
+                datasetAccess = new DatasetAccessFile();
+                break;
+            case ogc:
+                datasetAccess = new DatasetAccessOGC();
+                break;
+            case application:
+                datasetAccess = new DatasetAccessAPP();
+                break;
+            case api:
+                datasetAccess = new DatasetAccessAPI();
+                break;
+        }
+        addDataAccess(datasetAccess);
         updateDataAccessMessage();
     }
 

@@ -34,6 +34,10 @@ public class Product {
     @Enumerated(EnumType.STRING)
     Thematic thematic;
 
+    @OrderColumn(name = "geoinformation_order")
+    @OneToMany(cascade = CascadeType.ALL)
+    List<FeatureDescription> geoinformation;
+
     @OrderColumn(name = "form_order")
     @JoinTable(name = "product_formelement")
     @OneToMany(cascade = CascadeType.ALL)
@@ -110,6 +114,14 @@ public class Product {
 
     public String getShortDescription() {
         return shortDescription;
+    }
+
+    public List<FeatureDescription> getGeoinformation() {
+        return geoinformation;
+    }
+
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation = geoinformation;
     }
 
     public List<FormElement> getFormFields() {

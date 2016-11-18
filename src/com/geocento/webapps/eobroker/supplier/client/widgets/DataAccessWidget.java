@@ -1,10 +1,13 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
-import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -13,11 +16,14 @@ import gwt.material.design.addins.client.fileuploader.base.UploadFile;
 import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
 import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
 import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialListBox;
 import gwt.material.design.client.ui.MaterialTextBox;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
 import gwt.material.design.client.ui.animate.Transition;
+import gwt.material.design.client.ui.html.Option;
 
 /**
  * Created by thomas on 08/11/2016.
@@ -32,13 +38,9 @@ public class DataAccessWidget extends Composite {
     @UiField
     MaterialTextBox pitch;
     @UiField
-    MaterialListBox type;
+    MaterialLink type;
     @UiField
     MaterialTextBox uri;
-    @UiField
-    MaterialButton upload;
-    @UiField
-    MaterialFileUploader dataUploader;
 
     private final DatasetAccess datasetAccess;
 
@@ -48,43 +50,29 @@ public class DataAccessWidget extends Composite {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        for(AccessType accessType : AccessType.values()) {
-            type.addItem(accessType.getName(), accessType.toString());
+        String text = "Unknown";
+        IconType iconType = null;
+        if(datasetAccess instanceof DatasetAccessFile) {
+            iconType = IconType.GET_APP;
+            text = "File";
+        } else if(datasetAccess instanceof DatasetAccessAPP) {
+            iconType = IconType.WEB;
+            text = "Application";
+        } else if(datasetAccess instanceof DatasetAccessOGC) {
+            iconType = IconType.LAYERS;
+            text = "OGC services";
+        } else if(datasetAccess instanceof DatasetAccessAPI) {
+            iconType = IconType.CLOUD_CIRCLE;
+            text = "API";
         }
-
+        type.setText(text);
+        type.setIconType(iconType);
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());
-
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
-        dataUploader.setUrl(uploadUrl);
-        // Added the progress to card uploader
-        dataUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
-            @Override
-            public void onTotalUploadProgress(TotalUploadProgressEvent event) {
-/*
-                iconProgress.setPercent(event.getProgress());
-*/
-            }
-        });
-
-        dataUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
-            @Override
-            public void onSuccess(SuccessEvent<UploadFile> event) {
-                uri.setText(StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>"));
-            }
-        });
-
-        dataUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {
-            @Override
-            public void onDragOver(DragOverEvent event) {
-                MaterialAnimator.animate(Transition.RUBBERBAND, dataUploader, 0);
-            }
-        });
     }
 
     public DatasetAccess getDatasetAccess() {
         // update values first
-        datasetAccess.setAccessType(AccessType.valueOf(type.getSelectedValue()));
         datasetAccess.setPitch(pitch.getText());
         datasetAccess.setUri(uri.getText());
         return datasetAccess;

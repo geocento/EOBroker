@@ -21,27 +21,14 @@ public enum Sector {
     landcover("Land cover"),
     landuse("Land use");
 
-    private final String name;
+    String name;
 
-    private Sector(String s) {
-        name = s;
+    Sector(String name) {
+        this.name = name;
     }
 
-    public boolean equalsName(String otherName) {
-        return (otherName == null) ? false : name.equals(otherName);
-    }
-
-    public String toString() {
-        return this.name;
-    }
-
-    static public Sector fromName(String value) {
-        for(Sector sector : values()) {
-            if(sector.equalsName(value)) {
-                return sector;
-            }
-        }
-        return null;
+    public String getName() {
+        return name;
     }
 
 }

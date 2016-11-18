@@ -288,9 +288,11 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     @Override
     public void textSelected(String text) {
         this.text = text;
+/*
         if(text.trim().length() == 0) {
             return;
         }
+*/
         EOBrokerPlace eoBrokerPlace = null;
         if(category == null) {
             // go to general search results page

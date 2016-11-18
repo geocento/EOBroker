@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.*;
@@ -11,6 +12,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -19,6 +21,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.*;
 
@@ -125,7 +128,7 @@ public class FullViewImpl extends Composite implements FullView {
         thematic.setMarginRight(20);
         badges.add(thematic);
         MaterialChip sector = new MaterialChip();
-        sector.setText(productDescriptionDTO.getSector().toString());
+        sector.setText(productDescriptionDTO.getSector().getName());
         sector.setBackgroundColor("grey");
         sector.setTextColor("white");
         sector.setLetterBackgroundColor("green");
@@ -305,14 +308,31 @@ public class FullViewImpl extends Composite implements FullView {
         MaterialRow featuresPanel = new MaterialRow();
         MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
-        // TODO - add list of features provided
-        materialColumn.add(createSubsection("List of features provided"));
+        // add geoinformation provided
+        MaterialPanel geoinformationPanel = new MaterialPanel();
+        materialColumn.add(geoinformationPanel);
+        {
+            geoinformationPanel.add(createSubsection("Geoinformation provided"));
+            MaterialRow geoinformationRow = new MaterialRow();
+            geoinformationRow.setMarginTop(20);
+            geoinformationPanel.add(geoinformationRow);
+            for(FeatureDescription featureDescription : productServiceDescriptionDTO.getGeoinformation()) {
+                materialColumn = new MaterialColumn(12, 12, 12);
+                geoinformationRow.add(materialColumn);
+                MaterialLink materialLink = new MaterialLink(featureDescription.getName());
+                materialLink.setIconType(IconType.CHECK);
+                materialLink.setIconColor("green");
+                MaterialTooltip materialTooltip = new MaterialTooltip(materialLink, featureDescription.getDescription());
+                materialColumn.add(materialTooltip);
+            }
+        }
         // add map with extent of data
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
         materialColumn.add(createSubsection("Extent of service"));
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("200px");
+        mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         mapContainer.setEdit(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
@@ -322,19 +342,56 @@ public class FullViewImpl extends Composite implements FullView {
 
             @Override
             public void onSuccess(Void result) {
+                mapContainer.displayAoI(AoIUtil.fromWKT(productServiceDescriptionDTO.getExtent()));
+                mapContainer.centerOnAoI();
             }
         });
         materialColumn.add(mapContainer);
         // add perfomances
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
-        materialColumn.add(createSubsection("Performances"));
-        materialColumn.add(new MaterialLabel("TODO - add list of performance indicators like spatial resolution, etc..."));
+        // add geoinformation provided
+        MaterialPanel performancesPanel = new MaterialPanel();
+        materialColumn.add(performancesPanel);
+        {
+            performancesPanel.add(createSubsection("Performances and accuracy"));
+            MaterialRow materialRow = new MaterialRow();
+            materialRow.setMarginTop(20);
+            performancesPanel.add(materialRow);
+            {
+                materialColumn = new MaterialColumn(12, 12, 12);
+                materialRow.add(materialColumn);
+                materialColumn.add(new MaterialLabel("TODO - add list of performance indicators"));
+            }
+        }
         addTab(materialTab, tabsPanel, "Characteristics", featuresPanel, size);
+        // create tab for data access information
+        // add access panel
+        {
+            MaterialPanel accessPanel = new MaterialPanel();
+            accessPanel.add(createSubsection("Methods to access the data"));
+/*
+            for(DatasetAccess datasetAccess : productServiceDescriptionDTO.getDatasetAccesses()) {
+                DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, !productServiceDescriptionDTO.isCommercial());
+                dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
+                dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
+                accessPanel.add(dataAccessWidget);
+            }
+*/
+            accessPanel.add(createSubsection("Sample data"));
+/*
+            for(DatasetAccess datasetAccess : productServiceDescriptionDTO.getSamples()) {
+                DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, !productServiceDescriptionDTO.isCommercial());
+                dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
+                dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
+                accessPanel.add(dataAccessWidget);
+            }
+*/
+            addTab(materialTab, tabsPanel, "Data Access", accessPanel, size);
+        }
         // create tab panel for services
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
         addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
-        addTab(materialTab, tabsPanel, "Others", new HTMLPanel(""), size);
         materialTab.selectTab("fullViewTab0");
         details.add(tabsPanel);
         addColumnSection("You might also be interested in...");

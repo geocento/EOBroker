@@ -2,6 +2,8 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.Sector;
+import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
@@ -164,6 +166,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             searchPageView.setTitleText("Search Results");
             try {
                 searchPageView.displayLoadingResults("Searching matching results...");
+                boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
                 REST.withCallback(new MethodCallback<SearchResult>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
@@ -223,7 +226,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                             searchPageView.setMatchingProjects(projectDTOs, moreUrl);
                         }
                     }
-                }).call(ServicesUtil.searchService).getMatchingServices(text, null);
+                }).call(ServicesUtil.searchService).getMatchingServices(text, filterByAoI ? currentAoI.getId() : null);
             } catch (RequestException e) {
             }
         }
@@ -232,6 +235,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private void loadProducts(final String text, final int start, final int limit) {
         try {
             searchPageView.displayLoadingResults("Loading products...");
+            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+            Sector sector = searchPageView.getSectorFilter();
+            Thematic thematic = searchPageView.getThematicFilter();
             REST.withCallback(new MethodCallback<List<ProductDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -244,7 +250,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProducts(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProducts(text, start, limit, currentAoI == null ? null : currentAoI.getId());
+            }).call(ServicesUtil.searchService).listProducts(text, start, limit, filterByAoI ? null : currentAoI.getId(), sector, thematic);
         } catch (RequestException e) {
         }
     }

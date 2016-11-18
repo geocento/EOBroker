@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.admin.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 
 import java.util.List;
@@ -9,11 +10,20 @@ import java.util.List;
  */
 public class EditProductDTO extends ProductDTO {
 
-    private List<FormElement> formFields;
-    private String recommendationRule;
-    private List<FormElement> apiFormFields;
+    List<FeatureDescription> geoinformation;
+    List<FormElement> formFields;
+    String recommendationRule;
+    List<FormElement> apiFormFields;
 
     public EditProductDTO() {
+    }
+
+    public List<FeatureDescription> getGeoinformation() {
+        return geoinformation;
+    }
+
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation = geoinformation;
     }
 
     public List<FormElement> getFormFields() {

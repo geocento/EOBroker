@@ -1,11 +1,16 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductServiceView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -17,6 +22,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -41,7 +47,17 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         panel.setWidget(productServiceView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
-        handleHistory();
+        productServiceView.setMapLoadedHandler(new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(Exception reason) {
+
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                handleHistory();
+            }
+        });
     }
 
     private void handleHistory() {
@@ -82,17 +98,25 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
 
     }
 
-    private void setService(ProductServiceEditDTO productServiceDTO) {
+    private void setService(final ProductServiceEditDTO productServiceDTO) {
         ProductServiceActivity.this.productServiceDTO = productServiceDTO;
         productServiceView.getName().setText(productServiceDTO.getName());
-        productServiceView.getDescription().setText(productServiceDTO.getDescription());
         productServiceView.setIconUrl(productServiceDTO.getServiceImage());
-        productServiceView.getEmail().setText(productServiceDTO.getEmail());
-        productServiceView.getWebsite().setText(productServiceDTO.getWebsite());
-        productServiceView.setSelectedProduct(productServiceDTO.getProduct());
+        productServiceView.getDescription().setText(productServiceDTO.getDescription());
         productServiceView.setFullDescription(productServiceDTO.getFullDescription());
+        productServiceView.getEmail().setText(productServiceDTO.getEmail());
+        productServiceView.setSelectedProduct(productServiceDTO.getProduct());
+        productServiceView.setProductGeoinformation(productServiceDTO.getProductFeatures());
+        productServiceView.setSelectedGeoinformation(ListUtil.filterValues(productServiceDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
+            @Override
+            public boolean isValue(FeatureDescription value) {
+                return productServiceDTO.getSelectedFeatures().contains(value.getId());
+            }
+        }));
+        productServiceView.setExtent(AoIUtil.fromWKT(productServiceDTO.getExtent()));
+        productServiceView.getWebsite().setText(productServiceDTO.getWebsite());
         productServiceView.getAPIUrl().setText(productServiceDTO.getApiURL() == null ? "" : productServiceDTO.getApiURL());
-        productServiceView.getSampleWmsUrl().setText(productServiceDTO.getSampleWmsUrl() == null ? "" : productServiceDTO.getSampleWmsUrl());
+        productServiceView.setSampleDataAccess(productServiceDTO.getSamples());
     }
 
     @Override
@@ -105,12 +129,19 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                 productServiceDTO.setName(productServiceView.getName().getText());
                 productServiceDTO.setDescription(productServiceView.getDescription().getText());
                 productServiceDTO.setServiceImage(productServiceView.getIconUrl());
-                productServiceDTO.setProduct(productServiceView.getSelectProduct());
+                productServiceDTO.setProduct(productServiceView.getSelectedProduct());
+                productServiceDTO.setSelectedFeatures(ListUtil.mutate(productServiceView.getSelectedGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
+                    @Override
+                    public Long mutate(FeatureDescription featureDescription) {
+                        return featureDescription.getId();
+                    }
+                }));
+                productServiceDTO.setExtent(AoIUtil.toWKT(productServiceView.getExtent()));
                 productServiceDTO.setEmail(productServiceView.getEmail().getText());
                 productServiceDTO.setWebsite(productServiceView.getWebsite().getText());
                 productServiceDTO.setFullDescription(productServiceView.getFullDescription());
                 productServiceDTO.setApiURL(productServiceView.getAPIUrl().getText().length() > 0 ? productServiceView.getAPIUrl().getText() : null);
-                productServiceDTO.setSampleWmsUrl(productServiceView.getSampleWmsUrl().getText().length() > 0 ? productServiceView.getSampleWmsUrl().getText() : null);
+                productServiceDTO.setSamples(productServiceView.getSamples());
                 // do some checks
                 try {
                     if (productServiceDTO.getName() == null || productServiceDTO.getName().length() < 3) {
@@ -156,4 +187,27 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         }));
     }
 
+    @Override
+    public void productChanged() {
+        displayLoading("Loading product geoinformation");
+        ProductDTO selectedProduct = productServiceView.getSelectedProduct();
+        try {
+            REST.withCallback(new MethodCallback<List<FeatureDescription>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideLoading();
+                    displayError("Could not load product geoinformation");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<FeatureDescription> featureDescriptions) {
+                    hideLoading();
+                    productServiceView.setProductGeoinformation(featureDescriptions);
+                }
+
+            }).call(ServicesUtil.assetsService).getProductGeoinformation(selectedProduct.getId());
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -6,7 +6,6 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import gwt.material.design.client.base.SearchObject;
-import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.MaterialSearch;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -43,13 +42,6 @@ public class ProductTextBox extends MaterialSearch {
                 }).call(ServicesUtil.assetsService).findProducts(getValue());
             }
         });
-        addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
-            @Override
-            public void onSearchFinish(SearchFinishEvent event) {
-
-            }
-        });
-
     }
 
     public void setProduct(ProductDTO product) {

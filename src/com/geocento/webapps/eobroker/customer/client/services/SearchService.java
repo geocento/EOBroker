@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.customer.client.services;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
+import com.geocento.webapps.eobroker.common.shared.entities.Sector;
+import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
@@ -59,7 +61,7 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/products")
     @Produces("application/json")
-    public List<ProductDTO> listProducts(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    public List<ProductDTO> listProducts(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("sector") Sector sector, @QueryParam("thematic") Thematic thematic) throws RequestException;
 
     @GET
     @Path("/search/productservices")

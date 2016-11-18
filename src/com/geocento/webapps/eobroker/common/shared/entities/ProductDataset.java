@@ -54,6 +54,7 @@ public class ProductDataset {
 
     @Column(length = 1000)
     String website;
+    private List<FeatureDescription> geoinformation;
 
     public ProductDataset() {
     }
@@ -170,4 +171,11 @@ public class ProductDataset {
         this.features = features;
     }
 
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation = geoinformation;
+    }
+
+    public List<FeatureDescription> getGeoinformation() {
+        return geoinformation;
+    }
 }

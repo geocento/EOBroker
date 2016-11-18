@@ -24,7 +24,8 @@ public class ProductDatasetDTO {
     ServiceType serviceType;
     List<DatasetAccess> datasetAccesses;
     List<DatasetAccess> samples;
-    List<FeatureDescription> features;
+    List<FeatureDescription> productFeatures;
+    List<Long> selectedFeatures;
 
     public ProductDatasetDTO() {
     }
@@ -125,11 +126,19 @@ public class ProductDatasetDTO {
         this.samples = samples;
     }
 
-    public List<FeatureDescription> getFeatures() {
-        return features;
+    public List<FeatureDescription> getProductFeatures() {
+        return productFeatures;
     }
 
-    public void setFeatures(List<FeatureDescription> features) {
-        this.features = features;
+    public void setProductFeatures(List<FeatureDescription> productFeatures) {
+        this.productFeatures = productFeatures;
+    }
+
+    public List<Long> getSelectedFeatures() {
+        return selectedFeatures;
+    }
+
+    public void setSelectedFeatures(List<Long> selectedFeatures) {
+        this.selectedFeatures = selectedFeatures;
     }
 }

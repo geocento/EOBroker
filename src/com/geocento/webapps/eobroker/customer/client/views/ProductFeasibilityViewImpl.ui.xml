@@ -5,7 +5,8 @@
              xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:cutout="urn:import:gwt.material.design.addins.client.cutout"
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps">
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityViewImpl.Style">
 
         .providers {
@@ -169,8 +170,8 @@
             <m:MaterialButton text="Close" ui:field="btnCutOutClose" textColor="blue" backgroundColor="white"/>
         </cutout:MaterialCutOut>
         <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-            <maps:MapContainer width="100%" height="100%" ui:field="mapContainer">
-            </maps:MapContainer>
+            <cmaps:MapContainer width="100%" height="100%" ui:field="mapContainer">
+            </cmaps:MapContainer>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

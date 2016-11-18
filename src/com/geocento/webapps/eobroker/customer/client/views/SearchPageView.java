@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.Sector;
+import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
@@ -79,6 +81,10 @@ public interface SearchPageView extends IsWidget {
     void addCompanies(List<CompanyDTO> companyDTOs, int start, boolean hasMore, String text);
 
     HasValue<Boolean> getFilterByAoI();
+
+    Sector getSectorFilter();
+
+    Thematic getThematicFilter();
 
     public interface Presenter {
 

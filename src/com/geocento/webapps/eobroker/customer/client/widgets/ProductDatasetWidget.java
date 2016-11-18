@@ -39,6 +39,8 @@ public class ProductDatasetWidget extends Composite {
     MaterialLink companyLogo;
     @UiField
     MaterialLabel shortDescription;
+    @UiField
+    MaterialLink stars;
 
     public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));

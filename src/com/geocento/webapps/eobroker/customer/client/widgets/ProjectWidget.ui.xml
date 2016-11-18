@@ -39,6 +39,10 @@
 */
         }
 
+        .stars > i {
+            margin-right: 5px !important;
+        }
+
     </ui:style>
     <design:MaterialCard backgroundColor="blue" axis="VERTICAL">
         <design:MaterialCardImage>
@@ -46,11 +50,13 @@
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="white" padding="10">
-            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
             <design:MaterialLabel fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction addStyleNames="{style.actions}" padding="10">
+            <design:MaterialTooltip text="Favourited 0 times" ui:field="starsTooltip">
+                <design:MaterialLink text="0" float="RIGHT" textColor="LIME" iconType="STAR" iconColor="LIME" marginRight="0" addStyleNames="{style.stars}" ui:field="stars"></design:MaterialLink>
+            </design:MaterialTooltip>
             <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>

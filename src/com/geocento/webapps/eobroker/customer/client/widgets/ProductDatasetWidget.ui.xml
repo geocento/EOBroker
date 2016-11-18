@@ -33,10 +33,14 @@
         }
 
         .actions {
-/*
-            white-space: nowrap;
-            overflow: hidden;
-*/
+            /*
+                        white-space: nowrap;
+                        overflow: hidden;
+            */
+        }
+
+        .stars > i {
+            margin-right: 5px !important;
         }
 
     </ui:style>
@@ -50,8 +54,10 @@
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction addStyleNames="{style.actions}" padding="10" ui:field="action">
+            <design:MaterialTooltip text="Favourited 0 times" ui:field="starsTooltip">
+                <design:MaterialLink text="0" float="RIGHT" textColor="LIME" iconType="STAR" iconColor="LIME" marginRight="0" addStyleNames="{style.stars}" ui:field="stars"></design:MaterialLink>
+            </design:MaterialTooltip>
             <design:MaterialLink text="INFO" textColor="white" ui:field="info"></design:MaterialLink>
-            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

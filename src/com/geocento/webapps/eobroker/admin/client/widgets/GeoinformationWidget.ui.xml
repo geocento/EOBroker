@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+        >
     <ui:style>
 
         .pitch, .uri {
@@ -20,13 +20,13 @@
     <design:MaterialPanel backgroundColor="white" padding="20" margin="10">
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink ui:field="type"></design:MaterialLink>
+                <design:MaterialListBox ui:field="type"></design:MaterialListBox>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextBox placeholder="Your pitch on this data access" addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialTextBox>
+                <design:MaterialTextBox length="100" placeholder="Name of the geoinformation" marginBottom="10" ui:field="name"></design:MaterialTextBox>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextBox placeholder="Provide the uri for accessing the data" addStyleNames="{style.uri}" ui:field="uri"></design:MaterialTextBox>
+                <design:MaterialTextBox length="200" placeholder="Description of the geoinformation" marginBottom="10" addStyleNames="{style.pitch}" ui:field="description"></design:MaterialTextBox>
             </design:MaterialColumn>
         </design:MaterialRow>
     </design:MaterialPanel>

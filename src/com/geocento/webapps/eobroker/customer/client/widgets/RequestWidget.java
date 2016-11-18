@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ImageryResponsePlace;
@@ -35,6 +36,8 @@ public class RequestWidget extends Composite {
     MaterialButton request;
     @UiField
     MaterialCardContent content;
+    @UiField
+    MaterialLabel creationdate;
 
     public RequestWidget(final RequestDTO requestDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -61,6 +64,7 @@ public class RequestWidget extends Composite {
                 break;
         }
         description.setText(requestDTO.getDescription());
+        creationdate.setText("Created on " + DateUtils.formatDateOnly(requestDTO.getCreationTime()));
         final Place finalPlace = place;
         request.addClickHandler(new ClickHandler() {
             @Override

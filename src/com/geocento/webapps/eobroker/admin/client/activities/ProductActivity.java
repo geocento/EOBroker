@@ -80,6 +80,7 @@ public class ProductActivity extends TemplateActivity implements ProductView.Pre
         productView.setDescription(editProductDTO.getDescription());
         productView.setSector(editProductDTO.getSector());
         productView.setThematic(editProductDTO.getThematic());
+        productView.setGeoinformation(editProductDTO.getGeoinformation());
         productView.setFormFields(editProductDTO.getFormFields());
         productView.setAPIFields(editProductDTO.getApiFormFields());
         productView.setRecommendationRule(editProductDTO.getRecommendationRule());
@@ -98,6 +99,7 @@ public class ProductActivity extends TemplateActivity implements ProductView.Pre
                 productDTO.setDescription(productView.getDescription());
                 productDTO.setSector(productView.getSector());
                 productDTO.setThematic(productView.getThematic());
+                productDTO.setGeoinformation(productView.getGeoinformation());
                 productDTO.setFormFields(productView.getFormFields());
                 productDTO.setApiFormFields(productView.getAPIFields());
                 productDTO.setRecommendationRule(productView.getRecommendationRule());

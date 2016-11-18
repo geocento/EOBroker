@@ -1,12 +1,11 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.widgets.UploadAoI;
+import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -29,8 +28,6 @@ import java.util.List;
 public class RequestImageryViewImpl extends Composite implements RequestImageryView {
 
     private Presenter presenter;
-
-    private boolean mapRevealed = true;
 
     interface RequestImageryUiBinder extends UiBinder<Widget, RequestImageryViewImpl> {
     }
@@ -86,16 +83,12 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
             public void aoiChanged(AoIDTO aoi) {
-                presenter.aoiChanged(aoi);
+                displayAoI(aoi);
             }
 
             @Override
-            public void selectAoI() {
-                UploadAoI.getInstance().display(new UploadAoI.Presenter() {
-                    @Override
-                    public void aoiSelected(AoIDTO aoIDTO) {
-                    }
-                });
+            public void aoiSelected(AoIDTO aoi) {
+                displayAoI(aoi);
             }
         });
     }

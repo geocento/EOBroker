@@ -2,18 +2,16 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
-import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.GraphicJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
 import com.geocento.webapps.eobroker.customer.client.widgets.PieOpt;
+import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.Feature;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
@@ -33,13 +31,12 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.ProvidesKey;
-import com.google.gwt.view.client.SelectionModel;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
 import com.googlecode.gwt.charts.client.ColumnType;
@@ -138,6 +135,18 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
                 presenter.onStopDateChanged(event.getValue());
+            }
+        });
+
+        mapContainer.setPresenter(new MapContainer.Presenter() {
+            @Override
+            public void aoiChanged(AoIDTO aoi) {
+                displayAoI(aoi);
+            }
+
+            @Override
+            public void aoiSelected(AoIDTO aoi) {
+                displayAoI(aoi);
             }
         });
 
