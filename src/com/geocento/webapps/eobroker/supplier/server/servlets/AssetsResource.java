@@ -644,7 +644,7 @@ public class AssetsResource implements AssetsService {
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbDatasetAccesses.add(dbDatasetAccess);
-                    }
+
                 }
                 productDataset.setDatasetAccesses(dbDatasetAccesses);
             }

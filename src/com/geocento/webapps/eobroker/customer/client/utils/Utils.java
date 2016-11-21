@@ -15,6 +15,7 @@ public class Utils {
     }
 
     public static void saveAoI(AoIDTO aoi) {
+        saveLocalStorage("aoiid", aoi.getId() + "");
         saveLocalStorage("aoi", AoIUtil.toWKT(aoi));
     }
 
@@ -32,6 +33,10 @@ public class Utils {
     }
 
     public static AoIDTO getAoI() {
-        return AoIUtil.fromWKT(getLocalStorage("aoi"));
+        AoIDTO aoi = AoIUtil.fromWKT(getLocalStorage("aoi"));
+        String aoiId = getLocalStorage("aoiId");
+        aoi.setId(aoiId == null ? null : Long.valueOf(aoiId));
+        return aoi;
     }
+
 }
