@@ -2,9 +2,12 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
-import com.geocento.webapps.eobroker.common.shared.entities.ServiceType;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
+import com.google.gson.Gson;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -20,7 +23,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 public class DatasetUploadServlet extends HttpServlet {
 
@@ -28,20 +33,31 @@ public class DatasetUploadServlet extends HttpServlet {
 
     static private Logger logger = null;
 
+    private String RESTURL  = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUri);
+    private String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
+    private String RESTPW   = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
+
+    private GeoServerRESTReader reader;
+    private GeoServerRESTPublisher publisher;
+
     public DatasetUploadServlet() {
         logger = Logger.getLogger(DatasetUploadServlet.class);
         logger.info("Starting dataset upload servlet");
+
+        try {
+            reader = new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        publisher = new GeoServerRESTPublisher(RESTURL, RESTUSER, RESTPW);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
-        response.setContentType("text/html");
-        PrintWriter writer = response.getWriter();
         try {
             String logUserName = UserUtils.verifyUserSupplier(request);
-            // default values for width and height
-            ServiceType serviceType = null;
-            String resourceName = null;
+            // resource id for storing
+            Long resourceId = null;
             InputStream filecontent = null;
             String saveFile = null;
             List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
@@ -51,11 +67,8 @@ public class DatasetUploadServlet extends HttpServlet {
                     // Process regular form field (input type="text|radio|checkbox|etc", select, etc).
                     String fieldName = item.getFieldName();
                     String fieldValue = item.getString();
-                    if(fieldName.equalsIgnoreCase("servicetype")) {
-                        serviceType = ServiceType.valueOf(fieldValue);
-                    }
-                    if(fieldName.equalsIgnoreCase("resourcename")) {
-                        resourceName = fieldValue;
+                    if(fieldName.equalsIgnoreCase("resourceId")) {
+                        resourceId = Long.parseLong(fieldValue);
                     }
                 } else {
                     // Process form file field (input type="file").
@@ -71,6 +84,9 @@ public class DatasetUploadServlet extends HttpServlet {
             if(filecontent == null) {
                 throw new FileNotFoundException("no file provided");
             }
+            if(resourceId == null) {
+                throw new Exception("Resource id missing");
+            }
             System.out.println("Reading file content");
             // Process the input stream
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -84,45 +100,123 @@ public class DatasetUploadServlet extends HttpServlet {
             try {
                 final User user = em.find(User.class, logUserName);
                 System.out.println("Processing resource");
-                String resourcePath = processAndStoreResource(out, user, serviceType, resourceName);
-                System.out.println(resourcePath);
-                // return the url of the file
-                writer.println("<value>" + resourcePath + "</value>");
+                SampleUploadDTO sampleUploadDTO = processAndStoreResource(out, user, resourceId, saveFile);
+                response.setStatus(200);
+                response.setContentType("text/html");
+                PrintWriter writer = response.getWriter();
+                writer.print("<html><body><value>" + new Gson().toJson(sampleUploadDTO) + "</value></body></html>");
+                writer.flush();
+                writer.close();
             } finally {
                 em.close();
             }
         } catch (FileUploadException e) {
-            writeError(writer, "Could not read file");
+            writeError(response, "Could not read file");
         } catch (Exception e) {
-            writeError(writer, "Error whilst processing and storing resource: " + e.getMessage());
+            writeError(response, "Error whilst processing and storing resource: " + e.getMessage());
         } finally {
-            writer.flush();
-            writer.close();
             System.out.println("done");
         }
     }
 
-    protected void writeError(PrintWriter writer, String message) {
-        writer.println("<html><body>" + "error=" + message + "</body></html>");
+    protected void writeError(HttpServletResponse response, String message) throws IOException {
+        response.sendError(500, message);
     }
 
-    protected String processAndStoreResource(ByteArrayOutputStream out, User user, ServiceType serviceType, String resourceName) throws Exception {
+    protected SampleUploadDTO processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName) throws Exception {
         try {
-            String filePath =  "./datasets/" + user.getCompany().getName() + "/" + resourceName;
+            // save file to disk first
+            Long companyId = user.getCompany().getId();
+            String fileDirectory = "./datasets/" + companyId + "/" + resourceId + "/";
+            String filePath =  fileDirectory + resourceName;
             int maxFileSize = 10 * (1024 * 1024); //10 megs max
             if (out.size() > maxFileSize) {
                 throw new Exception("File is > than " + maxFileSize);
             }
-            // resize image and store file
+            // store file
             // TODO - check input and output format and limit output formats to be jpg or png
-            String realPath = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath) + filePath;
-            logger.info("Process and store file at " + realPath);
-            FileUtils.writeByteArrayToFile(new File(realPath), out.toByteArray());
-            return filePath;
+            String diskDirectory = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath) + fileDirectory;
+            String diskPath = diskDirectory + resourceName;
+            logger.info("Process and store file at " + diskPath);
+            // force creation of directory if it does not exist
+            FileUtils.forceMkdir(new File(diskDirectory));
+            File file = new File(diskPath);
+            FileUtils.writeByteArrayToFile(file, out.toByteArray());
+            // now check extension and publish to geoserver if it is a geospatial file
+            String workspaceName = companyId + "_" + resourceId;
+            String extension = resourceName.substring(resourceName.lastIndexOf(".") + 1).toLowerCase();
+            String storeName = resourceName.substring(resourceName.lastIndexOf("/") + 1).substring(0, resourceName.lastIndexOf("."));
+            String layerName = null;
+            switch (extension) {
+/*
+                case "kml":
+*/
+                case "zip":
+                    layerName = publishShapefile(workspaceName, storeName, file);
+                    break;
+                case "tiff":
+                case "tif":
+                    layerName = publishGeoTiff(workspaceName, storeName, file);
+                    break;
+                default:
+                    layerName = null;
+            }
+            // create response
+            SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
+            sampleUploadDTO.setFileUri(filePath);
+            sampleUploadDTO.setLayerName(layerName);
+            return sampleUploadDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
         }
+    }
+
+    private String publishShapefile(String workspaceName, String storeName, File file) throws Exception {
+        try {
+            if (!existsWorkpspace(workspaceName)) {
+                boolean created = publisher.createWorkspace(workspaceName);
+                if(!created) {
+                    throw new Exception("Could not create workspace " + workspaceName);
+                }
+            }
+            String resourceName = null;
+            ZipFile zipFile = new ZipFile(file.getPath());
+            resourceName = zipFile.entries().nextElement().getName();
+            resourceName = resourceName.substring(0, resourceName.lastIndexOf("."));
+            // check layer does not already exist
+            boolean published = publisher.publishShp(workspaceName, storeName, resourceName, file);
+            if (published) {
+                return resourceName;
+            } else {
+                throw new Exception("Could not publish layer");
+            }
+        } catch (Exception e) {
+            throw new Exception("Could not publish layer, reason is " + e.getMessage());
+        }
+    }
+
+    private String publishGeoTiff(String workspaceName, String storeName, File file) throws Exception {
+        try {
+            if(!existsWorkpspace(workspaceName)) {
+                boolean created = publisher.createWorkspace(workspaceName);
+                if(!created) {
+                    throw new Exception("Could not create workspace " + workspaceName);
+                }
+            }
+            boolean pc = publisher.publishGeoTIFF(workspaceName, storeName, file);
+            if (pc) {
+                return storeName;
+            } else {
+                throw new Exception("Could not publish layer");
+            }
+        } catch (Exception e) {
+            throw new Exception("Could not publish layer, reason is " + e.getMessage());
+        }
+    }
+
+    private boolean existsWorkpspace(String workspaceName) {
+        return reader.getWorkspaceNames().contains(workspaceName);
     }
 
 }

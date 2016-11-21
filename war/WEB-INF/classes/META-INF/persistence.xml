@@ -15,6 +15,10 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductService</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductDataset</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessAPI</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessAPP</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessFile</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Software</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductSoftware</class>

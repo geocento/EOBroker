@@ -65,6 +65,8 @@ public interface ProductDatasetView extends IsWidget {
 
     List<DatasetAccess> getSamples();
 
+    void setSampleProductDatasetId(Long datasetId);
+
     public interface Presenter {
         void productChanged();
     }

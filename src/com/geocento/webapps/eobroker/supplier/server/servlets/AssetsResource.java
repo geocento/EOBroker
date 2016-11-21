@@ -231,7 +231,32 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             productService.setApiUrl(productServiceDTO.getApiURL());
-            productService.setSampleWmsUrl(productServiceDTO.getSampleWmsUrl());
+            // update the sample access
+            {
+                List<DatasetAccess> samples = productServiceDTO.getSamples();
+                List<DatasetAccess> dbSamples = new ArrayList<DatasetAccess>();
+                if (samples != null && samples.size() > 0) {
+                    for (final DatasetAccess datasetAccess : samples) {
+                        DatasetAccess dbDatasetAccess = null;
+                        if (datasetAccess.getId() != null) {
+                            dbDatasetAccess = ListUtil.findValue(productService.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
+                                @Override
+                                public boolean isValue(DatasetAccess value) {
+                                    return value.getId().equals(datasetAccess.getId());
+                                }
+                            });
+                        }
+                        if (dbDatasetAccess == null) {
+                            em.persist(datasetAccess);
+                            dbDatasetAccess = datasetAccess;
+                        }
+                        dbDatasetAccess.setPitch(datasetAccess.getPitch());
+                        dbDatasetAccess.setUri(datasetAccess.getUri());
+                        dbSamples.add(dbDatasetAccess);
+                    }
+                }
+                productService.setSamples(dbSamples);
+            }
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + getProductServiceTSV(productService) +
                     ", tsvname = " + getProductServiceNameTSV(productService) + " where id = " + productService.getId() +

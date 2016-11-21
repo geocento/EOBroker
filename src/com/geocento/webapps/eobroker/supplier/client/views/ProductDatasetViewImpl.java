@@ -10,10 +10,13 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -74,12 +77,10 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialLabel dataAccessMessage;
     @UiField
     MaterialButton addHostedSample;
-    @UiField
+    @UiField(provided = true)
     MaterialFileUploader sampleUploader;
     @UiField
     MaterialListBox sampleAccessType;
-    @UiField
-    MaterialTextBox resourceName;
     @UiField
     MaterialRow samples;
     @UiField
@@ -92,6 +93,11 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
+
+        sampleUploader = new MaterialFileUploader();
+        // configure the sample uploader
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
+        sampleUploader.setUrl(uploadUrl);
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -112,6 +118,8 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             optionWidget.setValue(accessType.toString());
             datasetAccessType.add(optionWidget);
         }
+        // quirk to make sure the list box is initialised
+        datasetAccessType.setEnabled(true);
 
         for(AccessType accessType : new AccessType[] {AccessType.file, AccessType.ogc}) {
             Option optionWidget = new Option();
@@ -119,10 +127,9 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             optionWidget.setValue(accessType.toString());
             sampleAccessType.add(optionWidget);
         }
+        // quirk to make sure the list box is initialised
+        sampleAccessType.setEnabled(true);
 
-        // configure the sample uploader
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
-        sampleUploader.setUrl(uploadUrl);
         // Added the progress to card uploader
         sampleUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
             @Override
@@ -133,7 +140,23 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         sampleUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
             @Override
             public void onSuccess(SuccessEvent<UploadFile> event) {
-                String uri = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
+                String response = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
+                JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
+                SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
+                sampleUploadDTO.setFileUri(sampleUploadDTOJson.get("fileUri").isString().stringValue());
+                sampleUploadDTO.setLayerName(sampleUploadDTOJson.get("layerName").isString().stringValue());
+                if(sampleUploadDTO.getFileUri() != null) {
+                    DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
+                    datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
+                    datasetAccessFile.setPitch("Sample file");
+                    addSample(datasetAccessFile);
+                }
+                if(sampleUploadDTO.getLayerName() != null) {
+                    DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+                    datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
+                    datasetAccessOGC.setPitch("Sample data available as OGC service");
+                    addSample(datasetAccessOGC);
+                }
             }
         });
 
@@ -284,7 +307,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     private void addSample(DatasetAccess datasetAccess) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
-        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess);
+        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, true);
         materialColumn.add(dataAccessWidget);
     }
 
@@ -348,6 +371,11 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 materialCheckBox.setValue(selectedFeatures.contains(((FeatureDescription) materialCheckBox.getObject()).getId()));
             }
         }
+    }
+
+    @Override
+    public void setSampleProductDatasetId(Long datasetId) {
+        sampleUploader.setParameter("resourceId", datasetId + "");
     }
 
     @UiHandler("addDataAccess")

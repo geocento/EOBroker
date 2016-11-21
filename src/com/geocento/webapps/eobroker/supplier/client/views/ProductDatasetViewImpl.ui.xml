@@ -38,6 +38,9 @@
             margin-bottom: 20px;
         }
 
+        .samples {
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Off the shelf data" ui:field="template">
@@ -92,25 +95,19 @@
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="samples"></design:MaterialRow>
-                    <design:MaterialRow>
-                        <design:MaterialColumn grid="s12 m4 l4">
+                    <design:MaterialRow addStyleNames="{style.samples}">
+                        <design:MaterialColumn>
+                            <design:MaterialListBox marginRight="10" display="INLINE_BLOCK" ui:field="sampleAccessType"></design:MaterialListBox>
                             <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
-                            <design:MaterialLabel>Or upload to server</design:MaterialLabel>
-                        </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12 m4 l4">
-                            <c:MaterialFileUploader acceptedFiles="image/*" url="" height="auto" shadow="1" padding="20" ui:field="sampleUploader">
-                                <design:MaterialListBox ui:field="sampleAccessType"></design:MaterialListBox>
-                                <design:MaterialTextBox placeholder="Name of resource" ui:field="resourceName"></design:MaterialTextBox>
-                                <design:MaterialRow>
-                                    <design:MaterialColumn>
-                                        <design:MaterialLabel>Create sample</design:MaterialLabel>
-                                    </design:MaterialColumn>
-                                    <design:MaterialColumn>
-                                        <design:MaterialButton backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
-                                    </design:MaterialColumn>
-                                </design:MaterialRow>
+                            <c:MaterialFileUploader marginLeft="20" acceptedFiles="image/*" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
+                                <design:MaterialCard padding="20">
+                                    <design:MaterialCardContent layoutPosition="RELATIVE">
+                                        <design:MaterialLabel marginBottom="20">Or upload file to server</design:MaterialLabel>
+                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
+                                    </design:MaterialCardContent>
+                                </design:MaterialCard>
                             </c:MaterialFileUploader>
                         </design:MaterialColumn>
                     </design:MaterialRow>

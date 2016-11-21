@@ -45,6 +45,10 @@ public class DataAccessWidget extends Composite {
     private final DatasetAccess datasetAccess;
 
     public DataAccessWidget(DatasetAccess datasetAccess) {
+        this(datasetAccess, false);
+    }
+
+    public DataAccessWidget(DatasetAccess datasetAccess, boolean sample) {
 
         this.datasetAccess = datasetAccess;
 
@@ -69,6 +73,7 @@ public class DataAccessWidget extends Composite {
         type.setIconType(iconType);
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());
+        uri.setReadOnly(sample);
     }
 
     public DatasetAccess getDatasetAccess() {

@@ -77,6 +77,10 @@
         <servlet-name>ImageUploadServlet</servlet-name>
         <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.ImageUploadServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DatasetUploadServlet</servlet-name>
+        <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.DatasetUploadServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>NoCacheServlet</servlet-name>
         <url-pattern>*.nocache.js</url-pattern>
@@ -104,6 +108,10 @@
     <servlet-mapping>
         <servlet-name>ImageUploadServlet</servlet-name>
         <url-pattern>/upload/image/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DatasetUploadServlet</servlet-name>
+        <url-pattern>/upload/datasets/</url-pattern>
     </servlet-mapping>
 
     <!-- Default page to serve -->

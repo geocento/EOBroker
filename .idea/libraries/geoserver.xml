@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="geoserver">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/libraries/geoserver" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/libraries/geoserver" recursive="false" />
+  </library>
+</component>

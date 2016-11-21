@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class Configuration {
 
     static public enum APPLICATION_SETTINGS {
-        uploadPath, eiToken, coredatasetUrl
+        uploadPath, eiToken, geoserverUri, geoserverUser, geoserverPassword, coredatasetUrl
     };
 
     static private Properties props=new Properties();

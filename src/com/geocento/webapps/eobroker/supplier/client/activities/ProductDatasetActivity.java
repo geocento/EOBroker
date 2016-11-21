@@ -108,6 +108,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 return productDatasetDTO.getSelectedFeatures().contains(value.getId());
             }
         }));
+        productDatasetView.setSampleProductDatasetId(productDatasetDTO.getId());
     }
 
     @Override

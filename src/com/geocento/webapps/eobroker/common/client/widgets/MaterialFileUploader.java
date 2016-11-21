@@ -711,4 +711,5 @@ public class MaterialFileUploader extends MaterialWidget implements HasFileUploa
     public void setInitialize(boolean initialize) {
         this.initialize = initialize;
     }
+
 }

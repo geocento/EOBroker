@@ -123,6 +123,11 @@ public class UploadAoI {
     public void display(final Presenter presenter) {
         this.presenter = presenter;
         materialModal.openModal();
+        // reset list of uploaded files
+        // only for 2.0
+/*
+        uploadAoI.reset();
+*/
         listOfAoIs.clear();
         listOfAoIs.add(new LoadingWidget("Loading AoIs..."));
         // load user's AOIs

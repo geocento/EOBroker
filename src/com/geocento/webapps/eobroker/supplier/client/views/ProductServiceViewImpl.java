@@ -1,7 +1,10 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -18,9 +21,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.addins.client.fileuploader.base.UploadFile;
+import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
+import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
+import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.animate.MaterialAnimator;
+import gwt.material.design.client.ui.animate.Transition;
+import gwt.material.design.client.ui.html.Option;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +77,12 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     MaterialLabel samplesMessage;
     @UiField
     MaterialRow samples;
+    @UiField
+    MaterialListBox sampleAccessType;
+    @UiField
+    MaterialTextBox resourceName;
+    @UiField
+    MaterialFileUploader sampleUploader;
 
     public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -80,6 +96,40 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                 presenter.productChanged();
             }
         });
+
+        for(AccessType accessType : new AccessType[] {AccessType.file, AccessType.ogc}) {
+            Option optionWidget = new Option();
+            optionWidget.setText(accessType.getName());
+            optionWidget.setValue(accessType.toString());
+            sampleAccessType.add(optionWidget);
+        }
+        // quirk to make sure the list box is initialised
+        sampleAccessType.setEnabled(true);
+
+        // configure the sample uploader
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
+        sampleUploader.setUrl(uploadUrl);
+        // Added the progress to card uploader
+        sampleUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
+            @Override
+            public void onTotalUploadProgress(TotalUploadProgressEvent event) {
+            }
+        });
+
+        sampleUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
+            @Override
+            public void onSuccess(SuccessEvent<UploadFile> event) {
+                String uri = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
+            }
+        });
+
+        sampleUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {
+            @Override
+            public void onDragOver(DragOverEvent event) {
+                MaterialAnimator.animate(Transition.RUBBERBAND, sampleUploader, 0);
+            }
+        });
+
     }
 
     @Override

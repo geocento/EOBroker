@@ -11,10 +11,10 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value=DatasetAccessOGC.class, name="FILE"),
+        @JsonSubTypes.Type(value=DatasetAccessFile.class, name="FILE"),
         @JsonSubTypes.Type(value=DatasetAccessOGC.class, name="OGC"),
-        @JsonSubTypes.Type(value=DatasetAccessOGC.class, name="APP"),
-        @JsonSubTypes.Type(value=DatasetAccessOGC.class, name="API"),
+        @JsonSubTypes.Type(value=DatasetAccessAPP.class, name="APP"),
+        @JsonSubTypes.Type(value=DatasetAccessAPI.class, name="API"),
 })
 @JsonTypeInfo(use= JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.PROPERTY, property="@class")
 public class DatasetAccess {
