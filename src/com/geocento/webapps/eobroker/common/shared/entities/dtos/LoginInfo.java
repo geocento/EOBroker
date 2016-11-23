@@ -10,6 +10,7 @@ public class LoginInfo {
     private String userName;
     private String userIcon;
     private User.USER_ROLE userRole;
+    private AoIDTO aoIDTO;
 
     public LoginInfo() {
     }
@@ -42,5 +43,13 @@ public class LoginInfo {
 
     public void setUserRole(User.USER_ROLE userRole) {
         this.userRole = userRole;
+    }
+
+    public AoIDTO getAoIDTO() {
+        return aoIDTO;
+    }
+
+    public void setAoIDTO(AoIDTO aoIDTO) {
+        this.aoIDTO = aoIDTO;
     }
 }

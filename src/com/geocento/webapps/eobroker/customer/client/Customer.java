@@ -7,7 +7,6 @@ import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMappe
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
-import com.geocento.webapps.eobroker.customer.client.utils.Utils;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.activity.shared.FilteredActivityMapper;
@@ -30,13 +29,13 @@ import org.fusesource.restygwt.client.REST;
  */
 public class Customer implements EntryPoint {
 
-    public static AoIDTO currentAoI;
-
     private static LoginInfo loginInfo;
 
     private SimplePanel appWidget = new SimplePanel();
 
     public static ClientFactory clientFactory;
+
+    private static AoIDTO initialAoI;
 
     /**
      * This is the entry point method.
@@ -107,21 +106,11 @@ public class Customer implements EntryPoint {
         StyleResources.INSTANCE.style().ensureInjected();
         Defaults.setServiceRoot(GWT.getModuleBaseURL() + "api");
         Defaults.setDateFormat(null);
-        setAoI(Utils.getAoI());
     }
-
 
     public static void setLoginInfo(LoginInfo loginInfo) {
         Customer.loginInfo = loginInfo;
-    }
-
-    public static void setAoI(AoIDTO aoi) {
-        currentAoI = aoi;
-        Utils.saveAoI(aoi);
-    }
-
-    public static AoIDTO getAoI() {
-        return currentAoI;
+        initialAoI = loginInfo == null ? null : loginInfo.getAoIDTO();
     }
 
     public static boolean isLoggedIn() {
@@ -132,4 +121,7 @@ public class Customer implements EntryPoint {
         return loginInfo;
     }
 
+    public static AoIDTO getInitialAoI() {
+        return initialAoI;
+    }
 }

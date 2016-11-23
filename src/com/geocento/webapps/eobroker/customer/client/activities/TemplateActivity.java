@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
@@ -12,7 +13,6 @@ import com.geocento.webapps.eobroker.customer.client.events.LogOutHandler;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.customer.client.utils.Utils;
 import com.geocento.webapps.eobroker.customer.client.views.TemplateView;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.http.client.RequestException;
@@ -38,7 +38,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     private int lastCall = 0;
     protected Category category = null;
-    static protected AoIDTO currentAoI = Utils.getAoI();
+    static protected AoIDTO currentAoI = null;
 
     public TemplateActivity(ClientFactory clientFactory) {
         super(clientFactory);
@@ -49,7 +49,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         // check use is logged in
         if(Customer.isLoggedIn()) {
             templateView.displaySignedIn(true);
-            templateView.setUser(Customer.getLoginInfo());
+            LoginInfo loginInfo = Customer.getLoginInfo();
+            templateView.setUser(loginInfo);
             // load notifications and orders
             if(userRequests == null) {
                 loadUserOrders();
@@ -60,6 +61,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                 loadUserNotifications();
             } else {
                 templateView.setNotifications(userNotifications);
+            }
+            // if no AoI loaded load the initial one
+            if(currentAoI == null) {
+                currentAoI = loginInfo.getAoIDTO();
             }
         } else {
             templateView.displaySignedIn(false);
@@ -334,7 +339,6 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     public void setAoI(AoIDTO aoi) {
         this.currentAoI = aoi;
-        Utils.saveAoI(currentAoI);
     }
 
     protected void displayLoading() {

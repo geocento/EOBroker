@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
@@ -23,6 +25,8 @@ public class ProductServiceDescriptionDTO {
     List<ProductServiceDTO> suggestedServices;
     private List<FeatureDescription> geoinformation;
     private String extent;
+    private List<DatasetAccess> samples;
+    private List<AccessType> selectedAccessTypes;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -129,5 +133,21 @@ public class ProductServiceDescriptionDTO {
 
     public String getExtent() {
         return extent;
+    }
+
+    public void setSamples(List<DatasetAccess> samples) {
+        this.samples = samples;
+    }
+
+    public List<DatasetAccess> getSamples() {
+        return samples;
+    }
+
+    public void setSelectedAccessTypes(List<AccessType> selectedAccessTypes) {
+        this.selectedAccessTypes = selectedAccessTypes;
+    }
+
+    public List<AccessType> getSelectedAccessTypes() {
+        return selectedAccessTypes;
     }
 }

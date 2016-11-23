@@ -16,10 +16,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
-import gwt.material.design.addins.client.fileuploader.events.ErrorEvent;
-import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
-import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
+import gwt.material.design.addins.client.fileuploader.events.*;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
@@ -69,6 +66,17 @@ public class UploadAoI {
 
         final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/geometry/";
         uploadAoI.setUrl(uploadUrl);
+
+        uploadAoI.addAddedFileHandler(new AddedFileEvent.AddedFileHandler<UploadFile>() {
+            @Override
+            public void onAddedFile(AddedFileEvent<UploadFile> event) {
+                String fileName = event.getTarget().getName();
+                if(!fileName.endsWith(".kml")) {
+                    Window.alert("Sorry on KML files allowed for now");
+                    uploadAoI.fireErrorEvent(fileName, event.getTarget().getLastModified() + "", event.getTarget().getFileSize() + "", event.getTarget().getType(), "500", "", "Only KML files are allowed");
+                }
+            }
+        });
         // Added the progress to card uploader
         uploadAoI.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
             @Override
@@ -96,7 +104,7 @@ public class UploadAoI {
         uploadAoI.addErrorHandler(new ErrorEvent.ErrorHandler<UploadFile>() {
             @Override
             public void onError(ErrorEvent<UploadFile> event) {
-                Window.alert("Error loading file, message is " + event.getResponse());
+                Window.alert("Error loading file"); //, message is " + event.getResponse().getMessage());
             }
         });
 
@@ -150,7 +158,20 @@ public class UploadAoI {
                             aoIWidget.getSelect().addClickHandler(new ClickHandler() {
                                 @Override
                                 public void onClick(ClickEvent event) {
-                                    presenter.aoiSelected(aoIDTO);
+                                    try {
+                                        REST.withCallback(new MethodCallback<AoIDTO>() {
+                                            @Override
+                                            public void onFailure(Method method, Throwable exception) {
+                                                Window.alert("Failed to load AoI");
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Method method, AoIDTO aoIDTO) {
+                                                presenter.aoiSelected(aoIDTO);
+                                            }
+                                        }).call(ServicesUtil.assetsService).getAoI(aoIDTO.getId());
+                                    } catch (Exception e) {
+                                    }
                                     hide();
                                 }
                             });

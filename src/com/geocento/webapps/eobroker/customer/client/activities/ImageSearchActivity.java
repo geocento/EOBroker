@@ -10,7 +10,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.*;
 import com.geocento.webapps.eobroker.customer.client.places.ImageSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -114,7 +113,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             }
         }
         imageSearchView.clearMap();
-        setAoi(Customer.currentAoI);
+        setAoi(currentAoI);
         Date now = new Date();
         setStartDate(new Date(now.getTime() - 10 * 24 * 3600 * 1000));
         setStopDate(now);

@@ -114,6 +114,8 @@ public class GeometryUploadServlet extends HttpServlet {
                 response.setStatus(200);
                 response.setContentType("text/html");
                 response.getWriter().print("<html><body><value>" + new Gson().toJson(aoIDTO) + "</value></body></html>");
+            } else {
+                throw new Exception("Could not create AoI");
             }
 		} catch (FileUploadException e) {
 			writeError(response, "Could not read file");

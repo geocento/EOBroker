@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 
@@ -24,6 +25,7 @@ public class ProductServiceEditDTO {
     String apiURL;
     String sampleWmsUrl;
     private List<DatasetAccess> samples;
+    private List<AccessType> selectedDataAccessTypes;
 
     public ProductServiceEditDTO() {
     }
@@ -138,5 +140,13 @@ public class ProductServiceEditDTO {
 
     public List<DatasetAccess> getSamples() {
         return samples;
+    }
+
+    public List<AccessType> getSelectedDataAccessTypes() {
+        return selectedDataAccessTypes;
+    }
+
+    public void setSelectedDataAccessTypes(List<AccessType> selectedDataAccessTypes) {
+        this.selectedDataAccessTypes = selectedDataAccessTypes;
     }
 }

@@ -1,24 +1,13 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
-import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.common.server.UserSession;
-import com.geocento.webapps.eobroker.common.server.Utils.BCrypt;
-import com.geocento.webapps.eobroker.common.server.Utils.UserUtils;
-import com.geocento.webapps.eobroker.common.shared.entities.User;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.supplier.client.services.LoginService;
-import org.apache.log4j.Logger;
 
-import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import java.util.Date;
 
 @Path("/")
-public class LoginResource implements LoginService {
+public class LoginResource extends com.geocento.webapps.eobroker.common.server.servlets.LoginResource implements LoginService {
 
+/*
     Logger logger = Logger.getLogger(LoginResource.class);
 
     public LoginResource() {
@@ -41,6 +30,7 @@ public class LoginResource implements LoginService {
                     LoginInfo loginInfo = UserUtils.getLoginInfo(user);
                     try {
                         em.getTransaction().begin();
+*/
 /*
                         if(user.getUserStatus() == User.USER_STATUS.SIGNED_UP) {
                             // check if we have a registration token
@@ -50,7 +40,8 @@ public class LoginResource implements LoginService {
                                 throw new EIException("User email not yet verified");
                             }
                         }
-*/
+*//*
+
                         user.setLastLoggedIn(new Date());
                         em.getTransaction().commit();
                     } catch(Exception e) {
@@ -98,5 +89,6 @@ public class LoginResource implements LoginService {
         session.setAttribute("userSession", userSession);
         return userSession;
     }
+*/
 
 }

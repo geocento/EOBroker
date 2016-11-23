@@ -7,6 +7,7 @@ public class SampleUploadDTO {
 
     String fileUri;
     String layerName;
+    private String server;
 
     public SampleUploadDTO() {
     }
@@ -25,5 +26,13 @@ public class SampleUploadDTO {
 
     public void setLayerName(String layerName) {
         this.layerName = layerName;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public String getServer() {
+        return server;
     }
 }

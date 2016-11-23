@@ -6,7 +6,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.RequestImageryPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -75,7 +74,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
     }
 
     private void handleHistory() {
-        setAoI(Customer.currentAoI);
+        setAoI(currentAoI);
     }
 
     public void setAoI(AoIDTO aoi) {
@@ -116,6 +115,10 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
             return;
         }
         ImageRequestDTO imageRequestDTO = new ImageRequestDTO();
+        if(currentAoI == null) {
+            requestImageryView.displayFormError("Please define an AoI first");
+            return;
+        }
         imageRequestDTO.setAoiWKT(AoIUtil.toWKT(currentAoI));
         imageRequestDTO.setImageType(imageType);
         imageRequestDTO.setStart(start);

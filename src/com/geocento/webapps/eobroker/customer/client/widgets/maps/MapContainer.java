@@ -26,6 +26,7 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
                     @Override
                     public void aoiSelected(AoIDTO aoIDTO) {
                         displayAoI(aoIDTO);
+                        centerOnAoI();
                         presenter.aoiSelected(aoIDTO);
                     }
                 });

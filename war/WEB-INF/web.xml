@@ -13,10 +13,12 @@
         <param-name>org.eclipse.jetty.servlet.SessionIdPathParameterName</param-name>
         <param-value>xsessionid</param-value>
     </context-param>
+<!--
     <context-param>
         <param-name>org.eclipse.jetty.servlet.SessionPath</param-name>
         <param-value>/</param-value>
     </context-param>
+-->
 
     <context-param>
         <param-name>org.eclipse.jetty.servlet.MaxAge</param-name>

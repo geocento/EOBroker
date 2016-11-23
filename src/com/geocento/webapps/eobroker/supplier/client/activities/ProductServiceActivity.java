@@ -116,7 +116,9 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         productServiceView.setExtent(AoIUtil.fromWKT(productServiceDTO.getExtent()));
         productServiceView.getWebsite().setText(productServiceDTO.getWebsite());
         productServiceView.getAPIUrl().setText(productServiceDTO.getApiURL() == null ? "" : productServiceDTO.getApiURL());
+        productServiceView.setSelectedDataAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
         productServiceView.setSampleDataAccess(productServiceDTO.getSamples());
+        productServiceView.setSampleProductServiceId(productServiceDTO.getId());
     }
 
     @Override
@@ -136,11 +138,12 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                         return featureDescription.getId();
                     }
                 }));
-                productServiceDTO.setExtent(AoIUtil.toWKT(productServiceView.getExtent()));
+                productServiceDTO.setExtent(productServiceView.getExtent() == null ? null : AoIUtil.toWKT(productServiceView.getExtent()));
                 productServiceDTO.setEmail(productServiceView.getEmail().getText());
                 productServiceDTO.setWebsite(productServiceView.getWebsite().getText());
                 productServiceDTO.setFullDescription(productServiceView.getFullDescription());
                 productServiceDTO.setApiURL(productServiceView.getAPIUrl().getText().length() > 0 ? productServiceView.getAPIUrl().getText() : null);
+                productServiceDTO.setSelectedDataAccessTypes(productServiceView.getSelectedDataAccessTypes());
                 productServiceDTO.setSamples(productServiceView.getSamples());
                 // do some checks
                 try {

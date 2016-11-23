@@ -77,7 +77,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialLabel dataAccessMessage;
     @UiField
     MaterialButton addHostedSample;
-    @UiField(provided = true)
+    @UiField
     MaterialFileUploader sampleUploader;
     @UiField
     MaterialListBox sampleAccessType;
@@ -93,11 +93,6 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
-
-        sampleUploader = new MaterialFileUploader();
-        // configure the sample uploader
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
-        sampleUploader.setUrl(uploadUrl);
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -130,6 +125,10 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         // quirk to make sure the list box is initialised
         sampleAccessType.setEnabled(true);
 
+        // configure the sample uploader
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
+        sampleUploader.setUrl(uploadUrl);
+
         // Added the progress to card uploader
         sampleUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
             @Override
@@ -145,16 +144,19 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
                 sampleUploadDTO.setFileUri(sampleUploadDTOJson.get("fileUri").isString().stringValue());
                 sampleUploadDTO.setLayerName(sampleUploadDTOJson.get("layerName").isString().stringValue());
+                sampleUploadDTO.setServer(sampleUploadDTOJson.get("server").isString().stringValue());
                 if(sampleUploadDTO.getFileUri() != null) {
                     DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
                     datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
-                    datasetAccessFile.setPitch("Sample file");
+                    datasetAccessFile.setTitle("Sample file");
                     addSample(datasetAccessFile);
                 }
                 if(sampleUploadDTO.getLayerName() != null) {
                     DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+                    // TODO - change to use the geoserver address
+                    datasetAccessOGC.setServerUrl(sampleUploadDTO.getServer());
                     datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
-                    datasetAccessOGC.setPitch("Sample data available as OGC service");
+                    datasetAccessOGC.setTitle("Sample data available as OGC service");
                     addSample(datasetAccessOGC);
                 }
             }
@@ -248,6 +250,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @Override
     public void setExtent(AoIDTO extent) {
         mapContainer.displayAoI(extent);
+        mapContainer.centerOnAoI();
     }
 
     @Override
@@ -274,7 +277,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     private void addDataAccess(DatasetAccess datasetAccess) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.dataAccess.add(materialColumn);
-        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess);
+        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, true);
         materialColumn.add(dataAccessWidget);
     }
 
@@ -288,7 +291,16 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     public List<DatasetAccess> getDataAccesses() {
         List<DatasetAccess> dataAccesses = new ArrayList<DatasetAccess>();
         for(int index = 0; index < dataAccess.getWidgetCount(); index++) {
-            dataAccesses.add(((DataAccessWidget)((MaterialColumn) dataAccess.getWidget(index)).getWidget(0)).getDatasetAccess());
+            Widget widget = dataAccess.getWidget(index);
+            if(widget instanceof MaterialColumn) {
+                MaterialColumn materialColumn = (MaterialColumn) widget;
+                if(materialColumn.getWidgetCount() > 0) {
+                    Widget dataAccessWidget = materialColumn.getWidget(0);
+                    if(dataAccessWidget instanceof DataAccessWidget) {
+                        dataAccesses.add(((DataAccessWidget) dataAccessWidget).getDatasetAccess());
+                    }
+                }
+            }
         }
         return dataAccesses;
     }
@@ -305,9 +317,13 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     private void addSample(DatasetAccess datasetAccess) {
+        addSample(datasetAccess, false);
+    }
+
+    private void addSample(DatasetAccess datasetAccess, boolean editableUri) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
-        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, true);
+        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, editableUri);
         materialColumn.add(dataAccessWidget);
     }
 
@@ -321,7 +337,16 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     public List<DatasetAccess> getSamples() {
         List<DatasetAccess> dataAccesses = new ArrayList<DatasetAccess>();
         for(int index = 0; index < samples.getWidgetCount(); index++) {
-            dataAccesses.add(((DataAccessWidget)((MaterialColumn) samples.getWidget(index)).getWidget(0)).getDatasetAccess());
+            Widget widget = samples.getWidget(index);
+            if(widget instanceof MaterialColumn) {
+                MaterialColumn materialColumn = (MaterialColumn) widget;
+                if(materialColumn.getWidgetCount() > 0) {
+                    Widget dataAccessWidget = materialColumn.getWidget(0);
+                    if(dataAccessWidget instanceof DataAccessWidget) {
+                        dataAccesses.add(((DataAccessWidget) dataAccessWidget).getDatasetAccess());
+                    }
+                }
+            }
         }
         return dataAccesses;
     }
@@ -381,6 +406,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiHandler("addDataAccess")
     void addDataAccess(ClickEvent clickEvent) {
         AccessType selectedType = AccessType.valueOf(datasetAccessType.getValue());
+        DatasetAccess datasetAccess = createDataAccess(selectedType);
+        addDataAccess(datasetAccess);
+        updateDataAccessMessage();
+    }
+
+    private DatasetAccess createDataAccess(AccessType selectedType) {
         DatasetAccess datasetAccess = null;
         switch(selectedType) {
             case file:
@@ -396,13 +427,13 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 datasetAccess = new DatasetAccessAPI();
                 break;
         }
-        addDataAccess(datasetAccess);
-        updateDataAccessMessage();
+        return datasetAccess;
     }
 
     @UiHandler("addHostedSample")
     void addSample(ClickEvent clickEvent) {
-        addSample(new DatasetAccess());
+        AccessType selectedType = AccessType.valueOf(sampleAccessType.getValue());
+        addSample(createDataAccess(selectedType), true);
         updateSamplesMessage();
     }
 

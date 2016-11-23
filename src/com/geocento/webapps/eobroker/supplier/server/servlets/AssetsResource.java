@@ -144,6 +144,7 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             productServiceDTO.setApiURL(productService.getApiUrl());
+            productServiceDTO.setSelectedDataAccessTypes(productService.getSelectedAccessTypes());
             productServiceDTO.setSamples(productService.getSamples());
             productServiceDTO.setSampleWmsUrl(productService.getSampleWmsUrl());
             return productServiceDTO;
@@ -230,6 +231,7 @@ public class AssetsResource implements AssetsService {
                     return productServiceDTO.getSelectedFeatures().contains(value.getId());
                 }
             }));
+            productService.setSelectedAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
             productService.setApiUrl(productServiceDTO.getApiURL());
             // update the sample access
             {
@@ -250,6 +252,7 @@ public class AssetsResource implements AssetsService {
                             em.persist(datasetAccess);
                             dbDatasetAccess = datasetAccess;
                         }
+                        dbDatasetAccess.setTitle(datasetAccess.getTitle());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbSamples.add(dbDatasetAccess);
@@ -554,6 +557,7 @@ public class AssetsResource implements AssetsService {
             }));
             productDatasetDTO.setExtent(productDataset.getExtent());
             productDatasetDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
+            productDatasetDTO.setSamples(productDataset.getSamples());
             return productDatasetDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -641,10 +645,11 @@ public class AssetsResource implements AssetsService {
                             em.persist(datasetAccess);
                             dbDatasetAccess = datasetAccess;
                         }
+                        dbDatasetAccess.setTitle(datasetAccess.getTitle());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbDatasetAccesses.add(dbDatasetAccess);
-
+                    }
                 }
                 productDataset.setDatasetAccesses(dbDatasetAccesses);
             }
@@ -667,6 +672,7 @@ public class AssetsResource implements AssetsService {
                             em.persist(datasetAccess);
                             dbDatasetAccess = datasetAccess;
                         }
+                        dbDatasetAccess.setTitle(datasetAccess.getTitle());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbSamples.add(dbDatasetAccess);

@@ -88,13 +88,19 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     return productServiceDTO.getId();
                 }
             });
+            if(productServiceIds.size() == 0) {
+                throw new Exception("Please select at least one service");
+            }
+            productFormView.displayLoading("Submitting requests");
+            ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
+            productServiceRequestDTO.setProductId(productId);
+            if(currentAoI == null) {
+                throw new Exception("Please define an AoI first");
+            }
+            productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(currentAoI));
+            productServiceRequestDTO.setProductServiceIds(productServiceIds);
+            productServiceRequestDTO.setValues(values);
             try {
-                productFormView.displayLoading("Submitting requests");
-                ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
-                productServiceRequestDTO.setProductId(productId);
-                productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(currentAoI));
-                productServiceRequestDTO.setProductServiceIds(productServiceIds);
-                productServiceRequestDTO.setValues(values);
                 REST.withCallback(new MethodCallback<RequestDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
@@ -110,7 +116,6 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     }
                 }).call(ServicesUtil.ordersService).submitProductRequest(productServiceRequestDTO);
             } catch (Exception e) {
-
             }
         } catch (Exception e) {
             productFormView.displayFormValidationError(e.getMessage());

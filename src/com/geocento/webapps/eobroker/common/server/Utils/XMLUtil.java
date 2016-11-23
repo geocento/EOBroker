@@ -99,7 +99,16 @@ public class XMLUtil {
 	public static String addValue(String name, String value) {
 		return "<" + name + ">" + value + "</" + name + ">";
 	}
-	
-	
+
+
+    public static List<String> getNodesValue(Node node, String tagName) {
+        List<String> nodes = new ArrayList<String>();
+        NodeList nodeList = ((Element) node).getElementsByTagName(tagName);
+        for (int index = 0; index < nodeList.getLength(); index++) {
+            nodes.add(nodeList.item(index).getFirstChild().getTextContent());
+        }
+        return nodes;
+    }
+
 }
 

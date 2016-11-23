@@ -1,9 +1,9 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
@@ -14,6 +14,7 @@ import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
+import it.geosolutions.geoserver.rest.HTTPUtils;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,12 +47,15 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user", AoI.class);
+            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed DESC", AoI.class);
             query.setParameter("user", user);
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<AoI, AoIDTO>() {
                 @Override
                 public AoIDTO mutate(AoI aoi) {
-                    return createAoIDTO(aoi);
+                    AoIDTO aoIDTO = new AoIDTO();
+                    aoIDTO.setId(aoi.getId());
+                    aoIDTO.setName(aoi.getName());
+                    return aoIDTO;
                 }
             });
         } catch (Exception e) {
@@ -70,13 +75,60 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public AoIDTO getAoI(Long id) {
-        return new AoIPolygonDTO();
+    public AoIDTO getAoI(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            if(id == null) {
+                throw new RequestException("AoI not found");
+            }
+            AoI dbAoI = em.find(AoI.class, id);
+            if(dbAoI == null) {
+                throw new RequestException("Unknown AoI");
+            }
+            if(!dbAoI.getUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            dbAoI.setLastAccessed(new Date());
+            em.getTransaction().commit();
+            return createAoIDTO(dbAoI);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
-    public Long addAoI(AoIDTO aoi) {
-        return null;
+    public AoIDTO loadLatestAoI() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed", AoI.class);
+            query.setParameter("user", user);
+            query.setMaxResults(1);
+            List<AoI> dbAoIs = query.getResultList();
+            if(dbAoIs.size() == 0) {
+                return null;
+            } else {
+                AoI dbAoI = dbAoIs.get(0);
+                return createAoIDTO(dbAoI);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -90,6 +142,7 @@ public class AssetsResource implements AssetsService {
                 dbAoI = new AoI();
                 User user = em.find(User.class, userName);
                 dbAoI.setUser(user);
+                dbAoI.setCreationTime(new Date());
                 em.persist(dbAoI);
             } else {
                 dbAoI = em.find(AoI.class, aoi.getId());
@@ -102,6 +155,7 @@ public class AssetsResource implements AssetsService {
             }
             dbAoI.setName(aoi.getName());
             dbAoI.setGeometry(aoi.getWktGeometry());
+            dbAoI.setLastAccessed(new Date());
             em.getTransaction().commit();
             return createAoIDTO(dbAoI);
         } catch (Exception e) {
@@ -295,6 +349,8 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setGeoinformation(productService.getGeoinformation());
             productServiceDescriptionDTO.setExtent(productService.getExtent());
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
+            productServiceDescriptionDTO.setSelectedAccessTypes(productService.getSelectedAccessTypes());
+            productServiceDescriptionDTO.setSamples(productService.getSamples());
             // add suggestions
             // for now make it simple and just add the same product services
             List<ProductService> suggestedServices = new ArrayList<ProductService>(productService.getProduct().getProductServices());
@@ -336,6 +392,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
             productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
             productDatasetDescriptionDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
+            productDatasetDescriptionDTO.setSamples(productDataset.getSamples());
             List<ProductDataset> suggestedDatasets = new ArrayList<ProductDataset>(productDataset.getProduct().getProductDatasets());
             suggestedDatasets.remove(productDataset);
             productDatasetDescriptionDTO.setSuggestedDatasets(ListUtil.mutate(suggestedDatasets, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
@@ -412,6 +469,107 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public ProductDatasetVisualisationDTO getProductDatasetVisualisation(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductDataset productDataset = em.find(ProductDataset.class, id);
+            if(productDataset == null) {
+                throw new RequestException("Product dataset does not exist");
+            }
+            return convertToProductDatasetVisualisationDTO(productDataset);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProductDatasetVisualisationDTO getDatasetVisualisation(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            DatasetAccess datasetAccess = em.find(DatasetAccess.class, id);
+            if (datasetAccess == null) {
+                throw new RequestException("Dataset does not exist");
+            }
+            TypedQuery<ProductDataset> query = em.createQuery("select p from ProductDataset p where :dataset IN(p.samples)", ProductDataset.class);
+            query.setParameter("dataset", datasetAccess);
+            List<ProductDataset> productDatasets = query.getResultList();
+            if (productDatasets.size() == 0) {
+                throw new RequestException("Could not find product dataset");
+            }
+            ProductDataset productDataset = productDatasets.get(0);
+            return convertToProductDatasetVisualisationDTO(productDataset);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error when retrieving dataset access");
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductDatasetVisualisationDTO convertToProductDatasetVisualisationDTO(ProductDataset productDataset) {
+        ProductDatasetVisualisationDTO productDatasetVisualisationDTO = new ProductDatasetVisualisationDTO();
+        productDatasetVisualisationDTO.setId(productDataset.getId());
+        productDatasetVisualisationDTO.setName(productDataset.getName());
+        productDatasetVisualisationDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetVisualisationDTO.setDescription(productDataset.getDescription());
+        productDatasetVisualisationDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        productDatasetVisualisationDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+        productDatasetVisualisationDTO.setDatasetAccess(ListUtil.filterValues(productDataset.getDatasetAccesses(), new ListUtil.CheckValue<DatasetAccess>() {
+            @Override
+            public boolean isValue(DatasetAccess value) {
+                return value instanceof DatasetAccessOGC;
+            }
+        }));
+        productDatasetVisualisationDTO.setSamples(ListUtil.filterValues(productDataset.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
+            @Override
+            public boolean isValue(DatasetAccess value) {
+                return value instanceof DatasetAccessOGC;
+            }
+        }));
+        return productDatasetVisualisationDTO;
+    }
+
+    @Override
+    public ProductServiceVisualisationDTO getProductServiceVisualisation(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductService productService = em.find(ProductService.class, id);
+            if(productService == null) {
+                throw new RequestException("Product service does not exist");
+            }
+            return convertToProductServiceVisualisationDTO(productService);
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductServiceVisualisationDTO convertToProductServiceVisualisationDTO(ProductService productService) {
+        ProductServiceVisualisationDTO productServiceVisualisationDTO = new ProductServiceVisualisationDTO();
+        productServiceVisualisationDTO.setId(productService.getId());
+        productServiceVisualisationDTO.setName(productService.getName());
+        productServiceVisualisationDTO.setServiceImage(productService.getImageUrl());
+        productServiceVisualisationDTO.setDescription(productService.getDescription());
+        productServiceVisualisationDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
+        productServiceVisualisationDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+        productServiceVisualisationDTO.setSamples(ListUtil.filterValues(productService.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
+            @Override
+            public boolean isValue(DatasetAccess value) {
+                return value instanceof DatasetAccessOGC;
+            }
+        }));
+        return productServiceVisualisationDTO;
     }
 
     private ProductSoftwareDTO createProductSoftwareDTO(ProductSoftware productSoftware) {
@@ -666,6 +824,50 @@ public class AssetsResource implements AssetsService {
             }
             logger.error(e.getMessage(), e);
             throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public LayerInfoDTO getLayerInfo(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            final DatasetAccess datasetAccess = em.find(DatasetAccess.class, id);
+            if(datasetAccess == null) {
+                throw new RequestException("Dataset not found");
+            }
+            if(!(datasetAccess instanceof DatasetAccessOGC)) {
+                throw new RequestException("Dataset not valid");
+            }
+            // now issue the request to the map server
+            DatasetAccessOGC datasetAccessOGC = (DatasetAccessOGC) datasetAccess;
+            String serverUrl = datasetAccessOGC.getServerUrl();
+            // make WMS query
+            String response = HTTPUtils.get(serverUrl + "&service=WMS&request=getCapabilities");
+            WMSCapabilities wmsCapabilities = new WMSCapabilities();
+            wmsCapabilities.extractWMSXMLResources(response);
+            WMSCapabilities.WMSLayer wmsLayer = ListUtil.findValue(wmsCapabilities.getLayersList(), new ListUtil.CheckValue<WMSCapabilities.WMSLayer>() {
+                @Override
+                public boolean isValue(WMSCapabilities.WMSLayer value) {
+                    return value.getLayerName().contentEquals(datasetAccess.getUri());
+                }
+            });
+            if(wmsLayer == null) {
+                throw new RequestException("Layer does not exist");
+            }
+            LayerInfoDTO layerInfoDTO = new LayerInfoDTO();
+            layerInfoDTO.setName(wmsLayer.getName());
+            layerInfoDTO.setLayerName(wmsLayer.getLayerName());
+            layerInfoDTO.setServerUrl(serverUrl);
+            layerInfoDTO.setCrs(wmsLayer.getSupportedSRS());
+            layerInfoDTO.setExtent(wmsLayer.getBounds());
+            layerInfoDTO.setDescription(wmsLayer.getDescription());
+            return layerInfoDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
         } finally {
             em.close();
         }

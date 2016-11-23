@@ -68,7 +68,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
             datasetId = Long.parseLong(tokens.get(ProductDatasetPlace.TOKENS.id.toString()));
         }
         if(datasetId != null) {
-            // load all companys
+            // load dataset
             try {
                 REST.withCallback(new MethodCallback<ProductDatasetDTO>() {
                     @Override

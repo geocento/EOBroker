@@ -46,15 +46,14 @@ public class ProductDataset {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> samples;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<FeatureDescription> features;
+    @ManyToMany
+    List<FeatureDescription> geoinformation;
 
     @Column(length = 1000)
     String email;
 
     @Column(length = 1000)
     String website;
-    private List<FeatureDescription> geoinformation;
 
     public ProductDataset() {
     }
@@ -161,14 +160,6 @@ public class ProductDataset {
 
     public void setSamples(List<DatasetAccess> samples) {
         this.samples = samples;
-    }
-
-    public List<FeatureDescription> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<FeatureDescription> features) {
-        this.features = features;
     }
 
     public void setGeoinformation(List<FeatureDescription> geoinformation) {

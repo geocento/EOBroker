@@ -101,7 +101,7 @@
                             <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
-                            <c:MaterialFileUploader marginLeft="20" acceptedFiles="image/*" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
+                            <c:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
                                     <design:MaterialCardContent layoutPosition="RELATIVE">
                                         <design:MaterialLabel marginBottom="20">Or upload file to server</design:MaterialLabel>

@@ -15,7 +15,7 @@ public class VisualisationPlace extends EOBrokerPlace {
         super(token);
     }
 
-    public enum TOKENS {uri};
+    public enum TOKENS {productDatasetId, productServiceId, dataAccessId};
 
     @Prefix("visualisation")
     public static class Tokenizer implements PlaceTokenizer<VisualisationPlace> {

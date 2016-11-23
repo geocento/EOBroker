@@ -41,6 +41,8 @@ public class DataAccessWidget extends Composite {
     MaterialLink type;
     @UiField
     MaterialTextBox uri;
+    @UiField
+    MaterialTextBox title;
 
     private final DatasetAccess datasetAccess;
 
@@ -48,7 +50,7 @@ public class DataAccessWidget extends Composite {
         this(datasetAccess, false);
     }
 
-    public DataAccessWidget(DatasetAccess datasetAccess, boolean sample) {
+    public DataAccessWidget(DatasetAccess datasetAccess, boolean editableUri) {
 
         this.datasetAccess = datasetAccess;
 
@@ -71,13 +73,15 @@ public class DataAccessWidget extends Composite {
         }
         type.setText(text);
         type.setIconType(iconType);
+        title.setText(datasetAccess.getTitle());
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());
-        uri.setReadOnly(sample);
+        uri.setReadOnly(!editableUri);
     }
 
     public DatasetAccess getDatasetAccess() {
         // update values first
+        datasetAccess.setTitle(title.getText());
         datasetAccess.setPitch(pitch.getText());
         datasetAccess.setUri(uri.getText());
         return datasetAccess;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by thomas on 03/06/2016.
@@ -21,6 +22,14 @@ public class AoI {
 
     @Convert(converter = GeometryConverter.class)
     String geometry;
+
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    Date creationTime;
+
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    Date lastAccessed;
 
     @JsonIgnore
     @ManyToOne
@@ -59,5 +68,21 @@ public class AoI {
 
     public void setGeometry(String geometry) {
         this.geometry = geometry;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Date getLastAccessed() {
+        return lastAccessed;
+    }
+
+    public void setLastAccessed(Date lastAccessed) {
+        this.lastAccessed = lastAccessed;
     }
 }

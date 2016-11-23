@@ -49,16 +49,12 @@ public class MapJSNI extends JavaScriptObject {
         this.removeLayer(layer);
     }-*/;
 
-    public static final native ExtentJSNI createExtent(double south, double west, double north, double east) /*-{
-        return new $wnd['esri'].geometry.Extent(west, south, east, north, {
-            wkid: 4326
-        });
-    }-*/;
+    public static final ExtentJSNI createExtent(double west, double south, double east, double north) {
+        return createExtent(west, south, east, north, 4326);
+    }
 
     public static final native ExtentJSNI createExtent(double minx, double miny, double maxx, double maxy, int wkid) /*-{
-        return new $wnd['esri'].geometry.Extent(minx, miny, maxx, maxy, {
-            wkid: wkid
-        });
+        return new $wnd['esri'].geometry.Extent(minx, miny, maxx, maxy, $wnd['esri'].SpatialReference(wkid));
     }-*/;
 
     public final native void setExtent(ExtentJSNI extent) /*-{

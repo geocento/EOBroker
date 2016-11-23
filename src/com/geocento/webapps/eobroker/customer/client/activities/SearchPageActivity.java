@@ -250,7 +250,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProducts(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProducts(text, start, limit, filterByAoI ? null : currentAoI.getId(), sector, thematic);
+            }).call(ServicesUtil.searchService).listProducts(text, start, limit, filterByAoI ? currentAoI.getId() : null, sector, thematic);
         } catch (RequestException e) {
         }
     }
@@ -300,6 +300,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private void loadSoftware(final String text, final int start, final int limit) {
         try {
             searchPageView.displayLoadingResults("Loading software...");
+            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
             REST.withCallback(new MethodCallback<List<SoftwareDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -312,7 +313,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addSoftware(softwareDTOs, start, softwareDTOs != null && softwareDTOs.size() != 0 && softwareDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, currentAoI == null ? null : currentAoI.getId());
+            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, filterByAoI ? currentAoI.getId() : null);
         } catch (RequestException e) {
         }
     }
@@ -320,6 +321,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private void loadProjects(final String text, final int start, final int limit) {
         try {
             searchPageView.displayLoadingResults("Loading projects...");
+            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
             REST.withCallback(new MethodCallback<List<ProjectDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -332,7 +334,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProjects(projectDTOs, start, projectDTOs != null && projectDTOs.size() != 0 && projectDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProjects(text, start, limit, currentAoI == null ? null : currentAoI.getId());
+            }).call(ServicesUtil.searchService).listProjects(text, start, limit, filterByAoI ? currentAoI.getId() : null);
         } catch (RequestException e) {
         }
     }
@@ -404,22 +406,33 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     @Override
     public void aoiChanged(final AoIDTO aoi) {
-        displayLoading();
-        try {
-            REST.withCallback(new MethodCallback<AoIDTO>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
-                }
+        if(aoi == null) {
+            setAoI(null);
+            if(searchPageView.getFilterByAoI().getValue()) {
+                filtersChanged();
+            }
+        } else {
+            displayLoading();
+            // untick the filtering
+            try {
+                REST.withCallback(new MethodCallback<AoIDTO>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideLoading();
+                    }
 
-                @Override
-                public void onSuccess(Method method, AoIDTO aoIDTO) {
-                    hideLoading();
-                    setAoI(aoIDTO);
-                }
-            }).call(ServicesUtil.assetsService).updateAoI(aoi);
-        } catch (Exception e) {
+                    @Override
+                    public void onSuccess(Method method, AoIDTO aoIDTO) {
+                        hideLoading();
+                        setAoI(aoIDTO);
+                        if(searchPageView.getFilterByAoI().getValue()) {
+                            filtersChanged();
+                        }
+                    }
+                }).call(ServicesUtil.assetsService).updateAoI(aoi);
+            } catch (Exception e) {
 
+            }
         }
     }
 

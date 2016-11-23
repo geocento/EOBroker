@@ -9,7 +9,7 @@ import javax.persistence.*;
  * Created by thomas on 10/11/2016.
  */
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonSubTypes({
         @JsonSubTypes.Type(value=DatasetAccessFile.class, name="FILE"),
         @JsonSubTypes.Type(value=DatasetAccessOGC.class, name="OGC"),
@@ -22,6 +22,9 @@ public class DatasetAccess {
     @Id
     @GeneratedValue
     Long id;
+
+    @Column(length = 100)
+    String title;
 
     @Column(length = 1000)
     String pitch;
@@ -40,12 +43,12 @@ public class DatasetAccess {
         this.id = id;
     }
 
-    public String getUri() {
-        return uri;
+    public String getTitle() {
+        return title;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getPitch() {
@@ -54,5 +57,13 @@ public class DatasetAccess {
 
     public void setPitch(String pitch) {
         this.pitch = pitch;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

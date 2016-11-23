@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -57,6 +58,12 @@ public interface ProductServiceView extends IsWidget {
     HasText getAPIUrl();
 
     TemplateView getTemplateView();
+
+    void setSelectedDataAccessTypes(List<AccessType> selectedAccessTypes);
+
+    List<AccessType> getSelectedDataAccessTypes();
+
+    void setSampleProductServiceId(Long datasetId);
 
     void setSampleDataAccess(List<DatasetAccess> samples);
 

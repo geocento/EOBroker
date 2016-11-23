@@ -33,7 +33,7 @@ public class DatasetUploadServlet extends HttpServlet {
 
     static private Logger logger = null;
 
-    private String RESTURL  = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUri);
+    private String RESTURL  = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
     private String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
     private String RESTPW   = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
 
@@ -165,6 +165,7 @@ public class DatasetUploadServlet extends HttpServlet {
             SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
             sampleUploadDTO.setFileUri(filePath);
             sampleUploadDTO.setLayerName(layerName);
+            sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
             return sampleUploadDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -187,7 +188,7 @@ public class DatasetUploadServlet extends HttpServlet {
             // check layer does not already exist
             boolean published = publisher.publishShp(workspaceName, storeName, resourceName, file);
             if (published) {
-                return resourceName;
+                return workspaceName + ":" + resourceName;
             } else {
                 throw new Exception("Could not publish layer");
             }
@@ -206,7 +207,7 @@ public class DatasetUploadServlet extends HttpServlet {
             }
             boolean pc = publisher.publishGeoTIFF(workspaceName, storeName, file);
             if (pc) {
-                return storeName;
+                return workspaceName + ":" + storeName;
             } else {
                 throw new Exception("Could not publish layer");
             }

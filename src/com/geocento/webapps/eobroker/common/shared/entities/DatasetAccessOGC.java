@@ -9,7 +9,17 @@ import javax.persistence.*;
 @DiscriminatorValue("OGC")
 public class DatasetAccessOGC extends DatasetAccess {
 
+    @Column(length = 1000)
+    String serverUrl;
+
     public DatasetAccessOGC() {
     }
 
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
 }

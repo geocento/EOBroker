@@ -55,6 +55,10 @@ public class ProductService {
     @Column(length = 1000)
     String sampleWmsUrl;
 
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    List<AccessType> selectedAccessTypes;
+
     public ProductService() {
     }
 
@@ -168,5 +172,13 @@ public class ProductService {
 
     public void setSampleWmsUrl(String sampleWmsUrl) {
         this.sampleWmsUrl = sampleWmsUrl;
+    }
+
+    public List<AccessType> getSelectedAccessTypes() {
+        return selectedAccessTypes;
+    }
+
+    public void setSelectedAccessTypes(List<AccessType> selectedAccessTypes) {
+        this.selectedAccessTypes = selectedAccessTypes;
     }
 }

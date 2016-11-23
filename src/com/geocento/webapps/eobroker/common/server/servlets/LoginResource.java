@@ -19,7 +19,7 @@ import java.util.Date;
 @Path("/")
 public class LoginResource implements LoginService {
 
-    Logger logger = Logger.getLogger(LoginResource.class);
+    protected Logger logger = Logger.getLogger(LoginResource.class);
 
     public LoginResource() {
         logger.info("Starting service...");
@@ -38,7 +38,7 @@ public class LoginResource implements LoginService {
                 boolean valid = BCrypt.checkpw(passwordHash, hashFromDB);
                 if(valid) {
                     createUserSession(user, request);
-                    LoginInfo loginInfo = UserUtils.getLoginInfo(user);
+                    LoginInfo loginInfo = getLoginInfo(user);
                     try {
                         em.getTransaction().begin();
 /*
@@ -72,6 +72,10 @@ public class LoginResource implements LoginService {
         return null;
     }
 
+    protected LoginInfo getLoginInfo(User user) {
+        return UserUtils.getLoginInfo(user);
+    }
+
     @Override
     public void signout() {
         HttpSession session = request.getSession(true);
@@ -86,7 +90,7 @@ public class LoginResource implements LoginService {
         if(session != null) {
             UserSession userSession = (UserSession) session.getAttribute("userSession");
             if(userSession != null) {
-                return UserUtils.getLoginInfo(UserUtils.findUser(userSession.getUserName()));
+                return getLoginInfo(UserUtils.findUser(userSession.getUserName()));
             }
         }
         return null;

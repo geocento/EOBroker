@@ -23,12 +23,12 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/aoi/{id}")
     @Produces("application/json")
-    public AoIDTO getAoI(@PathParam("id") Long id);
+    public AoIDTO getAoI(@PathParam("id") Long id) throws RequestException;
 
-    @POST
-    @Path("/assets/aoi/")
+    @GET
+    @Path("/assets/aoi/latest")
     @Produces("application/json")
-    public Long addAoI(AoIDTO aoi);
+    public AoIDTO loadLatestAoI() throws RequestException;
 
     @PUT
     @Path("/assets/aoi/")
@@ -86,6 +86,21 @@ public interface AssetsService extends DirectRestService {
     ProjectDescriptionDTO getProjectDescription(@PathParam("id") Long projectId) throws RequestException;
 
     @GET
+    @Path("/assets/productdatasets/visualisation/{id}")
+    @Produces("application/json")
+    ProductDatasetVisualisationDTO getProductDatasetVisualisation(@PathParam("id") Long id) throws RequestException;
+
+    @GET
+    @Path("/assets/productservice/visualisation/{id}")
+    @Produces("application/json")
+    ProductServiceVisualisationDTO getProductServiceVisualisation(@PathParam("id") Long id) throws RequestException;
+
+    @GET
+    @Path("/assets/productdatasets/visualisation/dataset/{id}")
+    @Produces("application/json")
+    ProductDatasetVisualisationDTO getDatasetVisualisation(@PathParam("id") Long id) throws RequestException;
+
+    @GET
     @Path("/assets/imageservices")
     @Produces("application/json")
     List<ImageService> getImageServices() throws RequestException;
@@ -104,4 +119,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/notifications/")
     @Produces("application/json")
     List<NotificationDTO> getNotifications() throws RequestException;
+
+    @GET
+    @Path("/assets/spatial/{id}")
+    @Produces("application/json")
+    LayerInfoDTO getLayerInfo(@PathParam("id") Long id) throws RequestException;
+
 }

@@ -3,8 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.*;
@@ -21,10 +20,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -367,28 +368,46 @@ public class FullViewImpl extends Composite implements FullView {
         addTab(materialTab, tabsPanel, "Characteristics", featuresPanel, size);
         // create tab for data access information
         // add access panel
+        // add access panel
+        MaterialPanel accessPanel = new MaterialPanel();
+        List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
         {
-            MaterialPanel accessPanel = new MaterialPanel();
-            accessPanel.add(createSubsection("Methods to access the data"));
-/*
-            for(DatasetAccess datasetAccess : productServiceDescriptionDTO.getDatasetAccesses()) {
-                DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, !productServiceDescriptionDTO.isCommercial());
-                dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
-                dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
-                accessPanel.add(dataAccessWidget);
+            accessPanel.add(createSubsection("Dissemination methods supported"));
+            MaterialPanel materialPanel = new MaterialPanel();
+            materialPanel.setMargin(10);
+            accessPanel.add(materialPanel);
+            List<AccessType> accessTypes = productServiceDescriptionDTO.getSelectedAccessTypes();
+            for (AccessType accessType : AccessType.values()) {
+                MaterialLink materialLink = new MaterialLink(accessType.getName());
+                materialLink.setDisplay(Display.BLOCK);
+                materialLink.setMargin(10);
+                materialPanel.setMarginBottom(30);
+                materialLink.setTextColor("black");
+                if(accessTypes != null && accessTypes.contains(accessType)) {
+                    materialLink.setIconType(IconType.CHECK);
+                    materialLink.setIconColor("green");
+                    materialPanel.add(materialLink);
+                } else {
+                    materialLink.setIconType(IconType.CHECK_BOX_OUTLINE_BLANK);
+                    materialLink.setIconColor("black");
+                }
             }
-*/
-            accessPanel.add(createSubsection("Sample data"));
-/*
-            for(DatasetAccess datasetAccess : productServiceDescriptionDTO.getSamples()) {
-                DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, !productServiceDescriptionDTO.isCommercial());
-                dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
-                dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
-                accessPanel.add(dataAccessWidget);
-            }
-*/
-            addTab(materialTab, tabsPanel, "Data Access", accessPanel, size);
         }
+        List<DatasetAccess> samples = productServiceDescriptionDTO.getSamples();
+        if(samples != null && samples.size() > 0) {
+            accessPanel.add(createSubsection("Sample data access"));
+            MaterialPanel materialPanel = new MaterialPanel();
+            materialPanel.setMargin(10);
+            materialPanel.setMarginBottom(30);
+            accessPanel.add(materialPanel);
+            for(DatasetAccess datasetAccess : samples) {
+                materialPanel.add(createDataAccessWidgetProductService(productServiceDescriptionDTO, datasetAccess, true));
+                if(datasetAccess instanceof DatasetAccessOGC) {
+                    availableMapData.add(datasetAccess);
+                }
+            }
+        }
+        addTab(materialTab, tabsPanel, "Access to data", accessPanel, size);
         // create tab panel for services
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
         addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
@@ -511,17 +530,43 @@ public class FullViewImpl extends Composite implements FullView {
         materialColumn.add(new MaterialLabel("TODO - add list of performance indicators like spatial resolution, etc..."));
         addTab(materialTab, tabsPanel, "Characteristics", featuresPanel, size);
         // add access panel
-        {
-            MaterialPanel accessPanel = new MaterialPanel();
+        MaterialPanel accessPanel = new MaterialPanel();
+        List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
+        List<DatasetAccess> dataAccesses = productDatasetDescriptionDTO.getDatasetAccesses();
+        if(dataAccesses != null && dataAccesses.size() > 0) {
             accessPanel.add(createSubsection("Methods to access the data"));
-            for(DatasetAccess datasetAccess : productDatasetDescriptionDTO.getDatasetAccesses()) {
-                DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, !productDatasetDescriptionDTO.isCommercial());
-                dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
-                dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
+            for (DatasetAccess datasetAccess : dataAccesses) {
+                boolean freeAvailable = !productDatasetDescriptionDTO.isCommercial();
+                DataAccessWidget dataAccessWidget = createDataAccessWidgetProductDataset(productDatasetDescriptionDTO, datasetAccess, freeAvailable);
                 accessPanel.add(dataAccessWidget);
+                if (datasetAccess instanceof DatasetAccessOGC && freeAvailable) {
+                    availableMapData.add(datasetAccess);
+                }
             }
-            addTab(materialTab, tabsPanel, "Access to data", accessPanel, size);
         }
+        List<DatasetAccess> samples = productDatasetDescriptionDTO.getSamples();
+        if(samples != null && samples.size() > 0) {
+            accessPanel.add(createSubsection("Sample data"));
+            for(DatasetAccess datasetAccess : samples) {
+                accessPanel.add(createDataAccessWidgetProductDataset(productDatasetDescriptionDTO, datasetAccess, true));
+                if(datasetAccess instanceof DatasetAccessOGC) {
+                    availableMapData.add(datasetAccess);
+                }
+            }
+        }
+/*
+        if(availableMapData.size() > 0) {
+            MaterialPanel materialPanel = new MaterialPanel();
+            materialPanel.setPadding(10);
+            accessPanel.add(materialPanel);
+            MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton("View data in map");
+            materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(
+                    Utils.generateTokens(
+                            VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetDescriptionDTO.getId() + ""))));
+            materialPanel.add(materialAnchorButton);
+        }
+*/
+        addTab(materialTab, tabsPanel, "Access to data", accessPanel, size);
         // add terms and conditions tab panel
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
         addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
@@ -542,6 +587,71 @@ public class FullViewImpl extends Composite implements FullView {
                 materialRow.add(materialColumn);
             }
         }
+    }
+
+    private DataAccessWidget createDataAccessWidgetProductDataset(final ProductDatasetDescriptionDTO productDatasetDescriptionDTO, final DatasetAccess datasetAccess, final boolean freeAvailable) {
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, freeAvailable);
+        dataAccessWidget.getAction().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(datasetAccess instanceof DatasetAccessFile) {
+                    String fileUri = datasetAccess.getUri();
+                    if(fileUri.startsWith("./")) {
+                        fileUri = GWT.getHostPageBaseURL() + "uploaded/" + fileUri;
+                    }
+                    Window.open(fileUri, "_blank", null);
+                } else if(datasetAccess instanceof DatasetAccessAPP) {
+                    Window.open(datasetAccess.getUri(), "_blank", null);
+                } else if(datasetAccess instanceof DatasetAccessOGC) {
+                    if(freeAvailable) {
+                        template.getClientFactory().getPlaceController().goTo(new VisualisationPlace(
+                                Utils.generateTokens(
+                                        VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetDescriptionDTO.getId() + "",
+                                        VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
+                                )));
+                    }
+                } else if(datasetAccess instanceof DatasetAccessAPI) {
+                    Window.alert("TODO - show API end point and redirect to API help page? eg " + datasetAccess.getUri());
+                }
+            }
+        });
+        return dataAccessWidget;
+    }
+
+    private DataAccessWidget createDataAccessWidgetProductService(final ProductServiceDescriptionDTO productServiceDescriptionDTO, final DatasetAccess datasetAccess, final boolean freeAvailable) {
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, freeAvailable);
+        dataAccessWidget.getAction().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(datasetAccess instanceof DatasetAccessFile) {
+                    String fileUri = datasetAccess.getUri();
+                    if(fileUri.startsWith("./")) {
+                        fileUri = GWT.getHostPageBaseURL() + "uploaded/" + fileUri;
+                    }
+                    Window.open(fileUri, "_blank", null);
+                } else if(datasetAccess instanceof DatasetAccessAPP) {
+                    Window.open(datasetAccess.getUri(), "_blank", null);
+                } else if(datasetAccess instanceof DatasetAccessOGC) {
+                    if(freeAvailable) {
+                        template.getClientFactory().getPlaceController().goTo(new VisualisationPlace(
+                                Utils.generateTokens(
+                                        VisualisationPlace.TOKENS.productServiceId.toString(), productServiceDescriptionDTO.getId() + "",
+                                        VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
+                                )));
+                    }
+                } else if(datasetAccess instanceof DatasetAccessAPI) {
+                    Window.alert("TODO - show API end point and redirect to API help page? eg " + datasetAccess.getUri());
+                }
+            }
+        });
+        return dataAccessWidget;
+    }
+
+    private DataAccessWidget createDataAccessWidget(final DatasetAccess datasetAccess, final boolean freeAvailable) {
+        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, freeAvailable);
+        dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
+        dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
+        return dataAccessWidget;
     }
 
     @Override

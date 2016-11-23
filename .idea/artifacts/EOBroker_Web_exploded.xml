@@ -13,6 +13,7 @@
           <element id="library" level="project" name="antlr-4.5.3-complete" />
           <element id="library" level="project" name="gwt-user" />
           <element id="library" level="project" name="gwt-servlet" />
+          <element id="library" level="project" name="geoserver" />
         </element>
       </element>
       <element id="gwt-compiler-output" facet="EOBroker/gwt/GWT" />
