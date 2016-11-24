@@ -28,6 +28,8 @@ public interface ProductFormView extends IsWidget {
 
     void addProductService(ProductServiceDTO productServiceDTO);
 
+    void setComment(String comment);
+
     void setProductImage(String imageUrl);
 
     void setProductName(String name);
@@ -57,6 +59,8 @@ public interface ProductFormView extends IsWidget {
     void displaySubmittedSuccess(String message);
 
     TemplateView getTemplateView();
+
+    void clearRequest();
 
     public interface Presenter {
     }

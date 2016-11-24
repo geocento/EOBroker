@@ -9,7 +9,8 @@ import java.util.Date;
  */
 public class DateUtils {
 
-    public static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_SHORT);
+    public static DateTimeFormat dateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_SHORT);
+    public static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT);
 
     public static long secondInMs = 1000;
     public static long minuteInMs = 60 * secondInMs;
@@ -21,6 +22,10 @@ public class DateUtils {
     }
 
     public static String formatDateOnly(Date start) {
+        return dateFormat.format(start);
+    }
+
+    public static String formatDateTime(Date start) {
         return dateTimeFormat.format(start);
     }
 

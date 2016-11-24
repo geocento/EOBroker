@@ -8,7 +8,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -113,6 +112,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         }
         loadProduct(productServiceId);
         setAoI(currentAoI);
+        productFeasibilityView.centerOnAoI();
         enableUpdateMaybe();
     }
 
@@ -152,17 +152,25 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         }
     }
 
-    private void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
+    private void selectService(final ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         this.productFeasibilityService = productServiceFeasibilityDTO;
         productFeasibilityView.selectService(productServiceFeasibilityDTO);
-        productFeasibilityView.getRequestButton().setHref("#" + PlaceHistoryHelper.convertPlace(
-                new ProductFormPlace(
-                        ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceFeasibilityDTO.getId())));
-        productFeasibilityView.getContactButton().setHref("#" + PlaceHistoryHelper.convertPlace(
-                new ConversationPlace(
+        productFeasibilityView.getRequestButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ProductFormPlace(
+                        ProductFormPlace.TOKENS.id.toString() + "=" + productServiceFeasibilityDTO.getId()));
+            }
+        });
+        productFeasibilityView.getContactButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ConversationPlace(
                         Utils.generateTokens(
                                 ConversationPlace.TOKENS.companyid.toString(), productServiceFeasibilityDTO.getCompanyDTO().getId() + "",
-                                ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productServiceFeasibilityDTO.getName() + "'"))));
+                                ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productServiceFeasibilityDTO.getName() + "'")));
+            }
+        });
     }
 
     public void setStart(Date start) {

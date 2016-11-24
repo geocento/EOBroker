@@ -19,7 +19,7 @@ public class LoginResource extends com.geocento.webapps.eobroker.common.server.s
         LoginInfo loginInfo = super.getLoginInfo(user);
         EntityManager em = EMF.get().createEntityManager();
         try {
-            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed", AoI.class);
+            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed DESC", AoI.class);
             query.setParameter("user", user);
             query.setMaxResults(1);
             List<AoI> dbAoIs = query.getResultList();

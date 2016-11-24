@@ -63,7 +63,7 @@
     </ui:style>
     <views:TemplateView ui:field="template">
         <g:HTMLPanel addStyleNames="{style.formPanel}">
-            <design:MaterialTitle textColor="blue-grey" marginBottom="20" title="Request quotation for the following product" addStyleNames="{style.information}" ui:field="title"></design:MaterialTitle>
+            <design:MaterialTitle marginBottom="20" title="Request quotation for the following product" addStyleNames="{style.information}" ui:field="title"></design:MaterialTitle>
             <design:MaterialRow>
                 <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
                     <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
@@ -77,7 +77,8 @@
                 </design:MaterialColumn>
             </design:MaterialRow>
             <g:HTMLPanel>
-                <design:MaterialLabel text="Please fill in the form" textColor="blue-grey" marginTop="20" marginBottom="20" fontSize="1.4em"/>
+                <design:MaterialLabel text="Comment" marginTop="20" marginBottom="20" fontSize="1em" ui:field="comment"/>
+                <design:MaterialLabel text="Please fill in the form" marginTop="20" marginBottom="20" fontSize="1.4em"/>
                 <design:MaterialRow>
                     <design:MaterialColumn grid="s12 m12 l6">
                         <g:HTMLPanel addStyleNames="{style.container}" ui:field="formContainer"></g:HTMLPanel>
@@ -92,7 +93,7 @@
                 </design:MaterialRow>
             </g:HTMLPanel>
             <g:HTMLPanel>
-                <design:MaterialLabel text="Select your suppliers" textColor="blue-grey" marginTop="20" marginBottom="20" fontSize="1.4em"/>
+                <design:MaterialLabel text="Select your suppliers" marginTop="20" marginBottom="20" fontSize="1.4em"/>
                 <g:HTMLPanel addStyleNames="{style.container}" ui:field="productServices">
                 </g:HTMLPanel>
             </g:HTMLPanel>

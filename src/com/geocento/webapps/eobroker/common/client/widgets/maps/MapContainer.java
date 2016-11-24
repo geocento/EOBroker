@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -13,9 +14,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.ButtonSize;
 import gwt.material.design.client.constants.IconSize;
-import gwt.material.design.client.ui.MaterialAnchorButton;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialFAB;
+import gwt.material.design.client.ui.*;
+
+import java.util.Date;
 
 /**
  * Created by thomas on 21/09/2016.
@@ -44,6 +45,8 @@ public class MapContainer extends Composite {
     MaterialButton fabButton;
     @UiField
     MaterialAnchorButton uploadFile;
+    @UiField
+    MaterialPanel panel;
 
     private Presenter presenter;
 
@@ -82,6 +85,7 @@ public class MapContainer extends Composite {
                             public void callback(DrawEventJSNI result) {
                                 drawJSNI.deactivate();
                                 AoIDTO aoi = AoIUtil.createAoI(arcgisMap.convertsToGeographic(result.getGeometry()));
+                                aoi.setName("Drawn AoI - " + DateUtils.formatDateTime(new Date()));
                                 displayAoI(aoi);
                                 if(presenter != null) {
                                     presenter.aoiChanged(aoi);
@@ -182,6 +186,14 @@ public class MapContainer extends Composite {
         if(map != null && aoiRendering != null) {
             map.getGraphics().remove(aoiRendering);
         }
+    }
+
+    protected void displayLoading() {
+        MaterialLoader.showLoading(true, panel);
+    }
+
+    protected void hideLoading() {
+        MaterialLoader.showLoading(false, panel);
     }
 
 }

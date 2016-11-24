@@ -4,10 +4,11 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.FullViewImpl.Style">
+
         .panel {
             max-width: 960px;
             margin: 0px auto;
-            padding: 50px 20px;
+            padding: 20px;
         }
 
         .section {
@@ -35,10 +36,7 @@
 
         .tabPanel {
             margin-bottom: 50px;
-            padding: 50px 20px;
-/*
-            background: #c8ddd4;
-*/
+            padding: 20px 0px;
             border-bottom: 1px solid #c8ddd4;
         }
 
@@ -66,10 +64,19 @@
             text-transform: uppercase;
         }
 
+        .tabsPanel {
+            text-align: center;
+        }
+        .tabsPanel > * {
+            max-width: 960px;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
-        <g:HTMLPanel addStyleNames="{style.panel}">
-            <design:MaterialRow marginBottom="0">
+        <design:MaterialPanel backgroundColor="blue" addStyleNames="{style.tabsPanel}" ui:field="tabsPanel">
+        </design:MaterialPanel>
+        <design:MaterialPanel addStyleNames="{style.panel}">
+            <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="white" paddingTop="10" paddingBottom="10">
                     <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
                         <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
                     </design:MaterialColumn>
@@ -80,6 +87,6 @@
                     </design:MaterialColumn>
             </design:MaterialRow>
             <design:MaterialRow addStyleNames="{style.details}" ui:field="details"></design:MaterialRow>
-        </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

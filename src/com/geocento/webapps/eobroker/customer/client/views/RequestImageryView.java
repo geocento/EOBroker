@@ -48,6 +48,8 @@ public interface RequestImageryView extends IsWidget {
 
     void displayFormError(String message);
 
+    void clearRequest();
+
     public interface Presenter {
         void aoiChanged(AoIDTO aoi);
     }

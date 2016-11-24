@@ -14,7 +14,7 @@
         }
 
     </ui:style>
-    <g:HTMLPanel addStyleNames="{style.panel}">
+    <design:MaterialPanel addStyleNames="{style.panel}" ui:field="panel">
         <maps:ArcGISMap width="100%" height="100%" ui:field="mapContainer">
         </maps:ArcGISMap>
         <!-- FAB -->
@@ -34,5 +34,5 @@
                 </design:MaterialTooltip>
             </design:MaterialFABList>
         </design:MaterialFAB>
-    </g:HTMLPanel>
+    </design:MaterialPanel>
 </ui:UiBinder>

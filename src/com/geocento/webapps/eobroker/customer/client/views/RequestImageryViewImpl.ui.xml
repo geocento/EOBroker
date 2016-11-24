@@ -49,7 +49,7 @@
     </ui:style>
     <views:TemplateView titleText="Quotation for imagery" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
-            <m:MaterialTitle textColor="blue-grey" title="Request quotation for imagery" description="Please fill in the form below"></m:MaterialTitle>
+            <m:MaterialTitle title="Request quotation for imagery" description="Please fill in the form below"></m:MaterialTitle>
 <!--
             <m:MaterialLabel addStyleNames="{style.title}">Request quotation for imagery</m:MaterialLabel>
             <m:MaterialLabel textColor="blue-grey" addStyleNames="{style.subsection}">Please fill in the form below</m:MaterialLabel>

@@ -110,7 +110,7 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed", AoI.class);
+            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed DESC", AoI.class);
             query.setParameter("user", user);
             query.setMaxResults(1);
             List<AoI> dbAoIs = query.getResultList();
@@ -388,6 +388,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setImageUrl(productDataset.getImageUrl());
             productDatasetDescriptionDTO.setDescription(productDataset.getDescription());
             productDatasetDescriptionDTO.setFullDescription(productDataset.getFullDescription());
+            productDatasetDescriptionDTO.setGeoinformation(productDataset.getGeoinformation());
             productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
             productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
             productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
@@ -867,7 +868,7 @@ public class AssetsResource implements AssetsService {
             return layerInfoDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading wms layer info");
         } finally {
             em.close();
         }

@@ -223,7 +223,7 @@ public class OrderViewImpl extends Composite implements OrderView {
         materialRow.add(materialBubble);
         materialBubble.add(new MaterialLabel(message));
         MaterialLabel materialLabel = new MaterialLabel();
-        materialLabel.setText(DateUtils.dateTimeFormat.format(date));
+        materialLabel.setText(DateUtils.dateFormat.format(date));
         materialLabel.setFloat(Style.Float.RIGHT);
         materialLabel.setFontSize(0.6, Style.Unit.EM);
         materialBubble.add(materialLabel);

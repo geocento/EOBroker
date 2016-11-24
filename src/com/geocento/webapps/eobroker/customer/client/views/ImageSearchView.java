@@ -62,6 +62,8 @@ public interface ImageSearchView extends IsWidget {
 
     void setSearchTextValid(boolean valid);
 
+    void centerOnAoI();
+
     public interface Presenter {
 
         void aoiChanged(AoIDTO aoi);

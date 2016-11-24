@@ -93,13 +93,14 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                     productResponseView.displayProductRequest(productServiceResponseDTO);
                     if(finalResponseId == null) {
                         selectedResponse = request.getSupplierResponses().get(0);
+                    } else {
+                        selectedResponse = ListUtil.findValue(productServiceResponseDTO.getSupplierResponses(), new ListUtil.CheckValue<ProductServiceSupplierResponseDTO>() {
+                            @Override
+                            public boolean isValue(ProductServiceSupplierResponseDTO value) {
+                                return value.getId().longValue() == finalResponseId;
+                            }
+                        });
                     }
-                    selectedResponse = ListUtil.findValue(productServiceResponseDTO.getSupplierResponses(), new ListUtil.CheckValue<ProductServiceSupplierResponseDTO>() {
-                        @Override
-                        public boolean isValue(ProductServiceSupplierResponseDTO value) {
-                            return value.getId().longValue() == finalResponseId;
-                        }
-                    });
                     selectResponse(selectedResponse);
                 }
             }).call(ServicesUtil.ordersService).getProductResponse(id);
@@ -153,6 +154,6 @@ public class ProductResponseActivity extends TemplateActivity implements Product
 
     @Override
     public void responseSelected(ProductServiceSupplierResponseDTO productServiceSupplierResponseDTO) {
-
+        selectResponse(productServiceSupplierResponseDTO);
     }
 }

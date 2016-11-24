@@ -406,33 +406,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     @Override
     public void aoiChanged(final AoIDTO aoi) {
-        if(aoi == null) {
-            setAoI(null);
-            if(searchPageView.getFilterByAoI().getValue()) {
-                filtersChanged();
-            }
-        } else {
-            displayLoading();
-            // untick the filtering
-            try {
-                REST.withCallback(new MethodCallback<AoIDTO>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        hideLoading();
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, AoIDTO aoIDTO) {
-                        hideLoading();
-                        setAoI(aoIDTO);
-                        if(searchPageView.getFilterByAoI().getValue()) {
-                            filtersChanged();
-                        }
-                    }
-                }).call(ServicesUtil.assetsService).updateAoI(aoi);
-            } catch (Exception e) {
-
-            }
+        setAoI(aoi);
+        if(searchPageView.getFilterByAoI().getValue()) {
+            filtersChanged();
         }
     }
 

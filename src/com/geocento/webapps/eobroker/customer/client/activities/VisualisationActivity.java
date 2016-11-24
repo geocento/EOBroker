@@ -4,7 +4,6 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.VisualisationView;
@@ -191,10 +190,9 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
 
     @Override
     public void datasetAccessSelected(DatasetAccess datasetAccess) {
-        History.newItem(PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
-                VisualisationPlace.TOKENS.dataAccessId.toString(),
-                datasetAccess.getId() + ""
-        ))), false);
+        String token = History.getToken();
+        token = token.substring(0, token.lastIndexOf("=") + 1) + (datasetAccess.getId() + "");
+        History.newItem(token, false);
         setDataAccess(datasetAccess);
     }
 

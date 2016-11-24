@@ -75,6 +75,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
 
     private void handleHistory() {
         setAoI(currentAoI);
+        clearRequest();
     }
 
     public void setAoI(AoIDTO aoi) {
@@ -145,10 +146,15 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
                     requestImageryView.displaySubmitLoading(false);
                     requestImageryView.displaySucces("Request submitted");
                     clientFactory.getEventBus().fireEvent(new RequestCreated(requestDTO));
+                    clearRequest();
                 }
             }).call(ServicesUtil.ordersService).submitImageRequest(imageRequestDTO);
         } catch (RequestException e) {
         }
+    }
+
+    private void clearRequest() {
+        requestImageryView.clearRequest();
     }
 
     @Override

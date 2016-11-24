@@ -125,6 +125,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         // quirk to make sure the list box is initialised
         sampleAccessType.setEnabled(true);
 
+        // TODO - replace with a widget that can ve used in various views
         // configure the sample uploader
         final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
         sampleUploader.setUrl(uploadUrl);
@@ -142,9 +143,9 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 String response = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
                 JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
                 SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
-                sampleUploadDTO.setFileUri(sampleUploadDTOJson.get("fileUri").isString().stringValue());
-                sampleUploadDTO.setLayerName(sampleUploadDTOJson.get("layerName").isString().stringValue());
-                sampleUploadDTO.setServer(sampleUploadDTOJson.get("server").isString().stringValue());
+                sampleUploadDTO.setFileUri(sampleUploadDTOJson.containsKey("fileUri") ? sampleUploadDTOJson.get("fileUri").isString().stringValue() : null);
+                sampleUploadDTO.setLayerName(sampleUploadDTOJson.containsKey("layerName") ? sampleUploadDTOJson.get("layerName").isString().stringValue() : null);
+                sampleUploadDTO.setServer(sampleUploadDTOJson.containsKey("server") ? sampleUploadDTOJson.get("server").isString().stringValue() : null);
                 if(sampleUploadDTO.getFileUri() != null) {
                     DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
                     datasetAccessFile.setUri(sampleUploadDTO.getFileUri());

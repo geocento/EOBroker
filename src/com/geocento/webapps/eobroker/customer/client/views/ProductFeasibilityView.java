@@ -24,6 +24,8 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void displayAoI(AoIDTO aoi);
 
+    void centerOnAoI();
+
     void setText(String text);
 
     void displayLoadingResults(String message);
@@ -64,9 +66,9 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void showQuery();
 
-    HasHref getRequestButton();
+    HasClickHandlers getRequestButton();
 
-    HasHref getContactButton();
+    HasClickHandlers getContactButton();
 
     public interface Presenter {
 

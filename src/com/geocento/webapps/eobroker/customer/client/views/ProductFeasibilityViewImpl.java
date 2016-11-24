@@ -43,7 +43,6 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
-import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
@@ -108,9 +107,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @UiField
     MaterialLink resultsTab;
     @UiField
-    MaterialAnchorButton contact;
+    MaterialButton contact;
     @UiField
-    MaterialAnchorButton request;
+    MaterialButton request;
 
     private Presenter presenter;
 
@@ -141,12 +140,12 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
             public void aoiChanged(AoIDTO aoi) {
-                displayAoI(aoi);
+                presenter.aoiChanged(aoi);
             }
 
             @Override
             public void aoiSelected(AoIDTO aoi) {
-                displayAoI(aoi);
+                presenter.aoiChanged(aoi);
             }
         });
 
@@ -168,6 +167,11 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void displayAoI(AoIDTO aoi) {
         mapContainer.displayAoI(aoi);
+    }
+
+    @Override
+    public void centerOnAoI() {
+        mapContainer.centerOnAoI();
     }
 
     @Override
@@ -538,12 +542,12 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
-    public HasHref getRequestButton() {
+    public HasClickHandlers getRequestButton() {
         return request;
     }
 
     @Override
-    public HasHref getContactButton() {
+    public HasClickHandlers getContactButton() {
         return contact;
     }
 

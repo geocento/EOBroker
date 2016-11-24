@@ -135,32 +135,6 @@ public class RequestViewImpl extends Composite implements RequestView {
         return template;
     }
 
-    protected void displayResponse(String response) {
-        requestResponse.clear();
-        if(response == null) {
-            requestResponse.add(new HTML("No offer"));
-        } else {
-            requestResponse.add(new HTML(response));
-        }
-    }
-
-    protected void displayMessages(List<MessageDTO> messages) {
-        this.messages.clear();
-        this.message.setText("");
-        String userName = Customer.getLoginInfo().getUserName();
-        if(messages.size() == 0) {
-            this.messages.add(new MaterialLabel("No messages yet..."));
-            message.setPlaceholder("Start a conversation...");
-        } else {
-            for (MessageDTO messageDTO : messages) {
-                boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());
-                addMessage(messageDTO.getFrom(),
-                        isCustomer, messageDTO.getMessage(), messageDTO.getCreationDate());
-            }
-            message.setPlaceholder("Reply...");
-        }
-    }
-
     @Override
     public void addMessage(String userName, boolean isCustomer, String message, Date date) {
         MaterialRow materialRow = new MaterialRow();
@@ -185,7 +159,7 @@ public class RequestViewImpl extends Composite implements RequestView {
         materialRow.add(materialBubble);
         materialBubble.add(new MaterialLabel(message));
         MaterialLabel materialLabel = new MaterialLabel();
-        materialLabel.setText(DateUtils.dateTimeFormat.format(date));
+        materialLabel.setText(DateUtils.dateFormat.format(date));
         materialLabel.setFloat(Style.Float.RIGHT);
         materialLabel.setFontSize(0.6, Style.Unit.EM);
         materialBubble.add(materialLabel);
@@ -201,6 +175,38 @@ public class RequestViewImpl extends Composite implements RequestView {
     protected void addRequestValue(String name, String value) {
         this.requestDescription.add(new HTMLPanel("<p style='padding: 0.5rem;'><b>" + name + ":</b> " +
                 (value == null ? "not provided" : value) + "</p>"));
+    }
+
+    protected void displayResponse(String response) {
+        requestResponse.clear();
+        if(response == null) {
+            MaterialLabel materialLabel = new MaterialLabel("No offer yet...");
+            materialLabel.setMargin(20);
+            materialLabel.setTextColor("grey");
+            requestResponse.add(materialLabel);
+        } else {
+            requestResponse.add(new HTML(response));
+        }
+    }
+
+    protected void displayMessages(List<MessageDTO> messages) {
+        this.messages.clear();
+        this.message.setText("");
+        String userName = Customer.getLoginInfo().getUserName();
+        if(messages.size() == 0) {
+            MaterialLabel materialLabel = new MaterialLabel("No messages yet...");
+            materialLabel.setMargin(20);
+            materialLabel.setTextColor("grey");
+            this.messages.add(materialLabel);
+            message.setPlaceholder("Start a conversation...");
+        } else {
+            for (MessageDTO messageDTO : messages) {
+                boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());
+                addMessage(messageDTO.getFrom(),
+                        isCustomer, messageDTO.getMessage(), messageDTO.getCreationDate());
+            }
+            message.setPlaceholder("Reply...");
+        }
     }
 
     @Override

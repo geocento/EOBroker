@@ -105,15 +105,9 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
 
             }
         }
-        Long aoiId = null;
-        if (tokens.containsKey(ImageSearchPlace.TOKENS.aoiId.toString())) {
-            try {
-                aoiId = Long.parseLong(tokens.get(ImageSearchPlace.TOKENS.aoiId.toString()));
-            } catch (Exception e) {
-            }
-        }
         imageSearchView.clearMap();
         setAoi(currentAoI);
+        imageSearchView.centerOnAoI();
         Date now = new Date();
         setStartDate(new Date(now.getTime() - 10 * 24 * 3600 * 1000));
         setStopDate(now);

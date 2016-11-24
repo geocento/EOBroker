@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -63,6 +64,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     MapContainer mapContainer;
     @UiField
     MaterialChip information;
+    @UiField
+    MaterialLabel comment;
 
     private Presenter presenter;
 
@@ -85,6 +88,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
                 displayAoI(aoi);
             }
         });
+
+        information.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
     }
 
     @Override
@@ -130,6 +135,11 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
                         "by <img style='max-height: 24px; vertical-align: middle;' src='" + productServiceDTO.getCompanyLogo() + "'/> <b>" + productServiceDTO.getCompanyName() + "</b></span>", true);
         materialCheckBox.setObject(productServiceDTO);
         productServices.add(materialCheckBox);
+    }
+
+    @Override
+    public void setComment(String comment) {
+        this.comment.setText(comment);
     }
 
     @Override
@@ -222,6 +232,24 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @Override
     public TemplateView getTemplateView() {
         return template;
+    }
+
+    @Override
+    public void clearRequest() {
+        // clear form elements
+        for(int index = 0; index < formContainer.getWidgetCount(); index++) {
+            Widget widget = formContainer.getWidget(index);
+            if(widget instanceof ElementEditor) {
+                ((ElementEditor) widget).setFormElementValue("");
+            }
+        }
+        // clear services selection
+        for(int index = 0; index < productServices.getWidgetCount(); index++) {
+            Widget widget = productServices.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                ((MaterialCheckBox) widget).setValue(false);
+            }
+        }
     }
 
     @Override

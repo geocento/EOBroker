@@ -147,25 +147,32 @@ public class DatasetUploadServlet extends HttpServlet {
             String extension = resourceName.substring(resourceName.lastIndexOf(".") + 1).toLowerCase();
             String storeName = resourceName.substring(resourceName.lastIndexOf("/") + 1).substring(0, resourceName.lastIndexOf("."));
             String layerName = null;
+            // create response
+            SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
             switch (extension) {
 /*
                 case "kml":
 */
                 case "zip":
                     layerName = publishShapefile(workspaceName, storeName, file);
+                    sampleUploadDTO.setLayerName(layerName);
+                    sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
                     break;
                 case "tiff":
                 case "tif":
                     layerName = publishGeoTiff(workspaceName, storeName, file);
+                    sampleUploadDTO.setLayerName(layerName);
+                    sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
+                    break;
+                case "pdf":
+                case "csv":
+                case "ppt":
+                case "doc":
+                    sampleUploadDTO.setFileUri(filePath);
                     break;
                 default:
-                    layerName = null;
+                    throw new Exception("File format '" + extension + "' not supported");
             }
-            // create response
-            SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
-            sampleUploadDTO.setFileUri(filePath);
-            sampleUploadDTO.setLayerName(layerName);
-            sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
             return sampleUploadDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

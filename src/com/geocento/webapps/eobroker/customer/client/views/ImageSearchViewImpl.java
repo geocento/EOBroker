@@ -146,12 +146,12 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
             public void aoiChanged(AoIDTO aoi) {
-                displayAoI(aoi);
+                presenter.aoiChanged(aoi);
             }
 
             @Override
             public void aoiSelected(AoIDTO aoi) {
-                displayAoI(aoi);
+                presenter.aoiChanged(aoi);
             }
         });
 
@@ -540,6 +540,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @Override
     public void setSearchTextValid(boolean valid) {
         sensors.setSearchTextValid(valid);
+    }
+
+    @Override
+    public void centerOnAoI() {
+        mapContainer.centerOnAoI();
     }
 
     @Override

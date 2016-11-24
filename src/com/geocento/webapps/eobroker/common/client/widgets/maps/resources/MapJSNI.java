@@ -58,6 +58,6 @@ public class MapJSNI extends JavaScriptObject {
     }-*/;
 
     public final native void setExtent(ExtentJSNI extent) /*-{
-        this.setExtent(extent);
+        this.setExtent(extent, true);
     }-*/;
 }

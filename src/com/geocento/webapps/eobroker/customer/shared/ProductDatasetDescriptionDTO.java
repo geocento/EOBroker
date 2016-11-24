@@ -22,9 +22,9 @@ public class ProductDatasetDescriptionDTO {
     String email;
     String website;
     boolean commercial;
+    List<FeatureDescription> geoinformation;
     List<DatasetAccess> datasetAccesses;
     List<DatasetAccess> samples;
-    List<FeatureDescription> features;
     List<ProductDatasetDTO> suggestedDatasets;
 
     public ProductDatasetDescriptionDTO() {
@@ -134,12 +134,12 @@ public class ProductDatasetDescriptionDTO {
         this.samples = samples;
     }
 
-    public List<FeatureDescription> getFeatures() {
-        return features;
+    public void setGeoinformation(List<FeatureDescription> geoinformation) {
+        this.geoinformation = geoinformation;
     }
 
-    public void setFeatures(List<FeatureDescription> features) {
-        this.features = features;
+    public List<FeatureDescription> getGeoinformation() {
+        return geoinformation;
     }
 
     public List<ProductDatasetDTO> getSuggestedDatasets() {
@@ -149,4 +149,5 @@ public class ProductDatasetDescriptionDTO {
     public void setSuggestedDatasets(List<ProductDatasetDTO> suggestedDatasets) {
         this.suggestedDatasets = suggestedDatasets;
     }
+
 }

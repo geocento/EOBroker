@@ -47,6 +47,7 @@ public class ProductResponseViewImpl extends RequestViewImpl implements ProductR
         if(responses.size() > 1) {
             tabs.setVisible(true);
             MaterialTab materialTab = new MaterialTab();
+            materialTab.setBackgroundColor("transparent");
             for(final ProductServiceSupplierResponseDTO productServiceSupplierResponseDTO : responses) {
                 MaterialTabItem materialTabItem = new MaterialTabItem();
                 materialTabItem.setId(productServiceSupplierResponseDTO.getId() + "");
@@ -66,7 +67,6 @@ public class ProductResponseViewImpl extends RequestViewImpl implements ProductR
                 tabs.add(materialRow);
             }
             tabs.add(materialTab);
-            materialTab.onLoad();
         } else {
             tabs.setVisible(false);
             displayProductResponse(responses.get(0));

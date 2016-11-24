@@ -113,6 +113,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                         activityEventBus.fireEvent(new RequestCreated(requestDTO));
                         productFormView.hideLoading();
                         productFormView.displaySubmittedSuccess("Your request has been successfully submitted");
+                        clearRequest();
                     }
                 }).call(ServicesUtil.ordersService).submitProductRequest(productServiceRequestDTO);
             } catch (Exception e) {
@@ -138,6 +139,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
             return;
         }
 
+        clearRequest();
         productFormView.displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductFormDTO>() {
@@ -161,6 +163,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     for(ProductServiceDTO productServiceDTO : productFormDTO.getProductServices()) {
                         productFormView.addProductService(productServiceDTO);
                     }
+                    productFormView.setComment(productFormDTO.getProductServices().size() + " services available for this product");
                     handlers.add(productFormView.getInformation().addClickHandler(new ClickHandler() {
 
                         @Override
@@ -174,6 +177,10 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         } catch (RequestException e) {
         }
 
+    }
+
+    private void clearRequest() {
+        productFormView.clearRequest();
     }
 
     public void setAoI(AoIDTO aoi) {

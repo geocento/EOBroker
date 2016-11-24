@@ -219,6 +219,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         MaterialLink materialLink = new MaterialLink();
         materialLink.setIconType(IconType.CLOUD_CIRCLE);
         materialLink.setText(datasetAccess.getTitle());
+        materialLink.setTruncate(true);
         dataAccessList.add(materialLink);
         materialLink.addClickHandler(new ClickHandler() {
             @Override

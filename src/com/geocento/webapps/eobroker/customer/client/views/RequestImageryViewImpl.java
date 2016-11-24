@@ -79,6 +79,7 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
         for(String application : applications) {
             this.application.addItem(application);
         }
+        this.application.setSelectedValue(null);
         mapContainer.setHeight("100%");
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
@@ -121,27 +122,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     public void setSuppliers(List<ImageService> imageServices) {
         suppliers.clear();
         for(final ImageService imageService : imageServices) {
-/*
-            MaterialPanel materialPanel = new MaterialPanel();
-            MaterialLabelIcon labelIcon = new MaterialLabelIcon();
-            labelIcon.setImageHeight("16px");
-            labelIcon.setImageUrl(imageService.getCompany().getIconURL());
-            labelIcon.setText("by " + imageService.getCompany().getName());
-            labelIcon.getElement().getStyle().setFloat(Style.Float.RIGHT);
-            labelIcon.addDomHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(), imageService.getCompany().getId() + ""))), "_blank", null);
-                }
-            }, ClickEvent.getType());
-            labelIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-            materialPanel.add(labelIcon);
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(imageService.getName());
-            materialCheckBox.setObject(imageService);
-            materialPanel.add(materialCheckBox);
-            suppliers.add(materialPanel);
-*/
             MaterialCheckBox materialCheckBox = new MaterialCheckBox("<span style='display: inline;'><b>" + imageService.getName() + "</b> " +
                     "by <img style='max-height: 24px; vertical-align: middle; margin: 0px 5px;' src='" + imageService.getCompany().getIconURL() + "'/> <b>" + imageService.getCompany().getName() + "</b></span>", true);
             materialCheckBox.setObject(imageService);
@@ -184,16 +164,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
                     selectedServices.add((ImageService) ((MaterialCheckBox) widget).getObject());
                 }
             }
-/*
-            if(widget instanceof MaterialPanel) {
-                widget = ((MaterialPanel) widget).getWidget(1);
-                if (widget instanceof MaterialCheckBox) {
-                    if (((MaterialCheckBox) widget).getValue()) {
-                        selectedServices.add((ImageService) ((MaterialCheckBox) widget).getObject());
-                    }
-                }
-            }
-*/
         }
         return selectedServices;
     }
@@ -227,6 +197,24 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     @Override
     public void displayFormError(String message) {
         Window.alert(message);
+    }
+
+    @Override
+    public void clearRequest() {
+        application.setSelectedIndex(0);
+        imagetype.setText("");
+        information.setText("");
+        start.reset();
+        stop.reset();
+        template.scrollToTop();
+        for(int index = 0; index < suppliers.getWidgetCount(); index++) {
+            Widget widget = suppliers.getWidget(index);
+            if (widget instanceof MaterialCheckBox) {
+                ((MaterialCheckBox) widget).setValue(false);
+            }
+        }
+        // focus on AoI
+        mapContainer.centerOnAoI();
     }
 
     @Override

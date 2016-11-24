@@ -23,9 +23,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Path("/")
 public class OrdersResource implements OrdersService {
@@ -51,7 +49,7 @@ public class OrdersResource implements OrdersService {
             // get user
             User user = em.find(User.class, userName);
             {
-                TypedQuery<ImagesRequest> query = em.createQuery("select i from ImagesRequest i where i.customer = :user", ImagesRequest.class);
+                TypedQuery<ImagesRequest> query = em.createQuery("select i from ImagesRequest i where i.customer = :user order by i.creationDate DESC", ImagesRequest.class);
                 query.setParameter("user", user);
                 List<ImagesRequest> requests = query.getResultList();
                 requestDTOs.addAll(ListUtil.mutate(requests, new ListUtil.Mutate<ImagesRequest, RequestDTO>() {
@@ -62,7 +60,7 @@ public class OrdersResource implements OrdersService {
                 }));
             }
             {
-                TypedQuery<ImageryFormRequest> imageryFormQuery = em.createQuery("select i from ImageryFormRequest i where i.customer = :user", ImageryFormRequest.class);
+                TypedQuery<ImageryFormRequest> imageryFormQuery = em.createQuery("select i from ImageryFormRequest i where i.customer = :user order by i.creationDate DESC", ImageryFormRequest.class);
                 imageryFormQuery.setParameter("user", user);
                 List<ImageryFormRequest> imageryFormRequests = imageryFormQuery.getResultList();
                 requestDTOs.addAll(ListUtil.mutate(imageryFormRequests, new ListUtil.Mutate<ImageryFormRequest, RequestDTO>() {
@@ -73,7 +71,7 @@ public class OrdersResource implements OrdersService {
                 }));
             }
             {
-                TypedQuery<ProductServiceRequest> productFormQuery = em.createQuery("select p from ProductServiceRequest p where p.customer = :user", ProductServiceRequest.class);
+                TypedQuery<ProductServiceRequest> productFormQuery = em.createQuery("select p from ProductServiceRequest p where p.customer = :user order by p.creationDate DESC", ProductServiceRequest.class);
                 productFormQuery.setParameter("user", user);
                 List<ProductServiceRequest> productServiceRequests = productFormQuery.getResultList();
                 requestDTOs.addAll(ListUtil.mutate(productServiceRequests, new ListUtil.Mutate<ProductServiceRequest, RequestDTO>() {
@@ -83,6 +81,12 @@ public class OrdersResource implements OrdersService {
                     }
                 }));
             }
+            Collections.sort(requestDTOs, new Comparator<RequestDTO>() {
+                @Override
+                public int compare(RequestDTO o1, RequestDTO o2) {
+                    return o1.getCreationTime().compareTo(o2.getCreationTime());
+                }
+            });
             return requestDTOs;
         } catch (Exception e) {
             throw new RequestException("Issue when accessing list of requests");
