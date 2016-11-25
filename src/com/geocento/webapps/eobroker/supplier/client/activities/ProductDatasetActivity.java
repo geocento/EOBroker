@@ -124,7 +124,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setFullDescription(productDatasetView.getFullDescription());
                 productDatasetDTO.setServiceType(productDatasetView.getServiceType());
                 productDatasetDTO.setProduct(productDatasetView.getSelectedProduct());
-                productDatasetDTO.setExtent(AoIUtil.toWKT(productDatasetView.getExtent()));
+                productDatasetDTO.setExtent(productDatasetView.getExtent() == null ? null : AoIUtil.toWKT(productDatasetView.getExtent()));
                 productDatasetDTO.setDatasetAccesses(productDatasetView.getDataAccesses());
                 productDatasetDTO.setSamples(productDatasetView.getSamples());
                 productDatasetDTO.setSelectedFeatures(ListUtil.mutate(productDatasetView.getSelectedGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {

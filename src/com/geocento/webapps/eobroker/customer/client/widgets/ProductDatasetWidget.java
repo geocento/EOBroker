@@ -7,6 +7,8 @@ import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -41,10 +43,19 @@ public class ProductDatasetWidget extends Composite {
     MaterialLabel shortDescription;
     @UiField
     MaterialLink stars;
+    @UiField
+    MaterialImage imageLoading;
 
     public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        image.setUrl(productDatasetDTO.getImageUrl());
+        image.addLoadHandler(new LoadHandler() {
+            @Override
+            public void onLoad(LoadEvent event) {
+                image.setVisible(true);
+                imageLoading.setVisible(false);
+            }
+        });
+        image.setUrl(productDatasetDTO.getImageUrl() == null || productDatasetDTO.getImageUrl().length() == 0 ? "./images/noImage.png" : productDatasetDTO.getImageUrl());
         title.setText(productDatasetDTO.getName());
         shortDescription.setText(productDatasetDTO.getDescription());
         Image logoImage = new Image(productDatasetDTO.getCompany().getIconURL());

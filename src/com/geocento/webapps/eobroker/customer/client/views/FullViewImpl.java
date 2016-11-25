@@ -169,6 +169,19 @@ public class FullViewImpl extends Composite implements FullView {
         } else {
             {
                 MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
+                materialAnchorButton.setText("Compare");
+                materialAnchorButton.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        Window.alert("TODO...");
+                    }
+                });
+                materialAnchorButton.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
+                materialAnchorButton.setMarginRight(20);
+                servicesPanel.add(materialAnchorButton);
+            }
+            {
+                MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
                 materialAnchorButton.setText("Request quote");
                 materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDescriptionDTO.getId())));
                 materialAnchorButton.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
@@ -315,7 +328,7 @@ public class FullViewImpl extends Composite implements FullView {
             actionsPanel.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
             fullDescriptionPanel.add(actionsPanel);
         }
-        HTML fullDescription = new HTML("<h4>Description</h4>" + productServiceDescriptionDTO.getDescription());
+        HTML fullDescription = new HTML("<h4>Description</h4>" + productServiceDescriptionDTO.getFullDescription());
         fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);
@@ -521,7 +534,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
             fullDescriptionPanel.add(actionsPanel);
         }
-        HTML fullDescription = new HTML("<h4>Description</h4>" + productDatasetDescriptionDTO.getDescription());
+        HTML fullDescription = new HTML("<h4>Description</h4>" + productDatasetDescriptionDTO.getFullDescription());
         fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);
@@ -661,6 +674,9 @@ public class FullViewImpl extends Composite implements FullView {
                                         VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetDescriptionDTO.getId() + "",
                                         VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
                                 )));
+                    } else {
+                        // just open the service web page
+                        Window.open(datasetAccess.getUri(), "_blank", null);
                     }
                 } else if(datasetAccess instanceof DatasetAccessAPI) {
                     Window.alert("TODO - show API end point and redirect to API help page? eg " + datasetAccess.getUri());
@@ -771,7 +787,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
             fullDescriptionPanel.add(actionsPanel);
         }
-        HTML fullDescription = new HTML("<h4>Description</h4>" + softwareDescriptionDTO.getDescription());
+        HTML fullDescription = new HTML("<h4>Description</h4>" + softwareDescriptionDTO.getFullDescription());
         fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);
@@ -865,7 +881,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
             fullDescriptionPanel.add(actionsPanel);
         }
-        HTML fullDescription = new HTML("<h4>Description</h4>" + projectDescriptionDTO.getDescription());
+        HTML fullDescription = new HTML("<h4>Description</h4>" + projectDescriptionDTO.getFullDescription());
         fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);
@@ -992,7 +1008,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
             fullDescriptionPanel.add(actionsPanel);
         }
-        HTML fullDescription = new HTML("<h4>Description</h4>" + companyDescriptionDTO.getDescription());
+        HTML fullDescription = new HTML("<h4>Description</h4>" + companyDescriptionDTO.getFullDescription());
         fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);

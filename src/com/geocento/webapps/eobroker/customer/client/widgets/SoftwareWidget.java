@@ -4,6 +4,8 @@ import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.shared.SoftwareDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -33,13 +35,22 @@ public class SoftwareWidget extends Composite {
     MaterialLabel shortDescription;
     @UiField
     MaterialLink information;
+    @UiField
+    MaterialImage imageLoading;
 
     public SoftwareWidget(SoftwareDTO softwareDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
         Image logoImage = new Image(softwareDTO.getCompanyDTO().getIconURL());
         logoImage.setHeight("20px");
         companyLogo.add(logoImage);
-        image.setUrl(softwareDTO.getImageUrl());
+        image.addLoadHandler(new LoadHandler() {
+            @Override
+            public void onLoad(LoadEvent event) {
+                image.setVisible(true);
+                imageLoading.setVisible(false);
+            }
+        });
+        image.setUrl(softwareDTO.getImageUrl() == null ? "./images/noImage.png" : softwareDTO.getImageUrl());
         title.setText(softwareDTO.getName());
         shortDescription.setText(softwareDTO.getDescription());
         information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.softwareid.toString() + "=" + softwareDTO.getId())));

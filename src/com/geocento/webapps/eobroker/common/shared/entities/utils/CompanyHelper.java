@@ -11,13 +11,20 @@ public class CompanyHelper {
     public static CompanyDTO createCompanyDTO(Company company) {
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setId(company.getId());
+        companyDTO.setIconURL(company.getIconURL());
         companyDTO.setName(company.getName());
         companyDTO.setDescription(company.getDescription());
+/*
         companyDTO.setFullDescription(company.getFullDescription());
-        companyDTO.setIconURL(company.getIconURL());
+*/
         companyDTO.setContactEmail(company.getContactEmail());
         companyDTO.setWebsite(company.getWebsite());
         return companyDTO;
     }
 
+    public static CompanyDTO createFullCompanyDTO(Company company) {
+        CompanyDTO companyDTO = createCompanyDTO(company);
+        companyDTO.setFullDescription(company.getFullDescription());
+        return companyDTO;
+    }
 }

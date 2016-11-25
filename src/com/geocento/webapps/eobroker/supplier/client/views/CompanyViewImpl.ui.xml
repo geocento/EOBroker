@@ -64,7 +64,7 @@
     <views:TemplateView titleText="Company Profile" ui:field="template">
         <design:MaterialTitle title="Edit your company's profile" ui:field="title"></design:MaterialTitle>
         <design:MaterialRow>
-            <c:MaterialImageUploader ui:field="imageUploader"></c:MaterialImageUploader>
+            <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
             <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
             <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
             <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>

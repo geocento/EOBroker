@@ -392,6 +392,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
             productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
             productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            productDatasetDescriptionDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
             productDatasetDescriptionDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             productDatasetDescriptionDTO.setSamples(productDataset.getSamples());
             List<ProductDataset> suggestedDatasets = new ArrayList<ProductDataset>(productDataset.getProduct().getProductDatasets());
@@ -792,7 +793,7 @@ public class AssetsResource implements AssetsService {
             if (company == null) {
                 throw new RequestException("Company does not exist");
             }
-            return CompanyHelper.createCompanyDTO(company);
+            return CompanyHelper.createFullCompanyDTO(company);
         } catch (Exception e) {
             throw new RequestException("Server error");
         } finally {

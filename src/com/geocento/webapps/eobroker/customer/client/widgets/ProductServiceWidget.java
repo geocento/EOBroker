@@ -5,6 +5,8 @@ import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -36,9 +38,18 @@ public class ProductServiceWidget extends Composite {
     MaterialLink information;
     @UiField
     MaterialLink check;
+    @UiField
+    MaterialImage imageLoading;
 
     public ProductServiceWidget(ProductServiceDTO productServiceDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        image.addLoadHandler(new LoadHandler() {
+            @Override
+            public void onLoad(LoadEvent event) {
+                image.setVisible(true);
+                imageLoading.setVisible(false);
+            }
+        });
         Image logoImage = new Image(productServiceDTO.getCompanyLogo());
         logoImage.setHeight("20px");
         companyLogo.add(logoImage);
@@ -47,12 +58,6 @@ public class ProductServiceWidget extends Composite {
         shortDescription.setText(productServiceDTO.getDescription());
         information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceDTO.getId())));
         companyLogo.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + productServiceDTO.getCompanyId())));
-/*
-        quote.setHref("#" + PlaceHistoryHelper.convertPlace(
-                new ProductFormPlace(
-                            ProductFormPlace.TOKENS.id.toString() + "=" + productServiceDTO.getProduct().getId() + "&" +
-                            ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceDTO.getId())));
-*/
         check.setVisible(false);
         if(productServiceDTO.isHasFeasibility()) {
             check.setHref("#" + PlaceHistoryHelper.convertPlace(

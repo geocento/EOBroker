@@ -316,7 +316,7 @@ public class AssetsResource implements AssetsService {
             if (company == null) {
                 throw new RequestException("Unknown company");
             }
-            return CompanyHelper.createCompanyDTO(company);
+            return CompanyHelper.createFullCompanyDTO(company);
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

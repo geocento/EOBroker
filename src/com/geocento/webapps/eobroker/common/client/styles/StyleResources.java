@@ -26,4 +26,7 @@ public interface StyleResources extends ClientBundle {
     @Source("images/eobe-logo.png")
     ImageResource logoEOBroker();
 
+    @Source("images/loadingLarge.gif")
+    ImageResource loading300by200();
+
 }

@@ -37,7 +37,7 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
                             @Override
                             public void onSuccess(Method method, AoIDTO aoIDTO) {
                                 hideLoading();
-                                presenter.aoiChanged(aoi);
+                                presenter.aoiChanged(aoIDTO);
                             }
                         }).call(ServicesUtil.assetsService).updateAoI(aoi);
                     } catch (Exception e) {

@@ -4,6 +4,8 @@ import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -30,15 +32,21 @@ public class ProductWidget extends Composite {
     MaterialLabel description;
     @UiField
     MaterialLink information;
+    @UiField
+    MaterialImage imageLoading;
 
-    public ProductWidget(ProductDTO productDTO) {
+    public ProductWidget(final ProductDTO productDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        image.addLoadHandler(new LoadHandler() {
+            @Override
+            public void onLoad(LoadEvent event) {
+                image.setVisible(true);
+                imageLoading.setVisible(false);
+            }
+        });
         image.setUrl(productDTO.getImageUrl() == null || productDTO.getImageUrl().length() == 0 ? "./images/noImage.png" : productDTO.getImageUrl());
         title.setText(productDTO.getName());
         description.setText(productDTO.getDescription());
-/*
-        quote.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDTO.getId())));
-*/
         information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId())));
     }
 }
