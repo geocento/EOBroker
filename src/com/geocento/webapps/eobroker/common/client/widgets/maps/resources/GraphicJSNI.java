@@ -13,4 +13,8 @@ public class GraphicJSNI extends JavaScriptObject {
     public final native void function() /*-{
     }-*/;
 
+    public final native GeometryJSNI getGeometry() /*-{
+        return this.geometry;
+    }-*/;
+
 }

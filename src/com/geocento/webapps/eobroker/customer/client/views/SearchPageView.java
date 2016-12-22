@@ -86,6 +86,8 @@ public interface SearchPageView extends IsWidget {
 
     Thematic getThematicFilter();
 
+    void centerOnAoI();
+
     public interface Presenter {
 
         void loadMoreProducts();

@@ -121,7 +121,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         initWidget(ourUiBinder.createAndBindUi(this));
 
         tab.setBackgroundColor("teal lighten-2");
-        //tab.setIndicatorColor("yellow");
 
         startDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
@@ -146,11 +145,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
             public void aoiChanged(AoIDTO aoi) {
-                presenter.aoiChanged(aoi);
-            }
-
-            @Override
-            public void aoiSelected(AoIDTO aoi) {
                 presenter.aoiChanged(aoi);
             }
         });

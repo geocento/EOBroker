@@ -288,6 +288,7 @@ public class FullViewImpl extends Composite implements FullView {
                 template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId()));
             }
         });
+        product.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
         badges.add(product);
         tags.add(badges);
         MaterialPanel tabsPanel = createTabsPanel();
@@ -508,6 +509,7 @@ public class FullViewImpl extends Composite implements FullView {
                     template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId()));
                 }
             });
+            product.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
             badges.add(product);
         }
         tags.add(badges);

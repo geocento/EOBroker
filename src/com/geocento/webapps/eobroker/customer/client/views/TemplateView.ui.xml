@@ -94,7 +94,7 @@
                             <m:MaterialLink visible="false" text="All categories" activates="categories" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
                         </m:MaterialNavSection>
                         <m:MaterialNavSection float="RIGHT">
-                            <m:MaterialTooltip text="Orders" position="BOTTOM">
+                            <m:MaterialTooltip text="View your requests" position="BOTTOM">
                                 <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="orders">
                                     <m:MaterialBadge text="" backgroundColor="blue" textColor="white" circle="true" ui:field="ordersBadge"/>
                                 </m:MaterialLink>

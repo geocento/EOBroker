@@ -40,10 +40,28 @@ public class ContextListener implements ServletContextListener {
         // check all is ok with database
         EntityManager em = EMF.get().createEntityManager();
         em.close();
+    }
 
+    private String findNearest(List<String> values, String name) {
+        // look for the nearest one
+        String bestMatch = null;
+        // nearest is 0 and fartherst is 8
+        int bestMatchScore = 1000;
+        for(String value : values) {
+            // look for the highest number of common letters
+            Integer score = LevenshteinDistance.getDefaultInstance().apply(name, value);
+            if(score < bestMatchScore) {
+                bestMatch = value;
+                bestMatchScore = score;
+            }
+        }
+        return bestMatch;
+    }
+
+    private void initialiseDatabase() {
         // reset the db content if needed
+        EntityManager em = EMF.get().createEntityManager();
         try {
-            em = EMF.get().createEntityManager();
             // add some data to database
             TypedQuery<Product> query = em.createQuery("select p from Product p", Product.class);
             List<Product> products = query.getResultList();
@@ -140,23 +158,6 @@ public class ContextListener implements ServletContextListener {
             em.close();
         }
         // create resource handler for serving static files
-
-    }
-
-    private String findNearest(List<String> values, String name) {
-        // look for the nearest one
-        String bestMatch = null;
-        // nearest is 0 and fartherst is 8
-        int bestMatchScore = 1000;
-        for(String value : values) {
-            // look for the highest number of common letters
-            Integer score = LevenshteinDistance.getDefaultInstance().apply(name, value);
-            if(score < bestMatchScore) {
-                bestMatch = value;
-                bestMatchScore = score;
-            }
-        }
-        return bestMatch;
     }
 
     @Override

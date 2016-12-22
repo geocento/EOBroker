@@ -1,0 +1,24 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:fileuploader="urn:import:gwt.material.design.addins.client.fileuploader">
+    <ui:style>
+
+        .title h4 {
+            margin: 10px !important;
+        }
+
+    </ui:style>
+    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500" width="450px">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="Upload an AoI" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
+            <fileuploader:MaterialFileUploader url="./test" maxFileSize="100" height="auto" width="auto" shadow="0" ui:field="uploadAoI">
+                <design:MaterialPanel layoutPosition="RELATIVE" padding="10" paddingBottom="50" height="200px" backgroundColor="white">
+                    <design:MaterialLabel ui:field="iconName" text="Upload a file" fontSize="1.2em" truncate="true"/>
+                    <design:MaterialLabel ui:field="iconSize" text="Click on the button below to upload a file, or drag and drop your file in the area. Only kml files are supported. Only polygons are supported and only the first polygon will be selected. Polygon with more than 50 points will be automatically simplified." fontSize="0.8em"/>
+                    <design:MaterialProgress ui:field="iconProgress" layoutPosition="ABSOLUTE" bottom="0" left="0" type="DETERMINATE" percent="0" />
+                    <design:MaterialButton layoutPosition="ABSOLUTE" bottom="5" right="25" type="FLOATING" backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" iconColor="white"/>
+                </design:MaterialPanel>
+            </fileuploader:MaterialFileUploader>
+        </design:MaterialModalContent>
+    </design:MaterialModal>
+</ui:UiBinder>

@@ -86,11 +86,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
             public void aoiChanged(AoIDTO aoi) {
                 displayAoI(aoi);
             }
-
-            @Override
-            public void aoiSelected(AoIDTO aoi) {
-                displayAoI(aoi);
-            }
         });
     }
 

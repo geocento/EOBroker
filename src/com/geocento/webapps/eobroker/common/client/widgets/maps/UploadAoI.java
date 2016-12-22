@@ -1,33 +1,22 @@
-package com.geocento.webapps.eobroker.customer.client.widgets;
+package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
-import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.customer.client.views.AoIWidget;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import gwt.material.design.addins.client.fileuploader.MaterialFileUploader;
 import gwt.material.design.addins.client.fileuploader.base.UploadFile;
 import gwt.material.design.addins.client.fileuploader.events.*;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialModal;
-import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
 import gwt.material.design.client.ui.animate.Transition;
-import org.fusesource.restygwt.client.Method;
-import org.fusesource.restygwt.client.MethodCallback;
-import org.fusesource.restygwt.client.REST;
-
-import java.util.List;
 
 /**
  * Created by thomas on 15/11/2016.
@@ -51,8 +40,6 @@ public class UploadAoI {
     MaterialLabel iconSize;
     @UiField
     MaterialProgress iconProgress;
-    @UiField
-    MaterialPanel listOfAoIs;
 
     private final MaterialModal materialModal;
 
@@ -64,7 +51,7 @@ public class UploadAoI {
 
         materialModal = ourUiBinder.createAndBindUi(this);
 
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/geometry/";
+        final String uploadUrl = GWT.getHostPageBaseURL() + "upload/geometry/";
         uploadAoI.setUrl(uploadUrl);
 
         uploadAoI.addAddedFileHandler(new AddedFileEvent.AddedFileHandler<UploadFile>() {
@@ -90,10 +77,9 @@ public class UploadAoI {
             public void onSuccess(SuccessEvent<UploadFile> event) {
                 iconName.setText(event.getTarget().getName());
                 iconSize.setText(event.getTarget().getType());
-                String response = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
+                String response = StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>");
                 AoIDTO aoIDTO = new AoIDTO();
                 JSONObject aoiJson = JSONParser.parseLenient(response).isObject();
-                aoIDTO.setId((long) aoiJson.get("id").isNumber().doubleValue());
                 aoIDTO.setName(aoiJson.get("name").isString().stringValue());
                 aoIDTO.setWktGeometry(aoiJson.get("wktGeometry").isString().stringValue());
                 presenter.aoiSelected(aoIDTO);
@@ -131,58 +117,6 @@ public class UploadAoI {
     public void display(final Presenter presenter) {
         this.presenter = presenter;
         materialModal.openModal();
-        // reset list of uploaded files
-        // only for 2.0
-/*
-        uploadAoI.reset();
-*/
-        listOfAoIs.clear();
-        listOfAoIs.add(new LoadingWidget("Loading AoIs..."));
-        // load user's AOIs
-        try {
-            REST.withCallback(new MethodCallback<List<AoIDTO>>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    listOfAoIs.clear();
-                    listOfAoIs.add(new MaterialLabel("Error loading AoIs"));
-                }
-
-                @Override
-                public void onSuccess(Method method, List<AoIDTO> aoIDTOs) {
-                    listOfAoIs.clear();
-                    if(aoIDTOs.size() == 0) {
-                        listOfAoIs.add(new MaterialLabel("No AoIs defined..."));
-                    } else {
-                        for(final AoIDTO aoIDTO : aoIDTOs) {
-                            AoIWidget aoIWidget = new AoIWidget(aoIDTO);
-                            aoIWidget.getSelect().addClickHandler(new ClickHandler() {
-                                @Override
-                                public void onClick(ClickEvent event) {
-                                    try {
-                                        REST.withCallback(new MethodCallback<AoIDTO>() {
-                                            @Override
-                                            public void onFailure(Method method, Throwable exception) {
-                                                Window.alert("Failed to load AoI");
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Method method, AoIDTO aoIDTO) {
-                                                presenter.aoiSelected(aoIDTO);
-                                            }
-                                        }).call(ServicesUtil.assetsService).getAoI(aoIDTO.getId());
-                                    } catch (Exception e) {
-                                    }
-                                    hide();
-                                }
-                            });
-                            listOfAoIs.add(aoIWidget);
-                        }
-                    }
-                }
-            }).call(ServicesUtil.assetsService).listAoIs();
-        } catch (Exception e) {
-
-        }
     }
 
     private void hide() {

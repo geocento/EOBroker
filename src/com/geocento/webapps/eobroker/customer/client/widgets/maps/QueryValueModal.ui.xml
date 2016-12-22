@@ -1,0 +1,31 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+        >
+    <ui:style>
+
+        .title h4 {
+            margin: 10px !important;
+        }
+
+    </ui:style>
+    <design:MaterialModal dismissable="true" inDuration="500" outDuration="500" width="450px">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialPanel padding="10" ui:field="values">
+                        <design:MaterialTextBox placeholder="Type in value" ui:field="value"></design:MaterialTextBox>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialRow width="100%">
+                <design:MaterialColumn grid="s6" textAlign="LEFT">
+                    <design:MaterialButton text="Submit" backgroundColor="brown" textColor="white" textAlign="CENTER" ui:field="submit"></design:MaterialButton>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s6" textAlign="RIGHT">
+                    <design:MaterialButton text="Cancel" backgroundColor="grey" textColor="white" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+        </design:MaterialModalContent>
+    </design:MaterialModal>
+</ui:UiBinder>

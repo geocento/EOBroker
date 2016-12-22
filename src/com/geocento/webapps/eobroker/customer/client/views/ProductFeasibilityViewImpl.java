@@ -142,11 +142,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             public void aoiChanged(AoIDTO aoi) {
                 presenter.aoiChanged(aoi);
             }
-
-            @Override
-            public void aoiSelected(AoIDTO aoi) {
-                presenter.aoiChanged(aoi);
-            }
         });
 
         Scheduler.get().scheduleDeferred(new Command() {

@@ -170,6 +170,67 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public void updateAoIName(Long id, String name) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("No id provided");
+        }
+        if(name == null) {
+            throw new RequestException("No name provided");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            AoI dbAoI = em.find(AoI.class, id);
+            if(dbAoI == null) {
+                throw new RequestException("Unknown AoI");
+            }
+            if(!dbAoI.getUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            dbAoI.setName(name);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void deleteAoI(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("No id provided");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            AoI dbAoI = em.find(AoI.class, id);
+            if(dbAoI == null) {
+                throw new RequestException("Unknown AoI");
+            }
+            if(!dbAoI.getUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            em.remove(dbAoI);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ProductDTO getProduct(Long id) throws RequestException {
         if(id == null) {
             throw new RequestException("Id cannot be null");

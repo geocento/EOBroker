@@ -41,7 +41,6 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -142,11 +141,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             @Override
             public void aoiChanged(AoIDTO aoi) {
                 presenter.aoiChanged(aoi);
-            }
-
-            @Override
-            public void aoiSelected(AoIDTO aoi) {
-                presenter.aoiSelected(aoi);
             }
         });
 
@@ -776,6 +770,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public Thematic getThematicFilter() {
         return thematicSelection.getSelectedValue() == null ? null : Thematic.valueOf(thematicSelection.getSelectedValue());
+    }
+
+    @Override
+    public void centerOnAoI() {
+        mapContainer.centerOnAoI();
     }
 
     @Override

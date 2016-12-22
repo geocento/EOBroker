@@ -82,11 +82,6 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
             public void aoiChanged(AoIDTO aoi) {
                 displayAoI(aoi);
             }
-
-            @Override
-            public void aoiSelected(AoIDTO aoi) {
-                displayAoI(aoi);
-            }
         });
 
         information.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);

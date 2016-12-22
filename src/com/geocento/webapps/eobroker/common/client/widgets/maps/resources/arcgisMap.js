@@ -10,7 +10,7 @@ var arcgisMap = function(callback) {
         "esri/config",
         "esri/urlUtils",
         "esri/map",
-        "esri/toolbars/draw",
+        "esri/toolbars/draw", "esri/toolbars/edit",
         "esri/graphic",
         "esri/geometry/Polygon",
         "esri/geometry/Extent",
@@ -19,10 +19,12 @@ var arcgisMap = function(callback) {
         "esri/symbols/SimpleLineSymbol",
         "esri/symbols/SimpleFillSymbol",
         "esri/Color",
-        'esri/layers/WMSLayerInfo'
-    ], function(esriConfig, urlUtils, Map, Draw, Graphic,
+        'esri/layers/WMSLayerInfo',
+        'esri/geometry/geodesicUtils',
+        "esri/dijit/Search"
+    ], function(esriConfig, urlUtils, Map, Draw, Edit, Graphic,
                 Polygon, Extent, WMSLayer,
-                SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color) {
+                SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color, WMSLayerInfo, geodesicUtils, Search) {
 
 /*
         urlUtils.addProxyRule({
@@ -30,10 +32,6 @@ var arcgisMap = function(callback) {
             proxyUrl: "/proxy.jsp"
         });
 */
-
-        self.createDraw = function(map) {
-            return new Draw(map);
-        }
 
         self.createMap = function(baseMap, lat, lng, zoom, mapContainer, onload) {
             var map = new Map(
@@ -44,6 +42,24 @@ var arcgisMap = function(callback) {
                     autoResize: true
             });
             map.on("load", function(){onload(map);});
+        }
+
+        self.createDraw = function(map) {
+            return new Draw(map);
+        }
+
+        self.createEdit = function(map) {
+            return new Edit(map);
+        }
+
+        self.addSearch = function(map, div) {
+            // add search bar
+            var search = new Search({
+                enableHighlight: false,
+                enableInfoWindow: false,
+                map: map
+            }, div);
+            search.startup();
         }
 
         self.createLineSymbol = function(color, width) {

@@ -1,0 +1,21 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+    <ui:style>
+
+        .title h4 {
+            margin: 10px !important;
+        }
+
+    </ui:style>
+    <design:MaterialModal dismissable="true" inDuration="500" outDuration="500">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="Choose from your saved AoI" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialPanel padding="10" ui:field="listOfAoIs"></design:MaterialPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+        </design:MaterialModalContent>
+    </design:MaterialModal>
+</ui:UiBinder>

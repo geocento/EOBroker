@@ -30,6 +30,14 @@ public class ArcgisMapJSNI extends JavaScriptObject {
         return this.createDraw(map);
     }-*/;
 
+    public final native EditJSNI createEdit(MapJSNI map) /*-{
+        return this.createEdit(map);
+    }-*/;
+
+    public final native SearchJSNI addSearch(MapJSNI map, Element element) /*-{
+        return this.addSearch(map, element);
+    }-*/;
+
     public final native void template() /*-{
     }-*/;
 

@@ -72,7 +72,7 @@
             </widgets:MaterialSideNav>
         </views:header>
         <g:HTMLPanel addStyleNames="{style.displayPanel}" ui:field="displayPanel">
-            <maps:MapContainer width="100%" height="100%" edit="false" ui:field="mapContainer"></maps:MapContainer>
+            <maps:MapContainer width="100%" height="100%" editable="false" ui:field="mapContainer"></maps:MapContainer>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

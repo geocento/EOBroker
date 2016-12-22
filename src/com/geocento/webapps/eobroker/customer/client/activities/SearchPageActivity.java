@@ -114,6 +114,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             @Override
             public void onSuccess(Void result) {
                 searchPageView.displayAoI(currentAoI);
+                if(currentAoI != null) {
+                    searchPageView.centerOnAoI();
+                }
             }
         });
 

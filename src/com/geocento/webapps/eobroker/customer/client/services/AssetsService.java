@@ -35,6 +35,14 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public AoIDTO updateAoI(AoIDTO aoi) throws RequestException;
 
+    @POST
+    @Path("/assets/aoi/{id}")
+    void updateAoIName(@PathParam("id") Long id, @QueryParam("name") String name) throws RequestException;
+
+    @DELETE
+    @Path("/assets/aoi/{id}")
+    public void deleteAoI(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/product/{id}")
     @Produces("application/json")
