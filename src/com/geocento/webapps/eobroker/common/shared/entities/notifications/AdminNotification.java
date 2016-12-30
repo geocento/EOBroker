@@ -1,6 +1,9 @@
 package com.geocento.webapps.eobroker.common.shared.entities.notifications;
 
+import com.geocento.webapps.eobroker.common.shared.entities.Company;
+
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by thomas on 06/07/2016.
@@ -18,7 +21,19 @@ public class AdminNotification {
     TYPE type;
 
     @Column(length = 1000)
-    String text;
+    String message;
+
+    @ManyToOne
+    Company company;
+
+    @Column(length = 100)
+    String linkId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date creationDate;
+
+    public AdminNotification() {
+    }
 
     public Long getId() {
         return id;
@@ -36,11 +51,35 @@ public class AdminNotification {
         this.type = type;
     }
 
-    public String getText() {
-        return text;
+    public String getMessage() {
+        return message;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public String getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(String linkId) {
+        this.linkId = linkId;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

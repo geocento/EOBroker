@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.common.server;
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
 import com.geocento.webapps.eobroker.common.server.Utils.UserUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.LevenshteinDistance;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import org.apache.commons.csv.CSVFormat;
@@ -40,6 +41,9 @@ public class ContextListener implements ServletContextListener {
         // check all is ok with database
         EntityManager em = EMF.get().createEntityManager();
         em.close();
+
+        // apply fixes if needed
+        applyFixes();
     }
 
     private String findNearest(List<String> values, String name) {
@@ -158,6 +162,30 @@ public class ContextListener implements ServletContextListener {
             em.close();
         }
         // create resource handler for serving static files
+    }
+
+    private void applyFixes() {
+        // reset the db content if needed
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // add some data to database
+            TypedQuery<Request> query = em.createQuery("select r from Request r where r.status is NULL", Request.class);
+            List<Request> requests = query.getResultList();
+            if(requests.size() > 0) {
+                em.getTransaction().begin();
+                for (Request request : query.getResultList()) {
+                    request.setStatus(Request.STATUS.submitted);
+                }
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+        } finally {
+            em.close();
+        }
     }
 
     @Override

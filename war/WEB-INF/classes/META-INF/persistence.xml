@@ -33,21 +33,23 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.DoubleFormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ProductServiceRequest</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ProductServiceSupplierRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceSupplierRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ImageProcessingService</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ImageProcessingProduct</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ImageService</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageProductEntity</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImagesRequest</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageryFormRequest</class>
-        <class>com.geocento.webapps.eobroker.common.shared.entities.orders.ImageryFormSupplierRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ImageProductEntity</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.Request</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ImagesRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ImageryFormRequest</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ImageryFormSupplierRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Message</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.NewsItem</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Conversation</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Feedback</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />

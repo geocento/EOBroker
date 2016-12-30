@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Graphi
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.PolygonJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerInfoJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerJSNI;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.shared.requests.ImagesServiceResponseDTO;
@@ -42,6 +43,8 @@ public class ImagesResponseViewImpl extends RequestViewImpl implements ImagesRes
 
     public ImagesResponseViewImpl(ClientFactoryImpl clientFactory) {
         super(clientFactory);
+
+        setCategory(Category.imagery);
     }
 
     @Override
@@ -51,6 +54,8 @@ public class ImagesResponseViewImpl extends RequestViewImpl implements ImagesRes
 
     @Override
     public void displayImagesRequest(ImagesServiceResponseDTO imagesServiceResponseDTO) {
+        resetTabs();
+        setStatus(imagesServiceResponseDTO.getStatus());
         this.requestDescription.clear();
         displayAoI(AoIUtil.fromWKT(imagesServiceResponseDTO.getAoiWKT()));
         final List<Product> products = imagesServiceResponseDTO.getProducts();
@@ -76,6 +81,13 @@ public class ImagesResponseViewImpl extends RequestViewImpl implements ImagesRes
             }
             refreshMap(imagesServiceResponseDTO.getProducts());
         }
+        addResponseTab("response", "Offer", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                selectTab("response");
+            }
+        });
+        displayResponseSupplier(imagesServiceResponseDTO.getCompany().getIconURL(), imagesServiceResponseDTO.getCompany().getName());
         displayResponse(imagesServiceResponseDTO.getResponse());
         displayMessages(imagesServiceResponseDTO.getMessages());
     }

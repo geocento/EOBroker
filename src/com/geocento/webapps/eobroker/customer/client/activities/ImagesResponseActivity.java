@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.ChangeStatus;
+import com.geocento.webapps.eobroker.customer.client.events.ChangeStatusHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ImagesResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImagesResponseView;
@@ -67,6 +69,10 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
             History.back();
         }
 
+        loadResponse(requestId);
+    }
+
+    private void loadResponse(String requestId) {
         try {
             REST.withCallback(new MethodCallback<ImagesServiceResponseDTO>() {
                 @Override
@@ -81,7 +87,7 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
                     imagesResponseView.displayComment("See below your request and the supplier's response");
                     imagesResponseView.displayImagesRequest(imagesServiceResponseDTO);
                 }
-            }).call(ServicesUtil.ordersService).getImagesResponse(requestId);
+            }).call(ServicesUtil.requestsService).getImagesResponse(requestId);
         } catch (Exception e) {
 
         }
@@ -90,6 +96,32 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
     @Override
     protected void bind() {
         super.bind();
+
+        activityEventBus.addHandler(ChangeStatus.TYPE, new ChangeStatusHandler() {
+            @Override
+            public void onChangeStatus(ChangeStatus event) {
+                if (Window.confirm("Are you sure you want to change the status to '" + event.getStatus() + "'")) {
+                    displayLoading();
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                hideLoading();
+                                displayError(exception.getMessage());
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                hideLoading();
+                                loadResponse(request.getId());
+                            }
+                        }).call(ServicesUtil.requestsService).updateRequestStatus(request.getId(), event.getStatus());
+                    } catch (RequestException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         handlers.add(imagesResponseView.getSubmitMessage().addClickHandler(new ClickHandler() {
             @Override
@@ -109,7 +141,7 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
                             addMessage(response);
                             imagesResponseView.getMessageText().setText("");
                         }
-                    }).call(ServicesUtil.ordersService).addImagesResponseMessage(request.getId(), imagesResponseView.getMessageText().getText());
+                    }).call(ServicesUtil.requestsService).addImagesResponseMessage(request.getId(), imagesResponseView.getMessageText().getText());
                 } catch (RequestException e) {
                     e.printStackTrace();
                 }

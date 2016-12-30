@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceResponseDTO;
@@ -8,10 +9,6 @@ import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceSupp
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.MaterialRow;
-import gwt.material.design.client.ui.MaterialTab;
-import gwt.material.design.client.ui.MaterialTabItem;
 
 import java.util.List;
 
@@ -24,6 +21,8 @@ public class ProductResponseViewImpl extends RequestViewImpl implements ProductR
 
     public ProductResponseViewImpl(ClientFactoryImpl clientFactory) {
         super(clientFactory);
+
+        setCategory(Category.productservices);
     }
 
     @Override
@@ -33,6 +32,8 @@ public class ProductResponseViewImpl extends RequestViewImpl implements ProductR
 
     @Override
     public void displayProductRequest(ProductServiceResponseDTO productServiceResponseDTO) {
+        resetTabs();
+        setStatus(productServiceResponseDTO.getStatus());
         this.requestDescription.clear();
         addRequestValue("Product requested", productServiceResponseDTO.getProduct().getName());
         if(productServiceResponseDTO.getFormValues().size() == 0) {
@@ -45,28 +46,15 @@ public class ProductResponseViewImpl extends RequestViewImpl implements ProductR
         displayAoI(AoIUtil.fromWKT(productServiceResponseDTO.getAoIWKT()));
         List<ProductServiceSupplierResponseDTO> responses = productServiceResponseDTO.getSupplierResponses();
         if(responses.size() > 1) {
-            tabs.setVisible(true);
-            MaterialTab materialTab = new MaterialTab();
-            materialTab.setBackgroundColor("transparent");
             for(final ProductServiceSupplierResponseDTO productServiceSupplierResponseDTO : responses) {
-                MaterialTabItem materialTabItem = new MaterialTabItem();
-                materialTabItem.setId(productServiceSupplierResponseDTO.getId() + "");
-                materialTab.add(materialTabItem);
-                MaterialLink materialLink = new MaterialLink(productServiceSupplierResponseDTO.getCompany().getName());
-                materialLink.setHref("#" + productServiceSupplierResponseDTO.getId());
-                materialTabItem.add(materialLink);
-                materialLink.addClickHandler(new ClickHandler() {
+                addResponseTab(productServiceSupplierResponseDTO.getId() + "", productServiceSupplierResponseDTO.getCompany().getName(), new ClickHandler() {
 
                     @Override
                     public void onClick(ClickEvent event) {
                         presenter.responseSelected(productServiceSupplierResponseDTO);
                     }
                 });
-                MaterialRow materialRow = new MaterialRow();
-                materialRow.setId(productServiceSupplierResponseDTO.getId() + "");
-                tabs.add(materialRow);
             }
-            tabs.add(materialTab);
         } else {
             tabs.setVisible(false);
             displayProductResponse(responses.get(0));
@@ -75,27 +63,15 @@ public class ProductResponseViewImpl extends RequestViewImpl implements ProductR
 
     @Override
     public void displayProductResponse(ProductServiceSupplierResponseDTO productServiceSupplierResponseDTO) {
-        if(tabs.isVisible()) {
+        if(productServiceSupplierResponseDTO == null) {
+            selectTab("request");
+        } else {
             // make sure we select the tab
-            //tabs.selectTab(productServiceSupplierResponseDTO.getId() + "");
+            selectTab(productServiceSupplierResponseDTO.getId() + "");
+            displayResponseSupplier(productServiceSupplierResponseDTO.getCompany().getIconURL(), productServiceSupplierResponseDTO.getCompany().getName());
+            displayResponse(productServiceSupplierResponseDTO.getResponse());
+            displayMessages(productServiceSupplierResponseDTO.getMessages());
         }
-        displayResponse(productServiceSupplierResponseDTO.getResponse());
-        displayMessages(productServiceSupplierResponseDTO.getMessages());
-    }
-
-    private void addResponse(final ProductServiceSupplierResponseDTO productServiceSupplierResponseDTO) {
-        MaterialTabItem materialTabItem = new MaterialTabItem();
-        materialTabItem.setId(productServiceSupplierResponseDTO.getId() + "");
-        tabs.add(materialTabItem);
-        MaterialLink materialLink = new MaterialLink(productServiceSupplierResponseDTO.getCompany().getName());
-        materialTabItem.add(materialLink);
-        materialLink.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                presenter.responseSelected(productServiceSupplierResponseDTO);
-            }
-        });
     }
 
 }

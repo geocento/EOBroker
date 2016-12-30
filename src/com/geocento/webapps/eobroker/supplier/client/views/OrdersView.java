@@ -1,8 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.UserDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.List;

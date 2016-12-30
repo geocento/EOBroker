@@ -1,7 +1,6 @@
-package com.geocento.webapps.eobroker.common.shared.entities.orders;
+package com.geocento.webapps.eobroker.common.shared.entities.requests;
 
 import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
-import com.geocento.webapps.eobroker.common.shared.entities.User;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,13 +10,7 @@ import java.util.List;
  * Created by thomas on 06/07/2016.
  */
 @Entity
-public class ImageryFormRequest {
-
-    @Id
-    String id;
-
-    @ManyToOne
-    User customer;
+public class ImageryFormRequest extends Request {
 
     @Convert(converter = GeometryConverter.class)
     String aoiWKT;
@@ -39,26 +32,7 @@ public class ImageryFormRequest {
     @OneToMany(mappedBy = "imageryFormRequest", cascade = CascadeType.ALL)
     List<ImageryFormSupplierRequest> imageServiceRequests;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creationDate;
-
     public ImageryFormRequest() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public User getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(User customer) {
-        this.customer = customer;
     }
 
     public String getAoiWKT() {
@@ -99,14 +73,6 @@ public class ImageryFormRequest {
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public List<ImageryFormSupplierRequest> getImageServiceRequests() {

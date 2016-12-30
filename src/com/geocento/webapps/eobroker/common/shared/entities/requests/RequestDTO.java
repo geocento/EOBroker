@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities.orders;
+package com.geocento.webapps.eobroker.common.shared.entities.requests;
 
 import java.util.Date;
 
@@ -10,6 +10,7 @@ public class RequestDTO {
     public static enum TYPE {image, imageservice, imageprocessing, product}
 
     String id;
+    Request.STATUS status;
     String description;
     TYPE type;
     Date creationTime;
@@ -23,6 +24,14 @@ public class RequestDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setStatus(Request.STATUS status) {
+        this.status = status;
+    }
+
+    public Request.STATUS getStatus() {
+        return status;
     }
 
     public String getDescription() {

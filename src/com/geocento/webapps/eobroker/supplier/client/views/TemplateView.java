@@ -3,7 +3,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;

@@ -5,7 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
@@ -115,7 +115,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                         productFormView.displaySubmittedSuccess("Your request has been successfully submitted");
                         clearRequest();
                     }
-                }).call(ServicesUtil.ordersService).submitProductRequest(productServiceRequestDTO);
+                }).call(ServicesUtil.requestsService).submitProductRequest(productServiceRequestDTO);
             } catch (Exception e) {
             }
         } catch (Exception e) {

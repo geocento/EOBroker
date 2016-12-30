@@ -37,6 +37,9 @@ public class Project {
     @Column(length = 100000)
     String fullDescription;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    List<Company> consortium;
+
     public Project() {
     }
 
@@ -110,5 +113,13 @@ public class Project {
 
     public void setFullDescription(String fullDescription) {
         this.fullDescription = fullDescription;
+    }
+
+    public List<Company> getConsortium() {
+        return consortium;
+    }
+
+    public void setConsortium(List<Company> consortium) {
+        this.consortium = consortium;
     }
 }

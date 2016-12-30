@@ -7,7 +7,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.events.*;
@@ -196,7 +196,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                             imageSearchView.clearProductsSelection();
                             imageSearchView.displaySuccess("Quotation request submitted");
                         }
-                    }).call(ServicesUtil.ordersService).submitImagesRequest(imagesRequestDTO);
+                    }).call(ServicesUtil.requestsService).submitImagesRequest(imagesRequestDTO);
                 } catch (RequestException e) {
                 }
             }

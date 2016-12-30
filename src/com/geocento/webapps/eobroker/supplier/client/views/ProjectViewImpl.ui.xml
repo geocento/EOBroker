@@ -38,6 +38,12 @@
                 </design:MaterialRow>
                 <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
             </design:MaterialPanel>
+            <design:MaterialLink text="Project consortium" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+            <design:MaterialPanel>
+                <design:MaterialRow ui:field="consortium">
+                </design:MaterialRow>
+                <design:MaterialButton text="Add company" ui:field="addCompany"></design:MaterialButton>
+            </design:MaterialPanel>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
                 <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
             </g:HTMLPanel>

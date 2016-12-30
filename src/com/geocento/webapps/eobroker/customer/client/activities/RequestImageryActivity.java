@@ -3,7 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
@@ -148,7 +148,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
                     clientFactory.getEventBus().fireEvent(new RequestCreated(requestDTO));
                     clearRequest();
                 }
-            }).call(ServicesUtil.ordersService).submitImageRequest(imageRequestDTO);
+            }).call(ServicesUtil.requestsService).submitImageRequest(imageRequestDTO);
         } catch (RequestException e) {
         }
     }

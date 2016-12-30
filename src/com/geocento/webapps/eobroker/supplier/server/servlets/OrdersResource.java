@@ -7,7 +7,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
 import com.geocento.webapps.eobroker.common.shared.entities.Message;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.*;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;

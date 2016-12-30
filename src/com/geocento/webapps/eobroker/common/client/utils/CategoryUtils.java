@@ -29,4 +29,24 @@ public class CategoryUtils {
         }
         return null;
     }
+
+    public static String getColor(Category type) {
+        switch (type) {
+            case products:
+                return "blue-grey";
+            case productservices:
+                return "orange";
+            case productdatasets:
+                return "green";
+            case software:
+                return "brown";
+            case project:
+                return "blue";
+            case companies:
+                return "blue";
+            case imagery:
+                return "blue";
+        }
+        return "grey";
+    }
 }

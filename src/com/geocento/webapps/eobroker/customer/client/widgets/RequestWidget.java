@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ImageryResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.places.ImagesResponsePlace;

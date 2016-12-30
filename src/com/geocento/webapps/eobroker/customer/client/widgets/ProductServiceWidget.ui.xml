@@ -45,7 +45,7 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
-    <design:MaterialCard backgroundColor="orange" axis="VERTICAL">
+    <design:MaterialCard axis="VERTICAL">
         <design:MaterialCardImage>
             <design:MaterialImage resource="{res.loading300by200}" ui:field="imageLoading"></design:MaterialImage>
             <design:MaterialImage visible="false" ui:field="image"></design:MaterialImage>

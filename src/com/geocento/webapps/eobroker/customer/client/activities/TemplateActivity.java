@@ -4,7 +4,8 @@ import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.ImageOrderCreatedHandler;
@@ -76,6 +77,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         templateView.scrollToTop();
     }
 
+    // TODO - change for a request count instead?
     private void loadUserOrders() {
         try {
             REST.withCallback(new MethodCallback<List<RequestDTO>>() {
@@ -89,7 +91,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     userRequests = requestDTOs;
                     templateView.setRequests(requestDTOs);
                 }
-            }).call(ServicesUtil.ordersService).getRequests();
+            }).call(ServicesUtil.requestsService).getRequests(Request.STATUS.submitted);
         } catch (RequestException e) {
         }
     }
@@ -242,18 +244,22 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
+/*
                     if (currentAoI != null) {
                         token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
+*/
                     searchPlace = new SearchPagePlace(token);
                 } else {
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
+/*
                     if (currentAoI != null) {
                         token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
+*/
                     searchPlace = new SearchPagePlace(token);
                 }
             } break;
@@ -267,18 +273,22 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
+/*
                     if (currentAoI != null) {
                         token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
+*/
                     searchPlace = new SearchPagePlace(token);
                 } else {
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
+/*
                     if (currentAoI != null) {
                         token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
+*/
                     searchPlace = new SearchPagePlace(token);
                 }
             } break;
@@ -306,15 +316,21 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             if(category != null) {
                 token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
             }
+/*
             if(currentAoI != null) {
                 token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
             }
+*/
             eoBrokerPlace = new SearchPagePlace(token);
         } else {
             switch (category) {
                 case imagery:
                     eoBrokerPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + text +
-                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId()));
+/*
+                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId())
+*/
+                            ""
+                    );
                     break;
                 case products:
                 case companies:
@@ -324,9 +340,11 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     String token = "";
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+/*
                     if(currentAoI != null) {
                         token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
+*/
                     eoBrokerPlace = new SearchPagePlace(token);
             }
         }

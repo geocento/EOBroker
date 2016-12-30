@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
@@ -10,6 +12,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialCard;
 import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
@@ -37,6 +40,9 @@ public class ProductWidget extends Composite {
 
     public ProductWidget(final ProductDTO productDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        ((MaterialCard) getWidget()).setBackgroundColor(CategoryUtils.getColor(Category.products));
+
         image.addLoadHandler(new LoadHandler() {
             @Override
             public void onLoad(LoadEvent event) {

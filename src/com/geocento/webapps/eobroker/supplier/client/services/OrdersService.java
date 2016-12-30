@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.services;
 
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;

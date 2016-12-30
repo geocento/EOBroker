@@ -1,10 +1,11 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.RequestsPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.RequestsView;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -52,7 +53,7 @@ public class RequestsActivity extends TemplateActivity implements RequestsView.P
                 public void onSuccess(Method method, List<RequestDTO> requestDTOs) {
                     ordersView.setRequests(requestDTOs);
                 }
-            }).call(ServicesUtil.ordersService).getRequests();
+            }).call(ServicesUtil.requestsService).getRequests(Request.STATUS.submitted);
         } catch (RequestException e) {
         }
     }

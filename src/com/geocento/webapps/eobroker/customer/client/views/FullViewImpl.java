@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
@@ -11,7 +12,6 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -118,6 +118,7 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(productDescriptionDTO.getImageUrl()));
         title.setText(productDescriptionDTO.getName());
         description.setText(productDescriptionDTO.getShortDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.products));
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
@@ -177,7 +178,6 @@ public class FullViewImpl extends Composite implements FullView {
                     }
                 });
                 materialAnchorButton.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
-                materialAnchorButton.setMarginRight(20);
                 servicesPanel.add(materialAnchorButton);
             }
             {
@@ -185,6 +185,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialAnchorButton.setText("Request quote");
                 materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDescriptionDTO.getId())));
                 materialAnchorButton.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
+                materialAnchorButton.setMarginRight(20);
                 servicesPanel.add(materialAnchorButton);
             }
             servicesPanel.add(createSubsection("This product can be provided by the following on-demand services"));
@@ -252,12 +253,17 @@ public class FullViewImpl extends Composite implements FullView {
         addColumnLine(new MaterialLabel("TODO..."));
     }
 
+    private void setTabPanelColor(String color) {
+        tabsPanel.setBackgroundColor(color);
+    }
+
     @Override
     public void displayProductService(final ProductServiceDescriptionDTO productServiceDescriptionDTO) {
         clearDetails();
         image.setUrl(Utils.getImageMaybe(productServiceDescriptionDTO.getServiceImage()));
         title.setText(productServiceDescriptionDTO.getName());
         description.setText(productServiceDescriptionDTO.getDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.productservices));
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
@@ -468,6 +474,7 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(productDatasetDescriptionDTO.getImageUrl()));
         title.setText(productDatasetDescriptionDTO.getName());
         description.setText(productDatasetDescriptionDTO.getDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.productdatasets));
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
@@ -730,6 +737,7 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(softwareDescriptionDTO.getImageUrl()));
         title.setText(softwareDescriptionDTO.getName());
         description.setText(softwareDescriptionDTO.getDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.software));
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
@@ -795,17 +803,19 @@ public class FullViewImpl extends Composite implements FullView {
         fullDescriptionPanel.setPadding(10);
         addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
 
-        addTab(materialTab, tabsPanel, "Others", new HTMLPanel("TODO..."), size);
         // add products tab
         {
             MaterialPanel productsPanel = new MaterialPanel();
-            MaterialRow materialRow = new MaterialRow();
-            productsPanel.add(materialRow);
+            MaterialLabel materialLabel = createSubsection("Products covered by this software solution:");
+            materialLabel.setMarginBottom(20);
+            productsPanel.add(materialLabel);
             List<ProductSoftwareDTO> productsCovered = softwareDescriptionDTO.getProducts();
             if (productsCovered == null || productsCovered.size() == 0) {
                 addColumnLine(new MaterialLabel("No products..."));
             } else {
                 for(ProductSoftwareDTO productSoftwareDTO : productsCovered) {
+                    MaterialRow materialRow = new MaterialRow();
+                    productsPanel.add(materialRow);
                     MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
                     ProductWidget productWidget = new ProductWidget(productSoftwareDTO.getProduct());
                     materialColumn.add(productWidget);
@@ -817,9 +827,14 @@ public class FullViewImpl extends Composite implements FullView {
             }
             addTab(materialTab, tabsPanel, "Products", productsPanel, size);
         }
+
         // add terms and conditions tab panel
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
         addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+
+        // add other tab
+        addTab(materialTab, tabsPanel, "Other", new HTMLPanel("TODO..."), size);
+
         // now add the tabs panel
         materialTab.selectTab("fullViewTab0");
         details.add(tabsPanel);
@@ -840,6 +855,7 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(projectDescriptionDTO.getImageUrl()));
         title.setText(projectDescriptionDTO.getName());
         description.setText(projectDescriptionDTO.getDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.project));
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);
@@ -892,29 +908,62 @@ public class FullViewImpl extends Composite implements FullView {
         // add products tab
         {
             MaterialPanel productsPanel = new MaterialPanel();
-            MaterialRow materialRow = new MaterialRow();
-            productsPanel.add(materialRow);
+            MaterialLabel materialLabel = createSubsection("Products covered within this project:");
+            materialLabel.setMarginBottom(20);
+            productsPanel.add(materialLabel);
             List<ProductProjectDTO> productsCovered = projectDescriptionDTO.getProducts();
             if (productsCovered == null || productsCovered.size() == 0) {
                 addColumnLine(new MaterialLabel("No products..."));
             } else {
                 for (ProductProjectDTO productProjectDTO : productsCovered) {
+                    MaterialRow materialRow = new MaterialRow();
+                    materialRow.setWidth("100%");
+                    productsPanel.add(materialRow);
                     MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
                     ProductWidget productWidget = new ProductWidget(productProjectDTO.getProduct());
                     materialColumn.add(productWidget);
                     materialRow.add(materialColumn);
                     materialColumn = new MaterialColumn(6, 8, 9);
-                    materialColumn.add(new HTML(productProjectDTO.getPitch()));
+                    materialColumn.add(new HTML("<h5>Pitch</h5>" + productProjectDTO.getPitch()));
                     materialRow.add(materialColumn);
                 }
             }
             addTab(materialTab, tabsPanel, "Products", productsPanel, size);
         }
-        // TODO - add other information?
-        addTab(materialTab, tabsPanel, "Consortium", new HTMLPanel("TODO..."), size);
+
+        // add consortium information
+        {
+            MaterialPanel consortiumPanel = new MaterialPanel();
+            MaterialLabel materialLabel = createSubsection("Companies involved in this project:");
+            materialLabel.setMarginBottom(20);
+            consortiumPanel.add(materialLabel);
+            MaterialRow materialRow = new MaterialRow();
+            materialRow.setWidth("100%");
+            consortiumPanel.add(materialRow);
+            // add lead first
+            {
+                MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+                CompanyWidget companyWidget = new CompanyWidget(projectDescriptionDTO.getCompanyDTO());
+                materialColumn.add(companyWidget);
+                materialRow.add(materialColumn);
+            }
+            // now add all others
+            {
+                List<CompanyDTO> companies = projectDescriptionDTO.getConsortium();
+                if(companies != null && companies.size() > 0) {
+                    for (CompanyDTO companyDTO : companies) {
+                        MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+                        CompanyWidget companyWidget = new CompanyWidget(companyDTO);
+                        materialColumn.add(companyWidget);
+                        materialRow.add(materialColumn);
+                    }
+                }
+            }
+            addTab(materialTab, tabsPanel, "Consortium", consortiumPanel, size);
+        }
         // add terms and conditions tab panel
-        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
+        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No other information provided</p>");
+        addTab(materialTab, tabsPanel, "Others", termsAndConditionsPanel, size);
         materialTab.selectTab("fullViewTab0");
         // now add the tabs panel
         details.add(tabsPanel);
@@ -935,6 +984,7 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(companyDescriptionDTO.getIconURL()));
         title.setText(companyDescriptionDTO.getName());
         description.setText(companyDescriptionDTO.getDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.companies));
         tags.clear();
         MaterialPanel badges = new MaterialPanel();
         badges.setPadding(10);

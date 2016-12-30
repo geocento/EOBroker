@@ -95,11 +95,11 @@
         </header>
         <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
         </m:MaterialContainer>
-        <m:MaterialFooter backgroundColor="blue">
+        <m:MaterialFooter backgroundColor="green lighten-1">
             <m:MaterialRow>
                 <m:MaterialColumn grid="s12 m6 l6">
-                    <m:MaterialTitle textColor="white" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>
-                    <m:MaterialButton ui:field="chat" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                    <m:MaterialTitle textColor="white" title="Join The Discussion" description="Come and join us in the EO Broker Gerrit Lobby. Share your opinion, make comments, report bugs and request new features. We welcome feedback!"/>
+                    <m:MaterialAnchorButton ui:field="chat" href="https://gitter.im/EO-Broker/Lobby#" target="_blank;" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
                 </m:MaterialColumn>
                 <m:MaterialColumn grid="s12 m6 l6">
                     <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>

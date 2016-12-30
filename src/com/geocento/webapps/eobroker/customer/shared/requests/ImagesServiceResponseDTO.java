@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared.requests;
 
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public class ImagesServiceResponseDTO extends BaseResponseDTO {
     String id;
     String aoiWKT;
     List<Product> products;
+    Request.STATUS status;
 
     public ImagesServiceResponseDTO() {
     }
@@ -38,5 +40,13 @@ public class ImagesServiceResponseDTO extends BaseResponseDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Request.STATUS getStatus() {
+        return status;
+    }
+
+    public void setStatus(Request.STATUS status) {
+        this.status = status;
     }
 }

@@ -13,10 +13,14 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
+import com.geocento.webapps.eobroker.customer.client.places.FeedbackPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.*;
+import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,12 +33,10 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.base.HasHref;
+import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.html.Option;
 import org.fusesource.restygwt.client.Method;
@@ -107,6 +109,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     LoadingWidget loading;
     @UiField
     HTMLPanel requirementsPanel;
+    @UiField
+    MaterialLink companiesCategory;
+    @UiField
+    Anchor sendRequirements;
 
     // possible filters
     private MaterialListBox sectorSelection;
@@ -124,14 +130,24 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
         // update icons
         productsCategory.setIconType(CategoryUtils.getIconType(Category.products));
+        addCategoryTooltip(productsCategory, "See all relevant products");
         productServicesCategory.setIconType(CategoryUtils.getIconType(Category.productservices));
+        addCategoryTooltip(productServicesCategory, "See all on demand services able to supply your request");
         productDatasetsCategory.setIconType(CategoryUtils.getIconType(Category.productdatasets));
+        addCategoryTooltip(productDatasetsCategory, "See all off the shelf datasets matching your search");
         softwareCategory.setIconType(CategoryUtils.getIconType(Category.software));
+        addCategoryTooltip(softwareCategory, "See all software solutions matching your search");
         projectsCategory.setIconType(CategoryUtils.getIconType(Category.project));
+        addCategoryTooltip(projectsCategory, "See all relevant projects for your search");
+        companiesCategory.setIconType(CategoryUtils.getIconType(Category.companies));
+        addCategoryTooltip(companiesCategory, "See all relevant companies for your search");
 
         // hide the loading results widget
         hideLoadingResults();
 
+        sendRequirements.setHref("#" +
+                PlaceHistoryHelper.convertPlace(
+                        new FeedbackPlace(FeedbackPlace.TOKENS.topic.toString() + "=Feedback on search")));
         // hide the send requirements panel
         displaySendRequirements(false);
 
@@ -153,6 +169,16 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         });
 
         onResize(null);
+    }
+
+    private void addCategoryTooltip(MaterialLink materialLink, String message) {
+/*
+        MaterialTooltip materialTooltip = new MaterialTooltip();
+        materialTooltip.setWidget(materialLink);
+        materialTooltip.setPosition(Position.RIGHT);
+        materialTooltip.setText(message);
+        categories.add(materialTooltip);
+*/
     }
 
     private void displaySendRequirements(boolean display) {
@@ -436,6 +462,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
+    public HasHref getCompaniesCategory() {
+        return companiesCategory;
+    }
+
+    @Override
     public void displayCategories(boolean display) {
         categories.setVisible(true);
     }
@@ -444,25 +475,38 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     public void selectCategory(Category category) {
         for(Widget widget : categories) {
             widget.removeStyleName(style.selected());
+            if(widget instanceof MaterialLink) {
+                ((MaterialLink) widget).setTextColor("none");
+            }
         }
         if(category == null) {
             return;
         }
+        String color = CategoryUtils.getColor(category);
         switch (category) {
             case products:
                 productsCategory.addStyleName(style.selected());
+                productsCategory.setTextColor(color);
                 break;
             case productservices:
                 productServicesCategory.addStyleName(style.selected());
+                productServicesCategory.setTextColor(color);
                 break;
             case productdatasets:
                 productDatasetsCategory.addStyleName(style.selected());
+                productDatasetsCategory.setTextColor(color);
                 break;
             case software:
                 softwareCategory.addStyleName(style.selected());
+                softwareCategory.setTextColor(color);
                 break;
             case project:
                 projectsCategory.addStyleName(style.selected());
+                projectsCategory.setTextColor(color);
+                break;
+            case companies:
+                companiesCategory.addStyleName(style.selected());
+                companiesCategory.setTextColor(color);
                 break;
         }
     }

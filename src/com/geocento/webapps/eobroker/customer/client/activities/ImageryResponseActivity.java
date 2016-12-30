@@ -4,6 +4,8 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.ChangeStatus;
+import com.geocento.webapps.eobroker.customer.client.events.ChangeStatusHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ImageryResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ImageryResponseView;
@@ -77,8 +79,11 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
             }
         }
 
+        loadResponse(id, responseId);
+    }
+
+    private void loadResponse(String id, final Long responseId) {
         try {
-            final Long finalResponseId = responseId;
             REST.withCallback(new MethodCallback<ImageryResponseDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -91,19 +96,19 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
                     imageryResponseView.displayTitle("Viewing your imagery request '" + imageryResponseDTO.getId() + "'");
                     imageryResponseView.displayComment("See below your request and the suppliers' responses");
                     imageryResponseView.displayImageryRequest(imageryResponseDTO);
-                    if(finalResponseId == null) {
+                    if(responseId == null) {
                         selectedResponse = request.getSupplierResponses().get(0);
                     } else {
                         selectedResponse = ListUtil.findValue(imageryResponseDTO.getSupplierResponses(), new ListUtil.CheckValue<ImagerySupplierResponseDTO>() {
                             @Override
                             public boolean isValue(ImagerySupplierResponseDTO value) {
-                                return value.getId().longValue() == finalResponseId;
+                                return value.getId().longValue() == responseId;
                             }
                         });
                     }
                     selectResponse(selectedResponse);
                 }
-            }).call(ServicesUtil.ordersService).getImageResponse(id);
+            }).call(ServicesUtil.requestsService).getImageResponse(id);
         } catch (Exception e) {
 
         }
@@ -117,6 +122,32 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
     @Override
     protected void bind() {
         super.bind();
+
+        activityEventBus.addHandler(ChangeStatus.TYPE, new ChangeStatusHandler() {
+            @Override
+            public void onChangeStatus(ChangeStatus event) {
+                if (Window.confirm("Are you sure you want to change the status to '" + event.getStatus() + "'")) {
+                    displayLoading();
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                hideLoading();
+                                displayError(exception.getMessage());
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                hideLoading();
+                                loadResponse(request.getId(), null);
+                            }
+                        }).call(ServicesUtil.requestsService).updateRequestStatus(request.getId(), event.getStatus());
+                    } catch (RequestException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         handlers.add(imageryResponseView.getSubmitMessage().addClickHandler(new ClickHandler() {
             @Override
@@ -136,7 +167,7 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
                             addMessage(response);
                             imageryResponseView.getMessageText().setText("");
                         }
-                    }).call(ServicesUtil.ordersService).addImageryResponseMessage(selectedResponse.getId(), imageryResponseView.getMessageText().getText());
+                    }).call(ServicesUtil.requestsService).addImageryResponseMessage(selectedResponse.getId(), imageryResponseView.getMessageText().getText());
                 } catch (RequestException e) {
                     e.printStackTrace();
                 }

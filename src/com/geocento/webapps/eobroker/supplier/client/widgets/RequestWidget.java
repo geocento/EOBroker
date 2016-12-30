@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;
 import com.google.gwt.core.client.GWT;

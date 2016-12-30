@@ -42,4 +42,6 @@ public interface ClientFactory {
     ConversationView getConversationView();
 
     VisualisationView getVisualisationView();
+
+    FeedbackView getFeedbackView();
 }

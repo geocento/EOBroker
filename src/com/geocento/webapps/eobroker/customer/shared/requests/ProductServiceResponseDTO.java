@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared.requests;
 
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 
@@ -15,6 +16,7 @@ public class ProductServiceResponseDTO {
     List<FormElementValue> formValues;
     String aoIWKT;
     List<ProductServiceSupplierResponseDTO> supplierResponses;
+    private Request.STATUS status;
 
     public ProductServiceResponseDTO() {
     }
@@ -57,5 +59,13 @@ public class ProductServiceResponseDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setStatus(Request.STATUS status) {
+        this.status = status;
+    }
+
+    public Request.STATUS getStatus() {
+        return status;
     }
 }

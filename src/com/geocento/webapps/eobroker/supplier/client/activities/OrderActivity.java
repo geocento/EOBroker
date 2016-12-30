@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;

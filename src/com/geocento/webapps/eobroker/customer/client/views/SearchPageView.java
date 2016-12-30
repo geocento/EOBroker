@@ -64,6 +64,8 @@ public interface SearchPageView extends IsWidget {
 
     HasHref getProjectsCategory();
 
+    HasHref getCompaniesCategory();
+
     void displayCategories(boolean display);
 
     void selectCategory(Category category);

@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
@@ -7,19 +8,25 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.ChangeStatus;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
 import gwt.material.design.client.constants.Position;
+import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.ui.*;
 
 import java.util.Date;
@@ -38,7 +45,7 @@ public class RequestViewImpl extends Composite implements RequestView {
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    MaterialTitle title;
+    MaterialLabel title;
     @UiField
     protected
     MaterialColumn requestDescription;
@@ -57,7 +64,23 @@ public class RequestViewImpl extends Composite implements RequestView {
     UserWidget userImage;
     @UiField
     protected
-    MaterialRow tabs;
+    MaterialPanel tabs;
+    @UiField
+    MaterialButton status;
+    @UiField
+    MaterialDropDown statuses;
+    @UiField
+    MaterialLabel description;
+    @UiField
+    HTMLPanel responseTitle;
+    @UiField
+    MaterialRow requestTab;
+    @UiField
+    MaterialTab tab;
+    @UiField
+    MaterialPanel responsePanel;
+    @UiField
+    MaterialPanel colorPanel;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -91,12 +114,6 @@ public class RequestViewImpl extends Composite implements RequestView {
                 });
             }
         });
-
-/*
-        MaterialAvatar materialAvatar = new MaterialAvatar(Customer.getLoginInfo().getUserName());
-        materialAvatar.setWidth("100%");
-        userImage.add(materialAvatar);
-*/
         userImage.setUser(Customer.getLoginInfo().getUserName());
     }
 
@@ -117,12 +134,12 @@ public class RequestViewImpl extends Composite implements RequestView {
 
     @Override
     public void displayTitle(String title) {
-        this.title.setTitle(title);
+        this.title.setText(title);
     }
 
     @Override
     public void displayComment(String comment) {
-        this.title.setDescription(comment);
+        description.setText(comment);
     }
 
     @Override
@@ -133,6 +150,13 @@ public class RequestViewImpl extends Composite implements RequestView {
     @Override
     public TemplateView getTemplateView() {
         return template;
+    }
+
+    @Override
+    public void displayResponseSupplier(String supplierIconUrl, String supplierName) {
+        responseTitle.clear();
+        responseTitle.add(new HTML("Offer provided by " +
+                "<img style='max-height: 24px; vertical-align: middle;' src='" + supplierIconUrl + "'/> <b>" + supplierName + "</b></span>"));
     }
 
     @Override
@@ -180,7 +204,7 @@ public class RequestViewImpl extends Composite implements RequestView {
     protected void displayResponse(String response) {
         requestResponse.clear();
         if(response == null) {
-            MaterialLabel materialLabel = new MaterialLabel("No offer yet...");
+            MaterialLabel materialLabel = new MaterialLabel("This supplier hasn't provided an offer yet...");
             materialLabel.setMargin(20);
             materialLabel.setTextColor("grey");
             requestResponse.add(materialLabel);
@@ -207,6 +231,72 @@ public class RequestViewImpl extends Composite implements RequestView {
             }
             message.setPlaceholder("Reply...");
         }
+    }
+
+    protected void setStatus(Request.STATUS status) {
+        this.status.setText(status.toString());
+        statuses.clear();
+        this.status.setEnabled(false);
+            switch(status) {
+            case submitted:
+                this.status.setEnabled(true);
+            {
+                MaterialLink materialLink = new MaterialLink("Cancel");
+                materialLink.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        template.getClientFactory().getEventBus().fireEvent(new ChangeStatus(Request.STATUS.cancelled));
+                    }
+                });
+                statuses.add(materialLink);
+            }
+            {
+                MaterialLink materialLink = new MaterialLink("Complete");
+                materialLink.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        template.getClientFactory().getEventBus().fireEvent(new ChangeStatus(Request.STATUS.completed));
+                    }
+                });
+                statuses.add(materialLink);
+            }
+                break;
+        }
+    }
+
+    protected void setCategory(Category category) {
+        String color = CategoryUtils.getColor(category);
+        tabs.setBackgroundColor(color);
+        colorPanel.setBackgroundColor(color);
+    }
+
+    protected void resetTabs() {
+        // remove all other tabs than the request one
+        for(int index = tab.getWidgetCount(); index > 1; index--) {
+            tab.remove(tab.getWidget(index));
+        }
+    }
+
+    protected void addResponseTab(String id, String name, ClickHandler clickHandler) {
+        MaterialTabItem materialTabItem = new MaterialTabItem();
+        materialTabItem.setTextAlign(TextAlign.CENTER);
+        MaterialColumn materialColumn = new MaterialColumn();
+        MaterialLink materialLink = new MaterialLink(name);
+        materialLink.setHref("#" + id);
+        materialLink.setTextColor("white");
+        materialTabItem.add(materialLink);
+        materialLink.addClickHandler(clickHandler);
+        materialColumn.add(materialLink);
+        materialTabItem.add(materialColumn);
+        tab.add(materialTabItem);
+        MaterialPanel materialPanel = new MaterialPanel();
+        materialPanel.setId(id);
+        tabs.add(materialPanel);
+    }
+
+    protected void selectTab(String id) {
+        tab.selectTab(id);
+        responsePanel.setVisible(!id.contentEquals("request"));
     }
 
     @Override

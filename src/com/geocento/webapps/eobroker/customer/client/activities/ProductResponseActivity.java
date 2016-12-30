@@ -77,8 +77,11 @@ public class ProductResponseActivity extends TemplateActivity implements Product
             }
         }
 
+        loadResponse(id, responseId);
+    }
+
+    private void loadResponse(String id, final Long responseId) {
         try {
-            final Long finalResponseId = responseId;
             REST.withCallback(new MethodCallback<ProductServiceResponseDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -91,19 +94,19 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                     productResponseView.displayTitle("Viewing your product request '" + productServiceResponseDTO.getId() + "'");
                     productResponseView.displayComment("See below your request and the suppliers' responses");
                     productResponseView.displayProductRequest(productServiceResponseDTO);
-                    if(finalResponseId == null) {
-                        selectedResponse = request.getSupplierResponses().get(0);
+                    if(responseId == null) {
+                        selectedResponse = null; //request.getSupplierResponses().get(0);
                     } else {
                         selectedResponse = ListUtil.findValue(productServiceResponseDTO.getSupplierResponses(), new ListUtil.CheckValue<ProductServiceSupplierResponseDTO>() {
                             @Override
                             public boolean isValue(ProductServiceSupplierResponseDTO value) {
-                                return value.getId().longValue() == finalResponseId;
+                                return value.getId().longValue() == responseId;
                             }
                         });
                     }
                     selectResponse(selectedResponse);
                 }
-            }).call(ServicesUtil.ordersService).getProductResponse(id);
+            }).call(ServicesUtil.requestsService).getProductResponse(id);
         } catch (Exception e) {
 
         }
@@ -136,7 +139,7 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                             addMessage(response);
                             productResponseView.getMessageText().setText("");
                         }
-                    }).call(ServicesUtil.ordersService).addProductResponseMessage(selectedResponse.getId(), productResponseView.getMessageText().getText());
+                    }).call(ServicesUtil.requestsService).addProductResponseMessage(selectedResponse.getId(), productResponseView.getMessageText().getText());
                 } catch (RequestException e) {
                     e.printStackTrace();
                 }

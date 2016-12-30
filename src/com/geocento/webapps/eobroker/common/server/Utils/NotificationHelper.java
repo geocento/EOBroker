@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.common.server.Utils;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 
@@ -13,6 +14,16 @@ import java.util.Date;
  */
 public class NotificationHelper {
 
+    public static void notifyCustomer(EntityManager em, User user, Notification.TYPE type, String message, String linkId) {
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setType(type);
+        notification.setMessage(message);
+        notification.setLinkId(linkId);
+        notification.setCreationDate(new Date());
+        em.persist(notification);
+    }
+
     public static void notifySupplier(EntityManager em, Company company, SupplierNotification.TYPE type, String message, String linkId) {
         SupplierNotification supplierNotification = new SupplierNotification();
         supplierNotification.setCompany(company);
@@ -22,13 +33,11 @@ public class NotificationHelper {
         em.persist(supplierNotification);
     }
 
-    public static void notifyCustomer(EntityManager em, User user, Notification.TYPE type, String message, String linkId) {
-        Notification notification = new Notification();
-        notification.setUser(user);
-        notification.setType(type);
-        notification.setMessage(message);
-        notification.setLinkId(linkId);
-        notification.setCreationDate(new Date());
-        em.persist(notification);
+    public static void notifyAdmin(EntityManager em, AdminNotification.TYPE type, String message, String linkId) {
+        AdminNotification adminNotification = new AdminNotification();
+        adminNotification.setType(type);
+        adminNotification.setMessage(message);
+        adminNotification.setLinkId(linkId);
+        em.persist(adminNotification);
     }
 }

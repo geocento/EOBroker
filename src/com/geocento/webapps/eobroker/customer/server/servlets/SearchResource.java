@@ -220,102 +220,6 @@ public class SearchResource implements SearchService {
             searchResult.setMoreProjects(more);
         }
         return searchResult;
-/*
-        // check if last character is a space
-        boolean partialMatch = !text.endsWith(" ");
-        text.trim();
-        // break down text into sub words
-        String[] words = text.split(" ");
-        String keywords = StringUtils.join(words, " | ");
-        if(partialMatch) {
-            keywords += ":*";
-        }
-        EntityManager em = EMF.get().createEntityManager();
-        try {
-            // change the last word so that it allows for partial match
-            Query q = em.createNativeQuery("SELECT id, category, ts_rank(tsvname, keywords, 8) AS rank\n" +
-                    "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
-                    "          WHERE tsvname @@ keywords\n" +
-                    "          ORDER BY rank DESC\n" +
-                    "          LIMIT 50;");
-            List<Object[]> results = q.getResultList();
-            if(results.size() > 0) {
-                final HashMap<Long, Float> rankings = new HashMap<>();
-                List<Long> productIds = new ArrayList<Long>();
-                List<Long> productServiceIds = new ArrayList<Long>();
-                List<Long> productDatasetIds = new ArrayList<Long>();
-                for (Object[] result : results) {
-                    Long id = (Long) result[0];
-                    Float ranking = (Float) result[2];
-                    rankings.put(id, ranking);
-                    switch((String) result[1]) {
-                        case "product":
-                            productIds.add(id);
-                            break;
-                        case "productservice":
-                            productServiceIds.add(id);
-                            break;
-                        case "productdatasets":
-                            productDatasetIds.add(id);
-                            break;
-                    }
-                }
-                // now fetch the actual entities
-                // start with product
-                if(productIds.size() > 0) {
-                    boolean more = productIds.size() > 4;
-                    if(more) {
-                        productIds = productIds.subList(0, 4);
-                    }
-                    searchResult.setMoreProducts(more);
-                    TypedQuery<Product> productQuery = em.createQuery("select p from Product p where p.id IN :productIds", Product.class);
-                    productQuery.setParameter("productIds", productIds);
-                    List<Product> products = productQuery.getResultList();
-                    searchResult.setProducts(ListUtil.mutate(products, new ListUtil.Mutate<Product, ProductDTO>() {
-                        @Override
-                        public ProductDTO mutate(Product product) {
-                            return ProductHelper.createProductDTO(product);
-                        }
-                    }));
-                }
-                // then product services
-                if(productDatasetIds.size() > 0) {
-                    boolean more = productServiceIds.size() > 4;
-                    if(more) {
-                        productServiceIds = productServiceIds.subList(0, 4);
-                    }
-                    searchResult.setMoreProductServices(more);
-                    TypedQuery<ProductService> productServiceQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
-                    productServiceQuery.setParameter("productIds", productServiceIds);
-                    searchResult.setProductServices(ListUtil.mutate(productServiceQuery.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
-                        @Override
-                        public ProductServiceDTO mutate(ProductService productService) {
-                            return createProductServiceDTO(productService);
-                        }
-                    }));
-                }
-                // then product datasets
-                if(productDatasetIds.size() > 0) {
-                    boolean more = productDatasetIds.size() > 4;
-                    if(more) {
-                        productDatasetIds = productDatasetIds.subList(0, 4);
-                    }
-                    searchResult.setMoreProductServices(more);
-                    TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
-                    productDatasetQuery.setParameter("productIds", productDatasetIds);
-                    searchResult.setProductDatasets(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
-                        @Override
-                        public ProductDatasetDTO mutate(ProductDataset productDataset) {
-                            return createProductDatasetDTO(productDataset);
-                        }
-                    }));
-                }
-            }
-            return searchResult;
-        } finally {
-            em.close();
-        }
-*/
     }
 
     private ProductServiceDTO createProductServiceDTO(ProductService productService) {
@@ -851,32 +755,6 @@ public class SearchResource implements SearchService {
                 }
                 String response = sendAPIRequest(productService.getApiUrl(), json.toString());
                 ProductFeasibilityResponse productFeasibilityResponse = builder.create().fromJson(response, ProductFeasibilityResponse.class);
-/*
-                ProductFeasibilityResponse productFeasibilityResponse = new ProductFeasibilityResponse();
-                productFeasibilityResponse.setFeasible(feasibilityResponse.isFeasible());
-                productFeasibilityResponse.setMessage(feasibilityResponse.getMessage());
-                productFeasibilityResponse.setFeatures(feasibilityResponse.getFeatures());
-                productFeasibilityResponse.setCoverages(ListUtil.mutate(feasibilityResponse.getCoverages().getFeatures(), new ListUtil.Mutate<Feature, CoverageFeature>() {
-                    @Override
-                    public CoverageFeature mutate(Feature feature) {
-                        CoverageFeature coverageFeature = new CoverageFeature();
-                        String wktValue = null;
-                        Geometry geometry = feature.getGeometry();
-                        switch(geometry.getType()) {
-                            case "Polygon":
-                                wktValue = "POLYGON(" + convertGeoJsonRings(((Polygon) geometry).getCoordinates()) + ")";
-                                break;
-                        }
-                        coverageFeature.setWktValue(wktValue);
-                        Map<String, Serializable> properties = feature.getProperties();
-                        if(properties != null) {
-                            coverageFeature.setName(properties.get("name") + "");
-                            coverageFeature.setDescription(properties.get("description") + "");
-                        }
-                        return coverageFeature;
-                    }
-                }));
-*/
                 return productFeasibilityResponse;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

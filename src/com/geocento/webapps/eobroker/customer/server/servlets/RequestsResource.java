@@ -5,16 +5,17 @@ import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
-import com.geocento.webapps.eobroker.common.shared.entities.orders.*;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
-import com.geocento.webapps.eobroker.customer.client.services.OrdersService;
+import com.geocento.webapps.eobroker.customer.client.services.RequestsService;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.requests.*;
 import com.geocento.webapps.eobroker.customer.shared.utils.MessageHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -23,10 +24,12 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Path("/")
-public class OrdersResource implements OrdersService {
+public class RequestsResource implements RequestsService {
 
     static Logger logger = Logger.getLogger(AssetsResource.class);
 
@@ -36,96 +39,124 @@ public class OrdersResource implements OrdersService {
     @Context
     HttpServletRequest request;
 
-    public OrdersResource() {
+    public RequestsResource() {
         logger.info("Starting order service");
     }
 
     @Override
-    public List<RequestDTO> getRequests() throws RequestException {
+    public List<RequestDTO> getRequests(Request.STATUS status) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
             List<RequestDTO> requestDTOs = new ArrayList<RequestDTO>();
             // get user
             User user = em.find(User.class, userName);
-            {
-                TypedQuery<ImagesRequest> query = em.createQuery("select i from ImagesRequest i where i.customer = :user order by i.creationDate DESC", ImagesRequest.class);
-                query.setParameter("user", user);
-                List<ImagesRequest> requests = query.getResultList();
-                requestDTOs.addAll(ListUtil.mutate(requests, new ListUtil.Mutate<ImagesRequest, RequestDTO>() {
-                    @Override
-                    public RequestDTO mutate(ImagesRequest imagesRequest) {
-                        return createRequestDTO(imagesRequest);
-                    }
-                }));
-            }
-            {
-                TypedQuery<ImageryFormRequest> imageryFormQuery = em.createQuery("select i from ImageryFormRequest i where i.customer = :user order by i.creationDate DESC", ImageryFormRequest.class);
-                imageryFormQuery.setParameter("user", user);
-                List<ImageryFormRequest> imageryFormRequests = imageryFormQuery.getResultList();
-                requestDTOs.addAll(ListUtil.mutate(imageryFormRequests, new ListUtil.Mutate<ImageryFormRequest, RequestDTO>() {
-                    @Override
-                    public RequestDTO mutate(ImageryFormRequest imageryFormRequest) {
-                        return createRequestDTO(imageryFormRequest);
-                    }
-                }));
-            }
-            {
-                TypedQuery<ProductServiceRequest> productFormQuery = em.createQuery("select p from ProductServiceRequest p where p.customer = :user order by p.creationDate DESC", ProductServiceRequest.class);
-                productFormQuery.setParameter("user", user);
-                List<ProductServiceRequest> productServiceRequests = productFormQuery.getResultList();
-                requestDTOs.addAll(ListUtil.mutate(productServiceRequests, new ListUtil.Mutate<ProductServiceRequest, RequestDTO>() {
-                    @Override
-                    public RequestDTO mutate(ProductServiceRequest productServiceRequest) {
-                        return createRequestDTO(productServiceRequest);
-                    }
-                }));
-            }
-            Collections.sort(requestDTOs, new Comparator<RequestDTO>() {
+            TypedQuery<Request> query = em.createQuery("select r from Request r where r.customer = :user and r.status = :status order by r.creationDate DESC", Request.class);
+            query.setParameter("user", user);
+            query.setParameter("status", status);
+            List<Request> requests = query.getResultList();
+            requestDTOs.addAll(ListUtil.mutate(requests, new ListUtil.Mutate<Request, RequestDTO>() {
                 @Override
-                public int compare(RequestDTO o1, RequestDTO o2) {
-                    return o1.getCreationTime().compareTo(o2.getCreationTime());
+                public RequestDTO mutate(Request request) {
+                    return createRequestDTO(request);
                 }
-            });
+            }));
             return requestDTOs;
         } catch (Exception e) {
             throw new RequestException("Issue when accessing list of requests");
+        } finally {
+            em.close();
         }
     }
 
-    private RequestDTO createRequestDTO(ImageryFormRequest imageryFormRequest) {
+    @Override
+    public Integer getRequestsCount(Request.STATUS status) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // get user
+            User user = em.find(User.class, userName);
+            TypedQuery<Long> query = em.createQuery("select count(r) from Request r where r.customer = :user and r.status = :status", Long.class);
+            query.setParameter("user", user);
+            query.setParameter("status", status);
+            return query.getSingleResult().intValue();
+        } catch (Exception e) {
+            throw new RequestException("Issue when accessing list of requests");
+        } finally {
+            em.close();
+        }
+    }
+
+    private RequestDTO createRequestDTO(Request request) {
         RequestDTO requestDTO = new RequestDTO();
-        requestDTO.setId(imageryFormRequest.getId());
-        requestDTO.setType(RequestDTO.TYPE.imageservice);
-        boolean severalCompanies = imageryFormRequest.getImageServiceRequests().size() > 1;
-        requestDTO.setDescription("Form request for imagery service - " +
-            (severalCompanies ? (" (" + imageryFormRequest.getImageServiceRequests().size() + " companies)") :
-                    " (company '" + imageryFormRequest.getImageServiceRequests().get(0).getImageService().getCompany().getName() + "')")
-        );
-        requestDTO.setCreationTime(imageryFormRequest.getCreationDate());
+        requestDTO.setId(request.getId());
+        requestDTO.setCreationTime(request.getCreationDate());
+        // request specific
+        if(request instanceof ImageryFormRequest) {
+            ImageryFormRequest imageryFormRequest = (ImageryFormRequest) request;
+            requestDTO.setType(RequestDTO.TYPE.imageservice);
+            boolean severalCompanies = imageryFormRequest.getImageServiceRequests().size() > 1;
+            requestDTO.setDescription("Form request for imagery service - " +
+                            (severalCompanies ? (" (" + imageryFormRequest.getImageServiceRequests().size() + " companies)") :
+                                    " (company '" + imageryFormRequest.getImageServiceRequests().get(0).getImageService().getCompany().getName() + "')")
+            );
+        } else if(request instanceof ImagesRequest) {
+            ImagesRequest imagesRequest = (ImagesRequest) request;
+            requestDTO.setType(RequestDTO.TYPE.image);
+            requestDTO.setDescription("Request for " + imagesRequest.getProductRequests().size() + " products (company '" + imagesRequest.getImageService().getCompany().getName() + "')");
+        } else if(request instanceof ProductServiceRequest) {
+            requestDTO.setType(RequestDTO.TYPE.product);
+            ProductServiceRequest productServiceRequest = (ProductServiceRequest) request;
+            boolean severalCompanies = productServiceRequest.getSupplierRequests().size() > 1;
+            requestDTO.setDescription("Request for product '" + productServiceRequest.getProduct().getName() + "'" +
+                            (severalCompanies ? (" (" + productServiceRequest.getSupplierRequests().size() + " companies)") :
+                                    " (company '" + productServiceRequest.getSupplierRequests().get(0).getProductService().getCompany().getName() + "')")
+            );
+        }
         return requestDTO;
     }
 
-    private RequestDTO createRequestDTO(ImagesRequest imagesRequest) {
-        RequestDTO requestDTO = new RequestDTO();
-        requestDTO.setId(imagesRequest.getId());
-        requestDTO.setType(RequestDTO.TYPE.image);
-        requestDTO.setDescription("Request for " + imagesRequest.getProductRequests().size() + " products (company '" + imagesRequest.getImageService().getCompany().getName() + "')");
-        requestDTO.setCreationTime(imagesRequest.getCreationDate());
-        return requestDTO;
-    }
-
-    private RequestDTO createRequestDTO(ProductServiceRequest productServiceRequest) {
-        RequestDTO requestDTO = new RequestDTO();
-        requestDTO.setId(productServiceRequest.getId());
-        requestDTO.setType(RequestDTO.TYPE.product);
-        boolean severalCompanies = productServiceRequest.getSupplierRequests().size() > 1;
-        requestDTO.setDescription("Request for product '" + productServiceRequest.getProduct().getName() + "'" +
-                (severalCompanies ? (" (" + productServiceRequest.getSupplierRequests().size() + " companies)") :
-                        " (company '" + productServiceRequest.getSupplierRequests().get(0).getProductService().getCompany().getName() + "')")
-        );
-        requestDTO.setCreationTime(productServiceRequest.getCreationDate());
-        return requestDTO;
+    @Override
+    public void updateRequestStatus(String id, Request.STATUS status) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        if(id == null) {
+            throw new RequestException("Id is missing");
+        }
+        if(status == null) {
+            throw new RequestException("Status is missing");
+        }
+        try {
+            // get user
+            Request dbRequest = em.find(Request.class, id);
+            if(dbRequest == null) {
+                throw new RequestException("Request does not exist");
+            }
+            if(!dbRequest.getCustomer().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not allowed");
+            }
+            switch(status) {
+                case submitted:
+                    throw new RequestException("Not allowed");
+                // only submitted requests can be updated
+                case cancelled:
+                case completed:
+                    if(dbRequest.getStatus() != Request.STATUS.submitted) {
+                        throw new RequestException("Not allowed");
+                    }
+            }
+            em.getTransaction().begin();
+            dbRequest.setStatus(status);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Issue when accessing list of requests");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -159,6 +190,7 @@ public class OrdersResource implements OrdersService {
             // create image request
             ImageryFormRequest imageryFormRequest = new ImageryFormRequest();
             imageryFormRequest.setId(keyGenerator.CreateKey());
+            imageryFormRequest.setStatus(Request.STATUS.submitted);
             imageryFormRequest.setCustomer(user);
             imageryFormRequest.setAoiWKT(aoiWKT);
             imageryFormRequest.setStart(start);
@@ -235,6 +267,7 @@ public class OrdersResource implements OrdersService {
             // store the request
             ProductServiceRequest productServiceRequest = new ProductServiceRequest();
             productServiceRequest.setId(keyGenerator.CreateKey());
+            productServiceRequest.setStatus(Request.STATUS.submitted);
             productServiceRequest.setProduct(product);
             productServiceRequest.setCustomer(user);
             // TODO - check values are legitimate and correct?
@@ -283,6 +316,7 @@ public class OrdersResource implements OrdersService {
             User user = em.find(User.class, userName);
             ImagesRequest imagesRequest = new ImagesRequest();
             imagesRequest.setId(keyGenerator.CreateKey());
+            imagesRequest.setStatus(Request.STATUS.submitted);
             imagesRequest.setCustomer(user);
             imagesRequest.setCreationDate(new Date());
             ImageService imageService = em.find(ImageService.class, imageServiceId);
@@ -339,6 +373,7 @@ public class OrdersResource implements OrdersService {
             }
             ProductServiceResponseDTO productServiceResponseDTO = new ProductServiceResponseDTO();
             productServiceResponseDTO.setId(productServiceRequest.getId());
+            productServiceResponseDTO.setStatus(productServiceRequest.getStatus());
             productServiceResponseDTO.setAoIWKT(productServiceRequest.getAoIWKT());
             productServiceResponseDTO.setFormValues(productServiceRequest.getFormValues());
             productServiceResponseDTO.setProduct(ProductHelper.createProductDTO(productServiceRequest.getProduct()));
@@ -381,6 +416,7 @@ public class OrdersResource implements OrdersService {
             }
             ImageryResponseDTO imageryResponseDTO = new ImageryResponseDTO();
             imageryResponseDTO.setId(imageryFormRequest.getId());
+            imageryResponseDTO.setStatus(imageryFormRequest.getStatus());
             imageryResponseDTO.setAoiWKT(imageryFormRequest.getAoiWKT());
             imageryResponseDTO.setImageType(imageryFormRequest.getImageType());
             imageryResponseDTO.setApplication(imageryFormRequest.getApplication());
@@ -448,6 +484,7 @@ public class OrdersResource implements OrdersService {
             imagesServiceResponseDTO.setResponse(imagesRequest.getResponse());
             imagesServiceResponseDTO.setMessages(MessageHelper.convertToDTO(imagesRequest.getMessages()));
             imagesServiceResponseDTO.setResponseDate(imagesRequest.getLastModifiedDate());
+            imagesServiceResponseDTO.setStatus(imagesRequest.getStatus());
             return imagesServiceResponseDTO;
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
@@ -710,6 +747,143 @@ public class OrdersResource implements OrdersService {
         conversationDTO.setMessages(MessageHelper.convertToDTO(conversation.getMessages()));
         conversationDTO.setCreationDate(conversation.getCreationDate());
         return conversationDTO;
+    }
+
+    @Override
+    public List<FeedbackDTO> listFeedbacks() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Feedback> query = em.createQuery("select f from Feedback f where f.customer = :user order by f.creationDate desc", Feedback.class);
+            query.setParameter("user", user);
+            query.setFirstResult(0);
+            query.setMaxResults(10);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Feedback, FeedbackDTO>() {
+                @Override
+                public FeedbackDTO mutate(Feedback feedback) {
+                    FeedbackDTO feedbackDTO = new FeedbackDTO();
+                    feedbackDTO.setId(feedback.getId());
+                    feedbackDTO.setTopic(feedback.getTopic());
+                    feedbackDTO.setCreationDate(feedback.getCreationDate());
+                    return feedbackDTO;
+                }
+            });
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public FeedbackDTO getFeedback(String id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("Feedback id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            Feedback feedback = em.find(Feedback.class, id);
+            if(feedback == null) {
+                throw new RequestException("No feedback with this id");
+            }
+            if(feedback.getCustomer() != user) {
+                throw new RequestException("Not allowed");
+            }
+            return createFeedbackDTO(feedback);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to feedback, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public FeedbackDTO createFeedback(CreateFeedbackDTO feedbackDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(feedbackDTO == null) {
+            throw new RequestException("Feedback cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Feedback feedback = new Feedback();
+            feedback.setId(keyGenerator.CreateKey());
+            feedback.setTopic(feedbackDTO.getTopic());
+            feedback.setCustomer(user);
+            feedback.setCreationDate(new Date());
+            em.persist(feedback);
+            NotificationHelper.notifyAdmin(em, AdminNotification.TYPE.MESSAGE, "User " + userName + " has submitted a new feedback", feedback.getId());
+            em.getTransaction().commit();
+            return createFeedbackDTO(feedback);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public MessageDTO addFeedbackMessage(String id, String text) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("Feedback id cannot be null");
+        }
+        if(text == null || text.length() == 0) {
+            throw new RequestException("No message provided");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Feedback feedback = em.find(Feedback.class, id);
+            if(feedback == null) {
+                throw new RequestException("No feedback with this id");
+            }
+            if(feedback.getCustomer() != user) {
+                throw new RequestException("Not allowed");
+            }
+            Message message = new Message();
+            message.setFrom(user);
+            message.setMessage(text);
+            message.setCreationDate(new Date());
+            em.persist(message);
+            feedback.getMessages().add(message);
+            em.getTransaction().commit();
+            return MessageHelper.convertToDTO(message);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private FeedbackDTO createFeedbackDTO(Feedback feedback) {
+        FeedbackDTO feedbackDTO = new FeedbackDTO();
+        feedbackDTO.setId(feedback.getId());
+        feedbackDTO.setTopic(feedback.getTopic());
+        feedbackDTO.setMessages(MessageHelper.convertToDTO(feedback.getMessages()));
+        feedbackDTO.setCreationDate(feedback.getCreationDate());
+        return feedbackDTO;
     }
 
 }

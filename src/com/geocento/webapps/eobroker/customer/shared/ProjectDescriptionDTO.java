@@ -18,6 +18,7 @@ public class ProjectDescriptionDTO {
     String fullDescription;
     CompanyDTO companyDTO;
     List<ProductProjectDTO> products;
+    private List<CompanyDTO> consortium;
 
     public ProjectDescriptionDTO() {
     }
@@ -92,5 +93,13 @@ public class ProjectDescriptionDTO {
 
     public void setCompanyDTO(CompanyDTO companyDTO) {
         this.companyDTO = companyDTO;
+    }
+
+    public List<CompanyDTO> getConsortium() {
+        return consortium;
+    }
+
+    public void setConsortium(List<CompanyDTO> consortium) {
+        this.consortium = consortium;
     }
 }

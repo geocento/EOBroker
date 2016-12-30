@@ -43,6 +43,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new VisualisationActivity((VisualisationPlace) place, clientFactory);
         } else if(place instanceof ConversationPlace) {
             return new ConversationActivity((ConversationPlace) place, clientFactory);
+        } else if(place instanceof FeedbackPlace) {
+            return new FeedbackActivity((FeedbackPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
         }

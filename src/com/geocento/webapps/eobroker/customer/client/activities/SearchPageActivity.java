@@ -375,6 +375,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         searchPageView.getProductDatasetsCategory().setHref(getSearchCategoryUrl(Category.productdatasets, text));
         searchPageView.getSoftwareCategory().setHref(getSearchCategoryUrl(Category.software, text));
         searchPageView.getProjectsCategory().setHref(getSearchCategoryUrl(Category.project, text));
+        searchPageView.getCompaniesCategory().setHref(getSearchCategoryUrl(Category.companies, text));
     }
 
     @Override

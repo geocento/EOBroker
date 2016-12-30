@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.requests.ImageryResponseDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.ImagesServiceResponseDTO;
@@ -12,12 +13,20 @@ import org.fusesource.restygwt.client.DirectRestService;
 import javax.ws.rs.*;
 import java.util.List;
 
-public interface OrdersService extends DirectRestService {
+public interface RequestsService extends DirectRestService {
 
     @GET
     @Path("/requests/")
     @Produces("application/json")
-    List<RequestDTO> getRequests() throws RequestException;
+    List<RequestDTO> getRequests(@QueryParam("status") Request.STATUS status) throws RequestException;
+
+    @GET
+    @Path("/requests/count/")
+    Integer getRequestsCount(@QueryParam("status") Request.STATUS status) throws RequestException;
+
+    @PUT
+    @Path("/requests/{id}")
+    void updateRequestStatus(@PathParam("id") String id, @QueryParam("status") Request.STATUS status) throws RequestException;
 
     @POST
     @Path("/requests/image/")
@@ -83,4 +92,25 @@ public interface OrdersService extends DirectRestService {
     @Path("/assets/conversation/")
     @Produces("application/json")
     List<ConversationDTO> listConversations(@QueryParam("companyId") Long companyId) throws RequestException;
+
+    @GET
+    @Path("/requests/feedback/{id}")
+    @Produces("application/json")
+    FeedbackDTO getFeedback(@PathParam("id") String feedbackid) throws RequestException;
+
+    @POST
+    @Path("/requests/feedback/")
+    @Produces("application/json")
+    FeedbackDTO createFeedback(CreateFeedbackDTO feedbackDTO) throws RequestException;
+
+    @POST
+    @Path("/requests/feedback/{id}")
+    @Produces("application/json")
+    MessageDTO addFeedbackMessage(@PathParam("id") String feedbackid, String text) throws RequestException;
+
+    @GET
+    @Path("/assets/feedback/")
+    @Produces("application/json")
+    List<FeedbackDTO> listFeedbacks() throws RequestException;
+
 }

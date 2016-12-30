@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.shared.requests;
 
+import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
+
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class ImageryResponseDTO {
     String application;
     Date creationDate;
     List<ImagerySupplierResponseDTO> supplierResponses;
+    Request.STATUS status;
 
     public ImageryResponseDTO() {
     }
@@ -91,5 +94,13 @@ public class ImageryResponseDTO {
 
     public void setSupplierResponses(List<ImagerySupplierResponseDTO> supplierResponses) {
         this.supplierResponses = supplierResponses;
+    }
+
+    public void setStatus(Request.STATUS status) {
+        this.status = status;
+    }
+
+    public Request.STATUS getStatus() {
+        return status;
     }
 }

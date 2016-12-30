@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.events;
 
-import com.geocento.webapps.eobroker.common.shared.entities.orders.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**

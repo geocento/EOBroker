@@ -900,6 +900,12 @@ public class AssetsResource implements AssetsService {
                     return createProductProjectDTO(productProject);
                 }
             }));
+            projectDTO.setConsortium(ListUtil.mutate(project.getConsortium(), new ListUtil.Mutate<Company, CompanyDTO>() {
+                @Override
+                public CompanyDTO mutate(Company company) {
+                    return CompanyHelper.createCompanyDTO(company);
+                }
+            }));
             return projectDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

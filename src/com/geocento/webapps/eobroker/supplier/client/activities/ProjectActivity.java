@@ -58,7 +58,7 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
                 REST.withCallback(new MethodCallback<ProjectDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        Window.alert("Failed to load project");
                     }
 
                     @Override

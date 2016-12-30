@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.shared.entities.orders;
+package com.geocento.webapps.eobroker.common.shared.entities.requests;
 
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.Message;

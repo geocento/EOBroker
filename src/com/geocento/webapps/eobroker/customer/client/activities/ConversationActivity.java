@@ -73,7 +73,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                         conversationView.displayConversation(conversationDTO);
                         loadPreviousConversations(conversationDTO.getCompany().getId(), conversationDTO.getId());
                     }
-                }).call(ServicesUtil.ordersService).getConversation(conversationid);
+                }).call(ServicesUtil.requestsService).getConversation(conversationid);
             } catch (Exception e) {
             }
         } else {
@@ -122,7 +122,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                         }
                     }));
                 }
-            }).call(ServicesUtil.ordersService).listConversations(companyId);
+            }).call(ServicesUtil.requestsService).listConversations(companyId);
         } catch (Exception e) {
         }
     }
@@ -153,7 +153,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                                 History.newItem(PlaceHistoryHelper.convertPlace(new ConversationPlace(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId() + ""))), false);
                                 saveMessage();
                             }
-                        }).call(ServicesUtil.ordersService).createConversation(createConversationDTO);
+                        }).call(ServicesUtil.requestsService).createConversation(createConversationDTO);
                     } catch (RequestException e) {
                         e.printStackTrace();
                     }
@@ -181,7 +181,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                     addMessage(response);
                     conversationView.getMessageText().setText("");
                 }
-            }).call(ServicesUtil.ordersService).addConversationMessage(conversationDTO.getId(), conversationView.getMessageText().getText());
+            }).call(ServicesUtil.requestsService).addConversationMessage(conversationDTO.getId(), conversationView.getMessageText().getText());
         } catch (RequestException e) {
             e.printStackTrace();
         }
