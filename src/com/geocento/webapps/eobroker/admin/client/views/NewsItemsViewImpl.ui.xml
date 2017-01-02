@@ -20,7 +20,7 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView titleText="View news items" ui:field="template">
+    <views:TemplateView titleText="View news items" link="newsItems" ui:field="template">
         <design:MaterialPanel padding="20">
             <g:HTMLPanel>
                 <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" ui:field="createNew"></design:MaterialButton>

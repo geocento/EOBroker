@@ -21,6 +21,8 @@ public interface NewsItemsView extends IsWidget {
 
     void setNewsItemsLoading(boolean loading);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
         void loadMore();
 

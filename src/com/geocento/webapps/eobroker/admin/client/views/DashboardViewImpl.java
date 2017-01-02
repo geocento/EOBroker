@@ -47,6 +47,11 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
     }

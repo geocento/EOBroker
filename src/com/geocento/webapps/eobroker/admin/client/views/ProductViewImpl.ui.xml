@@ -37,7 +37,7 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView titleText="Edit product" ui:field="template">
+    <views:TemplateView titleText="Edit product" link="products" ui:field="template">
         <design:MaterialPanel padding="20">
             <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
             <design:MaterialRow>

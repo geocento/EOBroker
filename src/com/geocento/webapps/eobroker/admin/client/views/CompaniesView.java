@@ -21,6 +21,8 @@ public interface CompaniesView extends IsWidget {
 
     void addCompanies(boolean hasMore, List<CompanyDTO> response);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
         void loadMore();
 

@@ -16,9 +16,8 @@
         }
 
         .navBrand {
-            color: grey;
-            padding-left: 20px;
-            font-size: 1.4em;
+            padding: 20px 0px;
+            font-size: 1.2em;
         }
 
         .logoImage {
@@ -31,7 +30,7 @@
         }
 
         .navOpened main, .navOpened footer {
-            padding-left: 250px;
+            padding-left: 300px;
         }
 
         .title {
@@ -39,13 +38,46 @@
         }
 
         .userIcon {
+            display: inline-block;
+        !important;
             vertical-align: middle;
-            margin-right: 10px;
+            cursor: pointer;
         }
 
         .mainPanel {
             max-width: 960px;
             margin: auto;
+            padding: 0px 10px;
+        }
+
+        .sidenavPanel {
+            height: 100%;
+        }
+
+        .sideNav {
+            height: auto !important;
+            bottom: 0px !important;
+            background: rgb(238, 238, 238) !important;
+        }
+
+        .menus {
+            padding: 30px;
+            line-height: normal !important;
+        }
+
+        a.category {
+            height: inherit;
+            font-size: 1em;
+            line-height: 3.6em;
+            padding: 0 !important;
+            margin: 0;
+        }
+
+        .category.selected {
+            color: blue !important;
+        }
+
+        .notificationsPanel {
         }
 
     </ui:style>
@@ -61,18 +93,30 @@
                 </design:MaterialNavSection>
                 <design:MaterialNavSection float="RIGHT">
                     <design:MaterialTooltip text="Notifications" position="BOTTOM">
-                        <design:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE"/>
+                        <design:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="notifications" activates="notifications">
+                            <design:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true" ui:field="notificationsBadge"/>
+                        </design:MaterialLink>
                     </design:MaterialTooltip>
                     <design:MaterialTooltip text="Log out" position="BOTTOM">
-                        <widgets:UserWidget size="40" addStyleNames="{style.userIcon}" ui:field="userIcon"></widgets:UserWidget>
+                        <design:MaterialLink ui:field="signOut">
+                            <widgets:UserWidget size="40" addStyleNames="{style.userIcon}" ui:field="userIcon"></widgets:UserWidget>
+                        </design:MaterialLink>
                     </design:MaterialTooltip>
                 </design:MaterialNavSection>
             </design:MaterialNavBar>
-            <widgets:MaterialSideNav design:id="sideNav" type="FIXED" alwaysShowActivator="false" allowBodyScroll="true" backgroundColor="white" top="64" shadow="0" width="250" ui:field="sideNav">
-                <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
-                <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" ui:field="companies"></design:MaterialLink>
-                <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" ui:field="products"></design:MaterialLink>
-                <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="News Items" ui:field="newsItems"></design:MaterialLink>
+            <design:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" addStyleNames="{style.notificationsPanel}" ui:field="notificationsPanel"></design:MaterialDropDown>
+            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="sideNav">
+                <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
+                    <g:HTMLPanel addStyleNames="{style.menus}">
+                        <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
+                        <g:HTMLPanel ui:field="links">
+                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" addStyleNames="{style.category}" ui:field="companies"></design:MaterialLink>
+                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" addStyleNames="{style.category}" ui:field="products"></design:MaterialLink>
+                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="News Items" addStyleNames="{style.category}" ui:field="newsItems"></design:MaterialLink>
+                            <design:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="blue" text="Feedback" addStyleNames="{style.category}" ui:field="feedback"></design:MaterialLink>
+                        </g:HTMLPanel>
+                    </g:HTMLPanel>
+                </g:HTMLPanel>
             </widgets:MaterialSideNav>
         </header>
 

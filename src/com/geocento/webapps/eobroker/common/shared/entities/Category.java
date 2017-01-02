@@ -9,7 +9,8 @@ public enum Category {
     software("Software solutions"),
     project("Projects"),
     companies("Companies"),
-    imagery("Imagery");
+    imagery("Imagery"),
+    newsItems;
 
     private String name;
 

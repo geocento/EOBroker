@@ -9,6 +9,8 @@ public interface DashboardView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

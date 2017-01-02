@@ -123,4 +123,9 @@ public class NewsItemViewImpl extends Composite implements NewsItemView {
         pageTitle.setTitle(title);
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

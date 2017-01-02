@@ -61,6 +61,8 @@ public interface ProductView extends IsWidget {
 
     List<FeatureDescription> getGeoinformation();
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

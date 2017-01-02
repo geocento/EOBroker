@@ -63,6 +63,11 @@ public class DatasetProvidersViewImpl extends Composite implements DatasetProvid
     }
 
     @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }

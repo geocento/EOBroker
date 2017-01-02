@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.google.gwt.http.client.RequestException;
@@ -522,7 +523,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public List<DatasetProviderDTO> listDatasets() throws RequestException {
-        String userName = com.geocento.webapps.eobroker.supplier.server.util.UserUtils.verifyUserSupplier(request);
+        String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
@@ -540,6 +541,159 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public List<NotificationDTO> getNotifications() throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<AdminNotification> query = em.createQuery("select n from AdminNotification n ORDER BY n.creationDate DESC", AdminNotification.class);
+            query.setMaxResults(10);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<AdminNotification, NotificationDTO>() {
+                @Override
+                public NotificationDTO mutate(AdminNotification adminNotification) {
+                    NotificationDTO notificationDTO = new NotificationDTO();
+                    notificationDTO.setType(adminNotification.getType());
+                    notificationDTO.setMessage(adminNotification.getMessage());
+                    notificationDTO.setLinkId(adminNotification.getLinkId());
+                    notificationDTO.setCreationDate(adminNotification.getCreationDate());
+                    return notificationDTO;
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public FeedbackDTO getFeedback(String id) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        if(id == null) {
+            throw new RequestException("Feedback id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            Feedback feedback = em.find(Feedback.class, id);
+            if(feedback == null) {
+                throw new RequestException("No feedback with this id");
+            }
+            FeedbackDTO feedbackDTO = createFeedbackDTO(feedback);
+            feedbackDTO.setMessages(ListUtil.mutate(feedback.getMessages(), new ListUtil.Mutate<Message, MessageDTO>() {
+                @Override
+                public MessageDTO mutate(Message message) {
+                    return convertMessageToDTO(message);
+                }
+            }));
+            return feedbackDTO;
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not load feedback, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public MessageDTO addFeedbackMessage(String id, String text) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        if(id == null) {
+            throw new RequestException("Feedback id cannot be null");
+        }
+        if(text == null || text.length() == 0) {
+            throw new RequestException("No message provided");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Feedback feedback = em.find(Feedback.class, id);
+            if(feedback == null) {
+                throw new RequestException("No feedback with this id");
+            }
+            if(feedback.getCustomer() != user) {
+                throw new RequestException("Not allowed");
+            }
+            Message message = new Message();
+            message.setFrom(user);
+            message.setMessage(text);
+            message.setCreationDate(new Date());
+            em.persist(message);
+            feedback.getMessages().add(message);
+            em.getTransaction().commit();
+            return convertMessageToDTO(message);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<FeedbackDTO> listFeedbacks(String name) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            TypedQuery<Feedback> query = em.createQuery("select f from Feedback f " +
+                            (name != null ? "where f.customer.username = :userName" : "") +
+                            " order by f.creationDate desc", Feedback.class);
+            if(name != null) {
+                query.setParameter("userName", name);
+            }
+            query.setFirstResult(0);
+            query.setMaxResults(10);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Feedback, FeedbackDTO>() {
+                @Override
+                public FeedbackDTO mutate(Feedback feedback) {
+                    return createFeedbackDTO(feedback);
+                }
+            });
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not load the feedbacks, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private FeedbackDTO createFeedbackDTO(Feedback feedback) {
+        FeedbackDTO feedbackDTO = new FeedbackDTO();
+        feedbackDTO.setId(feedback.getId());
+        feedbackDTO.setUserDTO(createUserDTO(feedback.getCustomer()));
+        feedbackDTO.setTopic(feedback.getTopic());
+        feedbackDTO.setCreationDate(feedback.getCreationDate());
+        return feedbackDTO;
+    }
+
+    private MessageDTO convertMessageToDTO(Message message) {
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setId(message.getId());
+        messageDTO.setFrom(message.getFrom().getUsername());
+        messageDTO.setMessage(message.getMessage());
+        messageDTO.setCreationDate(message.getCreationDate());
+        return messageDTO;
+    }
+
+    static public UserDTO createUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(user.getUsername());
+        userDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(user.getCompany()));
+        return userDTO;
     }
 
 }

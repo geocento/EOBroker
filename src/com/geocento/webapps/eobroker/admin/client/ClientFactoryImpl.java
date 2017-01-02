@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.admin.client;
 
-import com.geocento.webapps.eobroker.admin.client.places.DashboardPlace;
+import com.geocento.webapps.eobroker.admin.client.places.CompaniesPlace;
 import com.geocento.webapps.eobroker.admin.client.views.*;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
@@ -31,6 +31,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private DatasetProvidersView datasetProvidersView = null;
 
+    private FeedbackView feedbackView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -43,7 +45,7 @@ public class ClientFactoryImpl implements ClientFactory {
 
     @Override
     public Place getDefaultPlace() {
-        return new DashboardPlace("");
+        return new CompaniesPlace("");
     }
 
     @Override
@@ -116,6 +118,14 @@ public class ClientFactoryImpl implements ClientFactory {
             datasetProvidersView = new DatasetProvidersViewImpl(this);
         }
         return datasetProvidersView;
+    }
+
+    @Override
+    public FeedbackView getFeedbackView() {
+        if(feedbackView == null) {
+            feedbackView = new FeedbackViewImpl(this);
+        }
+        return feedbackView;
     }
 
 }

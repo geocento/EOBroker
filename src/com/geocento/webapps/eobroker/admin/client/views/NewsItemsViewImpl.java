@@ -92,6 +92,11 @@ public class NewsItemsViewImpl extends Composite implements NewsItemsView {
     }
 
     @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }

@@ -43,6 +43,7 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
         companiesView = clientFactory.getCompaniesView();
         companiesView.setPresenter(this);
         panel.setWidget(companiesView.asWidget());
+        setTemplateView(companiesView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

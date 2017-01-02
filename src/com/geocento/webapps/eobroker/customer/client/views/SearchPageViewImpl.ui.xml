@@ -26,12 +26,6 @@
             line-height: normal !important;
         }
 
-        .navBrand {
-            color: grey;
-            padding-left: 20px;
-            font-size: 1.4em;
-        }
-
         .productTitle, .productServicesTitle {
             margin: 0;
             padding: 0px 10px;

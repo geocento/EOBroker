@@ -95,4 +95,10 @@ public class ProductsViewImpl extends Composite implements ProductsView {
     public void setProductsLoading(boolean loading) {
         products.setLoading(loading);
     }
+
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

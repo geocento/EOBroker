@@ -31,6 +31,8 @@ public interface NewsItemView extends IsWidget {
 
     void setPageTitle(String title);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

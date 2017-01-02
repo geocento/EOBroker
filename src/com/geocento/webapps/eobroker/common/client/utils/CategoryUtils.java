@@ -26,6 +26,8 @@ public class CategoryUtils {
                 return IconType.PICTURE_IN_PICTURE;
             case companies:
                 return IconType.BUSINESS;
+            case newsItems:
+                return IconType.NOTIFICATIONS;
         }
         return null;
     }

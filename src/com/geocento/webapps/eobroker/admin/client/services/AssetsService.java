@@ -1,9 +1,6 @@
 package com.geocento.webapps.eobroker.admin.client.services;
 
-import com.geocento.webapps.eobroker.admin.shared.dtos.DatasetProviderDTO;
-import com.geocento.webapps.eobroker.admin.shared.dtos.EditProductDTO;
-import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.admin.shared.dtos.ProductServiceDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -115,5 +112,25 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/dataset/")
     @Produces("application/json")
     List<DatasetProviderDTO> listDatasets() throws RequestException;
+
+    @GET
+    @Path("/notifications/")
+    @Produces("application/json")
+    List<NotificationDTO> getNotifications() throws RequestException;
+
+    @GET
+    @Path("/requests/feedback/{id}")
+    @Produces("application/json")
+    FeedbackDTO getFeedback(@PathParam("id") String feedbackid) throws RequestException;
+
+    @POST
+    @Path("/requests/feedback/{id}")
+    @Produces("application/json")
+    MessageDTO addFeedbackMessage(@PathParam("id") String feedbackid, String text) throws RequestException;
+
+    @GET
+    @Path("/requests/feedback/")
+    @Produces("application/json")
+    List<FeedbackDTO> listFeedbacks(@QueryParam("name") String name) throws RequestException;
 
 }

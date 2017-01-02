@@ -21,6 +21,8 @@ public interface ProductsView extends IsWidget {
 
     void setProductsLoading(boolean loading);
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
         void loadMore();
 

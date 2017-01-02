@@ -20,7 +20,7 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
-    <views:TemplateView titleText="View products" ui:field="template">
+    <views:TemplateView titleText="View products" link="products" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.content}">
             <g:HTMLPanel>
                 <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" ui:field="createNew"></design:MaterialButton>

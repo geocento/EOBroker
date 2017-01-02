@@ -33,6 +33,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new NewsItemsActivity((NewsItemsPlace) place, clientFactory);
         } else if(place instanceof NewsItemPlace) {
             return new NewsItemActivity((NewsItemPlace) place, clientFactory);
+        } else if(place instanceof FeedbackPlace) {
+            return new FeedbackActivity((FeedbackPlace) place, clientFactory);
         }
         return null;
     }

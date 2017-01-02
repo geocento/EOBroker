@@ -17,6 +17,8 @@ public interface DatasetProvidersView extends IsWidget {
 
     HasClickHandlers getCreateNewButton();
 
+    TemplateView getTemplateView();
+
     public interface Presenter {
     }
 

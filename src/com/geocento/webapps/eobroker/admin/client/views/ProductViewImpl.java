@@ -246,4 +246,9 @@ public class ProductViewImpl extends Composite implements ProductView {
         addFeatureDescription(new FeatureDescription());
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
 }

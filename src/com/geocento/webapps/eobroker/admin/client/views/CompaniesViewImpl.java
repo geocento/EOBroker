@@ -92,6 +92,11 @@ public class CompaniesViewImpl extends Composite implements CompaniesView {
     }
 
     @Override
+    public TemplateView getTemplateView() {
+        return template;
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }

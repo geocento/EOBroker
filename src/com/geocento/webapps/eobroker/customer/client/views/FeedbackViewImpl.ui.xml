@@ -11,18 +11,8 @@
             padding-bottom: 20px;
         }
 
-        .section {
-            padding: 10px 0px 10px 10px;
-            font-size: 1rem;
-            color: #9e9e9e;
-        }
-
         .buttonPanel {
             padding: 20px 10px;
-        }
-
-        .mapPanel {
-            position: relative;
         }
 
         .panel {
