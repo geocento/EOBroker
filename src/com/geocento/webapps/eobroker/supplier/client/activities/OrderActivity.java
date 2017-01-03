@@ -45,14 +45,18 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
         panel.setWidget(orderView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
+        displayFullLoading("Loading map...");
         orderView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
-
+                Window.alert("Problem loading map...");
+                hideFullLoading();
+                handleHistory();
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -69,17 +73,20 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
         }
 
         try {
+            displayFullLoading("Loading request...");
             type = RequestDTO.TYPE.valueOf(typeString);
             switch(type) {
                 case product:
                     REST.withCallback(new MethodCallback<ProductServiceSupplierRequestDTO>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            hideFullLoading();
+                            Window.alert("Problem loading request");
                         }
 
                         @Override
                         public void onSuccess(Method method, ProductServiceSupplierRequestDTO productServiceSupplierRequestDTO) {
+                            hideFullLoading();
                             request = productServiceSupplierRequestDTO;
                             orderView.displayTitle("Viewing product request '" + productServiceSupplierRequestDTO.getId() + "'");
                             orderView.displayUser(productServiceSupplierRequestDTO.getCustomer());
@@ -91,11 +98,13 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                     REST.withCallback(new MethodCallback<ImageryServiceRequestDTO>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            hideFullLoading();
+                            Window.alert("Problem loading request");
                         }
 
                         @Override
                         public void onSuccess(Method method, ImageryServiceRequestDTO imageryServiceRequestDTO) {
+                            hideFullLoading();
                             request = imageryServiceRequestDTO;
                             orderView.displayTitle("Viewing imagery request '" + imageryServiceRequestDTO.getId() + "'");
                             orderView.displayUser(imageryServiceRequestDTO.getCustomer());
@@ -107,11 +116,13 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                     REST.withCallback(new MethodCallback<ImagesRequestDTO>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            hideFullLoading();
+                            Window.alert("Problem loading request");
                         }
 
                         @Override
                         public void onSuccess(Method method, ImagesRequestDTO imagesRequestDTO) {
+                            hideFullLoading();
                             request = imagesRequestDTO;
                             orderView.displayTitle("Viewing images request '" + imagesRequestDTO.getId() + "'");
                             orderView.displayUser(imagesRequestDTO.getCustomer());

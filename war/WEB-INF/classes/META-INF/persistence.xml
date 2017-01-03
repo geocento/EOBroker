@@ -24,6 +24,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductSoftware</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Project</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductProject</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.CompanyRole</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.AoI</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.AoIFormElement</class>

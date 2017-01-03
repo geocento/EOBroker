@@ -43,6 +43,7 @@ public class RequestsActivity extends TemplateActivity implements RequestsView.P
     private void handleHistory() {
         // load all current requests
         try {
+            displayFullLoading("Loading opened requests...");
             REST.withCallback(new MethodCallback<List<RequestDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -51,6 +52,7 @@ public class RequestsActivity extends TemplateActivity implements RequestsView.P
 
                 @Override
                 public void onSuccess(Method method, List<RequestDTO> requestDTOs) {
+                    hideFullLoading();
                     ordersView.setRequests(requestDTOs);
                 }
             }).call(ServicesUtil.requestsService).getRequests(Request.STATUS.submitted);

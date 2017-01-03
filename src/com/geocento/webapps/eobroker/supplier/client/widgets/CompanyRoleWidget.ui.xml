@@ -26,7 +26,7 @@
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="white" padding="10">
             <design:MaterialLabel fontSize="1.2em" ui:field="title"/>
-            <design:MaterialLabel addStyleNames="{style.description}" ui:field="pitch"></design:MaterialLabel>
+            <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction padding="10">
             <design:MaterialLink text="REMOVE" textColor="white" ui:field="remove"></design:MaterialLink>

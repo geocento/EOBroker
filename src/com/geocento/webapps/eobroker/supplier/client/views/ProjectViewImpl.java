@@ -1,11 +1,19 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyRoleWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyTextBox;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductProjectPitch;
+import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.CompanyRoleDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductProjectDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -48,6 +56,18 @@ public class ProjectViewImpl extends Composite implements ProjectView {
     MaterialRow products;
     @UiField
     MaterialButton addProduct;
+    @UiField
+    MaterialTextBox companyRole;
+    @UiField
+    CompanyTextBox company;
+    @UiField
+    MaterialButton addCompany;
+    @UiField
+    MaterialRow consortium;
+    @UiField
+    ProductTextBox product;
+    @UiField
+    MaterialTextBox productPitch;
 
     public ProjectViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -136,15 +156,107 @@ public class ProjectViewImpl extends Composite implements ProjectView {
         if(getSelectedProducts().size() == 0) {
             products.clear();
         }
-        ProductProjectPitch productProjectPitch = new ProductProjectPitch();
-        productProjectPitch.setTitle("Product supported #" + (getSelectedProducts().size() + 1));
+        final ProductProjectPitch productProjectPitch = new ProductProjectPitch();
         productProjectPitch.setProductProject(productProjectDTO);
+        productProjectPitch.getRemove().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                WidgetUtil.removeWidgets(products, new WidgetUtil.CheckValue() {
+                    @Override
+                    public boolean isValue(Widget widget) {
+                        return widget instanceof ProductProjectPitch && ((ProductProjectPitch) widget) == productProjectPitch;
+                    }
+                });
+            }
+        });
         products.add(productProjectPitch);
     }
 
     @UiHandler("addProduct")
     void addProduct(ClickEvent clickEvent) {
-        addProductProjectPitch(new ProductProjectDTO());
+        ProductDTO productDTO = product.getProduct();
+        if(productDTO == null) {
+            template.displayError("Please select a product");
+            return;
+        }
+        String pitch = productPitch.getText();
+        if(pitch.contentEquals("")) {
+            template.displayError("Please provide a pitch for this product");
+            return;
+        }
+        ProductProjectDTO productProjectDTO = new ProductProjectDTO();
+        productProjectDTO.setProduct(productDTO);
+        productProjectDTO.setPitch(pitch);
+        addProductProjectPitch(productProjectDTO);
+        // reset the values
+        product.clearProduct();
+        productPitch.setText("");
+        productPitch.setFocus(false);
+    }
+
+    @Override
+    public List<CompanyRoleDTO> getConsortium() {
+        ArrayList<CompanyRoleDTO> companyRoles = new ArrayList<CompanyRoleDTO>();
+        for(int index = 0; index < consortium.getWidgetCount(); index++) {
+            Widget widget = consortium.getWidget(index);
+            if(widget instanceof CompanyRoleWidget) {
+                companyRoles.add(((CompanyRoleWidget) widget).getCompanyRole());
+            }
+        }
+        return companyRoles;
+    }
+
+    @Override
+    public void setConsortium(List<CompanyRoleDTO> companyRoleDTOs) {
+        consortium.clear();
+        if(companyRoleDTOs == null || companyRoleDTOs.size() == 0) {
+            consortium.add(new MaterialLabel("No company added yet, use the add company button to add a company"));
+        } else {
+            for(CompanyRoleDTO companyRoleDTO : companyRoleDTOs) {
+                addCompanyRole(companyRoleDTO);
+            }
+        }
+    }
+
+    private void addCompanyRole(CompanyRoleDTO companyRoleDTO) {
+        // make sure we remove the text before
+        if(getSelectedProducts().size() == 0) {
+            products.clear();
+        }
+        final CompanyRoleWidget companyRoleWidget = new CompanyRoleWidget(companyRoleDTO);
+        companyRoleWidget.getRemove().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                WidgetUtil.removeWidgets(consortium, new WidgetUtil.CheckValue() {
+                    @Override
+                    public boolean isValue(Widget widget) {
+                        return widget instanceof CompanyRoleWidget && ((CompanyRoleWidget) widget) == companyRoleWidget;
+                    }
+                });
+            }
+        });
+        consortium.add(companyRoleWidget);
+    }
+
+    @UiHandler("addCompany")
+    void addCompany(ClickEvent clickEvent) {
+        CompanyDTO companyDTO = company.getCompany();
+        if(companyDTO == null) {
+            template.displayError("Please select a company");
+            return;
+        }
+        String role = companyRole.getText();
+        if(role.contentEquals("")) {
+            template.displayError("Please provide a role for the company");
+            return;
+        }
+        CompanyRoleDTO companyRoleDTO = new CompanyRoleDTO();
+        companyRoleDTO.setCompanyDTO(companyDTO);
+        companyRoleDTO.setRole(role);
+        addCompanyRole(companyRoleDTO);
+        // reset the values
+        company.clearCompany();
+        companyRole.setText("");
     }
 
     @Override

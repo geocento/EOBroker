@@ -141,4 +141,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/products/geoinformation/{id}")
     @Produces("application/json")
     List<FeatureDescription> getProductGeoinformation(@PathParam("id") Long productId) throws RequestException;
+
+    @GET
+    @Path("/assets/companies/find/")
+    @Produces("application/json")
+    List<CompanyDTO> findCompanies(@QueryParam("text") String text);
+
 }

@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductSoftwarePitch;
+import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductSoftwareDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,6 +32,7 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     }
 
     private static SoftwareViewUiBinder ourUiBinder = GWT.create(SoftwareViewUiBinder.class);
+
     @UiField
     MaterialTextBox name;
     @UiField
@@ -48,6 +51,10 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     MaterialRow products;
     @UiField
     MaterialButton addProduct;
+    @UiField
+    ProductTextBox product;
+    @UiField
+    MaterialTextBox productPitch;
 
     public SoftwareViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -144,7 +151,23 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
 
     @UiHandler("addProduct")
     void addProduct(ClickEvent clickEvent) {
-        addProductSoftwarePicth(new ProductSoftwareDTO());
+        ProductDTO productDTO = product.getProduct();
+        if(productDTO == null) {
+            template.displayError("Please select a product");
+            return;
+        }
+        String pitch = productPitch.getText();
+        if(pitch.contentEquals("")) {
+            template.displayError("Please provide a pitch for this product");
+            return;
+        }
+        ProductSoftwareDTO productSoftwareDTO = new ProductSoftwareDTO();
+        productSoftwareDTO.setProduct(productDTO);
+        productSoftwareDTO.setPitch(pitch);
+        addProductSoftwarePicth(productSoftwareDTO);
+        // reset the values
+        product.clearProduct();
+        productPitch.setText("");
     }
 
     @Override

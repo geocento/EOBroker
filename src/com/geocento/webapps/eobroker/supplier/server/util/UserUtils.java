@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.supplier.server.util;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.LoginInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,4 +24,7 @@ public class UserUtils {
         throw new AuthorizationException();
     }
 
+    public static LoginInfo getLoginInfo(User user) {
+        return new LoginInfo(user);
+    }
 }

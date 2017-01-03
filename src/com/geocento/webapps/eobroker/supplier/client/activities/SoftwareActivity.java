@@ -55,14 +55,17 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
         }
         if(softwareId != null) {
             try {
+                displayFullLoading("loading software information...");
                 REST.withCallback(new MethodCallback<SoftwareDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        hideFullLoading();
+                        Window.alert("Problem loading software");
                     }
 
                     @Override
                     public void onSuccess(Method method, SoftwareDTO response) {
+                        hideFullLoading();
                         setSoftware(response);
                     }
                 }).call(ServicesUtil.assetsService).getSoftware(softwareId);

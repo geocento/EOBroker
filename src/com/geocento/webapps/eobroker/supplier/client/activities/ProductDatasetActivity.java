@@ -46,15 +46,19 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         setTemplateView(productDatasetView.getTemplateView());
         panel.setWidget(productDatasetView.asWidget());
         Window.setTitle("Earth Observation Broker");
+        bind();
+        displayFullLoading("Loading map...");
         productDatasetView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
                 Window.alert("Error " + reason.getMessage());
+                hideFullLoading();
+                handleHistory();
             }
 
             @Override
             public void onSuccess(Void result) {
-                bind();
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -70,14 +74,17 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         if(datasetId != null) {
             // load dataset
             try {
+                displayFullLoading("Loading off the shelf data information");
                 REST.withCallback(new MethodCallback<ProductDatasetDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        hideFullLoading();
+                        Window.alert("Failed to load off the shelf data information");
                     }
 
                     @Override
                     public void onSuccess(Method method, ProductDatasetDTO response) {
+                        hideFullLoading();
                         setProductDataset(response);
                     }
                 }).call(ServicesUtil.assetsService).getProductDataset(datasetId);
@@ -91,7 +98,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
 
     private void setProductDataset(final ProductDatasetDTO productDatasetDTO) {
         this.productDatasetDTO = productDatasetDTO;
-        productDatasetView.setTitleLine(productDatasetDTO.getId() == null ? "Create dataset" : "Edit dataset");
+        productDatasetView.setTitleLine(productDatasetDTO.getId() == null ? "Create off the shelf data product" : "Edit off the shelf data product");
         productDatasetView.getName().setText(productDatasetDTO.getName());
         productDatasetView.setIconUrl(productDatasetDTO.getImageUrl());
         productDatasetView.getDescription().setText(productDatasetDTO.getDescription());
@@ -170,7 +177,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                         @Override
                         public void onSuccess(Method method, Long companyId) {
                             hideLoading();
-                            displaySuccess("Product dataset saved");
+                            displaySuccess("Off the shelf data product saved");
                             productDatasetDTO.setId(companyId);
                         }
                     }).call(ServicesUtil.assetsService).saveProductDataset(productDatasetDTO);

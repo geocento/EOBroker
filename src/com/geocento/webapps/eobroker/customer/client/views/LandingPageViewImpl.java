@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
+import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.widgets.ProductDatasetWidget;
@@ -36,16 +35,6 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
 
     @UiField(provided = true)
     TemplateView template;
-    @UiField
-    ArcGISMap mapContainer;
-    @UiField
-    MaterialAnchorButton drawPolygon;
-    @UiField
-    MaterialAnchorButton clearAoIs;
-    @UiField
-    MaterialRow mapPanel;
-    @UiField
-    MaterialButton closeMap;
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
     @UiField

@@ -1,12 +1,12 @@
 package com.geocento.webapps.eobroker.common.server.servlets;
 
+import com.geocento.webapps.eobroker.common.client.services.LoginService;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.Utils.BCrypt;
 import com.geocento.webapps.eobroker.common.server.Utils.UserUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
-import com.geocento.webapps.eobroker.supplier.client.services.LoginService;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;

@@ -48,14 +48,18 @@ public class ProductResponseActivity extends TemplateActivity implements Product
         setTemplateView(productResponseView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        displayFullLoading("Loading map...");
         productResponseView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
-
+                Window.alert("Failed to load map");
+                hideFullLoading();
+                handleHistory();
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -82,14 +86,17 @@ public class ProductResponseActivity extends TemplateActivity implements Product
 
     private void loadResponse(String id, final Long responseId) {
         try {
+            displayFullLoading("Loading response...");
             REST.withCallback(new MethodCallback<ProductServiceResponseDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    hideFullLoading();
+                    Window.alert("Failed to load response");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductServiceResponseDTO productServiceResponseDTO) {
+                    hideFullLoading();
                     request = productServiceResponseDTO;
                     productResponseView.displayTitle("Viewing your product request '" + productServiceResponseDTO.getId() + "'");
                     productResponseView.displayComment("See below your request and the suppliers' responses");

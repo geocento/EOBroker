@@ -76,8 +76,12 @@
             }
 
             .userIcon {
-                display: inline-block; !important;
+                display: inline-block;
                 vertical-align: middle;
+            }
+
+            .loading {
+                margin: 50px;
             }
 
         </ui:style>
@@ -124,6 +128,8 @@
                 <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
             </header>
             <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">
+                <cwidgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></cwidgets:LoadingWidget>
+                <m:MaterialPanel ui:field="content"></m:MaterialPanel>
             </m:MaterialContainer>
             <m:MaterialFooter backgroundColor="blue-grey" ui:field="footer">
                 <m:MaterialRow>

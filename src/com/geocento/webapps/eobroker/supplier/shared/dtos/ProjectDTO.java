@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-
 import java.util.List;
 
 /**
@@ -17,7 +15,7 @@ public class ProjectDTO {
     String email;
     String website;
     String fullDescription;
-    List<CompanyDTO> consortium;
+    List<CompanyRoleDTO> consortium;
 
     public ProjectDTO() {
     }
@@ -86,11 +84,11 @@ public class ProjectDTO {
         this.fullDescription = fullDescription;
     }
 
-    public List<CompanyDTO> getConsortium() {
+    public List<CompanyRoleDTO> getConsortium() {
         return consortium;
     }
 
-    public void setConsortium(List<CompanyDTO> consortium) {
+    public void setConsortium(List<CompanyRoleDTO> consortium) {
         this.consortium = consortium;
     }
 }

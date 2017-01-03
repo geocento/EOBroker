@@ -87,6 +87,14 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
         templateView.hideLoading();
     }
 
+    public void displayFullLoading(String message) {
+        templateView.displayFullLoading(message);
+    }
+
+    public void hideFullLoading() {
+        templateView.hideFullLoading();
+    }
+
     public void displayError(String message) {
         templateView.displayError(message);
     }

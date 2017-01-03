@@ -47,14 +47,18 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         panel.setWidget(productServiceView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
+        displayFullLoading("Loading map...");
         productServiceView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
-
+                Window.alert("Problem loading map...");
+                hideFullLoading();
+                handleHistory();
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -72,17 +76,20 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         }
 
         if(serviceId != null) {
-            productServiceView.setTitleLine("Edit your services details and settings");
+            displayFullLoading("Loading on demand service...");
+            productServiceView.setTitleLine("Edit your on demand service details and settings");
             try {
                 REST.withCallback(new MethodCallback<ProductServiceEditDTO>() {
 
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        hideFullLoading();
+                        Window.alert("Problem loading on demand service");
                     }
 
                     @Override
                     public void onSuccess(Method method, ProductServiceEditDTO productServiceDTO) {
+                        hideFullLoading();
                         setService(productServiceDTO);
                     }
 

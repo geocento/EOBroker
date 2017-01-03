@@ -46,27 +46,22 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        Long companyId = null;
-        if(tokens.containsKey(CompanyPlace.TOKENS.id.toString())) {
-            try {
-                companyId = Long.parseLong(tokens.get(CompanyPlace.TOKENS.id.toString()));
-            } catch (Exception e) {
-
-            }
-        }
 
         companyView.setTitleLine("Edit your company details and settings");
         // no need for company id
+        displayFullLoading("Loading company information...");
         try {
             REST.withCallback(new MethodCallback<CompanyDTO>() {
 
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    hideFullLoading();
+                    Window.alert("Problem loading company information");
                 }
 
                 @Override
                 public void onSuccess(Method method, CompanyDTO companyDTO) {
+                    hideFullLoading();
                     CompanyActivity.this.companyDTO = companyDTO;
                     companyView.getName().setText(companyDTO.getName());
                     companyView.getDescription().setText(companyDTO.getDescription());

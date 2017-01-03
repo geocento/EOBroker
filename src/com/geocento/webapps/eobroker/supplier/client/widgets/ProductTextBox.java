@@ -18,9 +18,10 @@ import java.util.List;
  */
 public class ProductTextBox extends MaterialSearch {
 
-    private ProductDTO product;
-
     public ProductTextBox() {
+
+        setPlaceholder("Type in keyword for product");
+
         addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -51,5 +52,10 @@ public class ProductTextBox extends MaterialSearch {
 
     public ProductDTO getProduct() {
         return getSelectedObject() != null ? (ProductDTO) getSelectedObject().getO() : null;
+    }
+
+    public void clearProduct() {
+        setText("");
+        setFocus(false);
     }
 }

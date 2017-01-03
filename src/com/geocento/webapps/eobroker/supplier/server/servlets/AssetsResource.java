@@ -359,7 +359,7 @@ public class AssetsResource implements AssetsService {
             keywords += ":*";
         }
         // change the last word so that it allows for partial match
-        String sqlStatement = "SELECT id, \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+        String sqlStatement = "SELECT id, \"name\", imageurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
                 "          FROM product, to_tsquery('" + keywords + "') AS keywords\n" +
                 "          WHERE tsvname @@ keywords\n" +
                 "          ORDER BY rank\n" +
@@ -372,7 +372,42 @@ public class AssetsResource implements AssetsService {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setId((Long) result[0]);
             productDTO.setName((String) result[1]);
+            productDTO.setImageUrl((String) result[2]);
             suggestions.add(productDTO);
+        }
+        return suggestions;
+    }
+
+    @Override
+    public List<CompanyDTO> findCompanies(String text) {
+        // check if last character is a space
+        boolean partialMatch = !text.endsWith(" ");
+        text.trim();
+        if(text.length() == 0) {
+            return null;
+        }
+        // break down text into sub words
+        String[] words = text.split(" ");
+        String keywords = StringUtils.join(words, " | ");
+        if(partialMatch) {
+            keywords += ":*";
+        }
+        // change the last word so that it allows for partial match
+        String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+                "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +
+                "          WHERE tsvname @@ keywords\n" +
+                "          ORDER BY rank\n" +
+                "          LIMIT 10;";
+        EntityManager em = EMF.get().createEntityManager();
+        Query q = em.createNativeQuery(sqlStatement);
+        List<Object[]> results = q.getResultList();
+        List<CompanyDTO> suggestions = new ArrayList<CompanyDTO>();
+        for(Object[] result : results) {
+            CompanyDTO companyDTO = new CompanyDTO();
+            companyDTO.setId((Long) result[0]);
+            companyDTO.setName((String) result[1]);
+            companyDTO.setIconURL((String) result[2]);
+            suggestions.add(companyDTO);
         }
         return suggestions;
     }
@@ -900,10 +935,14 @@ public class AssetsResource implements AssetsService {
                     return createProductProjectDTO(productProject);
                 }
             }));
-            projectDTO.setConsortium(ListUtil.mutate(project.getConsortium(), new ListUtil.Mutate<Company, CompanyDTO>() {
+            projectDTO.setConsortium(ListUtil.mutate(project.getConsortium(), new ListUtil.Mutate<CompanyRole, CompanyRoleDTO>() {
                 @Override
-                public CompanyDTO mutate(Company company) {
-                    return CompanyHelper.createCompanyDTO(company);
+                public CompanyRoleDTO mutate(CompanyRole companyRole) {
+                    CompanyRoleDTO companyRoleDTO = new CompanyRoleDTO();
+                    companyRoleDTO.setId(companyRole.getId());
+                    companyRoleDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(companyRole.getCompany()));
+                    companyRoleDTO.setRole(companyRole.getRole());
+                    return companyRoleDTO;
                 }
             }));
             return projectDTO;
@@ -949,6 +988,8 @@ public class AssetsResource implements AssetsService {
             project.setName(projectDTO.getName());
             project.setDescription(projectDTO.getDescription());
             project.setFullDescription(projectDTO.getFullDescription());
+
+            // set project products
             ArrayList<ProductProject> productProjects = new ArrayList<ProductProject>();
             for(final ProductProjectDTO productProjectDTO : projectDTO.getProducts()) {
                 ProductProject dbProductProject = null;
@@ -970,9 +1011,38 @@ public class AssetsResource implements AssetsService {
                 }
                 dbProductProject.setPitch(productProjectDTO.getPitch());
                 dbProductProject.setProduct(product);
+                dbProductProject.setProject(project);
                 productProjects.add(dbProductProject);
             }
             project.setProducts(productProjects);
+
+            // set project products
+            ArrayList<CompanyRole> consortium = new ArrayList<CompanyRole>();
+            for(final CompanyRoleDTO companyRoleDTO : projectDTO.getConsortium()) {
+                CompanyRole dbCompanyRole = null;
+                if(companyRoleDTO.getId() != null) {
+                    dbCompanyRole = ListUtil.findValue(project.getConsortium(), new ListUtil.CheckValue<CompanyRole>() {
+                        @Override
+                        public boolean isValue(CompanyRole value) {
+                            return value.getId().equals(companyRoleDTO.getId());
+                        }
+                    });
+                }
+                if(dbCompanyRole == null) {
+                    dbCompanyRole = new CompanyRole();
+                    em.persist(dbCompanyRole);
+                }
+                Company company = em.find(Company.class, companyRoleDTO.getCompanyDTO().getId());
+                if(company == null) {
+                    throw new RequestException("Could not find company with id " + companyRoleDTO.getId());
+                }
+                dbCompanyRole.setRole(companyRoleDTO.getRole());
+                dbCompanyRole.setCompany(company);
+                dbCompanyRole.setProject(project);
+                consortium.add(dbCompanyRole);
+            }
+            project.setConsortium(consortium);
+
             project.setImageUrl(projectDTO.getImageUrl());
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE project SET tsv = " + getProjectTSV(project) +

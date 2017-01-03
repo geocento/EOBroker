@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
@@ -97,6 +98,10 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialFooter footer;
     @UiField
     MaterialLink signOut;
+    @UiField
+    MaterialPanel content;
+    @UiField
+    LoadingWidget loading;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -288,6 +293,20 @@ public class TemplateView extends Composite implements HasWidgets {
         Window.scrollTo(0, 0);
     }
 
+    public void displayContent(boolean display) {
+        content.setVisible(display);
+        loading.setVisible(!display);
+    }
+
+    public void displayFullLoading(String message) {
+        displayContent(false);
+        loading.setText(message);
+    }
+
+    public void hideFullLoading() {
+        displayContent(true);
+    }
+
     @Override
     public Widget asWidget() {
         return this;
@@ -295,22 +314,22 @@ public class TemplateView extends Composite implements HasWidgets {
 
     @Override
     public void add(Widget w) {
-        mainPanel.add(w);
+        content.add(w);
     }
 
     @Override
     public void clear() {
-        mainPanel.clear();
+        content.clear();
     }
 
     @Override
     public Iterator<Widget> iterator() {
-        return mainPanel.iterator();
+        return content.iterator();
     }
 
     @Override
     public boolean remove(Widget w) {
-        return mainPanel.remove(w);
+        return content.remove(w);
     }
 
 }

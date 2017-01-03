@@ -371,4 +371,12 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         templateView.displayError(message);
     }
 
+    public void displayFullLoading(String message) {
+        templateView.displayFullLoading(message);
+    }
+
+    public void hideFullLoading() {
+        templateView.hideFullLoading();
+    }
+
 }

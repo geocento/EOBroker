@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
@@ -36,6 +37,7 @@ public class TemplateView extends Composite implements HasWidgets {
     }
 
     private static TemplateViewUiBinder ourUiBinder = GWT.create(TemplateViewUiBinder.class);
+
     @UiField
     MaterialContainer mainPanel;
     @UiField
@@ -58,6 +60,10 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialBadge ordersBadge;
     @UiField
     UserWidget userIcon;
+    @UiField
+    LoadingWidget loading;
+    @UiField
+    MaterialPanel content;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -146,6 +152,20 @@ public class TemplateView extends Composite implements HasWidgets {
         Window.scrollTo(0, 0);
     }
 
+    public void displayContent(boolean display) {
+        content.setVisible(display);
+        loading.setVisible(!display);
+    }
+
+    public void displayFullLoading(String message) {
+        displayContent(false);
+        loading.setText(message);
+    }
+
+    public void hideFullLoading() {
+        displayContent(true);
+    }
+
     @Override
     public Widget asWidget() {
         return this;
@@ -153,22 +173,22 @@ public class TemplateView extends Composite implements HasWidgets {
 
     @Override
     public void add(Widget w) {
-        mainPanel.add(w);
+        content.add(w);
     }
 
     @Override
     public void clear() {
-        mainPanel.clear();
+        content.clear();
     }
 
     @Override
     public Iterator<Widget> iterator() {
-        return mainPanel.iterator();
+        return content.iterator();
     }
 
     @Override
     public boolean remove(Widget w) {
-        return mainPanel.remove(w);
+        return content.remove(w);
     }
 
 }

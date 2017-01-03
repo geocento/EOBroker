@@ -95,7 +95,7 @@
                     <design:MaterialTab backgroundColor="transparent" textColor="white" indicatorColor="white" ui:field="tab">
                         <design:MaterialTabItem ui:field="request">
                             <design:MaterialColumn>
-                                <design:MaterialLink text="Your Request" textColor="white" href="#request"></design:MaterialLink>
+                                <design:MaterialLink text="Your Request" textColor="white" href="#request" ui:field="requestLink"></design:MaterialLink>
                             </design:MaterialColumn>
                         </design:MaterialTabItem>
                     </design:MaterialTab>
@@ -109,8 +109,8 @@
                     <design:MaterialColumn grid="s12 m12 l6">
                         <design:MaterialLabel text="Area of interest" addStyleNames="{style.section}"></design:MaterialLabel>
                         <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                            <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
-                            </maps:ArcGISMap>
+                            <maps:MapContainer width="100%" height="300px" editable="false" ui:field="mapContainer">
+                            </maps:MapContainer>
                         </g:HTMLPanel>
                     </design:MaterialColumn>
                 </design:MaterialRow>

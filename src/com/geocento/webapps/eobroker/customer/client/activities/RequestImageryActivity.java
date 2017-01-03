@@ -46,23 +46,27 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
         setTemplateView(requestImageryView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        displayFullLoading("Loading map...");
         requestImageryView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
-                Window.alert("Error " + reason.getMessage());
+                Window.alert("Failed to load map");
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
+                displayFullLoading("Loading image services...");
                 try {
                     REST.withCallback(new MethodCallback<List<ImageService>>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-
+                            Window.alert("Failed to load image services...");
                         }
 
                         @Override
                         public void onSuccess(Method method, List<ImageService> imageServices) {
+                            hideFullLoading();
                             requestImageryView.setSuppliers(imageServices);
                             handleHistory();
                         }

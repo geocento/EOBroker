@@ -17,6 +17,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.html.ListItem;
@@ -69,6 +70,8 @@ public class MapContainer extends Composite {
     MaterialFABList addButtons;
     @UiField
     protected MaterialAnchorButton selectButton;
+    @UiField
+    MaterialPanel listLayers;
 
     private Presenter presenter;
 
@@ -96,7 +99,11 @@ public class MapContainer extends Composite {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        setEdit(false);
+        // disable all buttons before loading
+        addButton.setVisible(false);
+        editGeometry.setVisible(false);
+        clearAoIs.setVisible(false);
+
         displayLoading();
         mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
             @Override
@@ -114,7 +121,7 @@ public class MapContainer extends Composite {
                         final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
                         map = mapJSNI;
 
-                        setEdit(editable);
+                        // enable buttons if enabled
                         updateButtons();
 
                         drawJSNI = arcgisMap.createDraw(mapJSNI);
@@ -139,6 +146,10 @@ public class MapContainer extends Composite {
                                 stopEditing();
                             }
                         });
+
+                        listLayers.getElement().getStyle().setProperty("maxWidth", ((int) Math.floor(mapContainer.getOffsetWidth() * 0.6)) + "px");
+                        arcgisMap.createBaseMaps(map, listLayers.getElement());
+
                         map.setZoom(3);
                         mapLoaded();
                     }
@@ -152,17 +163,10 @@ public class MapContainer extends Composite {
         this.presenter = presenter;
     }
 
-    public void setHeight(String height) {
-        super.setHeight(height);
-/*
-        boolean large = getOffsetHeight() > 450;
-        fabButton.setSize(large ? ButtonSize.LARGE : ButtonSize.MEDIUM);
-        IconSize iconSize = large ? IconSize.MEDIUM : IconSize.SMALL;
-        fabButton.setIconSize(iconSize);
-        clearAoIs.setIconSize(iconSize);
-        drawPolygon.setIconSize(iconSize);
-        uploadFile.setIconSize(iconSize);
-*/
+    public void setButtonMargin(int height) {
+        for(MaterialWidget widget : new MaterialWidget[] {addButton, clearAoIs, editGeometry}) {
+            widget.setBottom(height);
+        }
     }
 
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
@@ -204,14 +208,6 @@ public class MapContainer extends Composite {
         return mapContainer.arcgisMap;
     }
 
-    public void setEdit(boolean display) {
-        addButton.setVisible(display);
-        if(!display) {
-            editGeometry.setVisible(false);
-            clearAoIs.setVisible(false);
-        }
-    }
-
     public void clearAoI() {
         // make sure we stop editing before
         stopEditing();
@@ -224,9 +220,16 @@ public class MapContainer extends Composite {
     }
 
     private void updateButtons() {
-        boolean hasAoI = aoiRendering != null;
-        editGeometry.setVisible(hasAoI);
-        clearAoIs.setVisible(hasAoI);
+        if(editable) {
+            boolean hasAoI = aoiRendering != null;
+            addButton.setVisible(true);
+            editGeometry.setVisible(hasAoI);
+            clearAoIs.setVisible(hasAoI);
+        } else {
+            addButton.setVisible(false);
+            editGeometry.setVisible(false);
+            clearAoIs.setVisible(false);
+        }
     }
 
     @UiHandler("drawExtent")
@@ -296,6 +299,7 @@ public class MapContainer extends Composite {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+        updateButtons();
     }
 
     protected void addButton(MaterialButton materialButton, String message) {

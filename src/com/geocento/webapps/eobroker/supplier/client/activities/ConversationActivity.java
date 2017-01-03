@@ -51,16 +51,19 @@ public class ConversationActivity extends TemplateActivity implements Conversati
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
 
         if(tokens.containsKey(ConversationPlace.TOKENS.id.toString())) {
+            displayFullLoading("Loading conversation...");
             String conversationid = tokens.get(ConversationPlace.TOKENS.id.toString());
             try {
                 REST.withCallback(new MethodCallback<ConversationDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        hideFullLoading();
+                        Window.alert("Error loading conversation");
                     }
 
                     @Override
                     public void onSuccess(Method method, ConversationDTO conversationDTO) {
+                        hideFullLoading();
                         ConversationActivity.this.conversationDTO = conversationDTO;
                         conversationView.displayConversation(conversationDTO);
                     }
@@ -69,6 +72,8 @@ public class ConversationActivity extends TemplateActivity implements Conversati
 
             }
             return;
+        } else {
+            Window.alert("Missing conversation id");
         }
     }
 

@@ -54,15 +54,17 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         setTemplateView(productFormView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        displayFullLoading("Loading map...");
         productFormView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
-                Window.alert("Error " + reason.getMessage());
+                Window.alert("Failed to load map");
             }
 
             @Override
             public void onSuccess(Void result) {
                 setAoI(currentAoI);
+                hideFullLoading();
                 handleHistory();
             }
         });

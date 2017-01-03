@@ -6,6 +6,7 @@
 
         .panel {
             position: relative !important;
+            overflow: hidden;
         }
 
         .fabPanel li, .fabPanel a {
@@ -32,17 +33,19 @@
         <g:HTMLPanel visible="false" addStyleNames="{style.searchContainer}" ui:field="searchPanel">
             <g:HTMLPanel ui:field="search"></g:HTMLPanel>
         </g:HTMLPanel>
-        <design:MaterialTooltip text="Clear AoI" position="BOTTOM">
+        <design:MaterialButton activates="layers" layoutPosition="ABSOLUTE" top="30" right="30" type="FLOATING" waves="LIGHT" backgroundColor="white" iconType="LAYERS" iconSize="SMALL" iconColor="black" addStyleNames="{style.fabButton}" ui:field="layers"/>
+        <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%">
+            <design:MaterialPanel ui:field="listLayers"></design:MaterialPanel>
+        </design:MaterialDropDown>
+        <design:MaterialTooltip text="Clear AoI" position="TOP">
             <design:MaterialButton layoutPosition="ABSOLUTE" bottom="30" right="110" type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="clearAoIs"/>
         </design:MaterialTooltip>
-        <design:MaterialTooltip text="Edit the current AoI" position="BOTTOM">
+        <design:MaterialTooltip text="Edit the current AoI" position="TOP">
             <design:MaterialButton layoutPosition="ABSOLUTE" bottom="30" right="60" type="FLOATING" backgroundColor="blue" iconType="EDIT" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="editGeometry"/>
         </design:MaterialTooltip>
         <!-- FAB -->
         <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="30" right="10" addStyleNames="{style.fabPanel}" ui:field="addButton">
-            <design:MaterialTooltip text="Add AoI" position="BOTTOM">
-                <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" iconSize="SMALL" opacity="1.0" ui:field="fabButton"/>
-            </design:MaterialTooltip>
+            <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" iconSize="SMALL" opacity="1.0" ui:field="fabButton"/>
             <design:MaterialFABList ui:field="addButtons">
                 <design:MaterialTooltip text="Select saved AoI" position="LEFT">
                     <design:MaterialAnchorButton visible="false" type="FLOATING" waves="LIGHT" backgroundColor="green" iconType="FILTER" iconSize="SMALL" ui:field="selectButton"/>

@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.supplier.shared.dtos.CompanyRoleDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductProjectDTO;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
@@ -33,6 +34,10 @@ public interface ProjectView extends IsWidget {
     List<ProductProjectDTO> getSelectedProducts();
 
     void setSelectedProducts(List<ProductProjectDTO> selectedProducts);
+
+    List<CompanyRoleDTO> getConsortium();
+
+    void setConsortium(List<CompanyRoleDTO> companyRoleDTOs);
 
     TemplateView getTemplateView();
 

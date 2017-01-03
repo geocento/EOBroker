@@ -34,6 +34,10 @@ public class ArcgisMapJSNI extends JavaScriptObject {
         return this.createEdit(map);
     }-*/;
 
+    public final native void createBaseMaps(MapJSNI map, Element element) /*-{
+        this.createBaseMaps(map, element);
+    }-*/;
+
     public final native SearchJSNI addSearch(MapJSNI map, Element element) /*-{
         return this.addSearch(map, element);
     }-*/;

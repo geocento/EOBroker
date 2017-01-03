@@ -20,6 +20,23 @@
             margin: 20px 0px;
         }
 
+        .sectionPanel {
+            margin: 20px 0px;
+            padding: 10px;
+            background: white;
+        }
+
+        .product {
+            height: 60px;
+            line-height: 60px;
+            margin-bottom: 20px;
+        }
+
+        .productsPanel {
+            padding: 20px;
+            background: #E9E9E9;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Software" ui:field="template">
@@ -40,10 +57,14 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Software supported products" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel>
+                <design:MaterialPanel addStyleNames="{style.productsPanel}">
                     <design:MaterialRow ui:field="products">
                     </design:MaterialRow>
-                    <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
+                    <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                        <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
+                        <design:MaterialTextBox margin="10" placeholder="Provide a pitch" ui:field="productPitch"></design:MaterialTextBox>
+                        <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
+                    </design:MaterialPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
         </design:MaterialRow>

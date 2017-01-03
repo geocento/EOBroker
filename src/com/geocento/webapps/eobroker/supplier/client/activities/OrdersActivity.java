@@ -44,15 +44,18 @@ public class OrdersActivity extends TemplateActivity implements OrdersView.Prese
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         // load all current requests
+        displayFullLoading("Loading requests...");
         try {
             REST.withCallback(new MethodCallback<List<RequestDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
+                    hideFullLoading();
                     Window.alert("Failed to load your requests");
                 }
 
                 @Override
                 public void onSuccess(Method method, List<RequestDTO> requestDTOs) {
+                    hideFullLoading();
                     ordersView.setRequests(requestDTOs);
                 }
             }).call(ServicesUtil.ordersService).getRequests();

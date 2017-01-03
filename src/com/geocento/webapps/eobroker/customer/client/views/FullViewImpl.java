@@ -370,7 +370,7 @@ public class FullViewImpl extends Composite implements FullView {
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("200px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
-        mapContainer.setEdit(false);
+        mapContainer.setEditable(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -578,7 +578,7 @@ public class FullViewImpl extends Composite implements FullView {
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("200px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
-        mapContainer.setEdit(false);
+        mapContainer.setEditable(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
@@ -937,9 +937,20 @@ public class FullViewImpl extends Composite implements FullView {
             MaterialLabel materialLabel = createSubsection("Companies involved in this project:");
             materialLabel.setMarginBottom(20);
             consortiumPanel.add(materialLabel);
-            MaterialRow materialRow = new MaterialRow();
-            materialRow.setWidth("100%");
-            consortiumPanel.add(materialRow);
+            List<CompanyRoleDTO> consortium = projectDescriptionDTO.getConsortium();
+            for(CompanyRoleDTO companyRoleDTO : consortium) {
+                MaterialRow materialRow = new MaterialRow();
+                materialRow.setWidth("100%");
+                consortiumPanel.add(materialRow);
+                MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+                CompanyWidget companyWidget = new CompanyWidget(companyRoleDTO.getCompanyDTO());
+                materialColumn.add(companyWidget);
+                materialRow.add(materialColumn);
+                materialColumn = new MaterialColumn(6, 8, 9);
+                materialColumn.add(new HTML("<h5>Role in project</h5>" + companyRoleDTO.getRole()));
+                materialRow.add(materialColumn);
+            }
+/*
             // add lead first
             {
                 MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
@@ -959,6 +970,7 @@ public class FullViewImpl extends Composite implements FullView {
                     }
                 }
             }
+*/
             addTab(materialTab, tabsPanel, "Consortium", consortiumPanel, size);
         }
         // add terms and conditions tab panel

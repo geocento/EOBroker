@@ -16,9 +16,6 @@ public class Project {
     @ManyToOne
     Company company;
 
-    @OneToMany
-    List<ProductProject> products;
-
     @Column(length = 1000)
     String name;
 
@@ -37,8 +34,11 @@ public class Project {
     @Column(length = 100000)
     String fullDescription;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<Company> consortium;
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    List<ProductProject> products;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    List<CompanyRole> consortium;
 
     public Project() {
     }
@@ -115,11 +115,11 @@ public class Project {
         this.fullDescription = fullDescription;
     }
 
-    public List<Company> getConsortium() {
+    public List<CompanyRole> getConsortium() {
         return consortium;
     }
 
-    public void setConsortium(List<Company> consortium) {
+    public void setConsortium(List<CompanyRole> consortium) {
         this.consortium = consortium;
     }
 }

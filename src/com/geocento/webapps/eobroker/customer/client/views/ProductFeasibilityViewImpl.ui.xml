@@ -170,7 +170,7 @@
             <m:MaterialButton text="Close" ui:field="btnCutOutClose" textColor="blue" backgroundColor="white"/>
         </cutout:MaterialCutOut>
         <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-            <cmaps:MapContainer width="100%" height="100%" ui:field="mapContainer">
+            <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" ui:field="mapContainer">
             </cmaps:MapContainer>
         </g:HTMLPanel>
     </views:TemplateView>

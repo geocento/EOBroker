@@ -47,14 +47,18 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
         setTemplateView(imagesResponseView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
+        displayFullLoading("Loading map...");
         imagesResponseView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
-
+                Window.alert("Failed to load map");
+                hideFullLoading();
+                handleHistory();
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -74,14 +78,17 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
 
     private void loadResponse(String requestId) {
         try {
+            displayFullLoading("Loading response...");
             REST.withCallback(new MethodCallback<ImagesServiceResponseDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    hideFullLoading();
+                    Window.alert("Failed to load response");
                 }
 
                 @Override
                 public void onSuccess(Method method, ImagesServiceResponseDTO imagesServiceResponseDTO) {
+                    hideFullLoading();
                     request = imagesServiceResponseDTO;
                     imagesResponseView.displayTitle("Viewing images request '" + imagesServiceResponseDTO.getId() + "'");
                     imagesResponseView.displayComment("See below your request and the supplier's response");

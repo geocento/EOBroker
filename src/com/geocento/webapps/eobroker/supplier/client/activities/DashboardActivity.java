@@ -50,14 +50,17 @@ public class DashboardActivity extends TemplateActivity implements DashboardView
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         try {
+            displayFullLoading("Loading assets...");
             REST.withCallback(new MethodCallback<OfferDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    hideFullLoading();
+                    Window.alert("Error loading assets...");
                 }
 
                 @Override
                 public void onSuccess(Method method, OfferDTO response) {
+                    hideFullLoading();
                     companyDTO = response.getCompanyDTO();
                     dashboardView.setCompany(companyDTO);
                     dashboardView.setServices(response.getProductServiceDTOs());

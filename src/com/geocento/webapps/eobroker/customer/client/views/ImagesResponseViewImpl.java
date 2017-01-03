@@ -2,10 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.GraphicJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.PolygonJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerInfoJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
@@ -90,18 +87,21 @@ public class ImagesResponseViewImpl extends RequestViewImpl implements ImagesRes
         displayResponseSupplier(imagesServiceResponseDTO.getCompany().getIconURL(), imagesServiceResponseDTO.getCompany().getName());
         displayResponse(imagesServiceResponseDTO.getResponse());
         displayMessages(imagesServiceResponseDTO.getMessages());
+        selectTab("response");
     }
 
     private void refreshMap(List<Product> products) {
+        ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
+        MapJSNI map = mapContainer.map;
         // refresh products display on map
         for(Product product : products) {
             boolean toRender = isProductSelected(product);
             boolean rendered = renderedProducts.containsKey(product);
             if(toRender && !rendered) {
                 ProductRendering productRendering = new ProductRendering();
-                PolygonJSNI polygon = mapContainer.arcgisMap.createPolygon(product.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
+                PolygonJSNI polygon = arcgisMap.createPolygon(product.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
                 productRendering.footprint = map.getGraphics().addGraphic(polygon,
-                        mapContainer.arcgisMap.createFillSymbol(product.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff", 2, "rgba(0,0,0,0.0)"));
+                        arcgisMap.createFillSymbol(product.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff", 2, "rgba(0,0,0,0.0)"));
                 // add wms layer
                 if (product.getType() == Product.TYPE.ARCHIVE && product.getQl() != null) {
                     productRendering.overlay = map.addWMSLayer(product.getQl(), WMSLayerInfoJSNI.createInfo(product.getSatelliteName(), product.getSatelliteName()), polygon.getExtent());
@@ -124,8 +124,8 @@ public class ImagesResponseViewImpl extends RequestViewImpl implements ImagesRes
         }
         // add outlined product on top
         if(outlinedProduct != null) {
-            outlinedProductGraphicJSNI = map.getGraphics().addGraphic(mapContainer.arcgisMap.createPolygon(outlinedProduct.getCoordinatesWKT().replace("POLYGON((", "").replace("))", "")),
-                    mapContainer.arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
+            outlinedProductGraphicJSNI = map.getGraphics().addGraphic(arcgisMap.createPolygon(outlinedProduct.getCoordinatesWKT().replace("POLYGON((", "").replace("))", "")),
+                    arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
         }
     }
 

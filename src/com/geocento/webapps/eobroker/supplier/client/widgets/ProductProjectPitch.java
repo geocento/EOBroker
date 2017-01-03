@@ -20,7 +20,9 @@ public class ProductProjectPitch extends ProductPitchWidget {
 
     public ProductProjectDTO getProductProjectDTO() {
         // update values
+/*
         productProjectDTO.setProduct(getProduct());
+*/
         productProjectDTO.setPitch(getPitch());
         return productProjectDTO;
     }

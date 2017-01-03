@@ -1,10 +1,10 @@
 package com.geocento.webapps.eobroker.supplier.client;
 
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.supplier.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.AppPlaceHistoryMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.LoginInfo;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.activity.shared.FilteredActivityMapper;

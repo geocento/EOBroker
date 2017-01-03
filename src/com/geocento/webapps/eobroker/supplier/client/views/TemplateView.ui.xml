@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:m="urn:import:gwt.material.design.client.ui"
-             xmlns:avatar="urn:import:gwt.material.design.addins.client.avatar"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style>
@@ -62,6 +61,10 @@
             border-left: 1px solid white;
         }
 
+        .loading {
+            margin: 50px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -74,12 +77,12 @@
                     <m:MaterialLabel display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
                 </m:MaterialNavSection>
                 <m:MaterialNavSection float="RIGHT">
-                    <m:MaterialTooltip text="Orders" position="BOTTOM">
+                    <m:MaterialTooltip text="View your requests" position="BOTTOM">
                         <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="orders">
                             <m:MaterialBadge text="" backgroundColor="blue" textColor="white" circle="true" ui:field="ordersBadge"/>
                         </m:MaterialLink>
                     </m:MaterialTooltip>
-                    <m:MaterialTooltip text="Notifications" position="BOTTOM">
+                    <m:MaterialTooltip text="View your notifications" position="BOTTOM">
                         <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" ui:field="notifications" layoutPosition="RELATIVE" activates="notifications">
                             <m:MaterialBadge text="" backgroundColor="pink" textColor="white" circle="true" ui:field="notificationsBadge"/>
                         </m:MaterialLink>
@@ -94,6 +97,8 @@
             <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
         </header>
         <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
+            <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
+            <m:MaterialPanel ui:field="content"></m:MaterialPanel>
         </m:MaterialContainer>
         <m:MaterialFooter backgroundColor="green lighten-1">
             <m:MaterialRow>

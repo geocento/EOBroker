@@ -21,10 +21,12 @@ var arcgisMap = function(callback) {
         "esri/Color",
         'esri/layers/WMSLayerInfo',
         'esri/geometry/geodesicUtils',
-        "esri/dijit/Search"
+        "esri/dijit/Search",
+        "esri/dijit/BasemapGallery"
     ], function(esriConfig, urlUtils, Map, Draw, Edit, Graphic,
                 Polygon, Extent, WMSLayer,
-                SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color, WMSLayerInfo, geodesicUtils, Search) {
+                SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color, WMSLayerInfo, geodesicUtils,
+                Search, BasemapGallery) {
 
 /*
         urlUtils.addProxyRule({
@@ -50,6 +52,18 @@ var arcgisMap = function(callback) {
 
         self.createEdit = function(map) {
             return new Edit(map);
+        }
+
+        self.createBaseMaps = function(map, element) {
+            var basemapGallery = new BasemapGallery({
+                showArcGISBasemaps: true,
+                map: map
+            }, element);
+            basemapGallery.startup();
+
+            basemapGallery.on("error", function(msg) {
+                console.log("basemap gallery error:  ", msg);
+            });
         }
 
         self.addSearch = function(map, div) {

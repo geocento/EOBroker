@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.services;
 
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.LoginInfo;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.GET;

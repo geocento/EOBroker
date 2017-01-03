@@ -20,7 +20,9 @@ public class ProductSoftwarePitch extends ProductPitchWidget {
 
     public ProductSoftwareDTO getProductSoftwareDTO() {
         // update values
+/*
         productSoftwareDTO.setProduct(getProduct());
+*/
         productSoftwareDTO.setPitch(getPitch());
         return productSoftwareDTO;
     }

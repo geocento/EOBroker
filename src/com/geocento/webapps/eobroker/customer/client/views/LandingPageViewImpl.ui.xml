@@ -42,30 +42,6 @@
     </ui:style>
     <views:TemplateView titleText="Home" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.mainPanel}">
-            <m:MaterialRow addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                <maps:ArcGISMap width="100%" ui:field="mapContainer">
-                </maps:ArcGISMap>
-                <!-- FAB -->
-                <m:MaterialFAB layoutPosition="ABSOLUTE" bottom="60">
-                    <m:MaterialTooltip text="Create" position="LEFT">
-                        <m:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" size="LARGE"/>
-                    </m:MaterialTooltip>
-                    <m:MaterialFABList>
-                        <m:MaterialTooltip text="Theme" position="LEFT">
-                            <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" ui:field="drawPolygon"/>
-                        </m:MaterialTooltip>
-                        <m:MaterialTooltip text="Mail " position="LEFT">
-                            <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" ui:field="clearAoIs"/>
-                        </m:MaterialTooltip>
-                    </m:MaterialFABList>
-                </m:MaterialFAB>
-                <m:MaterialFAB layoutPosition="ABSOLUTE" left="20">
-                    <m:MaterialTooltip text="Close map" position="RIGHT">
-                        <m:MaterialButton type="FLOATING" backgroundColor="grey" iconType="CLOSE" size="MEDIUM" ui:field="closeMap"/>
-                    </m:MaterialTooltip>
-                </m:MaterialFAB>
-            </m:MaterialRow>
-
             <g:HTMLPanel addStyleNames="{style.content}">
                 <cwidgets:MaterialSlider ui:field="slider" fullscreen="false">
                 </cwidgets:MaterialSlider>

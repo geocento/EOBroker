@@ -4,10 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
-import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
@@ -55,7 +52,7 @@ public class RequestViewImpl extends Composite implements RequestView {
     MaterialRow messages;
     @UiField
     protected
-    ArcGISMap mapContainer;
+    MapContainer mapContainer;
     @UiField
     ProgressButton submitMessage;
     @UiField
@@ -81,12 +78,8 @@ public class RequestViewImpl extends Composite implements RequestView {
     MaterialPanel responsePanel;
     @UiField
     MaterialPanel colorPanel;
-
-    private Callback<Void, Exception> mapLoadedHandler = null;
-
-    public MapJSNI map;
-
-    private boolean mapLoaded = false;
+    @UiField
+    MaterialLink requestLink;
 
     public RequestViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -94,42 +87,20 @@ public class RequestViewImpl extends Composite implements RequestView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        mapContainer.loadArcGISMap(new Callback<Void, Exception>() {
+        userImage.setUser(Customer.getLoginInfo().getUserName());
+
+        // add this to make sure the request tab is handled properly
+        requestLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onFailure(Exception reason) {
-
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-                mapContainer.createMap("streets", new LatLng(40.0, -4.0), 3, new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<MapJSNI>() {
-
-                    @Override
-                    public void callback(final MapJSNI mapJSNI) {
-                        final ArcgisMapJSNI arcgisMap = mapContainer.arcgisMap;
-                        RequestViewImpl.this.map = mapJSNI;
-                        map.setZoom(3);
-                        mapLoaded();
-                    }
-                });
+            public void onClick(ClickEvent event) {
+                selectTab("request");
             }
         });
-        userImage.setUser(Customer.getLoginInfo().getUserName());
     }
 
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
-        this.mapLoadedHandler = mapLoadedHandler;
-        if(mapLoaded) {
-            mapLoadedHandler.onSuccess(null);
-        }
-    }
-
-    private void mapLoaded() {
-        mapLoaded = true;
-        if(mapLoadedHandler != null) {
-            mapLoadedHandler.onSuccess(null);
-        }
+        mapContainer.setMapLoadedHandler(mapLoadedHandler);
     }
 
     @Override
@@ -190,10 +161,8 @@ public class RequestViewImpl extends Composite implements RequestView {
     }
 
     protected void displayAoI(AoIDTO aoi) {
-        map.getGraphics().clear();
-        if(aoi != null) {
-            map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
-        }
+        mapContainer.displayAoI(aoi);
+        mapContainer.centerOnAoI();
     }
 
     protected void addRequestValue(String name, String value) {

@@ -3,9 +3,11 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.places.ProjectPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProjectView;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.CompanyRoleDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductProjectDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProjectDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,14 +57,17 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
         }
         if(projectId != null) {
             try {
+                displayFullLoading("Loading project information...");
                 REST.withCallback(new MethodCallback<ProjectDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
+                        hideFullLoading();
                         Window.alert("Failed to load project");
                     }
 
                     @Override
                     public void onSuccess(Method method, ProjectDTO response) {
+                        hideFullLoading();
                         setProject(response);
                     }
                 }).call(ServicesUtil.assetsService).getProject(projectId);
@@ -70,6 +75,10 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
             }
         } else {
             ProjectDTO projectDTO = new ProjectDTO();
+            CompanyRoleDTO companyRole = new CompanyRoleDTO();
+            companyRole.setCompanyDTO(Supplier.getLoginInfo().getCompanyDTO());
+            companyRole.setRole("Leader");
+            projectDTO.setConsortium(ListUtil.toList(companyRole));
             setProject(projectDTO);
         }
     }
@@ -82,6 +91,7 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
         projectView.getDescription().setText(projectDTO.getDescription());
         projectView.setFullDescription(projectDTO.getFullDescription());
         projectView.setSelectedProducts(projectDTO.getProducts());
+        projectView.setConsortium(projectDTO.getConsortium());
     }
 
     @Override
@@ -96,6 +106,7 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
                 projectDTO.setDescription(projectView.getDescription().getText());
                 projectDTO.setFullDescription(projectView.getFullDescription());
                 projectDTO.setProducts(projectView.getSelectedProducts());
+                projectDTO.setConsortium(projectView.getConsortium());
                 // do some checks
                 try {
                     if (projectDTO.getName() == null || projectDTO.getName().length() < 3) {
@@ -122,6 +133,9 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
                         if(projectDTO.getProducts().size() == 0) {
                             throw new Exception("Please select at least one product or fill in the missing fields");
                         }
+                    }
+                    if (projectDTO.getConsortium() == null) {
+                        throw new Exception("Please specify at least one company for the consortium");
                     }
                 } catch (Exception e) {
                     // TODO - use the view instead
