@@ -78,12 +78,11 @@ public interface AssetsService extends DirectRestService {
                                           @QueryParam("orderby") String orderby,
                                           @QueryParam("filter") String filter) throws RequestException;
 
-/*
-    @PUT
-    @Path("/assets/companies/")
+
+    @GET
+    @Path("/assets/companies/find/")
     @Produces("application/json")
-    public void updateCompany(CompanyDTO product) throws RequestException;
-*/
+    List<CompanyDTO> findCompanies(@QueryParam("text") String text);
 
     @POST
     @Path("/assets/companies/")
@@ -119,18 +118,36 @@ public interface AssetsService extends DirectRestService {
     List<NotificationDTO> getNotifications() throws RequestException;
 
     @GET
-    @Path("/requests/feedback/{id}")
+    @Path("/feedback/{id}")
     @Produces("application/json")
     FeedbackDTO getFeedback(@PathParam("id") String feedbackid) throws RequestException;
 
     @POST
-    @Path("/requests/feedback/{id}")
+    @Path("/feedback/{id}")
     @Produces("application/json")
     MessageDTO addFeedbackMessage(@PathParam("id") String feedbackid, String text) throws RequestException;
 
     @GET
-    @Path("/requests/feedback/")
+    @Path("/feedback/")
     @Produces("application/json")
     List<FeedbackDTO> listFeedbacks(@QueryParam("name") String name) throws RequestException;
+
+    @GET
+    @Path("/users/")
+    @Produces("application/json")
+    List<UserDescriptionDTO> listUsers(@QueryParam("start") int start,
+                                       @QueryParam("limit") int limit,
+                                       @QueryParam("orderby") String orderby,
+                                       @QueryParam("filter") String filter) throws RequestException;
+
+    @GET
+    @Path("/users/{userName}")
+    @Produces("application/json")
+    UserDescriptionDTO getUser(@PathParam("userName") String userName) throws RequestException;
+
+    @POST
+    @Path("/users/")
+    @Consumes("application/json")
+    void saveUser(UserDescriptionDTO userDescriptionDTO) throws RequestException;
 
 }

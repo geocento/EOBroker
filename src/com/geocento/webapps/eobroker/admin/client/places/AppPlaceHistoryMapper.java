@@ -5,6 +5,7 @@ import com.google.gwt.place.shared.WithTokenizers;
 
 @WithTokenizers({LoginPagePlace.Tokenizer.class,
         DashboardPlace.Tokenizer.class,
+        UsersPlace.Tokenizer.class,
         CompaniesPlace.Tokenizer.class,
         CompanyPlace.Tokenizer.class,
         ProductsPlace.Tokenizer.class,

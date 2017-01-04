@@ -8,7 +8,7 @@
         .panel {
             max-width: 960px;
             margin: 0px auto;
-            padding: 20px;
+            padding: 0px;
         }
 
         .section {
@@ -24,7 +24,8 @@
             width: 100%;
         }
 
-        .details {
+        .tabsContent {
+            position: relative;
             clear: both;
             padding: 10px 0px;
         }
@@ -67,14 +68,21 @@
         .tabsPanel {
             text-align: center;
         }
+
         .tabsPanel > * {
             max-width: 960px;
         }
 
+        .colorPanel {
+            position: absolute;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
-        <design:MaterialPanel backgroundColor="blue" addStyleNames="{style.tabsPanel}" ui:field="tabsPanel">
-        </design:MaterialPanel>
         <design:MaterialPanel addStyleNames="{style.panel}">
             <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="white" paddingTop="10" paddingBottom="10">
                     <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
@@ -86,7 +94,13 @@
                         <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
                     </design:MaterialColumn>
             </design:MaterialRow>
-            <design:MaterialRow addStyleNames="{style.details}" ui:field="details"></design:MaterialRow>
+            <design:MaterialPanel backgroundColor="blue" addStyleNames="{style.tabsPanel}" ui:field="tabsPanel">
+            </design:MaterialPanel>
+            <design:MaterialPanel layoutPosition="RELATIVE">
+                <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
+                <design:MaterialRow addStyleNames="{style.tabsContent}" ui:field="tabsContent"></design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel padding="20" ui:field="recommendationsPanel"></design:MaterialPanel>
         </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

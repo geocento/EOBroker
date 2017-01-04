@@ -30,6 +30,11 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public AoIDTO loadLatestAoI() throws RequestException;
 
+    @DELETE
+    @Path("/assets/aoi/latest")
+    @Produces("application/json")
+    public void removeLatestAoI() throws RequestException;
+
     @PUT
     @Path("/assets/aoi/")
     @Produces("application/json")

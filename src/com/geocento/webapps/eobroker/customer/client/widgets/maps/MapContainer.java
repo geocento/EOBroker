@@ -34,21 +34,41 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
         saveButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if(aoi.getName() == null) {
-                    QueryValueModal.getInstance().getValue("AoI Name", "Please provide a name for your AoI", "", new QueryValueModal.Presenter() {
-                        @Override
-                        public void onValue(String value) {
-                            aoi.setName(value);
-                            saveAoI();
-                        }
+                if(aoi != null) {
+                    if (aoi.getName() == null) {
+                        QueryValueModal.getInstance().getValue("AoI Name", "Please provide a name for your AoI", "", new QueryValueModal.Presenter() {
+                            @Override
+                            public void onValue(String value) {
+                                aoi.setName(value);
+                                saveAoI();
+                            }
 
-                        @Override
-                        public void onCancel() {
+                            @Override
+                            public void onCancel() {
 
-                        }
-                    });
+                            }
+                        });
+                    } else {
+                        saveAoI();
+                    }
                 } else {
-                    saveAoI();
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                saveButton.setVisible(true);
+                                MaterialToast.fireToast("Could not save AoI, please retry", "red");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                MaterialToast.fireToast("AoI saved", "green");
+                                presenter.aoiChanged(null);
+                            }
+                        }).call(ServicesUtil.assetsService).removeLatestAoI();
+                    } catch (Exception e) {
+
+                    }
                 }
             }
         });

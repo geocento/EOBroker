@@ -91,6 +91,8 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Not authorised");
             }
             dbAoI.setLastAccessed(new Date());
+            User user = em.find(User.class, userName);
+            user.setLatestAoI(dbAoI);
             em.getTransaction().commit();
             return createAoIDTO(dbAoI);
         } catch (Exception e) {
@@ -110,22 +112,30 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<AoI> query = em.createQuery("select a from AoI a where a.user = :user order by a.lastAccessed DESC", AoI.class);
-            query.setParameter("user", user);
-            query.setMaxResults(1);
-            List<AoI> dbAoIs = query.getResultList();
-            if(dbAoIs.size() == 0) {
-                return null;
-            } else {
-                AoI dbAoI = dbAoIs.get(0);
-                return createAoIDTO(dbAoI);
-            }
+            return user.getLatestAoI() == null ? null : createAoIDTO(user.getLatestAoI());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeLatestAoI() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            user.setLatestAoI(null);
+            em.getTransaction().commit();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing the latest AoI");
         } finally {
             em.close();
         }
@@ -144,6 +154,7 @@ public class AssetsResource implements AssetsService {
                 dbAoI.setUser(user);
                 dbAoI.setCreationTime(new Date());
                 em.persist(dbAoI);
+                user.setLatestAoI(dbAoI);
             } else {
                 dbAoI = em.find(AoI.class, aoi.getId());
                 if(dbAoI == null) {
@@ -348,39 +359,70 @@ public class AssetsResource implements AssetsService {
             productDescriptionDTO.setSector(product.getSector());
             productDescriptionDTO.setThematic(product.getThematic());
             // add relevant supplier services
-            TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product", ProductService.class);
-            query.setParameter("product", product);
-            productDescriptionDTO.setProductServices(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
-                @Override
-                public ProductServiceDTO mutate(ProductService productService) {
-                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                    productServiceDTO.setId(productService.getId());
-                    productServiceDTO.setName(productService.getName());
-                    productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                    productServiceDTO.setCompanyName(productService.getCompany().getName());
-                    productServiceDTO.setCompanyId(productService.getCompany().getId());
-                    productServiceDTO.setServiceImage(productService.getImageUrl());
-                    productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-                    // initiate the services with product dto
-                    ProductDTO productDTO = new ProductDTO();
-                    productDTO.setId(productDescriptionDTO.getId());
-                    productServiceDTO.setProduct(productDTO);
-                    return productServiceDTO;
-                }
-            }));
-            TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.product = :product", ProductDataset.class);
-            productDatasetQuery.setParameter("product", product);
-            productDescriptionDTO.setProductDatasets(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
-                @Override
-                public ProductDatasetDTO mutate(ProductDataset productDataset) {
-                    ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
-                    ProductDTO productDTO = new ProductDTO();
-                    productDTO.setId(productDescriptionDTO.getId());
-                    productDatasetDTO.setProduct(productDTO);
-                    return productDatasetDTO;
-                }
-            }));
+            {
+                TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product", ProductService.class);
+                query.setParameter("product", product);
+                productDescriptionDTO.setProductServices(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+                    @Override
+                    public ProductServiceDTO mutate(ProductService productService) {
+                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+                        productServiceDTO.setId(productService.getId());
+                        productServiceDTO.setName(productService.getName());
+                        productServiceDTO.setDescription(productService.getDescription());
+                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+                        productServiceDTO.setCompanyName(productService.getCompany().getName());
+                        productServiceDTO.setCompanyId(productService.getCompany().getId());
+                        productServiceDTO.setServiceImage(productService.getImageUrl());
+                        productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+                        // initiate the services with product dto
+                        ProductDTO productDTO = new ProductDTO();
+                        productDTO.setId(productDescriptionDTO.getId());
+                        productServiceDTO.setProduct(productDTO);
+                        return productServiceDTO;
+                    }
+                }));
+            }
+            // add off the shelf data
+            {
+                TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.product = :product", ProductDataset.class);
+                productDatasetQuery.setParameter("product", product);
+                productDescriptionDTO.setProductDatasets(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+                    @Override
+                    public ProductDatasetDTO mutate(ProductDataset productDataset) {
+                        ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
+                        ProductDTO productDTO = new ProductDTO();
+                        productDTO.setId(productDescriptionDTO.getId());
+                        productDatasetDTO.setProduct(productDTO);
+                        return productDatasetDTO;
+                    }
+                }));
+            }
+            // add software
+            {
+                TypedQuery<ProductSoftware> softwareQuery = em.createQuery("select p from ProductSoftware p where p.product = :product", ProductSoftware.class);
+                softwareQuery.setParameter("product", product);
+                productDescriptionDTO.setSoftwares(ListUtil.mutate(softwareQuery.getResultList(), new ListUtil.Mutate<ProductSoftware, SoftwareDTO>() {
+                    @Override
+                    public SoftwareDTO mutate(ProductSoftware productSoftware) {
+                        return createSoftwareDTO(productSoftware.getSoftware());
+                    }
+                }));
+            }
+            // add projects
+            {
+                TypedQuery<ProductProject> projectQuery = em.createQuery("select p from ProductProject p where p.product = :product", ProductProject.class);
+                projectQuery.setParameter("product", product);
+                productDescriptionDTO.setProjects(ListUtil.mutate(projectQuery.getResultList(), new ListUtil.Mutate<ProductProject, ProjectDTO>() {
+                    @Override
+                    public ProjectDTO mutate(ProductProject productProject) {
+                        return createProjectDTO(productProject.getProject());
+                    }
+                }));
+            }
+            // TODO - add suggestions
+            {
+                productDescriptionDTO.setSuggestedProducts(new ArrayList<ProductDTO>());
+            }
             return productDescriptionDTO;
         } finally {
             em.close();
@@ -496,6 +538,10 @@ public class AssetsResource implements AssetsService {
                     return createProductSoftwareDTO(productSoftware);
                 }
             }));
+            // TODO - add suggestions
+            {
+                softwareDescriptionDTO.setSuggestedSoftware(new ArrayList<SoftwareDTO>());
+            }
             return softwareDescriptionDTO;
         } finally {
             em.close();
@@ -537,6 +583,10 @@ public class AssetsResource implements AssetsService {
                     return companyRoleDTO;
                 }
             }));
+            // TODO - add suggestions
+            {
+                projectDescriptionDTO.setSuggestedProjects(new ArrayList<ProjectDTO>());
+            }
             return projectDescriptionDTO;
         } finally {
             em.close();

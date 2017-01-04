@@ -806,42 +806,28 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<CompanyDTO> listCompanies(String textFilter, Integer start, Integer limit, Long aoiId) {
-        List<Company> companies = null;
         EntityManager em = EMF.get().createEntityManager();
-        if(textFilter != null) {
-            // check if last character is a space
-            boolean partialMatch = !textFilter.endsWith(" ");
-            textFilter.trim();
-            // break down text into sub words
-            String[] words = textFilter.split(" ");
-            String keywords = StringUtils.join(words, " | ");
-            if (partialMatch) {
-                keywords += ":*";
-            }
-            // change the last word so that it allows for partial match
-            String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
-                    "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +
-                    "          WHERE tsv @@ keywords\n" +
-                    "          ORDER BY rank DESC;";
-            Query q = em.createNativeQuery(sqlStatement);
-            q.setFirstResult(start);
-            q.setMaxResults(limit);
-            List<Object[]> results = q.getResultList();
-            List<Long> companyIds = new ArrayList<Long>();
-            for (Object[] result : results) {
-                companyIds.add((Long) result[0]);
-            }
+        List<Long> companyIds = getFilteredIds(em, "company", textFilter, start, limit, null);
+        List<Company> companies = null;
+        if(companyIds.size() > 0) {
             TypedQuery<Company> companyQuery = em.createQuery("select c from Company c where c.id IN :companyIds", Company.class);
             companyQuery.setParameter("companyIds", companyIds);
             companies = companyQuery.getResultList();
         } else {
-            TypedQuery<Company> companyQuery = em.createQuery("select c from Company c order by c.name", Company.class);
-            companyQuery.setFirstResult(start);
-            companyQuery.setMaxResults(limit);
-            companies = companyQuery.getResultList();
+            companies = new ArrayList<Company>();
         }
         em.close();
-        return ListUtil.mutate(companies, new ListUtil.Mutate<Company, CompanyDTO>() {
+        // make sure order has stayed the same
+        List<Company> sortedItems = new ArrayList<Company>();
+        for(final Long id : companyIds) {
+            sortedItems.add(ListUtil.findValue(companies, new ListUtil.CheckValue<Company>() {
+                @Override
+                public boolean isValue(Company value) {
+                    return value.getId().equals(id);
+                }
+            }));
+        }
+        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<Company, CompanyDTO>() {
             @Override
             public CompanyDTO mutate(Company company) {
                 return CompanyHelper.createCompanyDTO(company);

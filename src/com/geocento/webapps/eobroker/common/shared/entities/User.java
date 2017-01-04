@@ -38,6 +38,9 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     Date lastLoggedIn;
 
+    @OneToOne
+    AoI latestAoI;
+
     public User() {
     }
 
@@ -105,4 +108,11 @@ public class User {
         return lastLoggedIn;
     }
 
+    public AoI getLatestAoI() {
+        return latestAoI;
+    }
+
+    public void setLatestAoI(AoI latestAoI) {
+        this.latestAoI = latestAoI;
+    }
 }

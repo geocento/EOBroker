@@ -14,6 +14,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -23,6 +24,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -178,7 +180,7 @@ public class AssetsResource implements AssetsService {
             }
             boolean hasFilter = filter != null && filter.length() > 0;
             TypedQuery<Product> query = em.createQuery("select p from Product p" +
-                            (hasFilter ?  "  where p.name LIKE :filter" : "") +
+                            (hasFilter ?  "  where UPPER(p.name) LIKE UPPER(:filter)" : "") +
                             " order by " + orderBy, Product.class);
             if(hasFilter) {
                 query.setParameter("filter", "%" + filter + "%");
@@ -347,7 +349,7 @@ public class AssetsResource implements AssetsService {
                     orderby = "c.name";
             }
             TypedQuery<Company> query = em.createQuery("select c from Company c" +
-                    (hasFilter ?  "  where c.name LIKE :filter" : "") +
+                    (hasFilter ?  "  where UPPER(c.name) LIKE UPPER(:filter)" : "") +
                     " order by " + orderby, Company.class);
             if(hasFilter) {
                 query.setParameter("filter", "%" + filter + "%");
@@ -462,7 +464,7 @@ public class AssetsResource implements AssetsService {
                 orderby = "n.creationDate";
         }
         TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n" +
-                (hasFilter ?  "  where n.title LIKE :filter" : "") +
+                (hasFilter ?  "  where UPPER(n.title) LIKE UPPER(:filter)" : "") +
                 " order by " + orderby, NewsItem.class);
         if(hasFilter) {
             query.setParameter("filter", "%" + filter + "%");
@@ -671,6 +673,108 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+    @Override
+    public List<UserDescriptionDTO> listUsers(int start, int limit, String orderby, String filter) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            boolean hasFilter = filter != null && filter.length() > 0;
+            // force orderby if null
+            if(orderby == null) {
+                orderby = "creationDate";
+            }
+            switch(orderby) {
+                case "creationDate":
+                    orderby = "u.lastLoggedIn";
+                    break;
+                default:
+                    orderby = "u.username";
+            }
+            TypedQuery<User> query = em.createQuery("select u from users u" +
+                    (hasFilter ?  "  where UPPER(u.username) LIKE UPPER(:filter)" : "") +
+                    " order by " + orderby, User.class);
+            if(hasFilter) {
+                query.setParameter("filter", "%" + filter + "%");
+            }
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<User,UserDescriptionDTO>() {
+                @Override
+                public UserDescriptionDTO mutate(User user) {
+                    return createUserDescriptionDTO(user);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public UserDescriptionDTO getUser(String userName) throws RequestException {
+        UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            if(user == null) {
+                throw new RequestException("User '" + userName + "' does not exist");
+            }
+            return createUserDescriptionDTO(user);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private UserDescriptionDTO createUserDescriptionDTO(User user) {
+        UserDescriptionDTO userDescriptionDTO = new UserDescriptionDTO();
+        userDescriptionDTO.setName(user.getUsername());
+        userDescriptionDTO.setEmail(user.getEmail());
+        userDescriptionDTO.setUserRole(user.getRole());
+        userDescriptionDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(user.getCompany()));
+        return userDescriptionDTO;
+    }
+
+    @Override
+    public void saveUser(UserDescriptionDTO userDescriptionDTO) throws RequestException {
+        UserUtils.verifyUserAdmin(request);
+        if(userDescriptionDTO == null) {
+            throw new RequestException("User description cannot be empty");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // update user
+            em.getTransaction().begin();
+            String userName = userDescriptionDTO.getName();
+            User dbUser = em.find(User.class, userName);
+            if(dbUser == null) {
+                // create new user
+                dbUser = new User();
+                dbUser.setUsername(userDescriptionDTO.getName());
+                dbUser.setPassword(userDescriptionDTO.getPassword());
+                em.persist(dbUser);
+            }
+            Company dbCompany = null;
+            if(userDescriptionDTO.getCompanyDTO() != null) {
+                dbCompany = em.find(Company.class, userDescriptionDTO.getCompanyDTO().getId());
+            }
+            dbUser.setCompany(dbCompany);
+            dbUser.setRole(userDescriptionDTO.getUserRole());
+            dbUser.setEmail(userDescriptionDTO.getEmail());
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
     private FeedbackDTO createFeedbackDTO(Feedback feedback) {
         FeedbackDTO feedbackDTO = new FeedbackDTO();
         feedbackDTO.setId(feedback.getId());
@@ -694,6 +798,40 @@ public class AssetsResource implements AssetsService {
         userDTO.setName(user.getUsername());
         userDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(user.getCompany()));
         return userDTO;
+    }
+
+    @Override
+    public List<CompanyDTO> findCompanies(String text) {
+        // check if last character is a space
+        boolean partialMatch = !text.endsWith(" ");
+        text.trim();
+        if(text.length() == 0) {
+            return null;
+        }
+        // break down text into sub words
+        String[] words = text.split(" ");
+        String keywords = StringUtils.join(words, " | ");
+        if(partialMatch) {
+            keywords += ":*";
+        }
+        // change the last word so that it allows for partial match
+        String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+                "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +
+                "          WHERE tsvname @@ keywords\n" +
+                "          ORDER BY rank\n" +
+                "          LIMIT 10;";
+        EntityManager em = EMF.get().createEntityManager();
+        Query q = em.createNativeQuery(sqlStatement);
+        List<Object[]> results = q.getResultList();
+        List<CompanyDTO> suggestions = new ArrayList<CompanyDTO>();
+        for(Object[] result : results) {
+            CompanyDTO companyDTO = new CompanyDTO();
+            companyDTO.setId((Long) result[0]);
+            companyDTO.setName((String) result[1]);
+            companyDTO.setIconURL((String) result[2]);
+            suggestions.add(companyDTO);
+        }
+        return suggestions;
     }
 
 }

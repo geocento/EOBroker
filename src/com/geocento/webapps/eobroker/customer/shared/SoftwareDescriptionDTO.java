@@ -20,6 +20,7 @@ public class SoftwareDescriptionDTO {
     List<ProductSoftwareDTO> products;
     private boolean commercial;
     private boolean openSource;
+    private List<SoftwareDTO> suggestedSoftware;
 
     public SoftwareDescriptionDTO() {
     }
@@ -110,5 +111,13 @@ public class SoftwareDescriptionDTO {
 
     public void setOpenSource(boolean openSource) {
         this.openSource = openSource;
+    }
+
+    public List<SoftwareDTO> getSuggestedSoftware() {
+        return suggestedSoftware;
+    }
+
+    public void setSuggestedSoftware(List<SoftwareDTO> suggestedSoftware) {
+        this.suggestedSoftware = suggestedSoftware;
     }
 }

@@ -108,12 +108,18 @@ public abstract class AsyncPagingCellTable<T extends Object> extends FlowPanel i
 		dataGrid.addColumn(column, title);
 	}
 
+    public void clearData() {
+    }
+
     public void refreshDisplay() {
         dataGrid.redraw();
     }
 
     public void setPagerSize(int limit) {
         pager.setPageSize(limit);
+    }
+
+    public void setLoading(boolean loading) {
     }
 
     @Override

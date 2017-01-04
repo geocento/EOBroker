@@ -152,7 +152,7 @@
                             <g:HTMLPanel ui:field="settings">
                             </g:HTMLPanel>
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
-                            <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="200px" ui:field="mapContainer"></cmaps:MapContainer>
+                            <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="200px" layer="false" ui:field="mapContainer"></cmaps:MapContainer>
                             <g:HTMLPanel ui:field="timeFrame">
                                 <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
                                 <design:MaterialDatePicker placeholder="Start date" ui:field="start"></design:MaterialDatePicker>

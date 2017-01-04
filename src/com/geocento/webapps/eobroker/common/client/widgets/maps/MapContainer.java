@@ -1,13 +1,11 @@
 package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
-import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -21,8 +19,6 @@ import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.html.ListItem;
-
-import java.util.Date;
 
 /**
  * Created by thomas on 21/09/2016.
@@ -72,6 +68,12 @@ public class MapContainer extends Composite {
     protected MaterialAnchorButton selectButton;
     @UiField
     MaterialPanel listLayers;
+    @UiField
+    MaterialButton layers;
+    @UiField
+    HTMLPanel searchPanel;
+    @UiField
+    MaterialPanel buttonsPanel;
 
     private Presenter presenter;
 
@@ -94,6 +96,8 @@ public class MapContainer extends Composite {
     private boolean isEditing = false;
 
     private boolean editable = true;
+
+    private boolean searchActivated = false;
 
     public MapContainer() {
 
@@ -150,6 +154,11 @@ public class MapContainer extends Composite {
                         listLayers.getElement().getStyle().setProperty("maxWidth", ((int) Math.floor(mapContainer.getOffsetWidth() * 0.6)) + "px");
                         arcgisMap.createBaseMaps(map, listLayers.getElement());
 
+                        searchPanel.setVisible(searchActivated);
+                        if(searchActivated) {
+                            arcgisMap.addSearch(map, search.getElement());
+                        }
+
                         map.setZoom(3);
                         mapLoaded();
                     }
@@ -164,7 +173,7 @@ public class MapContainer extends Composite {
     }
 
     public void setButtonMargin(int height) {
-        for(MaterialWidget widget : new MaterialWidget[] {addButton, clearAoIs, editGeometry}) {
+        for(MaterialWidget widget : new MaterialWidget[] {addButton, buttonsPanel}) {
             widget.setBottom(height);
         }
     }
@@ -302,16 +311,23 @@ public class MapContainer extends Composite {
         updateButtons();
     }
 
+    public void setLayer(boolean display) {
+        layers.setVisible(display);
+    }
+
+    // TODO - only to be used once to activate search bar
+    public void setSearch(boolean search) {
+        this.searchActivated = search;
+    }
+
     protected void addButton(MaterialButton materialButton, String message) {
-        materialButton.setLayoutPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
-        materialButton.setBottom(30);
-        materialButton.setRight(160);
         materialButton.setType(ButtonType.FLOATING);
+        materialButton.setMarginRight(10);
         materialButton.addStyleName(style.fabButton());
         MaterialTooltip materialTooltip = new MaterialTooltip(materialButton);
         materialTooltip.setText(message);
-        materialTooltip.setPosition(Position.BOTTOM);
-        panel.add(materialButton);
+        materialTooltip.setPosition(Position.TOP);
+        buttonsPanel.insert(materialButton, 0);
     }
 
     protected void addFABButton(MaterialAnchorButton materialButton, String tooltipMessage) {

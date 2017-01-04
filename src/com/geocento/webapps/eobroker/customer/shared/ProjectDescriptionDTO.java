@@ -19,6 +19,7 @@ public class ProjectDescriptionDTO {
     CompanyDTO companyDTO;
     List<ProductProjectDTO> products;
     private List<CompanyRoleDTO> consortium;
+    private List<ProjectDTO> suggestedProjects;
 
     public ProjectDescriptionDTO() {
     }
@@ -101,5 +102,13 @@ public class ProjectDescriptionDTO {
 
     public void setConsortium(List<CompanyRoleDTO> consortium) {
         this.consortium = consortium;
+    }
+
+    public List<ProjectDTO> getSuggestedProjects() {
+        return suggestedProjects;
+    }
+
+    public void setSuggestedProjects(List<ProjectDTO> suggestedProjects) {
+        this.suggestedProjects = suggestedProjects;
     }
 }

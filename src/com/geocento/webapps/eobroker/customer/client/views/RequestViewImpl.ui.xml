@@ -79,6 +79,10 @@
             opacity: 0.1;
         }
 
+        .tabsContent {
+            position: relative;
+        }
+
     </ui:style>
     <views:TemplateView titleText="Request Management" ui:field="template">
         <design:MaterialPanel addStyleNames="{style.panel}">
@@ -103,39 +107,41 @@
             </design:MaterialPanel>
             <design:MaterialPanel layoutPosition="RELATIVE" ui:field="tabsPanel">
                 <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
-                <design:MaterialRow design:id="request" addStyleNames="{style.formValues}" ui:field="requestTab">
-                    <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
-                    </design:MaterialColumn>
-                    <design:MaterialColumn grid="s12 m12 l6">
-                        <design:MaterialLabel text="Area of interest" addStyleNames="{style.section}"></design:MaterialLabel>
-                        <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                            <maps:MapContainer width="100%" height="300px" editable="false" ui:field="mapContainer">
-                            </maps:MapContainer>
-                        </g:HTMLPanel>
-                    </design:MaterialColumn>
-                </design:MaterialRow>
-                <design:MaterialPanel padding="10" ui:field="responsePanel">
-                    <g:HTMLPanel addStyleNames="{style.responseTitle}" ui:field="responseTitle"></g:HTMLPanel>
-                    <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
-                    </g:HTMLPanel>
-                    <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
-                    <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
-                    </design:MaterialRow>
-                    <design:MaterialRow addStyleNames="{style.formValues}">
-                        <design:MaterialColumn grid="s2 m2 l2">
-                            <widgets:UserWidget size="64" ui:field="userImage"></widgets:UserWidget>
+                <design:MaterialRow addStyleNames="{style.tabsContent}" ui:field="tabsContent">
+                    <design:MaterialRow design:id="request" addStyleNames="{style.formValues}" ui:field="requestTab">
+                        <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
                         </design:MaterialColumn>
-                        <design:MaterialColumn grid="s10 m10 l10">
-                            <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
-                        </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12 m12 l12">
-                            <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                                <widgets:ProgressButton text="SEND MESSAGE" ui:field="submitMessage">
-                                </widgets:ProgressButton>
+                        <design:MaterialColumn grid="s12 m12 l6">
+                            <design:MaterialLabel text="Area of interest" addStyleNames="{style.section}"></design:MaterialLabel>
+                            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                                <maps:MapContainer width="100%" height="300px" editable="false" ui:field="mapContainer">
+                                </maps:MapContainer>
                             </g:HTMLPanel>
                         </design:MaterialColumn>
                     </design:MaterialRow>
-                </design:MaterialPanel>
+                    <design:MaterialPanel padding="10" ui:field="responsePanel">
+                        <g:HTMLPanel addStyleNames="{style.responseTitle}" ui:field="responseTitle"></g:HTMLPanel>
+                        <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
+                        </g:HTMLPanel>
+                        <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
+                        <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
+                        </design:MaterialRow>
+                        <design:MaterialRow addStyleNames="{style.formValues}">
+                            <design:MaterialColumn grid="s2 m2 l2">
+                                <widgets:UserWidget size="64" ui:field="userImage"></widgets:UserWidget>
+                            </design:MaterialColumn>
+                            <design:MaterialColumn grid="s10 m10 l10">
+                                <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
+                            </design:MaterialColumn>
+                            <design:MaterialColumn grid="s12 m12 l12">
+                                <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                                    <widgets:ProgressButton text="SEND MESSAGE" ui:field="submitMessage">
+                                    </widgets:ProgressButton>
+                                </g:HTMLPanel>
+                            </design:MaterialColumn>
+                        </design:MaterialRow>
+                    </design:MaterialPanel>
+                </design:MaterialRow>
             </design:MaterialPanel>
         </design:MaterialPanel>
     </views:TemplateView>

@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+
 import java.util.List;
 
 /**
@@ -18,6 +20,7 @@ public class CompanyDescriptionDTO {
     List<ProductDatasetDTO> productDatasets;
     List<SoftwareDTO> software;
     List<ProjectDTO> project;
+    private List<CompanyDTO> suggestedCompanies;
 
     public CompanyDescriptionDTO() {
     }
@@ -108,5 +111,13 @@ public class CompanyDescriptionDTO {
 
     public void setProject(List<ProjectDTO> project) {
         this.project = project;
+    }
+
+    public List<CompanyDTO> getSuggestedCompanies() {
+        return suggestedCompanies;
+    }
+
+    public void setSuggestedCompanies(List<CompanyDTO> suggestedCompanies) {
+        this.suggestedCompanies = suggestedCompanies;
     }
 }

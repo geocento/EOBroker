@@ -21,6 +21,9 @@ public class ProductDescriptionDTO {
     List<ProductServiceDTO> productServices;
     List<ProductDatasetDTO> productDatasets;
     boolean imageRule;
+    private List<SoftwareDTO> softwares;
+    private List<ProjectDTO> projects;
+    private List<ProductDTO> suggestedProducts;
 
     public ProductDescriptionDTO() {
     }
@@ -99,5 +102,29 @@ public class ProductDescriptionDTO {
 
     public void setProductDatasets(List<ProductDatasetDTO> productDatasets) {
         this.productDatasets = productDatasets;
+    }
+
+    public List<SoftwareDTO> getSoftwares() {
+        return softwares;
+    }
+
+    public void setSoftwares(List<SoftwareDTO> softwares) {
+        this.softwares = softwares;
+    }
+
+    public List<ProjectDTO> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<ProjectDTO> projects) {
+        this.projects = projects;
+    }
+
+    public List<ProductDTO> getSuggestedProducts() {
+        return suggestedProducts;
+    }
+
+    public void setSuggestedProducts(List<ProductDTO> suggestedProducts) {
+        this.suggestedProducts = suggestedProducts;
     }
 }

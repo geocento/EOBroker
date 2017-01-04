@@ -21,6 +21,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
         } else if(place instanceof DashboardPlace) {
             return new DashboardActivity((DashboardPlace) place, clientFactory);
+        } else if(place instanceof UsersPlace) {
+            return new UsersActivity((UsersPlace) place, clientFactory);
         } else if(place instanceof CompanyPlace) {
             return new CompanyActivity((CompanyPlace) place, clientFactory);
         } else if(place instanceof CompaniesPlace) {

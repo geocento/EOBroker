@@ -79,6 +79,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     HTMLPanel links;
     @UiField
     MaterialLink signOut;
+    @UiField
+    MaterialLink users;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -95,6 +97,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         products.setIconType(CategoryUtils.getIconType(Category.products));
         newsItems.setIconType(CategoryUtils.getIconType(Category.newsItems));
 
+        setLink(users, new UsersPlace());
         setLink(companies, new CompaniesPlace());
         setLink(products, new ProductsPlace());
         setLink(newsItems, new NewsItemsPlace());
@@ -120,6 +123,9 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
             return;
         }
         switch (place) {
+            case "users":
+                users.addStyleName(style.selected());
+                break;
             case "companies":
                 companies.addStyleName(style.selected());
                 break;

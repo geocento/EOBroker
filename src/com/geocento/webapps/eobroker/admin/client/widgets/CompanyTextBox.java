@@ -1,11 +1,10 @@
-package com.geocento.webapps.eobroker.supplier.client.widgets;
+package com.geocento.webapps.eobroker.admin.client.widgets;
 
+import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
-import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.http.client.RequestException;
 import gwt.material.design.client.base.SearchObject;
 import gwt.material.design.client.ui.MaterialSearch;
 import org.fusesource.restygwt.client.Method;
@@ -26,25 +25,22 @@ public class CompanyTextBox extends MaterialSearch {
         addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
-                try {
-                    REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
-                        @Override
-                        public void onFailure(Method method, Throwable exception) {
+                REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onSuccess(Method method, List<CompanyDTO> response) {
-                            setListSearches(ListUtil.mutate(response, new ListUtil.Mutate<CompanyDTO, SearchObject>() {
-                                @Override
-                                public SearchObject mutate(CompanyDTO companyDTO) {
-                                    return new SearchObject(companyDTO.getName(), "", companyDTO);
-                                }
-                            }));
-                        }
-                    }).call(ServicesUtil.assetsService).findCompanies(getValue());
-                } catch (RequestException e) {
-                }
+                    @Override
+                    public void onSuccess(Method method, List<CompanyDTO> response) {
+                        setListSearches(ListUtil.mutate(response, new ListUtil.Mutate<CompanyDTO, SearchObject>() {
+                            @Override
+                            public SearchObject mutate(CompanyDTO companyDTO) {
+                                return new SearchObject(companyDTO.getName(), "", companyDTO);
+                            }
+                        }));
+                    }
+                }).call(ServicesUtil.assetsService).findCompanies(getValue());
             }
         });
     }
@@ -59,6 +55,6 @@ public class CompanyTextBox extends MaterialSearch {
     }
 
     public void clearCompany() {
-        setCompany(null);
+        setText("");
     }
 }

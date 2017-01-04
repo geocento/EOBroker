@@ -123,7 +123,6 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                     @Override
                     public void onSuccess(Method method, ProductDTO productDTO) {
                         setSensors("Suitable for '" + productDTO.getName() + "'");
-                        enableUpdateMaybe();
                         if(currentAoI != null && text != null && text.length() > 0) {
                             updateSearch();
                         }
@@ -134,7 +133,6 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             }
         } else {
             setSensors(text);
-            enableUpdateMaybe();
             if(currentAoI != null && text != null && text.length() > 0) {
                 updateSearch();
             }
@@ -207,7 +205,6 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             public void onTextSelected(TextSelected event) {
                 // TODO - correct the input if needed
                 imageSearchView.setText(event.getText());
-                enableUpdateMaybe();
             }
         });
         
@@ -218,7 +215,6 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                 imageSearchView.setText(event.getSuggestion().getName());
                 selectedSuggestion = event.getSuggestion();
                 imageSearchView.setSearchTextValid(true);
-                enableUpdateMaybe();
             }
         });
     }
@@ -247,6 +243,14 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     }
 
     private void updateSearch() {
+        if(currentAoI == null) {
+            MaterialToast.fireToast("Please select an area of interest");
+            return;
+        }
+        if(sensors == null || sensors.length() == 0) {
+            MaterialToast.fireToast("Please select sensors");
+            return;
+        }
         // check current suggestion
         SearchQuery searchQuery = new SearchQuery();
         searchQuery.setAoiWKT(currentAoI.getWktGeometry());
@@ -287,52 +291,26 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
     @Override
     public void aoiChanged(AoIDTO aoi) {
         setAoi(aoi);
-        enableUpdateMaybe();
-    }
-
-    private void enableUpdateMaybe() {
-        if(currentAoI == null) {
-            MaterialToast.fireToast("Please select AoIDTO");
-            enableUpdate(false);
-            return;
-        }
-        if(sensors == null || sensors.length() == 0) {
-            MaterialToast.fireToast("Please select sensors");
-            enableUpdate(false);
-            return;
-        }
-/*
-        if(selectedSuggestion == null) {
-            enableUpdate(false);
-            return;
-        }
-*/
-        enableUpdate(true);
     }
 
     @Override
     public void onProviderChanged(ImageService imageService) {
         selectService(imageService);
-/*
-        updateSearch();
-*/
-        enableUpdateMaybe();
     }
 
     @Override
     public void onStartDateChanged(Date value) {
         startDate = value;
-        enableUpdateMaybe();
     }
 
     private void enableUpdate(boolean enable) {
-        imageSearchView.enableUpdate(enable);
+        // always enabled
+        imageSearchView.enableUpdate(true);
     }
 
     @Override
     public void onStopDateChanged(Date value) {
         stopDate = value;
-        enableUpdateMaybe();
     }
 
     @Override
@@ -341,7 +319,6 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         selectedSuggestion = null;
         imageSearchView.setSearchTextValid(false);
         updateSuggestions();
-        enableUpdateMaybe();
     }
 
     public void setAoi(AoIDTO aoi) {

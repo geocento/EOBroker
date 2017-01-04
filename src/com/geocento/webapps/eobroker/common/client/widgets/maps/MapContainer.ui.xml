@@ -33,18 +33,20 @@
         <g:HTMLPanel visible="false" addStyleNames="{style.searchContainer}" ui:field="searchPanel">
             <g:HTMLPanel ui:field="search"></g:HTMLPanel>
         </g:HTMLPanel>
-        <design:MaterialButton activates="layers" layoutPosition="ABSOLUTE" top="30" right="30" type="FLOATING" waves="LIGHT" backgroundColor="white" iconType="LAYERS" iconSize="SMALL" iconColor="black" addStyleNames="{style.fabButton}" ui:field="layers"/>
-        <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%">
+        <design:MaterialButton activates="layers" layoutPosition="ABSOLUTE" top="30" right="20" type="FLOATING" waves="LIGHT" backgroundColor="white" iconType="LAYERS" iconSize="SMALL" iconColor="black" addStyleNames="{style.fabButton}" ui:field="layers"/>
+        <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%" height="50%">
             <design:MaterialPanel ui:field="listLayers"></design:MaterialPanel>
         </design:MaterialDropDown>
-        <design:MaterialTooltip text="Clear AoI" position="TOP">
-            <design:MaterialButton layoutPosition="ABSOLUTE" bottom="30" right="110" type="FLOATING" waves="LIGHT" backgroundColor="amber"  iconType="LAYERS_CLEAR" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="clearAoIs"/>
-        </design:MaterialTooltip>
-        <design:MaterialTooltip text="Edit the current AoI" position="TOP">
-            <design:MaterialButton layoutPosition="ABSOLUTE" bottom="30" right="60" type="FLOATING" backgroundColor="blue" iconType="EDIT" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="editGeometry"/>
-        </design:MaterialTooltip>
+        <design:MaterialPanel layoutPosition="ABSOLUTE" bottom="30" right="60" ui:field="buttonsPanel">
+            <design:MaterialTooltip text="Clear AoI" position="TOP">
+                <design:MaterialButton type="FLOATING" backgroundColor="amber" marginRight="10" iconType="LAYERS_CLEAR" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="clearAoIs"/>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="Edit the current AoI" position="TOP">
+                <design:MaterialButton type="FLOATING" backgroundColor="blue" marginRight="10" iconType="EDIT" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="editGeometry"/>
+            </design:MaterialTooltip>
+        </design:MaterialPanel>
         <!-- FAB -->
-        <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="30" right="10" addStyleNames="{style.fabPanel}" ui:field="addButton">
+        <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="30" right="20" addStyleNames="{style.fabPanel}" ui:field="addButton">
             <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" iconSize="SMALL" opacity="1.0" ui:field="fabButton"/>
             <design:MaterialFABList ui:field="addButtons">
                 <design:MaterialTooltip text="Select saved AoI" position="LEFT">

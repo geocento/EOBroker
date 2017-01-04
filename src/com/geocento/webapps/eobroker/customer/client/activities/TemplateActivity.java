@@ -226,7 +226,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             case imagery: {
                 if (action.contentEquals("search")) {
                     searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
-                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId()));
+/*
+                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId())
+*/
+                    "");
                     //setText(parameters);
                 } else if (action.contentEquals("request")) {
                     searchPlace = new RequestImageryPlace(parameters);

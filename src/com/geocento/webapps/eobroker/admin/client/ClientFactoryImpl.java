@@ -33,6 +33,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private FeedbackView feedbackView = null;
 
+    private UsersView usersView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -126,6 +128,14 @@ public class ClientFactoryImpl implements ClientFactory {
             feedbackView = new FeedbackViewImpl(this);
         }
         return feedbackView;
+    }
+
+    @Override
+    public UsersView getUsersView() {
+        if(usersView == null) {
+            usersView = new UsersViewImpl(this);
+        }
+        return usersView;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
@@ -16,6 +17,8 @@ import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
+import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import it.geosolutions.geoserver.rest.decoder.RESTStyleList;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -410,6 +413,26 @@ public class AssetsResource implements AssetsService {
             suggestions.add(companyDTO);
         }
         return suggestions;
+    }
+
+    @Override
+    public List<String> getStyles() throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        User user = em.find(User.class, logUserName);
+        // define the style
+        String workspace = user.getCompany().getId() + "";
+        try {
+            // publish to GeoServer
+            String RESTURL = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
+            String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
+            String RESTPW = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
+            GeoServerRESTReader reader = new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
+            RESTStyleList styles = reader.getStyles(workspace);
+            return styles.getNames();
+        } catch (Exception e) {
+            throw new RequestException("Failed to call geoserver service");
+        }
     }
 
     @Override

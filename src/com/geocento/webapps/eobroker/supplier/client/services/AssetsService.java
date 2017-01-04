@@ -145,6 +145,16 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/companies/find/")
     @Produces("application/json")
-    List<CompanyDTO> findCompanies(@QueryParam("text") String text);
+    List<CompanyDTO> findCompanies(@QueryParam("text") String text) throws RequestException;
+
+    @POST
+    @Path("/assets/ows/styles/")
+    @Produces("application/json")
+    public String saveStyle(StyleDTO styleDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/ows/styles/{id}")
+    @Produces("application/json")
+    public List<String> getStyles() throws RequestException;
 
 }

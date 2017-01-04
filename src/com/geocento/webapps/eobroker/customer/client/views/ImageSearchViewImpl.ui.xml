@@ -14,12 +14,13 @@
         .providers {
             padding-left: 20px;
             font-size: 1.2em !important;
-            line-height: normal !important;
+            height: 2em !important;
+            line-height: 2em !important;
         }
 
         .providers > i {
             height: inherit !important;
-            line-height: normal !important;
+            line-height: inherit !important;
         }
 
         .queryPanel {
@@ -64,7 +65,7 @@
     <views:TemplateView footer="false" ui:field="template" titleText="Image Search">
         <views:header>
             <widgetsc:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
-                <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
+                <sideprofile:MaterialSideProfile backgroundColor="blue">
                     <m:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
                     <m:MaterialDropDown activator="provider" ui:field="providerDropdown">
                     </m:MaterialDropDown>
@@ -92,15 +93,12 @@
 <!--
                                 <m:MaterialTextBox placeholder="Sensors" textColor="black" ui:field="sensors"></m:MaterialTextBox>
 -->
-                                <widgets:MaterialSensorsSuggestion placeholder="Sensors" textColor="black" ui:field="sensors"></widgets:MaterialSensorsSuggestion>
+                                <widgets:MaterialSensorsSuggestion placeholder="Sensors - type in keywords" textColor="black" ui:field="sensors"></widgets:MaterialSensorsSuggestion>
                             </m:MaterialColumn>
                         </m:MaterialRow>
                         <m:MaterialRow addStyleNames="{style.queryButton}">
-                            <m:MaterialColumn grid="s6">
-                                <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="blue" enabled="false" ui:field="update"/>
-                            </m:MaterialColumn>
-                            <m:MaterialColumn grid="s6">
-                                <m:MaterialButton text="Request" type="FLAT" textAlign="CENTER" backgroundColor="green" enabled="false" ui:field="request"/>
+                            <m:MaterialColumn grid="s12">
+                                <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="blue" textColor="white" ui:field="update"/>
                             </m:MaterialColumn>
                         </m:MaterialRow>
                     </m:MaterialColumn>
@@ -115,7 +113,7 @@
             </widgetsc:MaterialSideNav>
         </views:header>
         <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-            <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" ui:field="mapContainer">
+            <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" ui:field="mapContainer">
             </cmaps:MapContainer>
         </g:HTMLPanel>
     </views:TemplateView>

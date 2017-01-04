@@ -110,6 +110,7 @@
                     <g:HTMLPanel addStyleNames="{style.menus}">
                         <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
                         <g:HTMLPanel ui:field="links">
+                            <design:MaterialLink iconType="VERIFIED_USER" iconPosition="LEFT" textColor="blue" text="Users" addStyleNames="{style.category}" ui:field="users"></design:MaterialLink>
                             <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" addStyleNames="{style.category}" ui:field="companies"></design:MaterialLink>
                             <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" addStyleNames="{style.category}" ui:field="products"></design:MaterialLink>
                             <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="News Items" addStyleNames="{style.category}" ui:field="newsItems"></design:MaterialLink>

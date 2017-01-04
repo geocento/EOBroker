@@ -55,7 +55,6 @@ public class ProductTextBox extends MaterialSearch {
     }
 
     public void clearProduct() {
-        setText("");
-        setFocus(false);
+        setProduct(null);
     }
 }
