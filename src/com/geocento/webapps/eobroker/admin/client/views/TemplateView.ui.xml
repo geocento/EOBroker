@@ -124,7 +124,7 @@
         <design:MaterialContainer fontSize="0.8em" paddingTop="64">
             <design:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></design:MaterialPanel>
         </design:MaterialContainer>
-        <design:MaterialFooter backgroundColor="blue">
+        <design:MaterialFooter backgroundColor="transparent" textColor="black">
             <design:MaterialFooterCopyright>
                 <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
             </design:MaterialFooterCopyright>

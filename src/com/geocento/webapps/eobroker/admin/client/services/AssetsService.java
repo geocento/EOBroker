@@ -150,4 +150,9 @@ public interface AssetsService extends DirectRestService {
     @Consumes("application/json")
     void saveUser(UserDescriptionDTO userDescriptionDTO) throws RequestException;
 
+    @PUT
+    @Path("/users/")
+    @Consumes("application/json")
+    void createUser(UserDescriptionDTO userDescriptionDTO) throws RequestException;
+
 }

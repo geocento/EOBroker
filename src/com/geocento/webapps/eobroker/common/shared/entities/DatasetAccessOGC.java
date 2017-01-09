@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
+import gwt.material.design.client.constants.IconType;
+
 import javax.persistence.*;
 
 /**
@@ -11,6 +13,7 @@ public class DatasetAccessOGC extends DatasetAccess {
 
     @Column(length = 1000)
     String serverUrl;
+    private String styleName;
 
     public DatasetAccessOGC() {
     }
@@ -21,5 +24,14 @@ public class DatasetAccessOGC extends DatasetAccess {
 
     public void setServerUrl(String serverUrl) {
         this.serverUrl = serverUrl;
+    }
+
+
+    public String getStyleName() {
+        return styleName;
+    }
+
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
     }
 }

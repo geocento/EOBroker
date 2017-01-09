@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
@@ -278,8 +279,21 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     private void addDataAccess(DatasetAccess datasetAccess) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.dataAccess.add(materialColumn);
-        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, true);
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, false);
         materialColumn.add(dataAccessWidget);
+    }
+
+    private DataAccessWidget createDataAccessWidget(DatasetAccess datasetAccess, boolean editableUri) {
+        if(datasetAccess instanceof DatasetAccessFile) {
+            return new DataAccessWidget(datasetAccess, editableUri);
+        } else if(datasetAccess instanceof DatasetAccessAPP) {
+            return new DataAccessWidget(datasetAccess, editableUri);
+        } else if(datasetAccess instanceof DatasetAccessOGC) {
+            return new OGCDataAccessWidget((DatasetAccessOGC) datasetAccess, editableUri);
+        } else if(datasetAccess instanceof DatasetAccessAPI) {
+            return new DataAccessWidget(datasetAccess, editableUri);
+        }
+        return null;
     }
 
     private void updateDataAccessMessage() {
@@ -324,7 +338,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     private void addSample(DatasetAccess datasetAccess, boolean editableUri) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
-        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, editableUri);
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, editableUri);
         materialColumn.add(dataAccessWidget);
     }
 

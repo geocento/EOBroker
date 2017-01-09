@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:fileuploader="urn:import:gwt.material.design.addins.client.fileuploader">
+    <ui:style>
+
+        .title h4 {
+            margin: 10px !important;
+        }
+
+    </ui:style>
+    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500" width="450px">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="Choose a style" addStyleNames="{style.title}"></design:MaterialTitle>
+            <design:MaterialPanel ui:field="listStyles"></design:MaterialPanel>
+            <design:MaterialPanel ui:field="styleEditor"></design:MaterialPanel>
+        </design:MaterialModalContent>
+    </design:MaterialModal>
+</ui:UiBinder>

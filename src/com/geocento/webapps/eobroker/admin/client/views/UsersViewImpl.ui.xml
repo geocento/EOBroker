@@ -16,9 +16,13 @@
         }
 
         .company {
+            position: relative;
             height: 60px;
             line-height: 60px;
             margin-bottom: 20px;
+        }
+        .company .search-result {
+            z-index: 1002 !important;
         }
 
         .title h4 {
@@ -45,22 +49,23 @@
             <design:MaterialModalContent>
                 <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
                 <design:MaterialRow width="100%">
-                    <design:MaterialColumn grid="s12">
+                    <design:MaterialColumn grid="s12 m6 l6">
                         <design:MaterialTextBox placeholder="User Name" ui:field="userName"></design:MaterialTextBox>
                     </design:MaterialColumn>
-                    <design:MaterialColumn grid="s12">
+                    <design:MaterialColumn grid="s12 m6 l6">
                         <design:MaterialTextBox placeholder="User Email" ui:field="email"></design:MaterialTextBox>
                     </design:MaterialColumn>
-                    <design:MaterialColumn grid="s12">
+                    <design:MaterialColumn grid="s12 m6 l6">
                         <design:MaterialListBox placeholder="User role" ui:field="role"></design:MaterialListBox>
                     </design:MaterialColumn>
-                    <design:MaterialColumn grid="s12">
+                    <design:MaterialColumn grid="s12 m6 l6">
                         <widgets:CompanyTextBox addStyleNames="{style.company}" ui:field="company"></widgets:CompanyTextBox>
                     </design:MaterialColumn>
                 </design:MaterialRow>
                 <design:MaterialRow width="100%">
                     <design:MaterialColumn grid="s6" textAlign="LEFT">
                         <design:MaterialButton text="Save" backgroundColor="brown" textColor="white" textAlign="CENTER" ui:field="submit"></design:MaterialButton>
+                        <design:MaterialButton visible="false" text="Create" backgroundColor="brown" textColor="white" textAlign="CENTER" ui:field="create"></design:MaterialButton>
                     </design:MaterialColumn>
                     <design:MaterialColumn grid="s6" textAlign="RIGHT">
                         <design:MaterialButton text="Cancel" backgroundColor="grey" textColor="white" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>

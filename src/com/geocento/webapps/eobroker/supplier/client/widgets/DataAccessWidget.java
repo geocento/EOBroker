@@ -17,10 +17,7 @@ import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
 import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
 import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.MaterialListBox;
-import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
 import gwt.material.design.client.ui.animate.Transition;
 import gwt.material.design.client.ui.html.Option;
@@ -43,8 +40,10 @@ public class DataAccessWidget extends Composite {
     MaterialTextBox uri;
     @UiField
     MaterialTextBox title;
+    @UiField
+    MaterialRow fields;
 
-    private final DatasetAccess datasetAccess;
+    protected final DatasetAccess datasetAccess;
 
     public DataAccessWidget(DatasetAccess datasetAccess) {
         this(datasetAccess, false);
@@ -86,4 +85,11 @@ public class DataAccessWidget extends Composite {
         datasetAccess.setUri(uri.getText());
         return datasetAccess;
     }
+
+    protected void addField(MaterialPanel panel) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        fields.add(materialColumn);
+        materialColumn.add(panel);
+    }
+
 }

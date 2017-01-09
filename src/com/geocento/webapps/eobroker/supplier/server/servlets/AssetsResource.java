@@ -17,6 +17,7 @@ import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import it.geosolutions.geoserver.rest.decoder.RESTStyleList;
 import org.apache.log4j.Logger;
@@ -413,6 +414,30 @@ public class AssetsResource implements AssetsService {
             suggestions.add(companyDTO);
         }
         return suggestions;
+    }
+
+    @Override
+    public String saveStyle(StyleDTO styleDTO) throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, logUserName);
+            // define the style
+            String workspace = user.getCompany().getId() + "";
+            String styleName = styleDTO.getStyleName();
+            String sldBody = styleDTO.getSldBody();
+            // publish to GeoServer
+            String RESTURL  = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
+            String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
+            String RESTPW   = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
+            GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(RESTURL, RESTUSER, RESTPW);
+            publisher.publishStyleInWorkspace(workspace, sldBody, styleName);
+            return styleName;
+        } catch (Exception e) {
+            throw new RequestException("Problem creating style");
+        } finally {
+            em.close();
+        }
     }
 
     @Override

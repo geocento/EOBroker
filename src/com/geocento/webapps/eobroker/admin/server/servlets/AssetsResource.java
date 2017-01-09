@@ -4,6 +4,8 @@ import com.geocento.webapps.eobroker.admin.client.services.AssetsService;
 import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.MailContent;
+import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
@@ -129,6 +131,15 @@ public class AssetsResource implements AssetsService {
     private static String getProductTSV(Product product) {
         return "setweight(to_tsvector('english','product " + product.getSector().getName() + " " + product.getThematic().getName() + " " + product.getName() + "'), 'A') " +
                 "|| setweight(to_tsvector('english','" + product.getShortDescription() + "'), 'B')";
+    }
+
+    private static String getCompanyNameTSV(Company company) {
+        return "setweight(to_tsvector('english','company'), 'A') || setweight(to_tsvector('english','" + company.getName() + "'), 'B')";
+    }
+
+    private static String getCompanyTSV(Company company) {
+        return "setweight(to_tsvector('english','company " + company.getName() + "'), 'A') " +
+                "|| setweight(to_tsvector('english','" + company.getDescription() + "'), 'B')";
     }
 
     @Override
@@ -302,20 +313,10 @@ public class AssetsResource implements AssetsService {
         String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
-            Company company = null;
             if (id == null) {
-                User user = em.find(User.class, userName);
-                company = user.getCompany();
-                if (company == null) {
-                    em.getTransaction().begin();
-                    company = new Company();
-                    em.persist(company);
-                    user.setCompany(company);
-                    em.getTransaction().commit();
-                }
-            } else {
-                company = em.find(Company.class, id);
+                throw new RequestException("Missing company id");
             }
+            Company company = em.find(Company.class, id);
             if (company == null) {
                 throw new RequestException("Unknown company");
             }
@@ -428,12 +429,19 @@ public class AssetsResource implements AssetsService {
             dbCompany.setContactEmail(companyDTO.getContactEmail());
             if(companyDTO.getId() == null) {
                 em.persist(dbCompany);
+/*
                 // also create a new user
                 User companyUser = com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createUser(companyDTO.getName() + "User", "password", User.USER_ROLE.supplier, null, dbCompany);
                 em.persist(companyUser);
+*/
             } else {
                 em.merge(dbCompany);
             }
+            // update the keyphrases
+            Query query = em.createNativeQuery("UPDATE company SET tsv = " + getCompanyTSV(dbCompany) +
+                    ", tsvname = " + getCompanyNameTSV(dbCompany) + " where id = " + dbCompany.getId() +
+                    ";");
+            query.executeUpdate();
             em.getTransaction().commit();
             return dbCompany.getId();
         } catch (Exception e) {
@@ -750,11 +758,7 @@ public class AssetsResource implements AssetsService {
             String userName = userDescriptionDTO.getName();
             User dbUser = em.find(User.class, userName);
             if(dbUser == null) {
-                // create new user
-                dbUser = new User();
-                dbUser.setUsername(userDescriptionDTO.getName());
-                dbUser.setPassword(userDescriptionDTO.getPassword());
-                em.persist(dbUser);
+                throw new RequestException("User does not exist");
             }
             Company dbCompany = null;
             if(userDescriptionDTO.getCompanyDTO() != null) {
@@ -764,6 +768,62 @@ public class AssetsResource implements AssetsService {
             dbUser.setRole(userDescriptionDTO.getUserRole());
             dbUser.setEmail(userDescriptionDTO.getEmail());
             em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void createUser(UserDescriptionDTO userDescriptionDTO) throws RequestException {
+        UserUtils.verifyUserAdmin(request);
+        if(userDescriptionDTO == null) {
+            throw new RequestException("User description cannot be empty");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // update user
+            em.getTransaction().begin();
+            String userName = userDescriptionDTO.getName();
+            User dbUser = em.find(User.class, userName);
+            if(dbUser != null) {
+                throw new RequestException("User already exists");
+            }
+            // create new user
+            dbUser = new User();
+            dbUser.setUsername(userDescriptionDTO.getName());
+            // if password not provided generate random password
+            if(userDescriptionDTO.getPassword() == null) {
+                userDescriptionDTO.setPassword(new KeyGenerator(8).CreateKey());
+            }
+            dbUser.setPassword(userDescriptionDTO.getPassword());
+            em.persist(dbUser);
+            Company dbCompany = null;
+            if(userDescriptionDTO.getCompanyDTO() != null) {
+                dbCompany = em.find(Company.class, userDescriptionDTO.getCompanyDTO().getId());
+            }
+            dbUser.setCompany(dbCompany);
+            dbUser.setRole(userDescriptionDTO.getUserRole());
+            dbUser.setEmail(userDescriptionDTO.getEmail());
+            em.getTransaction().commit();
+            // send email
+            try {
+                // check for errors to report
+                MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.CONSUMER);
+                mailContent.addTitle("Your user account");
+                mailContent.addLine("A new EO Broker user account was created for you:");
+                mailContent.addLine("<b>User name: </b>" + userName);
+                mailContent.addLine("<b>Password: </b>" + dbUser.getPassword());
+                mailContent.addLine("<b>Organisation: </b>" + dbUser.getCompany().getName());
+                mailContent.sendEmail(dbUser.getEmail(), "User account creation", false);
+            } catch (Exception e) {
+                throw new RequestException("Could not send email, please retry");
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if(em.getTransaction().isActive()) {

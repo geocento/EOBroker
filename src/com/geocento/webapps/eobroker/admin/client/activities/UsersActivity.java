@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
+import com.geocento.webapps.eobroker.admin.client.events.EditUser;
+import com.geocento.webapps.eobroker.admin.client.events.EditUserHandler;
 import com.geocento.webapps.eobroker.admin.client.places.UsersPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.UsersView;
@@ -24,6 +26,10 @@ import java.util.List;
  * Created by thomas on 09/05/2016.
  */
 public class UsersActivity extends TemplateActivity implements UsersView.Presenter {
+
+    public static String emailregExp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\."
+            +"[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
+            +"(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
 
     private int start = 0;
     private int limit = 10;
@@ -61,6 +67,14 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
     protected void bind() {
         super.bind();
 
+        activityEventBus.addHandler(EditUser.TYPE, new EditUserHandler() {
+            @Override
+            public void onEditUser(EditUser event) {
+                userDescriptionDTO = event.getUserDescriptionDTO();
+                usersView.editUser(userDescriptionDTO);
+            }
+        });
+
         handlers.add(usersView.getCreateNewButton().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -77,6 +91,74 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
                 userDescriptionDTO.setEmail(usersView.getUserEmail());
                 userDescriptionDTO.setUserRole(usersView.getUserRole());
                 userDescriptionDTO.setCompanyDTO(usersView.getUserCompany());
+                try {
+                    if(userDescriptionDTO.getName().length() < 5) {
+                        throw new Exception("Not a valid name");
+                    }
+                    if(!userDescriptionDTO.getEmail().matches(emailregExp)) {
+                        throw new Exception("Not a valid email");
+                    }
+                } catch (Exception e) {
+                    usersView.displayError(e.getMessage());
+                    return;
+                }
+                try {
+                    usersView.hideEditUser();
+                    usersView.displayLoading("Saving user...");
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            Window.alert("Error loading users");
+                            usersView.setUsersLoading(false);
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void response) {
+                            usersView.hideLoading();
+                            loadUsers();
+                        }
+                    }).call(ServicesUtil.assetsService).saveUser(userDescriptionDTO);
+                } catch (RequestException e) {
+                }
+            }
+        }));
+
+        handlers.add(usersView.getCreateUserButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                userDescriptionDTO.setName(usersView.getUserName());
+                userDescriptionDTO.setEmail(usersView.getUserEmail());
+                userDescriptionDTO.setUserRole(usersView.getUserRole());
+                userDescriptionDTO.setCompanyDTO(usersView.getUserCompany());
+                try {
+                    if(userDescriptionDTO.getName().length() < 5) {
+                        throw new Exception("Not a valid name");
+                    }
+                    if(!userDescriptionDTO.getEmail().matches(emailregExp)) {
+                        throw new Exception("Not a valid email");
+                    }
+                } catch (Exception e) {
+                    usersView.displayError(e.getMessage());
+                    return;
+                }
+                try {
+                    usersView.hideEditUser();
+                    usersView.displayLoading("Saving user...");
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            Window.alert("Error loading users");
+                            usersView.setUsersLoading(false);
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void response) {
+                            usersView.hideLoading();
+                            loadUsers();
+                        }
+                    }).call(ServicesUtil.assetsService).createUser(userDescriptionDTO);
+                } catch (RequestException e) {
+                }
             }
         }));
     }

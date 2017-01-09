@@ -63,6 +63,8 @@ public class UsersViewImpl extends Composite implements UsersView {
     MaterialButton cancel;
     @UiField
     MaterialTitle title;
+    @UiField
+    MaterialButton create;
 
     private Presenter presenter;
 
@@ -124,7 +126,10 @@ public class UsersViewImpl extends Composite implements UsersView {
 
     @Override
     public void editUser(UserDescriptionDTO userDescriptionDTO) {
-        title.setTitle(userDescriptionDTO.getName() == null ? "Create new user" : "Edit user settings");
+        boolean newUser = userDescriptionDTO.getName() == null;
+        title.setTitle(newUser ? "Create new user" : "Edit user settings");
+        create.setVisible(newUser);
+        submit.setVisible(!newUser);
         userName.setText(userDescriptionDTO.getName());
         email.setText(userDescriptionDTO.getEmail());
         role.setSelectedValue(userDescriptionDTO.getUserRole().toString());
@@ -160,6 +165,31 @@ public class UsersViewImpl extends Composite implements UsersView {
     @Override
     public CompanyDTO getUserCompany() {
         return company.getCompany();
+    }
+
+    @Override
+    public void displayError(String message) {
+        template.displayError(message);
+    }
+
+    @Override
+    public void hideEditUser() {
+        editUser.closeModal();
+    }
+
+    @Override
+    public void displayLoading(String message) {
+        template.displayLoading();
+    }
+
+    @Override
+    public HasClickHandlers getCreateUserButton() {
+        return create;
+    }
+
+    @Override
+    public void hideLoading() {
+        template.hideLoading();
     }
 
     @Override

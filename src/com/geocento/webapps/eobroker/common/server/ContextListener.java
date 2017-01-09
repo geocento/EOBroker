@@ -44,6 +44,15 @@ public class ContextListener implements ServletContextListener {
 
         // apply fixes if needed
         applyFixes();
+
+        // send an email to say we have started the application
+        MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ADMIN);
+        mailContent.addTitle("The " + Configuration.getProperty(Configuration.APPLICATION_SETTINGS.applicationName) + " server application started");
+        try {
+            mailContent.sendEmail(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.adminEmail), "Server started", false);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 
     private String findNearest(List<String> values, String name) {

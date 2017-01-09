@@ -51,7 +51,6 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
             companyId = Long.parseLong(tokens.get(CompanyPlace.TOKENS.id.toString()));
         }
         if(companyId != null) {
-            // load all companys
             try {
                 REST.withCallback(new MethodCallback<CompanyDTO>() {
                     @Override

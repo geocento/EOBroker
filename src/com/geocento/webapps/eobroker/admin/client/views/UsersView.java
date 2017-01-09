@@ -37,6 +37,16 @@ public interface UsersView extends IsWidget {
 
     CompanyDTO getUserCompany();
 
+    void displayError(String message);
+
+    void hideEditUser();
+
+    void displayLoading(String message);
+
+    HasClickHandlers getCreateUserButton();
+
+    void hideLoading();
+
     public interface Presenter {
 
         void rangeChanged(int start, int limit);
