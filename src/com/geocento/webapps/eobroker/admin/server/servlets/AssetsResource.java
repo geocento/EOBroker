@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.MailContent;
+import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -429,11 +430,8 @@ public class AssetsResource implements AssetsService {
             dbCompany.setContactEmail(companyDTO.getContactEmail());
             if(companyDTO.getId() == null) {
                 em.persist(dbCompany);
-/*
-                // also create a new user
-                User companyUser = com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createUser(companyDTO.getName() + "User", "password", User.USER_ROLE.supplier, null, dbCompany);
-                em.persist(companyUser);
-*/
+                // if new company create workspace
+                GeoserverUtils.getGeoserverPublisher().createWorkspace(dbCompany.getId() + "");
             } else {
                 em.merge(dbCompany);
             }

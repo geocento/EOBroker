@@ -18,6 +18,7 @@ public class LayerInfoDTO {
     boolean queryable;
     private String serverUrl;
     private String layerName;
+    private String styleName;
 
     public LayerInfoDTO() {
     }
@@ -92,5 +93,13 @@ public class LayerInfoDTO {
 
     public String getLayerName() {
         return layerName;
+    }
+
+    public String getStyleName() {
+        return styleName;
+    }
+
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
     }
 }

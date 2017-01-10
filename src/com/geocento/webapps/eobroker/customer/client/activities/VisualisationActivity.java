@@ -170,19 +170,6 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         setDataAccess(datasetAccess);
     }
 
-    private void viewResources(String uri) {
-        // fow now we only deal with WMS
-        String[] uriTokens = uri.split("::");
-        switch (uriTokens[0]) {
-            case "wms":
-                // TODO - load WMS description
-                String wmsUrl = uriTokens[1];
-                String layerName = uriTokens[2];
-                visualisationView.addWMSLayer(wmsUrl, layerName);
-                break;
-        }
-    }
-
     @Override
     protected void bind() {
         super.bind();

@@ -8,11 +8,14 @@
         }
 
     </ui:style>
-    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500" width="450px">
+    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500" width="600px" overflow="HIDDEN">
         <design:MaterialModalContent>
             <design:MaterialTitle title="Choose a style" addStyleNames="{style.title}"></design:MaterialTitle>
             <design:MaterialPanel ui:field="listStyles"></design:MaterialPanel>
-            <design:MaterialPanel ui:field="styleEditor"></design:MaterialPanel>
         </design:MaterialModalContent>
+        <design:MaterialModalFooter>
+            <design:MaterialButton marginRight="20" float="NONE" text="Cancel" backgroundColor="grey" textColor="white" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
+            <design:MaterialButton marginRight="20" text="NEW" backgroundColor="blue" textColor="white" textAlign="CENTER" ui:field="submit"></design:MaterialButton>
+        </design:MaterialModalFooter>
     </design:MaterialModal>
 </ui:UiBinder>

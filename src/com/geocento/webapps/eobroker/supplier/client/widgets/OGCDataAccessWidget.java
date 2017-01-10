@@ -20,37 +20,51 @@ public class OGCDataAccessWidget extends DataAccessWidget {
 
     public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri) {
         super(datasetAccess, editableUri);
-        MaterialPanel panel = new MaterialPanel();
-        panel.setMarginTop(20);
-        MaterialLabel materialLabel = new MaterialLabel("Style: ");
-        materialLabel.setDisplay(Display.INLINE_BLOCK);
-        materialLabel.setMarginRight(10);
-        panel.add(materialLabel);
-        materialLink = new MaterialLink(datasetAccess.getStyleName());
-        String styleName = ((DatasetAccessOGC) datasetAccess).getStyleName();
-        materialLink.setText(styleName == null ? "default" : styleName);
-        materialLink.setDisplay(Display.INLINE_BLOCK);
-        materialLink.setIconType(IconType.EDIT);
-        materialLink.setIconPosition(IconPosition.RIGHT);
-        materialLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                // TODO - display style name window
-                StyleNameEditor.getInstance().display(new StyleNameEditor.Presenter() {
-                    @Override
-                    public void styleSelected(String styleName) {
+        // if the uri is not editable it is a sample from the local geoserver
+        if(!editableUri) {
+            MaterialPanel panel = new MaterialPanel();
+            panel.setMarginTop(20);
+            MaterialLabel materialLabel = new MaterialLabel("Style: ");
+            materialLabel.setDisplay(Display.INLINE_BLOCK);
+            materialLabel.setMarginRight(10);
+            panel.add(materialLabel);
+            materialLink = new MaterialLink(datasetAccess.getStyleName());
+            String styleName = ((DatasetAccessOGC) datasetAccess).getStyleName();
+            setStyle(styleName);
+            materialLink.setDisplay(Display.INLINE_BLOCK);
+            materialLink.setIconType(IconType.EDIT);
+            materialLink.setIconPosition(IconPosition.RIGHT);
+            materialLink.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    // TODO - display style name window
+                    StyleNameEditor.getInstance().display(new StyleNameEditor.Presenter() {
+                        @Override
+                        public void styleSelected(String styleName) {
+                            setStyle(styleName);
+                            StyleNameEditor.getInstance().hide();
+                        }
+                    });
+                }
+            });
+            panel.add(materialLink);
+            addField(panel);
+        }
+    }
 
-                    }
-                });
-            }
-        });
-        panel.add(materialLink);
-        addField(panel);
+    private void setStyle(String styleName) {
+        materialLink.setText(styleName == null ? "default" : styleName);
     }
 
     public DatasetAccess getDatasetAccess() {
         super.getDatasetAccess();
-        ((DatasetAccessOGC) datasetAccess).setStyleName(materialLink.getText());
+        if(materialLink != null) {
+            String styleName = materialLink.getText();
+            if(styleName.contentEquals("default")) {
+                styleName = null;
+            }
+            ((DatasetAccessOGC) datasetAccess).setStyleName(styleName);
+        }
         return datasetAccess;
     }
 

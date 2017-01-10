@@ -1,0 +1,33 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .pitch {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .panel {
+            line-height: 3em;
+            height: 3em;
+            border-bottom: 1px solid grey;
+        }
+
+    </ui:style>
+    <design:MaterialPanel backgroundColor="white" padding="0" marginBottom="10" shadow="0" addStyleNames="{style.panel}">
+        <design:MaterialPanel ui:field="selectPanel">
+            <design:MaterialPanel float="RIGHT">
+                <design:MaterialButton type="FLOATING" iconType="EDIT" backgroundColor="white" shadow="0" iconColor="blue" marginRight="10" ui:field="edit"></design:MaterialButton>
+                <design:MaterialButton type="FLOATING" iconType="DELETE" backgroundColor="white" shadow="0" iconColor="blue" marginRight="10" ui:field="delete"></design:MaterialButton>
+                <design:MaterialButton type="FLOATING" iconType="ADD" backgroundColor="green" shadow="0" iconColor="white" marginRight="10" ui:field="select"></design:MaterialButton>
+            </design:MaterialPanel>
+            <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" truncate="true" ui:field="name"></design:MaterialLabel>
+        </design:MaterialPanel>
+        <design:MaterialPanel visible="false" ui:field="editPanel">
+            <design:MaterialPanel float="RIGHT">
+                <design:MaterialButton type="FLOATING" iconType="REFRESH" backgroundColor="white" shadow="0" iconColor="blue" marginRight="10" ui:field="validate"></design:MaterialButton>
+            </design:MaterialPanel>
+        <design:MaterialTextBox addStyleNames="{style.pitch}" paddingLeft="10" truncate="true" ui:field="editName"></design:MaterialTextBox>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+</ui:UiBinder>

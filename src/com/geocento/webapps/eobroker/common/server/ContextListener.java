@@ -1,11 +1,14 @@
 package com.geocento.webapps.eobroker.common.server;
 
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.UserUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.LevenshteinDistance;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -177,15 +180,34 @@ public class ContextListener implements ServletContextListener {
         // reset the db content if needed
         EntityManager em = EMF.get().createEntityManager();
         try {
-            // add some data to database
-            TypedQuery<Request> query = em.createQuery("select r from Request r where r.status is NULL", Request.class);
-            List<Request> requests = query.getResultList();
-            if(requests.size() > 0) {
-                em.getTransaction().begin();
-                for (Request request : query.getResultList()) {
-                    request.setStatus(Request.STATUS.submitted);
+            {
+                // add some data to database
+                TypedQuery<Request> query = em.createQuery("select r from Request r where r.status is NULL", Request.class);
+                List<Request> requests = query.getResultList();
+                if (requests.size() > 0) {
+                    em.getTransaction().begin();
+                    for (Request request : query.getResultList()) {
+                        request.setStatus(Request.STATUS.submitted);
+                    }
+                    em.getTransaction().commit();
                 }
-                em.getTransaction().commit();
+            }
+            // make sure each company has a workspace
+            {
+                GeoServerRESTReader geoserverReader = GeoserverUtils.getGeoserverReader();
+                GeoServerRESTPublisher geoserverPublisher = GeoserverUtils.getGeoserverPublisher();
+                TypedQuery<Company> query = em.createQuery("select c from Company c", Company.class);
+                List<Company> companies = query.getResultList();
+                if (companies.size() > 0) {
+                    List<String> workspaces = geoserverReader.getWorkspaceNames();
+                    for (Company company : query.getResultList()) {
+                        String workspace = company.getId() + "";
+                        if(!workspaces.contains(workspace)) {
+                            // create workspace
+                            geoserverPublisher.createWorkspace(workspace);
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {

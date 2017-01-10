@@ -986,6 +986,7 @@ public class AssetsResource implements AssetsService {
             layerInfoDTO.setCrs(wmsLayer.getSupportedSRS());
             layerInfoDTO.setExtent(wmsLayer.getBounds());
             layerInfoDTO.setDescription(wmsLayer.getDescription());
+            layerInfoDTO.setStyleName(datasetAccessOGC.getStyleName());
             return layerInfoDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

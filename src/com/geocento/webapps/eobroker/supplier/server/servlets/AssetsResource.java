@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
@@ -17,7 +18,6 @@ import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import it.geosolutions.geoserver.rest.decoder.RESTStyleList;
 import org.apache.log4j.Logger;
@@ -238,32 +238,8 @@ public class AssetsResource implements AssetsService {
             productService.setSelectedAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
             productService.setApiUrl(productServiceDTO.getApiURL());
             // update the sample access
-            {
-                List<DatasetAccess> samples = productServiceDTO.getSamples();
-                List<DatasetAccess> dbSamples = new ArrayList<DatasetAccess>();
-                if (samples != null && samples.size() > 0) {
-                    for (final DatasetAccess datasetAccess : samples) {
-                        DatasetAccess dbDatasetAccess = null;
-                        if (datasetAccess.getId() != null) {
-                            dbDatasetAccess = ListUtil.findValue(productService.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
-                                @Override
-                                public boolean isValue(DatasetAccess value) {
-                                    return value.getId().equals(datasetAccess.getId());
-                                }
-                            });
-                        }
-                        if (dbDatasetAccess == null) {
-                            em.persist(datasetAccess);
-                            dbDatasetAccess = datasetAccess;
-                        }
-                        dbDatasetAccess.setTitle(datasetAccess.getTitle());
-                        dbDatasetAccess.setPitch(datasetAccess.getPitch());
-                        dbDatasetAccess.setUri(datasetAccess.getUri());
-                        dbSamples.add(dbDatasetAccess);
-                    }
-                }
-                productService.setSamples(dbSamples);
-            }
+            List<DatasetAccess> dbSamples = updateSamples(em, productService.getSamples(), productServiceDTO.getSamples());
+            productService.setSamples(dbSamples);
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + getProductServiceTSV(productService) +
                     ", tsvname = " + getProductServiceNameTSV(productService) + " where id = " + productService.getId() +
@@ -279,6 +255,53 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private List<DatasetAccess> updateSamples(EntityManager em, List<DatasetAccess> dbSamples, List<DatasetAccess> samples) {
+        List<DatasetAccess> changedDbSamples = new ArrayList<DatasetAccess>();
+        if (samples != null && samples.size() > 0) {
+            for (final DatasetAccess datasetAccess : samples) {
+                DatasetAccess dbDatasetAccess = null;
+                if (datasetAccess.getId() != null) {
+                    dbDatasetAccess = ListUtil.findValue(dbSamples, new ListUtil.CheckValue<DatasetAccess>() {
+                        @Override
+                        public boolean isValue(DatasetAccess value) {
+                            return value.getId().equals(datasetAccess.getId());
+                        }
+                    });
+                }
+                if (dbDatasetAccess == null) {
+                    em.persist(datasetAccess);
+                    dbDatasetAccess = datasetAccess;
+                }
+                dbDatasetAccess.setTitle(datasetAccess.getTitle());
+                dbDatasetAccess.setPitch(datasetAccess.getPitch());
+                dbDatasetAccess.setUri(datasetAccess.getUri());
+                // now do some data access specific stuff
+                if (dbDatasetAccess instanceof DatasetAccessOGC) {
+                    DatasetAccessOGC dbDatasetAccessOGC = (DatasetAccessOGC) dbDatasetAccess;
+                    DatasetAccessOGC datasetAccessOGC = (DatasetAccessOGC) datasetAccess;
+                    // check if style has changed
+                    if (!StringUtils.areStringEqualsOrNull(dbDatasetAccessOGC.getStyleName(), ((DatasetAccessOGC) datasetAccess).getStyleName())) {
+                        // update db and update geoserver
+                        try {
+                            // first try the geoserver update
+/*
+                                String uri = dbDatasetAccessOGC.getUri();
+                                GSLayerEncoder configuration = new GSLayerEncoder();
+                                getGeoserverPublisher().configureLayer(uri.split(":")[0], uri.split(":")[1], configuration);
+*/
+                            dbDatasetAccessOGC.setStyleName(datasetAccessOGC.getStyleName());
+                        } catch (Exception e) {
+
+                        }
+                    }
+                    dbDatasetAccessOGC.setServerUrl(datasetAccessOGC.getServerUrl());
+                }
+                changedDbSamples.add(dbDatasetAccess);
+            }
+        }
+        return changedDbSamples;
     }
 
     private static String getProductServiceNameTSV(ProductService productService) {
@@ -424,15 +447,18 @@ public class AssetsResource implements AssetsService {
             User user = em.find(User.class, logUserName);
             // define the style
             String workspace = user.getCompany().getId() + "";
-            String styleName = styleDTO.getStyleName();
+            // TODO - change when geoserver workspace style is fixed
+            String styleName = workspace + "___" + styleDTO.getStyleName();
             String sldBody = styleDTO.getSldBody();
             // publish to GeoServer
-            String RESTURL  = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
-            String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
-            String RESTPW   = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
-            GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(RESTURL, RESTUSER, RESTPW);
-            publisher.publishStyleInWorkspace(workspace, sldBody, styleName);
-            return styleName;
+            boolean added = GeoserverUtils.getGeoserverPublisher().publishStyle(sldBody, styleName);
+/*
+            boolean added = GeoserverUtils.getGeoserverPublisher().publishStyleInWorkspace(workspace, sldBody, styleName);
+*/
+            if(!added) {
+                throw new RequestException("Failed to add style");
+            }
+            return workspace + ":" + styleName;
         } catch (Exception e) {
             throw new RequestException("Problem creating style");
         } finally {
@@ -446,15 +472,33 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         User user = em.find(User.class, logUserName);
         // define the style
-        String workspace = user.getCompany().getId() + "";
+        final String workspace = user.getCompany().getId() + "";
         try {
             // publish to GeoServer
             String RESTURL = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
             String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
             String RESTPW = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
             GeoServerRESTReader reader = new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
-            RESTStyleList styles = reader.getStyles(workspace);
-            return styles.getNames();
+            ArrayList<String> styles = new ArrayList<String>();
+            // add the user ones first
+/*
+            RESTStyleList stylesResponse = reader.getStyles(workspace);
+            if(stylesResponse != null) {
+                for(String styleName : stylesResponse.getNames()) {
+                    styles.add(workspace + ":" + styleName);
+                }
+            }
+*/
+            RESTStyleList stylesResponse = reader.getStyles();
+            if(stylesResponse != null) {
+                styles.addAll(ListUtil.filterValues(stylesResponse.getNames(), new ListUtil.CheckValue<String>() {
+                    @Override
+                    public boolean isValue(String value) {
+                        return !(value.contains("___") && !value.startsWith(workspace + "___"));
+                    }
+                }));
+            }
+            return styles;
         } catch (Exception e) {
             throw new RequestException("Failed to call geoserver service");
         }
@@ -737,6 +781,9 @@ public class AssetsResource implements AssetsService {
                 productDataset.setDatasetAccesses(dbDatasetAccesses);
             }
             // update the sample access
+            List<DatasetAccess> dbSamples = updateSamples(em, productDataset.getSamples(), productDatasetDTO.getSamples());
+            productDataset.setSamples(dbSamples);
+/*
             {
                 List<DatasetAccess> samples = productDatasetDTO.getSamples();
                 List<DatasetAccess> dbSamples = new ArrayList<DatasetAccess>();
@@ -763,6 +810,7 @@ public class AssetsResource implements AssetsService {
                 }
                 productDataset.setSamples(dbSamples);
             }
+*/
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + getProductDatasetTSV(productDataset) +
                     ", tsvname = " + getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +

@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ExtentJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerInfoJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -19,7 +20,8 @@ import com.geocento.webapps.eobroker.customer.shared.ProductServiceVisualisation
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -41,8 +43,6 @@ import java.util.List;
  * Created by thomas on 09/05/2016.
  */
 public class VisualisationViewImpl extends Composite implements VisualisationView, ResizeHandler {
-
-    private Presenter presenter;
 
     interface VisualisationUiBinder extends UiBinder<Widget, VisualisationViewImpl> {
     }
@@ -74,8 +74,6 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @UiField
     MaterialLabel name;
     @UiField
-    MaterialPanel details;
-    @UiField
     MaterialLabel description;
     @UiField
     MaterialLink addToFavourites;
@@ -85,12 +83,36 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     MaterialChip supplier;
     @UiField
     MaterialChip resource;
+    @UiField
+    LoadingWidget loading;
+    @UiField
+    MaterialPanel dataAccessDetails;
+    @UiField
+    MaterialRange opacity;
+    @UiField
+    MaterialLink serverUrl;
+    @UiField
+    MaterialLink layerName;
+    @UiField
+    MaterialLabel errorMessage;
+
+    private Presenter presenter;
+
+    private WMSLayerJSNI wmsLayer;
 
     public VisualisationViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        opacity.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                setOpacity(opacity.getValue());
+            }
+        });
+        setOpacity(100);
 
         Scheduler.get().scheduleDeferred(new Command() {
             @Override
@@ -99,6 +121,17 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
                 onResize(null);
             }
         });
+    }
+
+    private void setOpacity(int value) {
+        opacity.setValue(value);
+        updateOpacity();
+    }
+
+    private void updateOpacity() {
+        if(wmsLayer != null) {
+            wmsLayer.setOpacity(opacity.getValue() / 100.0);
+        }
     }
 
     @Override
@@ -117,36 +150,40 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     }
 
     @Override
-    public void addWMSLayer(String wmsUrl, String layerName) {
-        //mapContainer.map.removeAllLayers();
-        mapContainer.map.addWMSLayer(wmsUrl, WMSLayerInfoJSNI.createInfo(layerName, layerName), MapJSNI.createExtent(-180.0, -90.0, 180.0, 90.0));
-    }
-
-    @Override
     public void addWMSLayer(LayerInfoDTO layerInfoDTO) {
         Extent extent = layerInfoDTO.getExtent();
         ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
-        mapContainer.map.addWMSLayer(layerInfoDTO.getServerUrl(),
+        wmsLayer = mapContainer.map.addWMSLayer(layerInfoDTO.getServerUrl(),
                 WMSLayerInfoJSNI.createInfo(layerInfoDTO.getLayerName(), layerInfoDTO.getLayerName()),
-                extentJSNI);
+                extentJSNI, layerInfoDTO.getStyleName());
         mapContainer.map.setExtent(extentJSNI);
+        updateOpacity();
     }
 
     @Override
     public void setLoadingInformation(String message) {
-        details.clear();
-        details.add(new LoadingWidget("Loading..."));
+        hideContent();
+        loading.setText(message);
+        loading.setVisible(true);
     }
 
     @Override
     public void hideLoadingInformation() {
-        details.clear();
+        hideContent();
+        dataAccessDetails.setVisible(true);
     }
 
     @Override
     public void displayInformationError(String message) {
-        details.clear();
-        details.add(new MaterialLabel(message));
+        hideContent();
+        errorMessage.setVisible(true);
+        errorMessage.setText(message);
+    }
+
+    private void hideContent() {
+        loading.setVisible(false);
+        errorMessage.setVisible(false);
+        dataAccessDetails.setVisible(false);
     }
 
     @Override
@@ -172,14 +209,8 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     @Override
     public void displayLayerInfo(LayerInfoDTO layerInfoDTO) {
-        details.clear();
-        details.add(new HTMLPanel("<dl>" +
-                "<dt>Server URL</dt>" +
-                "<dl>" + layerInfoDTO.getServerUrl() + "</dl>" +
-                "<dt>Layer name</dt>" +
-                "<dl>" + layerInfoDTO.getLayerName() + "</dl>" +
-                "<dt>Available styles<dt>" +
-                "<dl>TODO...</dl>"));
+        serverUrl.setText("Server URL: " + layerInfoDTO.getServerUrl());
+        layerName.setText("Layer name: " + layerInfoDTO.getLayerName());
     }
 
     @Override

@@ -153,7 +153,7 @@ public interface AssetsService extends DirectRestService {
     public String saveStyle(StyleDTO styleDTO) throws RequestException;
 
     @GET
-    @Path("/assets/ows/styles/{id}")
+    @Path("/assets/ows/styles/")
     @Produces("application/json")
     public List<String> getStyles() throws RequestException;
 

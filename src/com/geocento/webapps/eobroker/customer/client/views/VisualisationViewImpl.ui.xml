@@ -45,10 +45,15 @@
             line-height: normal;
         }
 
+        .loading, .errorMessage {
+            margin: 50px 20px;
+        }
+
     </ui:style>
+    <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <views:TemplateView titleText="View datasets" footer="false" ui:field="template">
         <views:header>
-            <widgets:MaterialSideNav width="350" design:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="resourcesBar">
+            <widgets:MaterialSideNav width="350" design:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" addStyleNames="{resCommon.style.slimScrollbar}" ui:field="resourcesBar">
                 <sideprofile:MaterialSideProfile backgroundColor="blue">
                     <design:MaterialPanel>
                         <design:MaterialImage float="LEFT" ui:field="image"></design:MaterialImage>
@@ -64,9 +69,27 @@
                 </sideprofile:MaterialSideProfile>
                 <design:MaterialDropDown activator="datasets" ui:field="dataAccessList">
                 </design:MaterialDropDown>
-                <design:MaterialPanel padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
+                <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
+                <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="red" ui:field="errorMessage"></design:MaterialLabel>
+                <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
                     <design:MaterialLabel paddingBottom="20" ui:field="description"></design:MaterialLabel>
-                    <design:MaterialPanel ui:field="details"></design:MaterialPanel>
+                    <design:MaterialRow>
+                        <design:MaterialColumn grid="s12">
+                            <design:MaterialLink iconType="LINK" truncate="true" ui:field="serverUrl"></design:MaterialLink>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12">
+                            <design:MaterialLink iconType="LAYERS" overflow="HIDDEN" truncate="true" ui:field="layerName"></design:MaterialLink>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12">
+                            <design:MaterialLabel>Layer controls</design:MaterialLabel>
+                            <design:MaterialRow>
+                                <design:MaterialColumn grid="s12">
+                                    <design:MaterialLabel text="Opacity" marginRight="20" display="INLINE_BLOCK"></design:MaterialLabel>
+                                    <design:MaterialRange min="0" max="100" display="INLINE_BLOCK" width="200px" ui:field="opacity"></design:MaterialRange>
+                                </design:MaterialColumn>
+                            </design:MaterialRow>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
                     <design:MaterialLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></design:MaterialLink>
                 </design:MaterialPanel>
             </widgets:MaterialSideNav>

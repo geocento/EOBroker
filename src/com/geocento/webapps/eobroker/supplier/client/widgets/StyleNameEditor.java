@@ -1,12 +1,23 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.StyleDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.RootPanel;
-import gwt.material.design.client.ui.MaterialListBox;
+import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
+import org.fusesource.restygwt.client.REST;
+
+import java.util.List;
 
 /**
  * Created by thomas on 15/11/2016.
@@ -51,9 +62,68 @@ public class StyleNameEditor {
     public void display(final Presenter presenter) {
         this.presenter = presenter;
         materialModal.openModal();
+        listStyles.clear();
+        listStyles.add(new LoadingWidget("Loading styles..."));
+        loadStyles();
     }
 
-    private void hide() {
+    private void loadStyles() {
+        // load styles
+        try {
+            REST.withCallback(new MethodCallback<List<String>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    listStyles.clear();
+                    listStyles.add(new MaterialLabel("Error loading styles"));
+                }
+
+                @Override
+                public void onSuccess(Method method, List<String> styles) {
+                    listStyles.clear();
+                    if (styles.size() == 0) {
+                        listStyles.add(new MaterialLabel("No style defined..."));
+                    } else {
+                        for (final String styleName : styles) {
+                            StyleWidget styleWidget = new StyleWidget(styleName);
+                            styleWidget.getDelete().addClickHandler(new ClickHandler() {
+                                @Override
+                                public void onClick(ClickEvent event) {
+                                }
+                            });
+                            styleWidget.getSelect().addClickHandler(new ClickHandler() {
+                                @Override
+                                public void onClick(ClickEvent event) {
+                                    if (presenter != null) {
+                                        presenter.styleSelected(styleName);
+                                    }
+                                }
+                            });
+                            listStyles.add(styleWidget);
+                        }
+                    }
+                }
+
+            }).call(ServicesUtil.assetsService).getStyles();
+        } catch (Exception e) {
+        }
+    }
+
+    @UiHandler("submit")
+    void createStyle(ClickEvent clickEvent) {
+        StyleEditor.getInstance().display(new StyleEditor.Presenter() {
+            @Override
+            public void styleChanged(StyleDTO styleDTO) {
+                loadStyles();
+            }
+        });
+    }
+
+    @UiHandler("cancel")
+    void cancel(ClickEvent clickEvent) {
+        hide();
+    }
+
+    public void hide() {
         materialModal.closeModal();
     }
 

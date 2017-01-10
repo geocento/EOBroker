@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.client.views;
+package com.geocento.webapps.eobroker.supplier.client.widgets;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -18,12 +18,12 @@ import org.fusesource.restygwt.client.REST;
 /**
  * Created by thomas on 08/11/2016.
  */
-public class AoIWidget extends Composite {
+public class StyleWidget extends Composite {
 
-    interface AoIWidgetUiBinder extends UiBinder<Widget, AoIWidget> {
+    interface StyleWidgetUiBinder extends UiBinder<Widget, StyleWidget> {
     }
 
-    private static AoIWidgetUiBinder ourUiBinder = GWT.create(AoIWidgetUiBinder.class);
+    private static StyleWidgetUiBinder ourUiBinder = GWT.create(StyleWidgetUiBinder.class);
 
     @UiField
     MaterialButton select;
@@ -40,21 +40,20 @@ public class AoIWidget extends Composite {
     @UiField
     MaterialButton delete;
 
-    private final AoIDTO aoi;
+    private String style;
 
-    public AoIWidget(AoIDTO aoIDTO) {
-        this.aoi = aoIDTO;
+    public StyleWidget(String style) {
+        this.style = style;
         initWidget(ourUiBinder.createAndBindUi(this));
         updateName();
     }
 
-    public AoIDTO getAoI() {
-        return aoi;
+    public String getStyle() {
+        return style;
     }
 
     private void updateName() {
-        String name = aoi.getName();
-        name = name == null || name.length() == 0 ? "No name" : name;
+        String name = style == null || style.length() == 0 ? "No name" : style;
         this.name.setText(name);
         editName.setText(name);
     }
@@ -66,7 +65,6 @@ public class AoIWidget extends Composite {
     public void setEditing(boolean editing) {
         selectPanel.setVisible(!editing);
         editPanel.setVisible(editing);
-
     }
 
     @UiHandler("edit")
@@ -81,27 +79,11 @@ public class AoIWidget extends Composite {
             MaterialToast.fireToast("Please provide a valid name", "red");
             return;
         }
-        // update aoi
-        aoi.setName(name);
+        // update style
+        style = name;
         setEditing(false);
-        MaterialToast.fireToast("Saving AoI...");
-        try {
-            REST.withCallback(new MethodCallback<Void>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    setEditing(true);
-                    MaterialToast.fireToast("Could not save AoI, please retry", "red");
-                }
-
-                @Override
-                public void onSuccess(Method method, Void response) {
-                    MaterialToast.fireToast("AoI saved", "green");
-                    updateName();
-                }
-            }).call(ServicesUtil.assetsService).updateAoIName(aoi.getId(), name);
-        } catch (Exception e) {
-
-        }
+        // TODO - for now style name is not editable
+        MaterialToast.fireToast("Cannot change style name...");
     }
 
     public HasClickHandlers getDelete() {

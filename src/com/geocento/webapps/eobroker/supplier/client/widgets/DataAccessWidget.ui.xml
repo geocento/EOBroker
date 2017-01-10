@@ -21,6 +21,7 @@
         <design:MaterialRow ui:field="fields">
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink ui:field="type"></design:MaterialLink>
+                <design:MaterialButton type="FLOATING" float="RIGHT" iconType="DELETE" ui:field="remove"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialTextBox placeholder="Title for this data access" addStyleNames="{style.pitch}" ui:field="title"></design:MaterialTextBox>

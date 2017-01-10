@@ -8,6 +8,7 @@ public class SampleUploadDTO {
     String fileUri;
     String layerName;
     private String server;
+    private String styleName;
 
     public SampleUploadDTO() {
     }
@@ -34,5 +35,13 @@ public class SampleUploadDTO {
 
     public String getServer() {
         return server;
+    }
+
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
+    }
+
+    public String getStyleName() {
+        return styleName;
     }
 }

@@ -1,26 +1,14 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
-import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.URL;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
-import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
-import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
-import gwt.material.design.client.ui.animate.MaterialAnimator;
-import gwt.material.design.client.ui.animate.Transition;
-import gwt.material.design.client.ui.html.Option;
 
 /**
  * Created by thomas on 08/11/2016.
@@ -42,6 +30,8 @@ public class DataAccessWidget extends Composite {
     MaterialTextBox title;
     @UiField
     MaterialRow fields;
+    @UiField
+    MaterialButton remove;
 
     protected final DatasetAccess datasetAccess;
 
@@ -90,6 +80,10 @@ public class DataAccessWidget extends Composite {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         fields.add(materialColumn);
         materialColumn.add(panel);
+    }
+
+    public HasClickHandlers getRemove() {
+        return remove;
     }
 
 }

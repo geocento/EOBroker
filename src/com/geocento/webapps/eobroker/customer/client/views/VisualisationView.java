@@ -18,8 +18,6 @@ public interface VisualisationView extends IsWidget {
 
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
-    void addWMSLayer(String wmsUrl, String layerName);
-
     void displayLayerInfo(LayerInfoDTO layerInfoDTO);
 
     void setProductDataset(ProductDatasetVisualisationDTO productDatasetVisualisationDTO);

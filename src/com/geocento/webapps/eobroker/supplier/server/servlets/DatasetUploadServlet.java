@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
@@ -33,10 +34,6 @@ public class DatasetUploadServlet extends HttpServlet {
 
     static private Logger logger = null;
 
-    private String RESTURL  = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
-    private String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
-    private String RESTPW   = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
-
     private GeoServerRESTReader reader;
     private GeoServerRESTPublisher publisher;
 
@@ -45,11 +42,11 @@ public class DatasetUploadServlet extends HttpServlet {
         logger.info("Starting dataset upload servlet");
 
         try {
-            reader = new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
+            reader = GeoserverUtils.getGeoserverReader();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        publisher = new GeoServerRESTPublisher(RESTURL, RESTUSER, RESTPW);
+        publisher = GeoserverUtils.getGeoserverPublisher();
     }
 
     @Override
@@ -157,12 +154,14 @@ public class DatasetUploadServlet extends HttpServlet {
                     layerName = publishShapefile(workspaceName, storeName, file);
                     sampleUploadDTO.setLayerName(layerName);
                     sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
+                    sampleUploadDTO.setStyleName("geometries");
                     break;
                 case "tiff":
                 case "tif":
                     layerName = publishGeoTiff(workspaceName, storeName, file);
                     sampleUploadDTO.setLayerName(layerName);
                     sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
+                    sampleUploadDTO.setStyleName("raster");
                     break;
                 case "pdf":
                 case "csv":

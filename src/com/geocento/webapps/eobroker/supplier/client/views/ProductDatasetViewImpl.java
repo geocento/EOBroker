@@ -15,12 +15,14 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
@@ -147,6 +149,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 sampleUploadDTO.setFileUri(sampleUploadDTOJson.containsKey("fileUri") ? sampleUploadDTOJson.get("fileUri").isString().stringValue() : null);
                 sampleUploadDTO.setLayerName(sampleUploadDTOJson.containsKey("layerName") ? sampleUploadDTOJson.get("layerName").isString().stringValue() : null);
                 sampleUploadDTO.setServer(sampleUploadDTOJson.containsKey("server") ? sampleUploadDTOJson.get("server").isString().stringValue() : null);
+                sampleUploadDTO.setStyleName(sampleUploadDTOJson.containsKey("styleName") ? sampleUploadDTOJson.get("styleName").isString().stringValue() : null);
                 if(sampleUploadDTO.getFileUri() != null) {
                     DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
                     datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
@@ -159,6 +162,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                     datasetAccessOGC.setServerUrl(sampleUploadDTO.getServer());
                     datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
                     datasetAccessOGC.setTitle("Sample data available as OGC service");
+                    datasetAccessOGC.setStyleName(sampleUploadDTO.getStyleName());
                     addSample(datasetAccessOGC);
                 }
             }
@@ -277,9 +281,17 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     private void addDataAccess(DatasetAccess datasetAccess) {
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        final MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.dataAccess.add(materialColumn);
-        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, false);
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, true);
+        dataAccessWidget.getRemove().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(Window.confirm("Are you sure you want to remove this data access?")) {
+                    dataAccess.remove(materialColumn);
+                }
+            }
+        });
         materialColumn.add(dataAccessWidget);
     }
 
@@ -336,9 +348,17 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     private void addSample(DatasetAccess datasetAccess, boolean editableUri) {
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        final MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
         DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, editableUri);
+        dataAccessWidget.getRemove().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(Window.confirm("Are you sure you want to remove this sample?")) {
+                    samples.remove(materialColumn);
+                }
+            }
+        });
         materialColumn.add(dataAccessWidget);
     }
 

@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+        >
+    <ui:style>
+
+        .title h4 {
+            margin: 10px !important;
+        }
+
+        .label {
+            display: block;
+            margin: 10px 0px;
+            font-size: 1.2em;
+        }
+
+    </ui:style>
+    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500" width="600px" overflow="HIDDEN">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="Create a style" addStyleNames="{style.title}"></design:MaterialTitle>
+            <design:MaterialTextBox placeholder="Style Name" ui:field="styleName"></design:MaterialTextBox>
+            <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Style definition"></design:MaterialLink>
+            <design:MaterialPanel height="300px" ui:field="styleEditor"></design:MaterialPanel>
+        </design:MaterialModalContent>
+        <design:MaterialModalFooter>
+            <design:MaterialButton marginRight="20" text="Cancel" backgroundColor="grey" textColor="white" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
+            <design:MaterialButton marginRight="20" text="CREATE" backgroundColor="blue" textColor="white" textAlign="CENTER" ui:field="create"></design:MaterialButton>
+        </design:MaterialModalFooter>
+    </design:MaterialModal>
+</ui:UiBinder>
