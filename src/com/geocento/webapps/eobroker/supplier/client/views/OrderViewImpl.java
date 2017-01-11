@@ -114,6 +114,8 @@ public class OrderViewImpl extends Composite implements OrderView {
         });
 
         userImage.setUser(Supplier.getLoginInfo().getUserName());
+
+        template.setPlace(null);
     }
 
     @Override

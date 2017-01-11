@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.*;
@@ -54,6 +55,20 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialRow projects;
     @UiField
     MaterialButton addProject;
+    @UiField
+    MaterialPanel companyPanel;
+    @UiField
+    MaterialPanel servicesPanel;
+    @UiField
+    MaterialPanel datasetsPanel;
+    @UiField
+    MaterialPanel softwarePanel;
+    @UiField
+    MaterialPanel projectsPanel;
+    @UiField
+    MaterialPanel datasetServicesPanel;
+    @UiField
+    MaterialPanel messagePanel;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -68,7 +83,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
-    public void setServices(List<ProductServiceDTO> productServiceDTOs) {
+    public void displayServices(List<ProductServiceDTO> productServiceDTOs) {
+        hideAll();
+        template.setPlace(Category.productservices);
+        servicesPanel.setVisible(true);
         services.clear();
         if(productServiceDTOs == null || productServiceDTOs.size() == 0) {
             services.add(new MaterialLabel("No service, click on the button below to add a new service"));
@@ -82,7 +100,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
-    public void setDatasets(List<DatasetProviderDTO> datasetProviderDTOs) {
+    public void displayDatasets(List<DatasetProviderDTO> datasetProviderDTOs) {
+        hideAll();
+        template.setPlace(null);
+        datasetsPanel.setVisible(true);
         datasets.clear();
         if(datasetProviderDTOs == null || datasetProviderDTOs.size() == 0) {
             datasets.add(new MaterialLabel("No datasets, click on the button below to add a new dataset"));
@@ -98,7 +119,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
-    public void setProductDatasets(List<ProductDatasetDTO> productDatasetDTOs) {
+    public void displayProductDatasets(List<ProductDatasetDTO> productDatasetDTOs) {
+        hideAll();
+        template.setPlace(Category.productdatasets);
+        datasetsPanel.setVisible(true);
         productdatasets.clear();
         if(productDatasetDTOs == null || productDatasetDTOs.size() == 0) {
             productdatasets.add(new MaterialLabel("No off the shelf data, click on the button below to add a new offer"));
@@ -113,8 +137,21 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         }
     }
 
+    private void hideAll() {
+        messagePanel.setVisible(false);
+        companyPanel.setVisible(false);
+        servicesPanel.setVisible(false);
+        datasetsPanel.setVisible(false);
+        softwarePanel.setVisible(false);
+        projectsPanel.setVisible(false);
+        datasetServicesPanel.setVisible(false);
+    }
+
     @Override
-    public void setSoftwares(List<SoftwareDTO> softwareDTOs) {
+    public void displaySoftwares(List<SoftwareDTO> softwareDTOs) {
+        hideAll();
+        template.setPlace(Category.software);
+        softwarePanel.setVisible(true);
         softwares.clear();
         if(softwareDTOs == null || softwareDTOs.size() == 0) {
             softwares.add(new MaterialLabel("No software, click on the button below to add a new offer"));
@@ -130,7 +167,10 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
-    public void setProjects(List<ProjectDTO> projectDTOs) {
+    public void displayProjects(List<ProjectDTO> projectDTOs) {
+        hideAll();
+        template.setPlace(Category.project);
+        projectsPanel.setVisible(true);
         projects.clear();
         if(projectDTOs == null || projectDTOs.size() == 0) {
             projects.add(new MaterialLabel("No project, click on the button below to add a new offer"));
@@ -143,6 +183,14 @@ public class DashboardViewImpl extends Composite implements DashboardView {
             materialColumn.add(new ProjectWidget(projectDTO));
             materialRow.add(materialColumn);
         }
+    }
+
+    @Override
+    public void displayMessage() {
+        hideAll();
+        template.setPlace(null);
+        messagePanel.setVisible(true);
+        messagePanel.add(new MaterialTitle("Welcome to the supplier management interface", "Please use the navigation menus on the side to edit your company assets"));
     }
 
     @Override

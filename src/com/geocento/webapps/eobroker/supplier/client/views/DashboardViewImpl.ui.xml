@@ -71,43 +71,61 @@
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Dashboard" ui:field="template">
         <design:MaterialPanel paddingBottom="50">
-            <design:MaterialTitle title="Company"></design:MaterialTitle>
-            <design:MaterialRow>
-                <design:MaterialColumn grid="s12 m6 l4">
-                    <design:MaterialImage ui:field="companyImage"></design:MaterialImage>
-                </design:MaterialColumn>
-                <design:MaterialColumn grid="s12 m6 l8">
-                    <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="companyTitle"></design:MaterialTitle>
-                </design:MaterialColumn>
-            </design:MaterialRow>
-            <g:HTMLPanel>
-                <design:MaterialButton backgroundColor="blue" text="Edit Company" ui:field="editCompany"></design:MaterialButton>
-            </g:HTMLPanel>
-
-            <design:MaterialTitle title="On-demand services"></design:MaterialTitle>
-            <design:MaterialRow addStyleNames="{style.services}" ui:field="services">
-            </design:MaterialRow>
-            <design:MaterialButton backgroundColor="blue" text="Add new service" ui:field="addService"></design:MaterialButton>
-
-            <design:MaterialTitle title="Off the shelf data"></design:MaterialTitle>
-            <design:MaterialRow addStyleNames="{style.services}" ui:field="productdatasets">
-            </design:MaterialRow>
-            <design:MaterialButton backgroundColor="blue" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
-
-            <design:MaterialTitle title="Software solutions"></design:MaterialTitle>
-            <design:MaterialRow addStyleNames="{style.services}" ui:field="softwares">
-            </design:MaterialRow>
-            <design:MaterialButton backgroundColor="blue" text="Add new software" ui:field="addSoftware"></design:MaterialButton>
-
-            <design:MaterialTitle title="Projects"></design:MaterialTitle>
-            <design:MaterialRow addStyleNames="{style.services}" ui:field="projects">
-            </design:MaterialRow>
-            <design:MaterialButton backgroundColor="blue" text="Add new project" ui:field="addProject"></design:MaterialButton>
-
-            <design:MaterialTitle visible="false" title="Your datasets"></design:MaterialTitle>
-            <design:MaterialRow visible="false" addStyleNames="{style.services}" ui:field="datasets">
-            </design:MaterialRow>
-            <design:MaterialButton visible="false" backgroundColor="blue" text="Add new dataset" ui:field="addDataset"></design:MaterialButton>
+            <design:MaterialPanel visible="false" ui:field="messagePanel"></design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="companyPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Edit Company" ui:field="editCompany"></design:MaterialButton>
+                    <design:MaterialTitle title="Company"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow>
+                    <design:MaterialColumn grid="s12 m6 l4">
+                        <design:MaterialImage ui:field="companyImage"></design:MaterialImage>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m6 l8">
+                        <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="companyTitle"></design:MaterialTitle>
+                    </design:MaterialColumn>
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="servicesPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new service" ui:field="addService"></design:MaterialButton>
+                    <design:MaterialTitle title="On-demand services"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="services">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="datasetsPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
+                    <design:MaterialTitle title="Off the shelf data"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="productdatasets">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="softwarePanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new software" ui:field="addSoftware"></design:MaterialButton>
+                    <design:MaterialTitle title="Software solutions"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="softwares">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="projectsPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new project" ui:field="addProject"></design:MaterialButton>
+                    <design:MaterialTitle title="Projects"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="projects">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="datasetServicesPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new dataset" ui:field="addDataset"></design:MaterialButton>
+                    <design:MaterialTitle title="Your datasets"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="datasets">
+                </design:MaterialRow>
+            </design:MaterialPanel>
         </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

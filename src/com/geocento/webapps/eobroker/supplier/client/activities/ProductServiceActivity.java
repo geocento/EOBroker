@@ -5,7 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
-import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.ProductServicePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductServiceView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
@@ -33,7 +33,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
 
     private ProductServiceEditDTO productServiceDTO;
 
-    public ProductServiceActivity(ServicesPlace place, ClientFactory clientFactory) {
+    public ProductServiceActivity(ProductServicePlace place, ClientFactory clientFactory) {
         super(clientFactory);
         this.place = place;
     }
@@ -67,9 +67,9 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         Long serviceId = null;
-        if(tokens.containsKey(ServicesPlace.TOKENS.service.toString())) {
+        if(tokens.containsKey(ProductServicePlace.TOKENS.service.toString())) {
             try {
-                serviceId = Long.parseLong(tokens.get(ServicesPlace.TOKENS.service.toString()));
+                serviceId = Long.parseLong(tokens.get(ProductServicePlace.TOKENS.service.toString()));
             } catch (Exception e) {
 
             }

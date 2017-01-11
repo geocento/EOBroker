@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -51,6 +52,7 @@ public class CompanyViewImpl extends Composite implements CompanyView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        template.setPlace(Category.companies);
     }
 
     @Override

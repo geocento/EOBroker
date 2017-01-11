@@ -2,7 +2,7 @@ package com.geocento.webapps.eobroker.supplier.client.widgets;
 
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.RemoveService;
-import com.geocento.webapps.eobroker.supplier.client.places.ServicesPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.ProductServicePlace;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -56,7 +56,7 @@ public class ProductServiceWidget extends Composite {
         edit.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Supplier.clientFactory.getPlaceController().goTo(new ServicesPlace(ServicesPlace.TOKENS.service.toString() + "=" + productServiceDTO.getId()));
+                Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId()));
             }
         });
         remove.addClickHandler(new ClickHandler() {

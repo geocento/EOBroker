@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyRoleWidget;
@@ -75,6 +76,7 @@ public class ProjectViewImpl extends Composite implements ProjectView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        template.setPlace(Category.project);
     }
 
     @Override

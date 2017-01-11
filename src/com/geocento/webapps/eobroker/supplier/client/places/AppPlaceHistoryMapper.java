@@ -6,13 +6,17 @@ import com.google.gwt.place.shared.WithTokenizers;
 @WithTokenizers({DashboardPlace.Tokenizer.class,
         LoginPagePlace.Tokenizer.class,
         CompanyPlace.Tokenizer.class,
-        ServicesPlace.Tokenizer.class,
+        ProductServicePlace.Tokenizer.class,
+        ProductServicesPlace.Tokenizer.class,
         OrdersPlace.Tokenizer.class,
         OrderPlace.Tokenizer.class,
         DatasetProviderPlace.Tokenizer.class,
         ProductDatasetPlace.Tokenizer.class,
+        ProductDatasetsPlace.Tokenizer.class,
         SoftwarePlace.Tokenizer.class,
+        SoftwaresPlace.Tokenizer.class,
         ProjectPlace.Tokenizer.class,
+        ProjectsPlace.Tokenizer.class,
         ConversationPlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOutHandler;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
@@ -36,6 +37,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
         } else {
             templateView.setNotifications(notifications);
         }
+        templateView.setCompany(Supplier.getLoginInfo().getCompanyDTO());
         // make sure page scrolls to the top
         templateView.scrollToTop();
     }

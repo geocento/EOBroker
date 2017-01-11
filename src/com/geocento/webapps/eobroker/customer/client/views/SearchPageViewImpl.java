@@ -113,6 +113,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialLink companiesCategory;
     @UiField
     Anchor sendRequirements;
+    @UiField
+    HTMLPanel timeFrame;
 
     // possible filters
     private MaterialListBox sectorSelection;
@@ -513,6 +515,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void displayFilters(Category category) {
+        timeFrame.setVisible(false);
         settings.clear();
         if(category == null) {
         } else {
@@ -521,8 +524,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     displayProductFilters();
                     break;
                 case productservices:
+                    displayProductServicesFilters();
                     break;
                 case productdatasets:
+                    displayProductDatasetsFilters();
                     break;
                 case software:
                     break;
@@ -533,6 +538,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     break;
             }
         }
+    }
+
+    private void displayProductDatasetsFilters() {
+        timeFrame.setVisible(true);
+    }
+
+    private void displayProductServicesFilters() {
+
     }
 
     @Override

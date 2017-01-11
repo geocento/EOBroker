@@ -43,6 +43,7 @@ public class DatasetProviderViewImpl extends Composite implements DatasetProvide
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        template.setPlace(null);
     }
 
     @Override

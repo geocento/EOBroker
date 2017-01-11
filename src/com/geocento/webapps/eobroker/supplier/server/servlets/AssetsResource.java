@@ -1156,13 +1156,25 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public OfferDTO getOffer() throws RequestException {
+    public OfferDTO getOffer(Category category) throws RequestException {
         OfferDTO offerDTO = new OfferDTO();
-        offerDTO.setCompanyDTO(getCompany());
-        offerDTO.setProductServiceDTOs(listProductServices());
-        offerDTO.setProductDatasetDTOs(listProductDatasets());
-        offerDTO.setSoftwareDTOs(listSoftwares());
-        offerDTO.setProjectDTOs(listProjects());
+        switch (category) {
+            case companies:
+                offerDTO.setCompanyDTO(getCompany());
+                break;
+            case productservices:
+                offerDTO.setProductServiceDTOs(listProductServices());
+                break;
+            case productdatasets:
+                offerDTO.setProductDatasetDTOs(listProductDatasets());
+                break;
+            case software:
+                offerDTO.setSoftwareDTOs(listSoftwares());
+                break;
+            case project:
+                offerDTO.setProjectDTOs(listProjects());
+                break;
+        }
         return offerDTO;
     }
 

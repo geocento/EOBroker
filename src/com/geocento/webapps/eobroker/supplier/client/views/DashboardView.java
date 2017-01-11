@@ -14,7 +14,7 @@ public interface DashboardView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void setServices(List<ProductServiceDTO> response);
+    void displayServices(List<ProductServiceDTO> response);
 
     void setCompany(CompanyDTO companyDTO);
 
@@ -32,13 +32,15 @@ public interface DashboardView extends IsWidget {
 
     TemplateView getTemplateView();
 
-    void setDatasets(List<DatasetProviderDTO> response);
+    void displayDatasets(List<DatasetProviderDTO> response);
 
-    void setProductDatasets(List<ProductDatasetDTO> response);
+    void displayProductDatasets(List<ProductDatasetDTO> response);
 
-    void setSoftwares(List<SoftwareDTO> softwareDTOs);
+    void displaySoftwares(List<SoftwareDTO> softwareDTOs);
 
-    void setProjects(List<ProjectDTO> projectDTOs);
+    void displayProjects(List<ProjectDTO> projectDTOs);
+
+    void displayMessage();
 
     public interface Presenter {
     }

@@ -23,8 +23,10 @@ public class AppActivityMapper implements ActivityMapper {
             return new LoginActivity((LoginPagePlace) place, clientFactory);
         } else if(place instanceof CompanyPlace) {
             return new CompanyActivity((CompanyPlace) place, clientFactory);
-        } else if(place instanceof ServicesPlace) {
-            return new ProductServiceActivity((ServicesPlace) place, clientFactory);
+        } else if(place instanceof ProductServicesPlace) {
+            return new ProductServicesActivity((ProductServicesPlace) place, clientFactory);
+        } else if(place instanceof ProductServicePlace) {
+            return new ProductServiceActivity((ProductServicePlace) place, clientFactory);
         } else if(place instanceof OrdersPlace) {
             return new OrdersActivity((OrdersPlace) place, clientFactory);
         } else if(place instanceof OrderPlace) {
@@ -35,8 +37,14 @@ public class AppActivityMapper implements ActivityMapper {
             return new DatasetProviderActivity((DatasetProviderPlace) place, clientFactory);
         } else if(place instanceof ProductDatasetPlace) {
             return new ProductDatasetActivity((ProductDatasetPlace) place, clientFactory);
+        } else if(place instanceof ProductDatasetsPlace) {
+            return new ProductDatasetsActivity((ProductDatasetsPlace) place, clientFactory);
+        } else if(place instanceof SoftwaresPlace) {
+            return new SoftwaresActivity((SoftwaresPlace) place, clientFactory);
         } else if(place instanceof SoftwarePlace) {
             return new SoftwareActivity((SoftwarePlace) place, clientFactory);
+        } else if(place instanceof ProjectsPlace) {
+            return new ProjectsActivity((ProjectsPlace) place, clientFactory);
         } else if(place instanceof ProjectPlace) {
             return new ProjectActivity((ProjectPlace) place, clientFactory);
         }

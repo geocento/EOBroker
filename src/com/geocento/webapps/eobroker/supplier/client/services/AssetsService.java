@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.services;
 
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -133,9 +134,9 @@ public interface AssetsService extends DirectRestService {
     Long saveProject(ProjectDTO projectDTO) throws RequestException;
 
     @GET
-    @Path("/assets/offer/")
+    @Path("/assets/offer/{category}")
     @Produces("application/json")
-    OfferDTO getOffer() throws RequestException;
+    OfferDTO getOffer(@PathParam("category") Category category) throws RequestException;
 
     @GET
     @Path("/assets/products/geoinformation/{id}")

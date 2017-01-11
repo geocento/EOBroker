@@ -35,6 +35,8 @@ public class OrdersViewImpl extends Composite implements OrdersView {
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        template.setPlace(null);
     }
 
     @Override

@@ -10,16 +10,26 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialTextBox;
 
 /**
  * Created by thomas on 08/11/2016.
  */
 public class OGCDataAccessWidget extends DataAccessWidget {
 
+    private MaterialTextBox serverUrl;
+
     private MaterialLink materialLink;
 
     public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri) {
         super(datasetAccess, editableUri);
+        // add server url
+        serverUrl = new MaterialTextBox();
+        serverUrl.setPlaceholder("The OWS server base WMS URL");
+        serverUrl.setMarginTop(20);
+        addField(serverUrl);
+        setServerUrl(datasetAccess.getServerUrl());
+        serverUrl.setReadOnly(!editableUri);
         // if the uri is not editable it is a sample from the local geoserver
         if(!editableUri) {
             MaterialPanel panel = new MaterialPanel();
@@ -52,13 +62,20 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         }
     }
 
+    private void setServerUrl(String serverUrl) {
+        this.serverUrl.setText(serverUrl);
+    }
+
     private void setStyle(String styleName) {
         materialLink.setText(styleName == null ? "default" : styleName);
     }
 
     public DatasetAccess getDatasetAccess() {
         super.getDatasetAccess();
-        if(materialLink != null) {
+        // update fields if editable
+        if(editableUri) {
+            ((DatasetAccessOGC) datasetAccess).setServerUrl(serverUrl.getText());
+        } else {
             String styleName = materialLink.getText();
             if(styleName.contentEquals("default")) {
                 styleName = null;

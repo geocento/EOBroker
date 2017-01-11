@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 
@@ -35,6 +36,8 @@ public class DataAccessWidget extends Composite {
 
     protected final DatasetAccess datasetAccess;
 
+    protected boolean editableUri;
+
     public DataAccessWidget(DatasetAccess datasetAccess) {
         this(datasetAccess, false);
     }
@@ -42,6 +45,7 @@ public class DataAccessWidget extends Composite {
     public DataAccessWidget(DatasetAccess datasetAccess, boolean editableUri) {
 
         this.datasetAccess = datasetAccess;
+        this.editableUri = editableUri;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -76,7 +80,7 @@ public class DataAccessWidget extends Composite {
         return datasetAccess;
     }
 
-    protected void addField(MaterialPanel panel) {
+    protected void addField(MaterialWidget panel) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         fields.add(materialColumn);
         materialColumn.add(panel);

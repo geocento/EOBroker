@@ -26,6 +26,11 @@ public class MaterialLabelIcon extends HTMLPanel {
         getElement().getStyle().setWhiteSpace(Style.WhiteSpace.NOWRAP);
     }
 
+    public MaterialLabelIcon(String name) {
+        this();
+        setText(name);
+    }
+
     public MaterialLabelIcon(String iconURL, String name) {
         this();
         setImageUrl(iconURL);

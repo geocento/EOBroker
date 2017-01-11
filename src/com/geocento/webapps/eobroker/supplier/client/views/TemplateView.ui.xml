@@ -2,8 +2,10 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:m="urn:import:gwt.material.design.client.ui"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
         >
-    <ui:style>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.supplier.client.views.TemplateView.Style">
+
         .panel header {
 
         }
@@ -13,23 +15,23 @@
 
         .panel main {
             min-height: 80%;
-            max-width: 960px;
-            margin: 0 auto;
-            overflow-y: auto;
         }
 
         .mainPanel {
-            position: fixed;
-            top: 64px;
-            bottom: 0px;
-            width: 100%;
-            overflow-y: auto;
+            max-width: 960px;
+            margin: auto;
+            padding: 0px 30px;
+        }
+
+        .company {
+            padding: 20px;
+            font-size: 1.2em;
+            color: white;
         }
 
         .navBrand {
-            color: grey;
-            padding-left: 20px;
-            font-size: 1.4em;
+            padding: 20px 0px;
+            font-size: 1.2em;
         }
 
         .logoImage {
@@ -62,13 +64,44 @@
         }
 
         .loading {
-            margin: 50px;
+            margin: 50px !important;
+        }
+
+        .sidenavPanel {
+            height: 100%;
+        }
+
+        .sideNav {
+            height: auto !important;
+            bottom: 0px !important;
+            background: rgb(238, 238, 238) !important;
+        }
+
+        a.category {
+            height: inherit;
+            font-size: 1em;
+            line-height: 3.6em;
+            padding: 0 !important;
+            margin: 0;
+        }
+
+        .category.selected {
+            color: blue !important;
+        }
+
+        .menus {
+            padding: 0px 30px;
+            line-height: normal !important;
+        }
+
+        .navOpened main, .navOpened footer {
+            padding-left: 300px;
         }
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
-    <g:HTMLPanel addStyleNames="{style.panel}">
+    <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
         <header>
             <!-- NavBar -->
             <m:MaterialNavBar activates="sideNav" backgroundColor="green" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
@@ -96,9 +129,27 @@
             </m:MaterialNavBar>
             <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
         </header>
-        <m:MaterialContainer ui:field="mainPanel" paddingTop="64">
+        <widgets:MaterialSideNav type="FIXED" m:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="sideNav">
+            <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
+                <m:MaterialPanel backgroundColor="green lighten-2">
+                    <widgets:MaterialLabelIcon imageHeight="50px" spacing="20" addStyleNames="{style.company}" text="" ui:field="companyImage"/>
+                    <m:MaterialLabel visible="false" ui:field="companyName"></m:MaterialLabel>
+                </m:MaterialPanel>
+                <g:HTMLPanel addStyleNames="{style.menus}">
+                    <m:MaterialLabel addStyleNames="{style.navBrand}" text="Access your"/>
+                    <g:HTMLPanel ui:field="links">
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Company settings" addStyleNames="{style.category}" ui:field="company"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="On-demand services" addStyleNames="{style.category}" ui:field="services"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Off the shelf data" addStyleNames="{style.category}" ui:field="datasets"></m:MaterialLink>
+                        <m:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="blue" text="Software solutions" addStyleNames="{style.category}" ui:field="software"></m:MaterialLink>
+                        <m:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="blue" text="Projects" addStyleNames="{style.category}" ui:field="projects"></m:MaterialLink>
+                    </g:HTMLPanel>
+                </g:HTMLPanel>
+            </g:HTMLPanel>
+        </widgets:MaterialSideNav>
+        <m:MaterialContainer paddingTop="64">
             <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
-            <m:MaterialPanel ui:field="content"></m:MaterialPanel>
+            <m:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></m:MaterialPanel>
         </m:MaterialContainer>
         <m:MaterialFooter backgroundColor="green lighten-1">
             <m:MaterialRow>

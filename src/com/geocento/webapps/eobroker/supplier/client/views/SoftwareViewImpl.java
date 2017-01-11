@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductSoftwarePitch;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
@@ -62,6 +63,7 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        template.setPlace(Category.software);
     }
 
     @Override

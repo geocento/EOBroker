@@ -175,6 +175,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             }
         });
 
+        template.setPlace(Category.productdatasets);
     }
 
     @Override

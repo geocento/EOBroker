@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
@@ -162,6 +163,8 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             materialCheckBox.setObject(accessType);
             dataAccess.add(materialCheckBox);
         }
+
+        template.setPlace(Category.productservices);
     }
 
     @Override
@@ -364,7 +367,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     private void addSample(DatasetAccess datasetAccess, boolean editableUri) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
-        DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, editableUri);
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, editableUri);
         materialColumn.add(dataAccessWidget);
     }
 
@@ -390,6 +393,19 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             }
         }
         return dataAccesses;
+    }
+
+    private DataAccessWidget createDataAccessWidget(DatasetAccess datasetAccess, boolean editableUri) {
+        if(datasetAccess instanceof DatasetAccessFile) {
+            return new DataAccessWidget(datasetAccess, editableUri);
+        } else if(datasetAccess instanceof DatasetAccessAPP) {
+            return new DataAccessWidget(datasetAccess, editableUri);
+        } else if(datasetAccess instanceof DatasetAccessOGC) {
+            return new OGCDataAccessWidget((DatasetAccessOGC) datasetAccess, editableUri);
+        } else if(datasetAccess instanceof DatasetAccessAPI) {
+            return new DataAccessWidget(datasetAccess, editableUri);
+        }
+        return null;
     }
 
     private DatasetAccess createDataAccess(AccessType selectedType) {

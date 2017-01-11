@@ -55,6 +55,8 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         initWidget(ourUiBinder.createAndBindUi(this));
 
         userImage.setUser(Supplier.getLoginInfo().getUserName());
+
+        template.setPlace(null);
     }
 
     @Override
