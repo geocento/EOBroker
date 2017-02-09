@@ -12,7 +12,6 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -427,6 +426,7 @@ public class FullViewImpl extends Composite implements FullView {
         mapContainer.setHeight("200px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         mapContainer.setEditable(false);
+        mapContainer.setBasemapVisible(false);
         mapContainer.setLayer(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
@@ -641,6 +641,7 @@ public class FullViewImpl extends Composite implements FullView {
         mapContainer.setHeight("200px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         mapContainer.setEditable(false);
+        mapContainer.setBasemapVisible(false);
         mapContainer.setLayer(false);
         mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override

@@ -796,10 +796,11 @@ public class AssetsResource implements AssetsService {
             dbUser = new User();
             dbUser.setUsername(userDescriptionDTO.getName());
             // if password not provided generate random password
-            if(userDescriptionDTO.getPassword() == null) {
-                userDescriptionDTO.setPassword(new KeyGenerator(8).CreateKey());
+            String password = userDescriptionDTO.getPassword();
+            if(password == null) {
+                password = new KeyGenerator(8).CreateKey();
             }
-            dbUser.setPassword(userDescriptionDTO.getPassword());
+            dbUser.setPassword(com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createPasswordHash(password));
             em.persist(dbUser);
             Company dbCompany = null;
             if(userDescriptionDTO.getCompanyDTO() != null) {
@@ -816,7 +817,7 @@ public class AssetsResource implements AssetsService {
                 mailContent.addTitle("Your user account");
                 mailContent.addLine("A new EO Broker user account was created for you:");
                 mailContent.addLine("<b>User name: </b>" + userName);
-                mailContent.addLine("<b>Password: </b>" + dbUser.getPassword());
+                mailContent.addLine("<b>Password: </b>" + password);
                 mailContent.addLine("<b>Organisation: </b>" + dbUser.getCompany().getName());
                 mailContent.sendEmail(dbUser.getEmail(), "User account creation", false);
             } catch (Exception e) {

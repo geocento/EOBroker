@@ -128,6 +128,7 @@
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
                 </design:MaterialPanel>
+                <design:MaterialLabel margin="20" textColor="orange" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Service product" textColor="black" iconType="MAP"/>
@@ -163,44 +164,16 @@
                         <design:MaterialColumn>
                             <widgets:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
-                                    <design:MaterialCardContent layoutPosition="RELATIVE">
-                                        <design:MaterialLabel marginBottom="20">Or upload file to server</design:MaterialLabel>
-                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
+                                    <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
+                                        <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to server</design:MaterialLabel>
+                                        <design:MaterialLabel textColor="grey" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
+                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white" ui:field="uploadSampleButton"></design:MaterialButton>
                                     </design:MaterialCardContent>
                                 </design:MaterialCard>
                             </widgets:MaterialFileUploader>
                         </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>
-<!--
-                <design:MaterialLink text="Samples" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
-                    <design:MaterialRow ui:field="samples"></design:MaterialRow>
-                    <design:MaterialRow>
-                        <design:MaterialColumn grid="s12 m4 l4">
-                            <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
-                        </design:MaterialColumn>
-                        <design:MaterialColumn>
-                            <design:MaterialLabel>Or upload to server</design:MaterialLabel>
-                        </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12 m4 l4">
-                            <widgets:MaterialFileUploader acceptedFiles="image/*" url="" height="auto" shadow="1" padding="20" ui:field="sampleUploader">
-                                <design:MaterialListBox ui:field="sampleAccessType"></design:MaterialListBox>
-                                <design:MaterialTextBox placeholder="Name of resource" ui:field="resourceName"></design:MaterialTextBox>
-                                <design:MaterialRow>
-                                    <design:MaterialColumn>
-                                        <design:MaterialLabel>Create sample</design:MaterialLabel>
-                                    </design:MaterialColumn>
-                                    <design:MaterialColumn>
-                                        <design:MaterialButton backgroundColor="pink" size="LARGE" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
-                                    </design:MaterialColumn>
-                                </design:MaterialRow>
-                            </widgets:MaterialFileUploader>
-                        </design:MaterialColumn>
-                    </design:MaterialRow>
-                </design:MaterialPanel>
--->
             </design:MaterialColumn>
         </design:MaterialRow>
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">

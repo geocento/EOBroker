@@ -78,6 +78,7 @@
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
                 </design:MaterialPanel>
+                <design:MaterialLabel margin="20" textColor="orange" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full data access" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
@@ -103,9 +104,10 @@
                         <design:MaterialColumn>
                             <c:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
-                                    <design:MaterialCardContent layoutPosition="RELATIVE">
-                                        <design:MaterialLabel marginBottom="20">Or upload file to server</design:MaterialLabel>
-                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white"></design:MaterialButton>
+                                    <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
+                                        <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to server</design:MaterialLabel>
+                                        <design:MaterialLabel textColor="grey" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
+                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white" ui:field="uploadSampleButton"></design:MaterialButton>
                                     </design:MaterialCardContent>
                                 </design:MaterialCard>
                             </c:MaterialFileUploader>

@@ -24,7 +24,7 @@ public class UserUtils {
         return user;
     }
 
-    private static String createPasswordHash(String password) {
+    public static String createPasswordHash(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 

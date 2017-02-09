@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.styles.StyleResources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasKeyPressHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -44,6 +45,7 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
         logo = new MaterialImage(StyleResources.INSTANCE.logoEOBroker(), ImageType.CIRCLE);
 
         initWidget(ourUiBinder.createAndBindUi(this));
+
     }
 
     @Override
@@ -74,6 +76,11 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
     @Override
     public HasValue<Boolean> getKeepLoggedIn() {
         return keepLoggedIn;
+    }
+
+    @Override
+    public HasKeyPressHandlers getPasswordBox() {
+        return password;
     }
 
 }

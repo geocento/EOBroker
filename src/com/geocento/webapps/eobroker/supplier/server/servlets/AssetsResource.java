@@ -285,12 +285,6 @@ public class AssetsResource implements AssetsService {
                     if (!StringUtils.areStringEqualsOrNull(dbDatasetAccessOGC.getStyleName(), ((DatasetAccessOGC) datasetAccess).getStyleName())) {
                         // update db and update geoserver
                         try {
-                            // first try the geoserver update
-/*
-                                String uri = dbDatasetAccessOGC.getUri();
-                                GSLayerEncoder configuration = new GSLayerEncoder();
-                                getGeoserverPublisher().configureLayer(uri.split(":")[0], uri.split(":")[1], configuration);
-*/
                             dbDatasetAccessOGC.setStyleName(datasetAccessOGC.getStyleName());
                         } catch (Exception e) {
 
@@ -720,6 +714,7 @@ public class AssetsResource implements AssetsService {
             productDataset.setName(productDatasetDTO.getName());
             productDataset.setDescription(productDatasetDTO.getDescription());
             productDataset.setFullDescription(productDatasetDTO.getFullDescription());
+            productDataset.setServiceType(productDatasetDTO.getServiceType());
             Product product = em.find(Product.class, productDatasetDTO.getProduct().getId());
             if(product == null) {
                 throw new RequestException("Product does not exist");
@@ -775,6 +770,21 @@ public class AssetsResource implements AssetsService {
                         dbDatasetAccess.setTitle(datasetAccess.getTitle());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
+                        // now do some data access specific stuff
+                        if (dbDatasetAccess instanceof DatasetAccessOGC) {
+                            DatasetAccessOGC dbDatasetAccessOGC = (DatasetAccessOGC) dbDatasetAccess;
+                            DatasetAccessOGC datasetAccessOGC = (DatasetAccessOGC) datasetAccess;
+                            // check if style has changed
+                            if (!StringUtils.areStringEqualsOrNull(dbDatasetAccessOGC.getStyleName(), ((DatasetAccessOGC) datasetAccess).getStyleName())) {
+                                // update db and update geoserver
+                                try {
+                                    dbDatasetAccessOGC.setStyleName(datasetAccessOGC.getStyleName());
+                                } catch (Exception e) {
+
+                                }
+                            }
+                            dbDatasetAccessOGC.setServerUrl(datasetAccessOGC.getServerUrl());
+                        }
                         dbDatasetAccesses.add(dbDatasetAccess);
                     }
                 }

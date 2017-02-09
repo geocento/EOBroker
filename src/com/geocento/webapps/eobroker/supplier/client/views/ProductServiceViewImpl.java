@@ -16,12 +16,14 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
@@ -89,6 +91,12 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     MaterialLabel dataAccessMessage;
     @UiField
     MaterialRow dataAccess;
+    @UiField
+    MaterialButton uploadSampleButton;
+    @UiField
+    MaterialLabel uploadSampleTitle;
+    @UiField
+    MaterialLabel uploadSampleComment;
 
     public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -126,6 +134,11 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
         sampleUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
             @Override
             public void onSuccess(SuccessEvent<UploadFile> event) {
+                String error = StringUtils.extract(event.getResponse().getMessage(), "<error>", "</error>");
+                if(error.length() > 0) {
+                    Window.alert(error);
+                    return;
+                }
                 String response = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
                 JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
                 SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
@@ -136,6 +149,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                     DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
                     datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
                     datasetAccessFile.setTitle("Sample file");
+                    datasetAccessFile.setHostedData(false);
                     addSample(datasetAccessFile);
                 }
                 if(sampleUploadDTO.getLayerName() != null) {
@@ -144,6 +158,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                     datasetAccessOGC.setServerUrl(sampleUploadDTO.getServer());
                     datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
                     datasetAccessOGC.setTitle("Sample data available as OGC service");
+                    datasetAccessOGC.setHostedData(false);
                     addSample(datasetAccessOGC);
                 }
             }
@@ -209,7 +224,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
 
     @Override
     public void setFullDescription(String fullDescription) {
-        this.fullDescription.setHTML(fullDescription);
+        this.fullDescription.setHTML(fullDescription == null ? "" : fullDescription);
     }
 
     @Override
@@ -311,13 +326,12 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
 
     @Override
     public void setSelectedDataAccessTypes(List<AccessType> selectedAccessTypes) {
-        if(selectedAccessTypes != null && selectedAccessTypes.size() > 0) {
-            for(int index = 0; index < dataAccess.getWidgetCount(); index++) {
-                Widget widget = dataAccess.getWidget(index);
-                if(widget instanceof MaterialCheckBox) {
-                    MaterialCheckBox materialCheckBox = (MaterialCheckBox) widget;
-                    materialCheckBox.setValue(selectedAccessTypes.contains((AccessType) materialCheckBox.getObject()));
-                }
+        if(selectedAccessTypes == null) selectedAccessTypes = new ArrayList<>();
+        for(int index = 0; index < dataAccess.getWidgetCount(); index++) {
+            Widget widget = dataAccess.getWidget(index);
+            if(widget instanceof MaterialCheckBox) {
+                MaterialCheckBox materialCheckBox = (MaterialCheckBox) widget;
+                materialCheckBox.setValue(selectedAccessTypes.contains((AccessType) materialCheckBox.getObject()));
             }
         }
         updateDataAccessTypesMessage();
@@ -346,7 +360,17 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
 
     @Override
     public void setSampleProductServiceId(Long serviceId) {
-        sampleUploader.setParameter("resourceId", serviceId + "");
+        uploadSampleTitle.setText("Upload sample files to our servers");
+        if(serviceId == null) {
+            uploadSampleComment.setText("Sorry, you need to SUBMIT before you can upload files to our servers");
+            uploadSampleComment.setTextColor("orange");
+            uploadSampleButton.setEnabled(false);
+        } else {
+            uploadSampleComment.setText("Allowed files are shapefiles (zipped), GeoTIFF and documents (PDF, doc, xls...)");
+            uploadSampleComment.setTextColor("dark_grey");
+            uploadSampleButton.setEnabled(true);
+            sampleUploader.setParameter("resourceId", serviceId + "");
+        }
     }
 
     @Override
@@ -361,13 +385,18 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     }
 
     private void addSample(DatasetAccess datasetAccess) {
-        addSample(datasetAccess, false);
-    }
-
-    private void addSample(DatasetAccess datasetAccess, boolean editableUri) {
-        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        final MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
-        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, editableUri);
+        // check uri name
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, datasetAccess.isHostedData());
+        dataAccessWidget.getRemove().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(Window.confirm("Are you sure you want to remove this sample?")) {
+                    samples.remove(materialColumn);
+                }
+            }
+        });
         materialColumn.add(dataAccessWidget);
     }
 
@@ -408,7 +437,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
         return null;
     }
 
-    private DatasetAccess createDataAccess(AccessType selectedType) {
+    private DatasetAccess createDataAccess(AccessType selectedType, boolean hostedData) {
         DatasetAccess datasetAccess = null;
         switch(selectedType) {
             case file:
@@ -424,13 +453,14 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                 datasetAccess = new DatasetAccessAPI();
                 break;
         }
+        datasetAccess.setHostedData(hostedData);
         return datasetAccess;
     }
 
     @UiHandler("addHostedSample")
     void addSample(ClickEvent clickEvent) {
         AccessType selectedType = AccessType.valueOf(sampleAccessType.getValue());
-        addSample(createDataAccess(selectedType), true);
+        addSample(createDataAccess(selectedType, true));
         updateSamplesMessage();
     }
 

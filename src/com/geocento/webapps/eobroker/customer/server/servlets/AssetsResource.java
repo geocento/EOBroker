@@ -967,9 +967,8 @@ public class AssetsResource implements AssetsService {
             DatasetAccessOGC datasetAccessOGC = (DatasetAccessOGC) datasetAccess;
             String serverUrl = datasetAccessOGC.getServerUrl();
             // make WMS query
-            String response = HTTPUtils.get(serverUrl + "&service=WMS&request=getCapabilities");
             WMSCapabilities wmsCapabilities = new WMSCapabilities();
-            wmsCapabilities.extractWMSXMLResources(response);
+            wmsCapabilities.extractWMSXMLResources(serverUrl + "&service=WMS&request=getCapabilities");
             WMSCapabilities.WMSLayer wmsLayer = ListUtil.findValue(wmsCapabilities.getLayersList(), new ListUtil.CheckValue<WMSCapabilities.WMSLayer>() {
                 @Override
                 public boolean isValue(WMSCapabilities.WMSLayer value) {

@@ -117,7 +117,12 @@ public class DatasetUploadServlet extends HttpServlet {
     }
 
     protected void writeError(HttpServletResponse response, String message) throws IOException {
-        response.sendError(500, message);
+        response.setStatus(200);
+        response.setContentType("text/html");
+        PrintWriter writer = response.getWriter();
+        writer.print("<html><body><error>" + message + "</error></body></html>");
+        writer.flush();
+        writer.close();
     }
 
     protected SampleUploadDTO processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName) throws Exception {

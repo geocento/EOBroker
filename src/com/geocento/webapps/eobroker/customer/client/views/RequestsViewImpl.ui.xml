@@ -10,7 +10,7 @@
             padding: 0px 20px;
         }
     </ui:style>
-    <views:TemplateView titleText="Orders Management" ui:field="template">
+    <views:TemplateView titleText="Requests Management" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.panel}">
             <design:MaterialTitle title="Manage your requests" description="Here are all your currently opened requests"></design:MaterialTitle>
             <design:MaterialRow ui:field="requestsList"></design:MaterialRow>

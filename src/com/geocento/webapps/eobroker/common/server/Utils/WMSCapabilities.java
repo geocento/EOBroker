@@ -2,10 +2,14 @@ package com.geocento.webapps.eobroker.common.server.Utils;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.sun.org.apache.xerces.internal.util.XMLChar;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,9 +197,15 @@ public class WMSCapabilities {
 		this.name = name;
 	}
 
-    public void extractWMSXMLResources(String response) throws Exception {
+    public void extractWMSXMLResources(String url) throws Exception {
 		// parse XML response
-		Document document = XMLUtil.getDocument(response);
+/*
+		Document document = XMLUtil.getDocument(stripInvalidXmlCharacters(response));
+*/
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder domBuilder = dbf.newDocumentBuilder();
+        URL resURL = new URL(url);
+        Document document = domBuilder.parse(resURL.openStream());
 		// get top element
 		Element topElement = document.getDocumentElement();
 		if(topElement.getNodeName().equalsIgnoreCase("ows:ExceptionReport")) {
@@ -318,5 +328,18 @@ public class WMSCapabilities {
 			layersList.add(layer);
 		}
 	}
+
+    public static String stripInvalidXmlCharacters(String input) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (XMLChar.isValid(c)) {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
+
 
 }

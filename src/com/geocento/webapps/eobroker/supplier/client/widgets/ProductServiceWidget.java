@@ -32,8 +32,6 @@ public class ProductServiceWidget extends Composite {
     @UiField
     MaterialLink companyLogo;
     @UiField
-    MaterialLabel description;
-    @UiField
     MaterialCardAction action;
     @UiField
     MaterialLabel title;
@@ -52,7 +50,6 @@ public class ProductServiceWidget extends Composite {
         image.setUrl(productServiceDTO.getServiceImage());
         title.setText(productServiceDTO.getName());
         shortDescription.setText(productServiceDTO.getDescription());
-        description.setText(productServiceDTO.getDescription());
         edit.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

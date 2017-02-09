@@ -27,6 +27,11 @@ import org.fusesource.restygwt.client.REST;
  */
 public class Supplier implements EntryPoint {
 
+    // log-in session ID cookie duration
+    public static long DURATION = 7 * 24 * 3600;
+
+    static private String cookieSession = "XSESSIONID";
+
     private static LoginInfo loginInfo;
 
     /*
@@ -102,4 +107,5 @@ public class Supplier implements EntryPoint {
     public static LoginInfo getLoginInfo() {
         return Supplier.loginInfo;
     }
+
 }

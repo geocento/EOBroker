@@ -71,7 +71,7 @@ public class MaterialImageUploader extends Composite {
         if(imageUrl != null) {
             iconPreview.setUrl(imageUrl);
         } else {
-            iconPreview.clear();
+            iconPreview.setUrl("");
         }
     }
 

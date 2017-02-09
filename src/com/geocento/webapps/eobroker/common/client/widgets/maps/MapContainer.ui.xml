@@ -33,7 +33,10 @@
         <g:HTMLPanel visible="false" addStyleNames="{style.searchContainer}" ui:field="searchPanel">
             <g:HTMLPanel ui:field="search"></g:HTMLPanel>
         </g:HTMLPanel>
-        <design:MaterialButton activates="layers" layoutPosition="ABSOLUTE" top="30" right="20" type="FLOATING" waves="LIGHT" backgroundColor="white" iconType="LAYERS" iconSize="SMALL" iconColor="black" addStyleNames="{style.fabButton}" ui:field="layers"/>
+        <design:MaterialPanel layoutPosition="ABSOLUTE" top="20" right="20" ui:field="basemapTogglePanel">
+            <design:MaterialPanel ui:field="basemapToggle"></design:MaterialPanel>
+        </design:MaterialPanel>
+        <design:MaterialButton visible="false" activates="layers" layoutPosition="ABSOLUTE" top="30" right="20" type="FLOATING" waves="LIGHT" backgroundColor="white" iconType="LAYERS" iconSize="SMALL" iconColor="black" addStyleNames="{style.fabButton}" ui:field="layers"/>
         <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%" height="50%">
             <design:MaterialPanel ui:field="listLayers"></design:MaterialPanel>
         </design:MaterialDropDown>

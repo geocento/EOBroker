@@ -113,18 +113,23 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         productServiceView.setFullDescription(productServiceDTO.getFullDescription());
         productServiceView.getEmail().setText(productServiceDTO.getEmail());
         productServiceView.setSelectedProduct(productServiceDTO.getProduct());
-        productServiceView.setProductGeoinformation(productServiceDTO.getProductFeatures());
-        productServiceView.setSelectedGeoinformation(ListUtil.filterValues(productServiceDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
-            @Override
-            public boolean isValue(FeatureDescription value) {
-                return productServiceDTO.getSelectedFeatures().contains(value.getId());
-            }
-        }));
+        if(productServiceDTO.getProduct() != null) {
+            productServiceView.setProductGeoinformation(productServiceDTO.getProductFeatures());
+            productServiceView.setSelectedGeoinformation(ListUtil.filterValues(productServiceDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
+                @Override
+                public boolean isValue(FeatureDescription value) {
+                    return productServiceDTO.getSelectedFeatures().contains(value.getId());
+                }
+            }));
+        } else {
+            productServiceView.setProductGeoinformation(null);
+        }
         productServiceView.setExtent(AoIUtil.fromWKT(productServiceDTO.getExtent()));
         productServiceView.getWebsite().setText(productServiceDTO.getWebsite());
         productServiceView.getAPIUrl().setText(productServiceDTO.getApiURL() == null ? "" : productServiceDTO.getApiURL());
         productServiceView.setSelectedDataAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
         productServiceView.setSampleDataAccess(productServiceDTO.getSamples());
+        // needed for the upload of samples on the broker server
         productServiceView.setSampleProductServiceId(productServiceDTO.getId());
     }
 

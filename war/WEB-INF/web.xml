@@ -7,7 +7,7 @@
 
     <context-param>
         <param-name>org.eclipse.jetty.servlet.SessionCookie</param-name>
-        <param-value>XSESSIONID</param-value>
+        <param-value>EOBROKERID</param-value>
     </context-param>
     <context-param>
         <param-name>org.eclipse.jetty.servlet.SessionIdPathParameterName</param-name>
@@ -18,10 +18,9 @@
         <param-value>/</param-value>
     </context-param>
 
-    <context-param>
-        <param-name>org.eclipse.jetty.servlet.MaxAge</param-name>
-        <param-value>864000</param-value>
-    </context-param>
+    <session-config>
+        <session-timeout>10000</session-timeout>
+    </session-config>
 
     <listener>
         <listener-class>com.geocento.webapps.eobroker.common.server.ContextListener</listener-class>

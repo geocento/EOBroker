@@ -7,8 +7,7 @@ import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.LoginPageView;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceChangeEvent;
@@ -52,25 +51,40 @@ public class LoginPageActivity extends AbstractApplicationActivity implements Lo
         handlers.add(loginPageView.getLogin().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                REST.withCallback(new MethodCallback<LoginInfo>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        MaterialToast.fireToast("Wrong combination of user name and password");
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, LoginInfo response) {
-                        if (response == null) {
-                            MaterialToast.fireToast("Wrong combination of user name and password");
-                        } else {
-                            Admin.setLoginInfo(response);
-                            Place nextPlace = ((LoginPagePlace) place).getNextPlace();
-                            clientFactory.getEventBus().fireEvent(new PlaceChangeEvent(nextPlace == null ? clientFactory.getDefaultPlace() : nextPlace));
-                        }
-                    }
-                }).call(ServicesUtil.loginService).signin(loginPageView.getUserName().getText(), loginPageView.getPassword().getText());
+                signIn();
             }
         }));
+
+        handlers.add(
+                loginPageView.getPasswordBox().addKeyPressHandler(new KeyPressHandler() {
+
+                    @Override
+                    public void onKeyPress(KeyPressEvent event) {
+                        if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+                            signIn();
+                        }
+                    }
+                }));
+    }
+
+    private void signIn() {
+        REST.withCallback(new MethodCallback<LoginInfo>() {
+            @Override
+            public void onFailure(Method method, Throwable exception) {
+                MaterialToast.fireToast("Wrong combination of user name and password");
+            }
+
+            @Override
+            public void onSuccess(Method method, LoginInfo response) {
+                if (response == null) {
+                    MaterialToast.fireToast("Wrong combination of user name and password");
+                } else {
+                    Admin.setLoginInfo(response);
+                    Place nextPlace = ((LoginPagePlace) place).getNextPlace();
+                    clientFactory.getEventBus().fireEvent(new PlaceChangeEvent(nextPlace == null ? clientFactory.getDefaultPlace() : nextPlace));
+                }
+            }
+        }).call(ServicesUtil.loginService).signin(loginPageView.getUserName().getText(), loginPageView.getPassword().getText());
     }
 
 }

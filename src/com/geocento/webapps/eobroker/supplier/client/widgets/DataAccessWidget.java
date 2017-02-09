@@ -26,7 +26,7 @@ public class DataAccessWidget extends Composite {
     @UiField
     MaterialLink type;
     @UiField
-    MaterialTextBox uri;
+    protected MaterialTextBox uri;
     @UiField
     MaterialTextBox title;
     @UiField
@@ -51,18 +51,23 @@ public class DataAccessWidget extends Composite {
 
         String text = "Unknown";
         IconType iconType = null;
+        String uriName = "Unknown";
         if(datasetAccess instanceof DatasetAccessFile) {
             iconType = IconType.GET_APP;
             text = "File";
+            uriName = "The File Download URL";
         } else if(datasetAccess instanceof DatasetAccessAPP) {
             iconType = IconType.WEB;
             text = "Application";
+            uriName = "The URL to access the web application";
         } else if(datasetAccess instanceof DatasetAccessOGC) {
             iconType = IconType.LAYERS;
             text = "OGC services";
+            uriName = "The WMS layer name for this data";
         } else if(datasetAccess instanceof DatasetAccessAPI) {
             iconType = IconType.CLOUD_CIRCLE;
             text = "API";
+            uriName = "The URL to the API documentation";
         }
         type.setText(text);
         type.setIconType(iconType);
@@ -70,6 +75,7 @@ public class DataAccessWidget extends Composite {
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());
         uri.setReadOnly(!editableUri);
+        uri.setPlaceholder(uriName);
     }
 
     public DatasetAccess getDatasetAccess() {

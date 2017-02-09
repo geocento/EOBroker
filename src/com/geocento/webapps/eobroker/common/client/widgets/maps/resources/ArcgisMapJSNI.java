@@ -75,4 +75,9 @@ public class ArcgisMapJSNI extends JavaScriptObject {
     public final native GeometryJSNI convertsToGeographic(GeometryJSNI geometry) /*-{
         return $wnd['esri'].geometry.webMercatorToGeographic(geometry);
     }-*/;
+
+    public final native void createBaseMapToggle(MapJSNI map, Element element) /*-{
+        this.createBaseMapToggle(map, element);
+    }-*/;
+
 }

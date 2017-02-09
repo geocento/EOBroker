@@ -20,6 +20,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -139,7 +140,14 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         visualisationView.setProductDataset(productDatasetVisualisationDTO);
         DatasetAccess datasetAccess = null;
         if(datasetId != null) {
-            datasetAccess = ListUtil.findValue(productDatasetVisualisationDTO.getDatasetAccess(), new ListUtil.CheckValue<DatasetAccess>() {
+            ArrayList<DatasetAccess> datasetAccesses = new ArrayList<DatasetAccess>();
+            if(productDatasetVisualisationDTO.getDatasetAccess() != null) {
+                datasetAccesses.addAll(productDatasetVisualisationDTO.getDatasetAccess());
+            }
+            if(productDatasetVisualisationDTO.getSamples() != null) {
+                datasetAccesses.addAll(productDatasetVisualisationDTO.getSamples());
+            }
+            datasetAccess = ListUtil.findValue(datasetAccesses, new ListUtil.CheckValue<DatasetAccess>() {
                 @Override
                 public boolean isValue(DatasetAccess value) {
                     return value.getId().equals(datasetId);

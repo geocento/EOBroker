@@ -74,6 +74,10 @@ public class MapContainer extends Composite {
     HTMLPanel searchPanel;
     @UiField
     MaterialPanel buttonsPanel;
+    @UiField
+    MaterialPanel basemapToggle;
+    @UiField
+    MaterialPanel basemapTogglePanel;
 
     private Presenter presenter;
 
@@ -151,15 +155,16 @@ public class MapContainer extends Composite {
                             }
                         });
 
+/*
                         listLayers.getElement().getStyle().setProperty("maxWidth", ((int) Math.floor(mapContainer.getOffsetWidth() * 0.6)) + "px");
                         arcgisMap.createBaseMaps(map, listLayers.getElement());
+*/
+                        arcgisMap.createBaseMapToggle(map, basemapToggle.getElement());
 
                         searchPanel.setVisible(searchActivated);
                         if(searchActivated) {
                             arcgisMap.addSearch(map, search.getElement());
                         }
-
-                        map.setZoom(3);
                         mapLoaded();
                     }
                 });
@@ -176,6 +181,10 @@ public class MapContainer extends Composite {
         for(MaterialWidget widget : new MaterialWidget[] {addButton, buttonsPanel}) {
             widget.setBottom(height);
         }
+    }
+
+    public void setBasemapVisible(boolean visible) {
+        basemapTogglePanel.setVisible(visible);
     }
 
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {

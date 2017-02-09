@@ -1,12 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -38,37 +34,45 @@ public class DataAccessWidget extends Composite {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        // TODO - change uri if free or commercial
         title.setText(datasetAccess.getTitle());
         pitch.setText(datasetAccess.getPitch());
         IconType iconType = IconType.HELP_OUTLINE;
         IconType actionIconType = IconType.HELP_OUTLINE;
-        String text = "Unknown";
-        String url = "";
         if(isFree) {
             if(datasetAccess instanceof DatasetAccessFile) {
                 iconType = IconType.ARCHIVE;
                 actionIconType = IconType.GET_APP;
-                text = "Download File";
-                url = datasetAccess.getUri();
             } else if(datasetAccess instanceof DatasetAccessAPP) {
                 iconType = IconType.WEB;
                 actionIconType = IconType.OPEN_IN_BROWSER;
-                text = "Open URL";
-                url = datasetAccess.getUri();
             } else if(datasetAccess instanceof DatasetAccessOGC) {
                 iconType = IconType.MAP;
                 actionIconType = IconType.LAYERS;
-                text = "View in map";
-                url = "#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(
-                        Utils.generateTokens(VisualisationPlace.TOKENS.dataAccessId.toString(), URL.encodeQueryString(datasetAccess.getUri()))));
             } else if(datasetAccess instanceof DatasetAccessAPI) {
                 iconType = IconType.CLOUD_CIRCLE;
                 actionIconType = IconType.CONTENT_COPY;
-                text = "Copy URL";
+            }
+        } else {
+            if(datasetAccess instanceof DatasetAccessFile) {
+                iconType = IconType.ARCHIVE;
+                actionIconType = IconType.INFO;
+            } else if(datasetAccess instanceof DatasetAccessAPP) {
+                iconType = IconType.WEB;
+                actionIconType = IconType.INFO;
+            } else if(datasetAccess instanceof DatasetAccessOGC) {
+                iconType = IconType.MAP;
+                actionIconType = IconType.INFO;
+            } else if(datasetAccess instanceof DatasetAccessAPI) {
+                iconType = IconType.CLOUD_CIRCLE;
+                actionIconType = IconType.INFO;
             }
         }
+        String color = isFree ? "green" : "blue";
+        image.setBackgroundColor(color);
         action.setText("");
         action.setIconType(actionIconType);
+        action.setBackgroundColor(color);
         image.setIconType(iconType);
     }
 

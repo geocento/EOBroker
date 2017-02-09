@@ -7,8 +7,7 @@ import com.geocento.webapps.eobroker.supplier.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.LoginPageView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.LoginInfo;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceChangeEvent;
@@ -41,6 +40,7 @@ public class LoginActivity extends AbstractApplicationActivity implements LoginP
         panel.setWidget(loginPageView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
+        handleHistory();
     }
 
     private void handleHistory() {
@@ -52,25 +52,40 @@ public class LoginActivity extends AbstractApplicationActivity implements LoginP
         handlers.add(loginPageView.getLogin().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                REST.withCallback(new MethodCallback<LoginInfo>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        MaterialToast.fireToast("Wrong combination of user name and password");
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, LoginInfo response) {
-                        if(response == null) {
-                            MaterialToast.fireToast("Wrong combination of user name and password");
-                        } else {
-                            Supplier.setLoginInfo(response);
-                            Place nextPlace = ((LoginPagePlace) place).getNextPlace();
-                            clientFactory.getEventBus().fireEvent(new PlaceChangeEvent(nextPlace == null ? clientFactory.getDefaultPlace() : nextPlace));
-                        }
-                    }
-                }).call(ServicesUtil.loginService).signin(loginPageView.getUserName().getText(), loginPageView.getPassword().getText());
+                signIn();
             }
         }));
+
+        handlers.add(
+                loginPageView.getPasswordBox().addKeyPressHandler(new KeyPressHandler() {
+
+                    @Override
+                    public void onKeyPress(KeyPressEvent event) {
+                        if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+                            signIn();
+                        }
+                    }
+                }));
+    }
+
+    private void signIn() {
+        REST.withCallback(new MethodCallback<LoginInfo>() {
+            @Override
+            public void onFailure(Method method, Throwable exception) {
+                MaterialToast.fireToast("Wrong combination of user name and password");
+            }
+
+            @Override
+            public void onSuccess(Method method, LoginInfo response) {
+                if(response == null) {
+                    MaterialToast.fireToast("Wrong combination of user name and password");
+                } else {
+                    Supplier.setLoginInfo(response);
+                    Place nextPlace = ((LoginPagePlace) place).getNextPlace();
+                    clientFactory.getEventBus().fireEvent(new PlaceChangeEvent(nextPlace == null ? clientFactory.getDefaultPlace() : nextPlace));
+                }
+            }
+        }).call(ServicesUtil.loginService).signin(loginPageView.getUserName().getText(), loginPageView.getPassword().getText());
     }
 
 }

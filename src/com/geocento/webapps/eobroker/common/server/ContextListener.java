@@ -209,6 +209,20 @@ public class ContextListener implements ServletContextListener {
                     }
                 }
             }
+            {
+                // initialise the hostedData flag in data access
+                TypedQuery<DatasetAccess> query = em.createQuery("select d from DatasetAccess d where d.hostedData is NULL", DatasetAccess.class);
+                List<DatasetAccess> datasetAccesses = query.getResultList();
+                if (datasetAccesses.size() > 0) {
+                    em.getTransaction().begin();
+                    for (DatasetAccess datasetAccess : query.getResultList()) {
+                        datasetAccess.setHostedData(
+                                !(datasetAccess.getUri() != null && datasetAccess.getUri().contains("eobroker.com/")) &&
+                                        !(datasetAccess instanceof DatasetAccessOGC && ((DatasetAccessOGC) datasetAccess).getServerUrl() != null && ((DatasetAccessOGC) datasetAccess).getServerUrl().contains("eobroker.com/")));
+                    }
+                    em.getTransaction().commit();
+                }
+            }
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

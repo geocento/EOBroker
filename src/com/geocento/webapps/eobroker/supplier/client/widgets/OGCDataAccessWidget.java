@@ -23,6 +23,8 @@ public class OGCDataAccessWidget extends DataAccessWidget {
 
     public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri) {
         super(datasetAccess, editableUri);
+        //  rename uri to layer name
+        uri.setPlaceholder("Provide the layer name for this data");
         // add server url
         serverUrl = new MaterialTextBox();
         serverUrl.setPlaceholder("The OWS server base WMS URL");
@@ -30,6 +32,7 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         addField(serverUrl);
         setServerUrl(datasetAccess.getServerUrl());
         serverUrl.setReadOnly(!editableUri);
+        serverUrl.setEnabled(editableUri);
         // if the uri is not editable it is a sample from the local geoserver
         if(!editableUri) {
             MaterialPanel panel = new MaterialPanel();

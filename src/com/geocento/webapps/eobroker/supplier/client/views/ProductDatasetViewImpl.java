@@ -92,6 +92,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialListBox datasetAccessType;
     @UiField
     MaterialPanel geoinformation;
+    @UiField
+    MaterialLabel uploadSampleTitle;
+    @UiField
+    MaterialLabel uploadSampleComment;
+    @UiField
+    MaterialButton uploadSampleButton;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -143,6 +149,11 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         sampleUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
             @Override
             public void onSuccess(SuccessEvent<UploadFile> event) {
+                String error = StringUtils.extract(event.getResponse().getMessage(), "<error>", "</error>");
+                if(error.length() > 0) {
+                    Window.alert(error);
+                    return;
+                }
                 String response = StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>");
                 JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
                 SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
@@ -154,6 +165,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                     DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
                     datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
                     datasetAccessFile.setTitle("Sample file");
+                    datasetAccessFile.setHostedData(false);
                     addSample(datasetAccessFile);
                 }
                 if(sampleUploadDTO.getLayerName() != null) {
@@ -163,6 +175,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                     datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
                     datasetAccessOGC.setTitle("Sample data available as OGC service");
                     datasetAccessOGC.setStyleName(sampleUploadDTO.getStyleName());
+                    datasetAccessOGC.setHostedData(false);
                     addSample(datasetAccessOGC);
                 }
             }
@@ -345,13 +358,9 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     private void addSample(DatasetAccess datasetAccess) {
-        addSample(datasetAccess, false);
-    }
-
-    private void addSample(DatasetAccess datasetAccess, boolean editableUri) {
         final MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.samples.add(materialColumn);
-        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, editableUri);
+        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, datasetAccess.isHostedData());
         dataAccessWidget.getRemove().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -436,18 +445,28 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
 
     @Override
     public void setSampleProductDatasetId(Long datasetId) {
-        sampleUploader.setParameter("resourceId", datasetId + "");
+        uploadSampleTitle.setText("Upload sample files to our servers");
+        if(datasetId == null) {
+            uploadSampleComment.setText("Sorry, you need to SUBMIT before you can upload files to our servers");
+            uploadSampleComment.setTextColor("orange");
+            uploadSampleButton.setEnabled(false);
+        } else {
+            uploadSampleComment.setText("Allowed files are shapefiles (zipped), GeoTIFF and documents (PDF, doc, xls...)");
+            uploadSampleComment.setTextColor("dark_grey");
+            uploadSampleButton.setEnabled(true);
+            sampleUploader.setParameter("resourceId", datasetId + "");
+        }
     }
 
     @UiHandler("addDataAccess")
     void addDataAccess(ClickEvent clickEvent) {
         AccessType selectedType = AccessType.valueOf(datasetAccessType.getValue());
-        DatasetAccess datasetAccess = createDataAccess(selectedType);
+        DatasetAccess datasetAccess = createDataAccess(selectedType, true);
         addDataAccess(datasetAccess);
         updateDataAccessMessage();
     }
 
-    private DatasetAccess createDataAccess(AccessType selectedType) {
+    private DatasetAccess createDataAccess(AccessType selectedType, boolean hostedData) {
         DatasetAccess datasetAccess = null;
         switch(selectedType) {
             case file:
@@ -463,13 +482,14 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 datasetAccess = new DatasetAccessAPI();
                 break;
         }
+        datasetAccess.setHostedData(hostedData);
         return datasetAccess;
     }
 
     @UiHandler("addHostedSample")
-    void addSample(ClickEvent clickEvent) {
+    void addHostedSample(ClickEvent clickEvent) {
         AccessType selectedType = AccessType.valueOf(sampleAccessType.getValue());
-        addSample(createDataAccess(selectedType), true);
+        addSample(createDataAccess(selectedType, true));
         updateSamplesMessage();
     }
 

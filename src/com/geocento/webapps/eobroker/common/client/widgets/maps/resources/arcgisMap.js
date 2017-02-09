@@ -22,11 +22,12 @@ var arcgisMap = function(callback) {
         'esri/layers/WMSLayerInfo',
         'esri/geometry/geodesicUtils',
         "esri/dijit/Search",
-        "esri/dijit/BasemapGallery"
+        "esri/dijit/BasemapGallery",
+        "esri/dijit/BasemapToggle"
     ], function(esriConfig, urlUtils, Map, Draw, Edit, Graphic,
                 Polygon, Extent, WMSLayer,
                 SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color, WMSLayerInfo, geodesicUtils,
-                Search, BasemapGallery) {
+                Search, BasemapGallery, BasemapToggle) {
 
 /*
         urlUtils.addProxyRule({
@@ -41,7 +42,8 @@ var arcgisMap = function(callback) {
                     basemap: baseMap,
                     center: [lng, lat],
                     zoom: zoom,
-                    autoResize: true
+                    autoResize: true,
+                    wrapAround180: true
             });
             map.on("load", function(){onload(map);});
         }
@@ -64,6 +66,14 @@ var arcgisMap = function(callback) {
             basemapGallery.on("error", function(msg) {
                 console.log("basemap gallery error:  ", msg);
             });
+        }
+
+        self.createBaseMapToggle = function(map, element) {
+            var toggle = new BasemapToggle({
+                map: map,
+                basemap: "satellite"
+            }, element);
+            toggle.startup();
         }
 
         self.addSearch = function(map, div) {
