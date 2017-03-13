@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.MailContent;
+import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
@@ -19,6 +20,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.google.gwt.http.client.RequestException;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -27,6 +30,8 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -702,6 +707,8 @@ public class AssetsResource implements AssetsService {
             if(hasFilter) {
                 query.setParameter("filter", "%" + filter + "%");
             }
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<User,UserDescriptionDTO>() {
                 @Override
                 public UserDescriptionDTO mutate(User user) {
@@ -831,6 +838,39 @@ public class AssetsResource implements AssetsService {
             throw new RequestException("Server error");
         } finally {
             em.close();
+        }
+    }
+
+    @Override
+    public ApplicationSettings getSettings() throws RequestException {
+        return ServerUtil.getSettings();
+    }
+
+    @Override
+    public void saveSettings(ApplicationSettings settings) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(settings);
+            em.getTransaction().commit();
+            logger.info("User " + userName + " has modified the application settings");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public String getLogs() throws RequestException {
+        FileAppender appender = (FileAppender) Logger.getRootLogger().getAppender("file");
+        File file = new File(appender.getFile());
+        try {
+            return FileUtils.readFileToString(file);
+        } catch (IOException e) {
+            throw new RequestException("Server error");
         }
     }
 

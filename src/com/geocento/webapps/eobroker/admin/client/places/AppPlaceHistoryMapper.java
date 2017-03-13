@@ -13,6 +13,8 @@ import com.google.gwt.place.shared.WithTokenizers;
         NewsItemsPlace.Tokenizer.class,
         NewsItemPlace.Tokenizer.class,
         FeedbackPlace.Tokenizer.class,
+        SettingsPlace.Tokenizer.class,
+        LogsPlace.Tokenizer.class
 })
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

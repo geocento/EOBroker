@@ -52,6 +52,12 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.Conversation</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Feedback</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.SupplierSettings</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.PerformanceValue</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Standard</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.Testimonial</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

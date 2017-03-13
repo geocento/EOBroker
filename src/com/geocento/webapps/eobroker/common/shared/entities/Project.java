@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,6 +13,9 @@ public class Project {
     @Id
     @GeneratedValue
     Long id;
+
+    @Enumerated(EnumType.STRING)
+    PUBLICATION_STATE publicationState;
 
     @ManyToOne
     Company company;
@@ -40,6 +44,12 @@ public class Project {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     List<CompanyRole> consortium;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    Date startDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date stopDate;
+
     public Project() {
     }
 
@@ -49,6 +59,14 @@ public class Project {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public PUBLICATION_STATE getPublicationState() {
+        return publicationState;
+    }
+
+    public void setPublicationState(PUBLICATION_STATE publicationState) {
+        this.publicationState = publicationState;
     }
 
     public Company getCompany() {
@@ -121,5 +139,21 @@ public class Project {
 
     public void setConsortium(List<CompanyRole> consortium) {
         this.consortium = consortium;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getStopDate() {
+        return stopDate;
+    }
+
+    public void setStopDate(Date stopDate) {
+        this.stopDate = stopDate;
     }
 }

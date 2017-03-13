@@ -190,6 +190,7 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         hideAll();
         template.setPlace(null);
         messagePanel.setVisible(true);
+        messagePanel.clear();
         messagePanel.add(new MaterialTitle("Welcome to the supplier management interface", "Please use the navigation menus on the side to edit your company assets"));
     }
 

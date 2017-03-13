@@ -15,6 +15,9 @@ public class ProductService {
     @GeneratedValue
     Long id;
 
+    @Enumerated(EnumType.STRING)
+    PUBLICATION_STATE publicationState;
+
     @ManyToOne
     Company company;
 
@@ -37,7 +40,21 @@ public class ProductService {
     String extent;
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "productservice_geoinformation")
     List<FeatureDescription> geoinformation;
+
+    @Column(length = 1000)
+    String geoinformationComment;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "productservice_performances")
+    List<PerformanceDescription> performances;
+
+    @Column(length = 1000)
+    String performancesComment;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Standard> applicableStandards;
 
     @Column(length = 1000)
     String email;
@@ -52,12 +69,12 @@ public class ProductService {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> samples;
 
-    @Column(length = 1000)
-    String sampleWmsUrl;
-
     @ElementCollection
     @Enumerated(EnumType.STRING)
     List<AccessType> selectedAccessTypes;
+
+    @Column
+    String timeToDelivery;
 
     public ProductService() {
     }
@@ -68,6 +85,14 @@ public class ProductService {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public PUBLICATION_STATE getPublicationState() {
+        return publicationState;
+    }
+
+    public void setPublicationState(PUBLICATION_STATE publicationState) {
+        this.publicationState = publicationState;
     }
 
     public Company getCompany() {
@@ -150,6 +175,46 @@ public class ProductService {
         this.geoinformation = geoinformation;
     }
 
+    public String getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    public void setGeoinformationComment(String geoinformationComment) {
+        this.geoinformationComment = geoinformationComment;
+    }
+
+    public List<PerformanceDescription> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(List<PerformanceDescription> performances) {
+        this.performances = performances;
+    }
+
+    public String getPerformancesComment() {
+        return performancesComment;
+    }
+
+    public void setPerformancesComment(String performancesComment) {
+        this.performancesComment = performancesComment;
+    }
+
+    public List<Standard> getApplicableStandards() {
+        return applicableStandards;
+    }
+
+    public void setApplicableStandards(List<Standard> applicableStandards) {
+        this.applicableStandards = applicableStandards;
+    }
+
+    public String getTimeToDelivery() {
+        return timeToDelivery;
+    }
+
+    public void setTimeToDelivery(String timeToDelivery) {
+        this.timeToDelivery = timeToDelivery;
+    }
+
     public String getApiUrl() {
         return apiUrl;
     }
@@ -164,14 +229,6 @@ public class ProductService {
 
     public void setSamples(List<DatasetAccess> samples) {
         this.samples = samples;
-    }
-
-    public String getSampleWmsUrl() {
-        return sampleWmsUrl;
-    }
-
-    public void setSampleWmsUrl(String sampleWmsUrl) {
-        this.sampleWmsUrl = sampleWmsUrl;
     }
 
     public List<AccessType> getSelectedAccessTypes() {

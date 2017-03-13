@@ -35,6 +35,10 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private UsersView usersView = null;
 
+    private SettingsView settingsView = null;
+
+    private LogsView logsView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -136,6 +140,22 @@ public class ClientFactoryImpl implements ClientFactory {
             usersView = new UsersViewImpl(this);
         }
         return usersView;
+    }
+
+    @Override
+    public SettingsView getSettingsView() {
+        if(settingsView == null) {
+            settingsView = new SettingsViewImpl(this);
+        }
+        return settingsView;
+    }
+
+    @Override
+    public LogsView getLogsView() {
+        if(logsView == null) {
+            logsView = new LogsViewImpl(this);
+        }
+        return logsView;
     }
 
 }

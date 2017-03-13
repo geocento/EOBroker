@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
-import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.fileupload.FileItem;
@@ -108,7 +108,7 @@ public class ImageUploadServlet extends HttpServlet {
             }
             // resize image and store file
             // TODO - check input and output format and limit output formats to be jpg or png
-            String realPath = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath) + filePath;
+            String realPath = ServerUtil.getSettings().getDataDirectory() + filePath;
             logger.info("Process and store file at " + realPath);
             if(width > 0 && height > 0) {
                 Thumbnails.of(new ByteArrayInputStream(out.toByteArray())).forceSize(width, height).toFile(realPath);

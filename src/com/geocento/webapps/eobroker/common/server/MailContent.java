@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.common.server;
 
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileReader;
@@ -87,6 +89,15 @@ public class MailContent {
             textContent.append("\r\n");
         }
         htmlContent.append("</table>");
+    }
+
+    public void sendEmail(List<User> users, String subject, boolean bcc) throws Exception {
+        sendEmail(ListUtil.toString(users, new ListUtil.GetLabel<User>() {
+            @Override
+            public String getLabel(User value) {
+                return value.getEmail();
+            }
+        }, ","), subject, bcc);
     }
 
 }

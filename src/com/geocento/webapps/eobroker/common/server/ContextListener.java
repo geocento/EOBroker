@@ -50,9 +50,9 @@ public class ContextListener implements ServletContextListener {
 
         // send an email to say we have started the application
         MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ADMIN);
-        mailContent.addTitle("The " + Configuration.getProperty(Configuration.APPLICATION_SETTINGS.applicationName) + " server application started");
+        mailContent.addTitle("The " + ServerUtil.getSettings().getApplicationName() + " server application started");
         try {
-            mailContent.sendEmail(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.adminEmail), "Server started", false);
+            mailContent.sendEmail(ServerUtil.getUsersAdministrator(), "Server started", false);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -181,6 +181,28 @@ public class ContextListener implements ServletContextListener {
         EntityManager em = EMF.get().createEntityManager();
         try {
             {
+                // check admin settings exist
+                if(ServerUtil.getSettings() == null) {
+                    em.getTransaction().begin();
+                    ApplicationSettings applicationSettings = new ApplicationSettings();
+                    applicationSettings.setApplicationName(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.applicationName));
+                    applicationSettings.setDataDirectory(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath));
+                    applicationSettings.setEmailAccount(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_account));
+                    applicationSettings.setEmailFrom(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_from));
+                    applicationSettings.setEmailPassword(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_password));
+                    applicationSettings.setEmailPort(Configuration.getIntProperty(Configuration.APPLICATION_SETTINGS.email_port));
+                    applicationSettings.setEmailServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_host));
+                    applicationSettings.setSmtps(Configuration.getBooleanProperty(Configuration.APPLICATION_SETTINGS.email_issmpts));
+                    applicationSettings.setReportByEmail(true);
+                    applicationSettings.setGeoserverOWS(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
+                    applicationSettings.setGeoserverRESTUri(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri));
+                    applicationSettings.setGeoserverUser(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser));
+                    applicationSettings.setGeoserverPassword(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword));
+                    em.persist(applicationSettings);
+                    em.getTransaction().commit();
+                }
+            }
+            {
                 // add some data to database
                 TypedQuery<Request> query = em.createQuery("select r from Request r where r.status is NULL", Request.class);
                 List<Request> requests = query.getResultList();
@@ -215,10 +237,25 @@ public class ContextListener implements ServletContextListener {
                 List<DatasetAccess> datasetAccesses = query.getResultList();
                 if (datasetAccesses.size() > 0) {
                     em.getTransaction().begin();
-                    for (DatasetAccess datasetAccess : query.getResultList()) {
+                    for (DatasetAccess datasetAccess : datasetAccesses) {
                         datasetAccess.setHostedData(
                                 !(datasetAccess.getUri() != null && datasetAccess.getUri().contains("eobroker.com/")) &&
                                         !(datasetAccess instanceof DatasetAccessOGC && ((DatasetAccessOGC) datasetAccess).getServerUrl() != null && ((DatasetAccessOGC) datasetAccess).getServerUrl().contains("eobroker.com/")));
+                    }
+                    em.getTransaction().commit();
+                }
+            }
+            {
+                // check all companies have their supplier settings
+                TypedQuery<Company> query = em.createQuery("select c from Company c where c.settings is NULL", Company.class);
+                List<Company> companies = query.getResultList();
+                if (companies.size() > 0) {
+                    em.getTransaction().begin();
+                    for (Company company : companies) {
+                        SupplierSettings supplierSettings = new SupplierSettings();
+                        em.persist(supplierSettings);
+                        supplierSettings.setCompany(company);
+                        company.setSettings(supplierSettings);
                     }
                     em.getTransaction().commit();
                 }

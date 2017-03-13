@@ -12,6 +12,9 @@ public class ProductSoftware {
     @GeneratedValue
     Long id;
 
+    @Enumerated(EnumType.STRING)
+    PUBLICATION_STATE publicationState;
+
     @Column(length = 1000)
     String pitch;
 
@@ -30,6 +33,14 @@ public class ProductSoftware {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public PUBLICATION_STATE getPublicationState() {
+        return publicationState;
+    }
+
+    public void setPublicationState(PUBLICATION_STATE publicationState) {
+        this.publicationState = publicationState;
     }
 
     public String getPitch() {

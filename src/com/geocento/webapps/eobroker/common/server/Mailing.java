@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.common.server;
 
-import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -20,12 +20,15 @@ public class Mailing {
 
     static public void sendEmail(String template, String recipients, String subject, String message, String plainText, boolean asBcc) throws Exception {
 
-        String from = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_from);
-        String host = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_host);
-        Integer port = Configuration.getIntProperty(Configuration.APPLICATION_SETTINGS.email_port);
-        boolean isSMTPS = Configuration.getBooleanProperty(Configuration.APPLICATION_SETTINGS.email_issmpts);
-        final String account = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_account);
-        final String password = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.email_password);
+        ApplicationSettings settings = ServerUtil.getSettings();
+        String from = settings.getEmailFrom();
+        String host = settings.getEmailServer();
+        Integer port = settings.getEmailPort();
+        boolean isSMTPS = settings.isSmtps();
+        boolean enableTLS = settings.isEnableTLS();
+        // check port
+        final String account = settings.getEmailAccount();
+        final String password = settings.getEmailPassword();
 
         // Create propertiesEditor for the Session
         Properties props = new Properties();
@@ -36,11 +39,12 @@ public class Mailing {
             props.put("mail.smtps.host", host);
             props.put("mail.smtps.port", port);
             props.put("mail.smtps.auth", "true");
+            props.put("mail.smtps.starttls.enable", enableTLS);
         } else {
             props.put("mail.smtp.host", host);
             props.put("mail.smtp.port", port);
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.starttls.enable", enableTLS);
         }
         // To see what is going on behind the scene
         props.put("mail.debug", "true"); 

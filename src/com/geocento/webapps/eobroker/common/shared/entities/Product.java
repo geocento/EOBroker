@@ -38,6 +38,13 @@ public class Product {
     @OneToMany(cascade = CascadeType.ALL)
     List<FeatureDescription> geoinformation;
 
+    @OrderColumn(name = "performance_order")
+    @OneToMany(cascade = CascadeType.ALL)
+    List<PerformanceDescription> performances;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Standard> applicableStandards;
+
     @OrderColumn(name = "form_order")
     @JoinTable(name = "product_formelement")
     @OneToMany(cascade = CascadeType.ALL)
@@ -122,6 +129,22 @@ public class Product {
 
     public void setGeoinformation(List<FeatureDescription> geoinformation) {
         this.geoinformation = geoinformation;
+    }
+
+    public List<PerformanceDescription> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(List<PerformanceDescription> performances) {
+        this.performances = performances;
+    }
+
+    public List<Standard> getApplicableStandards() {
+        return applicableStandards;
+    }
+
+    public void setApplicableStandards(List<Standard> applicableStandards) {
+        this.applicableStandards = applicableStandards;
     }
 
     public List<FormElement> getFormFields() {

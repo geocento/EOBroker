@@ -138,6 +138,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         // configure the sample uploader
         final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
         sampleUploader.setUrl(uploadUrl);
+        sampleUploader.setMaxFileSize(200);
 
         // Added the progress to card uploader
         sampleUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {

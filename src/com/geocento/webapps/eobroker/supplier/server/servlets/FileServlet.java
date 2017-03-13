@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
-import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.ServerUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +21,7 @@ public class FileServlet extends HttpServlet {
             return;
         }
         String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
-        File file = new File(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath), filename);
+        File file = new File(ServerUtil.getSettings().getDataDirectory(), filename);
         response.setHeader("Content-Type", getServletContext().getMimeType(filename));
         response.setHeader("Content-Length", String.valueOf(file.length()));
         response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");

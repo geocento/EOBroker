@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.common.shared.entities.formelements;
 
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -12,25 +10,25 @@ import javax.persistence.Entity;
 @DiscriminatorValue("TEXT")
 public class TextFormElement extends FormElement {
 
-    int min;
-    int max;
+    Integer min;
+    Integer max;
 
     public TextFormElement() {
     }
 
-    public int getMin() {
+    public Integer getMin() {
         return min;
     }
 
-    public void setMin(int min) {
+    public void setMin(Integer min) {
         this.min = min;
     }
 
-    public int getMax() {
+    public Integer getMax() {
         return max;
     }
 
-    public void setMax(int max) {
+    public void setMax(Integer max) {
         this.max = max;
     }
 }

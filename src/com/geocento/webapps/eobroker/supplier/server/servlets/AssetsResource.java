@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -150,7 +149,6 @@ public class AssetsResource implements AssetsService {
             productServiceDTO.setApiURL(productService.getApiUrl());
             productServiceDTO.setSelectedDataAccessTypes(productService.getSelectedAccessTypes());
             productServiceDTO.setSamples(productService.getSamples());
-            productServiceDTO.setSampleWmsUrl(productService.getSampleWmsUrl());
             return productServiceDTO;
         } catch (Exception e) {
             throw new RequestException("Error");
@@ -469,10 +467,7 @@ public class AssetsResource implements AssetsService {
         final String workspace = user.getCompany().getId() + "";
         try {
             // publish to GeoServer
-            String RESTURL = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverRESTUri);
-            String RESTUSER = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverUser);
-            String RESTPW = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverPassword);
-            GeoServerRESTReader reader = new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
+            GeoServerRESTReader reader = GeoserverUtils.getGeoserverReader(); //new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
             ArrayList<String> styles = new ArrayList<String>();
             // add the user ones first
 /*

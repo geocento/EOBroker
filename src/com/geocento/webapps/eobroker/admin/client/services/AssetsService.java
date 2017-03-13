@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.services;
 
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
+import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -155,4 +156,18 @@ public interface AssetsService extends DirectRestService {
     @Consumes("application/json")
     void createUser(UserDescriptionDTO userDescriptionDTO) throws RequestException;
 
+    @GET
+    @Path("/settings/")
+    @Consumes("application/json")
+    ApplicationSettings getSettings() throws RequestException;
+
+    @PUT
+    @Path("/settings/")
+    @Consumes("application/json")
+    void saveSettings(ApplicationSettings settings) throws RequestException;
+
+    @GET
+    @Path("/logs/")
+    @Consumes("application/json")
+    String getLogs() throws RequestException;
 }

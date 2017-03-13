@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
@@ -131,13 +131,13 @@ public class DatasetUploadServlet extends HttpServlet {
             Long companyId = user.getCompany().getId();
             String fileDirectory = "./datasets/" + companyId + "/" + resourceId + "/";
             String filePath =  fileDirectory + resourceName;
-            int maxFileSize = 10 * (1024 * 1024); //10 megs max
+            int maxFileSize = ServerUtil.getSettings().getMaxSampleSizeMB() * (1024 * 1024);
             if (out.size() > maxFileSize) {
                 throw new Exception("File is > than " + maxFileSize);
             }
             // store file
             // TODO - check input and output format and limit output formats to be jpg or png
-            String diskDirectory = Configuration.getProperty(Configuration.APPLICATION_SETTINGS.uploadPath) + fileDirectory;
+            String diskDirectory = ServerUtil.getSettings().getDataDirectory() + fileDirectory;
             String diskPath = diskDirectory + resourceName;
             logger.info("Process and store file at " + diskPath);
             // force creation of directory if it does not exist
@@ -158,14 +158,14 @@ public class DatasetUploadServlet extends HttpServlet {
                 case "zip":
                     layerName = publishShapefile(workspaceName, storeName, file);
                     sampleUploadDTO.setLayerName(layerName);
-                    sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
+                    sampleUploadDTO.setServer(ServerUtil.getSettings().getGeoserverOWS());
                     sampleUploadDTO.setStyleName("geometries");
                     break;
                 case "tiff":
                 case "tif":
                     layerName = publishGeoTiff(workspaceName, storeName, file);
                     sampleUploadDTO.setLayerName(layerName);
-                    sampleUploadDTO.setServer(Configuration.getProperty(Configuration.APPLICATION_SETTINGS.geoserverOWS));
+                    sampleUploadDTO.setServer(ServerUtil.getSettings().getGeoserverOWS());
                     sampleUploadDTO.setStyleName("raster");
                     break;
                 case "pdf":

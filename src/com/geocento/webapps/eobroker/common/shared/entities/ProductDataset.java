@@ -15,6 +15,9 @@ public class ProductDataset {
     @GeneratedValue
     Long id;
 
+    @Enumerated(EnumType.STRING)
+    PUBLICATION_STATE publicationState;
+
     @ManyToOne
     Company company;
 
@@ -46,8 +49,25 @@ public class ProductDataset {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> samples;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "productdataset_geoinformation")
     List<FeatureDescription> geoinformation;
+
+    @Column(length = 1000)
+    String geoinformationComment;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "productdataset_performances")
+    List<PerformanceDescription> performances;
+
+    @Column(length = 1000)
+    String performancesComment;
+
+    @Embedded
+    TemporalCoverage temporalCoverage;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Standard> applicableStandards;
 
     @Column(length = 1000)
     String email;
@@ -64,6 +84,14 @@ public class ProductDataset {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public PUBLICATION_STATE getPublicationState() {
+        return publicationState;
+    }
+
+    public void setPublicationState(PUBLICATION_STATE publicationState) {
+        this.publicationState = publicationState;
     }
 
     public Company getCompany() {
@@ -168,5 +196,45 @@ public class ProductDataset {
 
     public List<FeatureDescription> getGeoinformation() {
         return geoinformation;
+    }
+
+    public String getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    public void setGeoinformationComment(String geoinformationComment) {
+        this.geoinformationComment = geoinformationComment;
+    }
+
+    public List<PerformanceDescription> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(List<PerformanceDescription> performances) {
+        this.performances = performances;
+    }
+
+    public String getPerformancesComment() {
+        return performancesComment;
+    }
+
+    public void setPerformancesComment(String performancesComment) {
+        this.performancesComment = performancesComment;
+    }
+
+    public List<Standard> getApplicableStandards() {
+        return applicableStandards;
+    }
+
+    public void setApplicableStandards(List<Standard> applicableStandards) {
+        this.applicableStandards = applicableStandards;
+    }
+
+    public TemporalCoverage getTemporalCoverage() {
+        return temporalCoverage;
+    }
+
+    public void setTemporalCoverage(TemporalCoverage temporalCoverage) {
+        this.temporalCoverage = temporalCoverage;
     }
 }

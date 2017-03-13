@@ -1,5 +1,10 @@
 package com.geocento.webapps.eobroker.common.server;
 
+import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
+import com.geocento.webapps.eobroker.common.shared.entities.User;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -208,6 +213,22 @@ public class ServerUtil {
             buffer.append(line);
         }
         return buffer.toString();
+    }
+
+    public static ApplicationSettings getSettings() {
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            return em.find(ApplicationSettings.class, 1L);
+        } finally {
+            em.close();
+        }
+    }
+
+    public static List<User> getUsersAdministrator() {
+        EntityManager em = EMF.get().createEntityManager();
+        TypedQuery<User> query = em.createQuery("Select u from User u where u.userRole = :userRole", User.class);
+        query.setParameter("userRole", User.USER_ROLE.administrator);
+        return query.getResultList();
     }
 
 }

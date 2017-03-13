@@ -81,6 +81,10 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLink signOut;
     @UiField
     MaterialLink users;
+    @UiField
+    MaterialLink logs;
+    @UiField
+    MaterialLink settings;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -102,6 +106,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         setLink(products, new ProductsPlace());
         setLink(newsItems, new NewsItemsPlace());
         setLink(feedback, new FeedbackPlace());
+        setLink(settings, new SettingsPlace());
+        setLink(logs, new LogsPlace());
 
         userIcon.setUser(Admin.getLoginInfo().getUserName());
 
@@ -138,6 +144,12 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
             case "feedback":
                 feedback.addStyleName(style.selected());
                 break;
+            case "settings":
+                settings.addStyleName(style.selected());
+                break;
+            case "logs":
+                logs.addStyleName(style.selected());
+                break;
         }
     }
 
@@ -164,6 +176,10 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         if(message != null) {
             MaterialToast.fireToast(message, "green darken-1");
         }
+    }
+
+    public void displaySuccess(String message) {
+        MaterialToast.fireToast(message, "green darken-1");
     }
 
     public void displayLoading() {

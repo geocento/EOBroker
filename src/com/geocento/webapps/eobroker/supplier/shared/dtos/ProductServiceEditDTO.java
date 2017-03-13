@@ -23,7 +23,6 @@ public class ProductServiceEditDTO {
     List<FeatureDescription> productFeatures;
     List<Long> selectedFeatures;
     String apiURL;
-    String sampleWmsUrl;
     private List<DatasetAccess> samples;
     private List<AccessType> selectedDataAccessTypes;
 
@@ -124,14 +123,6 @@ public class ProductServiceEditDTO {
 
     public void setApiURL(String apiURL) {
         this.apiURL = apiURL;
-    }
-
-    public String getSampleWmsUrl() {
-        return sampleWmsUrl;
-    }
-
-    public void setSampleWmsUrl(String sampleWmsUrl) {
-        this.sampleWmsUrl = sampleWmsUrl;
     }
 
     public void setSamples(List<DatasetAccess> samples) {

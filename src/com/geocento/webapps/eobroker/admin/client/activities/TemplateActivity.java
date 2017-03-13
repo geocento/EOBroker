@@ -77,8 +77,8 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         });
     }
 
-    protected void displayLoading() {
-        templateView.displayLoading();
+    protected void displayLoading(String message) {
+        templateView.setLoading(message);
     }
 
     protected void hideLoading() {
@@ -87,6 +87,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     protected void displayError(String message) {
         templateView.displayError(message);
+    }
+
+    protected void displaySuccess(String message) {
+        templateView.displaySuccess(message);
     }
 
 }

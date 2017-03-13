@@ -22,16 +22,18 @@ public class TextEditor extends ElementEditor<TextFormElement> {
     public void setFormElement(TextFormElement textFormElement) {
         super.setFormElement(textFormElement);
         // TODO - add extra stuff here
-        textBox.setLength(textFormElement.getMax());
+        if(textFormElement.getMax() != null) {
+            textBox.setLength(textFormElement.getMax());
+        }
     }
 
     @Override
     public FormElementValue getFormElementValue() throws Exception {
         String value = textBox.getText();
-        if(value.length() < formElement.getMin()) {
+        if(formElement.getMin() != null && value.length() < formElement.getMin()) {
             throw new Exception("Minimum " + formElement.getMin() + " characters");
         }
-        if(value.length() > formElement.getMax()) {
+        if(formElement.getMax() != null && value.length() > formElement.getMax()) {
             throw new Exception("Maximum " + formElement.getMax() + " characters");
         }
         FormElementValue formElementValue = new FormElementValue();

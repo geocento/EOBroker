@@ -127,7 +127,7 @@ public class FeedbackActivity extends TemplateActivity implements FeedbackView.P
     }
 
     private void saveMessage() {
-        displayLoading();
+        displayLoading("Saving message...");
         try {
             REST.withCallback(new MethodCallback<MessageDTO>() {
                 @Override

@@ -33,6 +33,24 @@ public class Company {
     @Column(length = 1000)
     private String website;
 
+    @Column(length = 1000)
+    String address;
+
+    @Column(length = 3)
+    String countryCode;
+
+    @Enumerated(EnumType.STRING)
+    COMPANY_SIZE companySize;
+
+    @ElementCollection
+    List<String> awards;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    List<Testimonial> testimonials;
+
+    @OneToOne
+    SupplierSettings settings;
+
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
     List<ProductService> services;
@@ -106,6 +124,54 @@ public class Company {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public COMPANY_SIZE getCompanySize() {
+        return companySize;
+    }
+
+    public void setCompanySize(COMPANY_SIZE companySize) {
+        this.companySize = companySize;
+    }
+
+    public List<String> getAwards() {
+        return awards;
+    }
+
+    public void setAwards(List<String> awards) {
+        this.awards = awards;
+    }
+
+    public List<Testimonial> getTestimonials() {
+        return testimonials;
+    }
+
+    public void setTestimonials(List<Testimonial> testimonials) {
+        this.testimonials = testimonials;
+    }
+
+    public SupplierSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(SupplierSettings settings) {
+        this.settings = settings;
     }
 
     public List<ProductService> getServices() {

@@ -30,6 +30,10 @@ public class FormHelper {
             DoubleEditor doubleEditor = new DoubleEditor();
             doubleEditor.setFormElement((DoubleFormElement) formElement);
             return doubleEditor;
+        } else if(formElement instanceof BooleanFormElement) {
+            BooleanEditor booleanEditor = new BooleanEditor();
+            booleanEditor.setFormElement((BooleanFormElement) formElement);
+            return booleanEditor;
         }
         return null;
     }

@@ -22,17 +22,21 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
     public void setFormElement(IntegerFormElement integerFormElement) {
         super.setFormElement(integerFormElement);
         // TODO - add extra stuff here
-        integerBox.setMin(integerFormElement.getMin() + "");
-        integerBox.setMax(integerFormElement.getMax() + "");
+        if(integerFormElement.getMin() != null) {
+            integerBox.setMin(integerFormElement.getMin() + "");
+        }
+        if(integerFormElement.getMax() != null) {
+            integerBox.setMax(integerFormElement.getMax() + "");
+        }
     }
 
     @Override
     public FormElementValue getFormElementValue() throws Exception {
         Integer value = integerBox.getValue();
-        if(value < formElement.getMin()) {
+        if(formElement.getMin() != null && value < formElement.getMin()) {
             throw new Exception("Minimum value is " + formElement.getMin());
         }
-        if(value > formElement.getMax()) {
+        if(formElement.getMax() != null && value > formElement.getMax()) {
             throw new Exception("Maximum value is " + formElement.getMax());
         }
         FormElementValue formElementValue = new FormElementValue();
