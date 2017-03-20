@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.admin.client.widgets.FormEditor;
 import com.geocento.webapps.eobroker.admin.client.widgets.GeoinformationWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
@@ -71,6 +72,12 @@ public class ProductViewImpl extends Composite implements ProductView {
     MaterialRow geoinformation;
     @UiField
     MaterialLabel geoinformationMessage;
+    @UiField
+    MaterialLabel performanceMessage;
+    @UiField
+    MaterialRow performances;
+    @UiField
+    MaterialButton addPerformance;
 
     private Presenter presenter;
 
@@ -213,20 +220,20 @@ public class ProductViewImpl extends Composite implements ProductView {
         this.geoinformation.clear();
         if(geoinformation != null) {
             for(FeatureDescription featureDescription : geoinformation) {
-                addFeatureDescription(featureDescription);
+                addGeoinformation(featureDescription);
             }
         }
-        updateDataAccessMessage();
+        updateGeoinformationMessage();
     }
 
-    private void addFeatureDescription(FeatureDescription featureDescription) {
+    private void addGeoinformation(FeatureDescription featureDescription) {
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         this.geoinformation.add(materialColumn);
         GeoinformationWidget geoinformationWidget = new GeoinformationWidget(featureDescription);
         materialColumn.add(geoinformationWidget);
     }
 
-    private void updateDataAccessMessage() {
+    private void updateGeoinformationMessage() {
         List<FeatureDescription> geoinformations = getGeoinformation();
         geoinformationMessage.setText(geoinformations.size() == 0 ? "No geoinformation provided, add new geoinformation using the button below" :
                 geoinformations.size() + " geoinformation defined, add more using the add button below");
@@ -243,7 +250,45 @@ public class ProductViewImpl extends Composite implements ProductView {
 
     @UiHandler("addGeoinformation")
     void addGeoInformation(ClickEvent clickEvent) {
-        addFeatureDescription(new FeatureDescription());
+        addGeoinformation(new FeatureDescription());
+    }
+
+    @Override
+    public void setPerformances(List<PerformanceDescription> performanceDescriptions) {
+        this.performances.clear();
+        if(performanceDescriptions != null) {
+            for(PerformanceDescription performanceDescription : performanceDescriptions) {
+                addPerformance(performanceDescription);
+            }
+        }
+        updatePerformanceMessage();
+    }
+
+    private void addPerformance(PerformanceDescription performanceDescription) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        this.performances.add(materialColumn);
+        PerformanceWidget performanceWidget = new PerformanceWidget(performanceDescription);
+        materialColumn.add(performanceWidget);
+    }
+
+    private void updatePerformanceMessage() {
+        List<PerformanceDescription> performanceDescriptions = getPerformances();
+        performanceMessage.setText(performanceDescriptions.size() == 0 ? "No performances provided, add new performance criteria using the button below" :
+                performanceDescriptions.size() + " performances defined, add more using the add button below");
+    }
+
+    @Override
+    public List<PerformanceDescription> getPerformances() {
+        List<PerformanceDescription> performanceDescriptions = new ArrayList<PerformanceDescription>();
+        for(int index = 0; index < performances.getWidgetCount(); index++) {
+            performanceDescriptions.add(((PerformanceWidget) ((MaterialColumn) performances.getWidget(index)).getWidget(0)).getPerformanceDescription());
+        }
+        return performanceDescriptions;
+    }
+
+    @UiHandler("addPerformance")
+    void addPerformance(ClickEvent clickEvent) {
+        addPerformance(new PerformanceDescription());
     }
 
     @Override

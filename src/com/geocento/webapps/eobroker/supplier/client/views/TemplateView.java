@@ -28,6 +28,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 
@@ -98,6 +99,12 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLabelIcon companyImage;
     @UiField
     MaterialLabel companyName;
+    @UiField
+    MaterialLink settings;
+    @UiField
+    MaterialLink successStories;
+    @UiField
+    MaterialLink testimonials;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -125,12 +132,18 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         datasets.setIconType(CategoryUtils.getIconType(Category.productdatasets));
         software.setIconType(CategoryUtils.getIconType(Category.software));
         projects.setIconType(CategoryUtils.getIconType(Category.project));
+        testimonials.setIconType(IconType.VERIFIED_USER);
+        successStories.setIconType(IconType.SENTIMENT_VERY_SATISFIED);
+        settings.setIconType(IconType.SETTINGS);
 
         setLink(company, new CompanyPlace());
         setLink(services, new ProductServicesPlace());
         setLink(datasets, new ProductDatasetsPlace());
         setLink(software, new SoftwaresPlace());
         setLink(projects, new ProjectsPlace());
+        setLink(testimonials, new TestimonialsPlace());
+        setLink(successStories, new SuccessStoriesPlace());
+        setLink(settings, new SettingsPlace());
 
         onResize(null);
     }
@@ -165,31 +178,40 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         link.setHref("#" + PlaceHistoryHelper.convertPlace(place));
     }
 
-    public void setPlace(Category category) {
+    public void setPlace(String place) {
         for(Widget widget : links) {
             widget.removeStyleName(style.selected());
             if(widget instanceof MaterialLink) {
                 ((MaterialLink) widget).setTextColor("none");
             }
         }
-        if(category == null) {
+        if(place == null) {
             return;
         }
-        switch (category) {
-            case companies:
+        switch (place) {
+            case "companies":
                 company.addStyleName(style.selected());
                 break;
-            case productservices:
+            case "productservices":
                 services.addStyleName(style.selected());
                 break;
-            case productdatasets:
+            case "productdatasets":
                 datasets.addStyleName(style.selected());
                 break;
-            case software:
+            case "software":
                 software.addStyleName(style.selected());
                 break;
-            case project:
+            case "project":
                 projects.addStyleName(style.selected());
+                break;
+            case "testimonials":
+                testimonials.addStyleName(style.selected());
+                break;
+            case "stories":
+                successStories.addStyleName(style.selected());
+                break;
+            case "settings":
+                settings.addStyleName(style.selected());
                 break;
         }
     }

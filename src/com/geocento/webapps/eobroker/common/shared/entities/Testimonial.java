@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by thomas on 13/03/2017.
@@ -19,6 +20,9 @@ public class Testimonial {
 
     @Column(length = 1000)
     String testimonial;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date creationDate;
 
     public Testimonial() {
     }
@@ -53,5 +57,13 @@ public class Testimonial {
 
     public void setTestimonial(String testimonial) {
         this.testimonial = testimonial;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

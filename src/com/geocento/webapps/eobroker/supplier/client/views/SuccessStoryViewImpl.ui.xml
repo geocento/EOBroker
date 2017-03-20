@@ -1,0 +1,94 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:c="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
+             xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
+        >
+    <ui:style>
+        .buttonsPanel {
+            padding: 20px 0px;
+        }
+
+        .mapContainer {
+            margin: 20px 0px;
+        }
+
+        .subtitle {
+            display: block;
+            margin: 20px 0px;
+        }
+
+        .sectionPanel {
+            margin: 20px 0px 20px 30px;
+            padding: 10px 10px 10px 20px;
+            border-left: 1px solid #aaa;
+        }
+
+        .product {
+            height: 60px;
+            line-height: 60px;
+            margin-bottom: 20px;
+        }
+
+        .productsPanel, .consortiumPanel {
+            padding: 20px;
+            background: #E9E9E9;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
+    <views:TemplateView titleText="Success story" ui:field="template">
+        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Customer" textColor="black" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <widgets:CompanyTextBox addStyleNames="{style.product}" ui:field="customer"></widgets:CompanyTextBox>
+                    <design:MaterialPanel marginTop="20">
+                        <design:MaterialButton text="Get Endorsement" float="RIGHT"></design:MaterialButton>
+                        <design:MaterialLabel>The customer hasn't endorsed this story</design:MaterialLabel>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Date (only month and year count)" textColor="black" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialDatePicker placeholder="Month and year" ui:field="date"></design:MaterialDatePicker>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Offering used" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.productsPanel}">
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Partners" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.consortiumPanel}">
+                    <design:MaterialRow ui:field="consortium">
+                    </design:MaterialRow>
+                    <design:MaterialLabel paddingTop="20" paddingBottom="20" text="Add partner"></design:MaterialLabel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+    </views:TemplateView>
+</ui:UiBinder>

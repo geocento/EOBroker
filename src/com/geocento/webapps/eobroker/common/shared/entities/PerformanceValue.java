@@ -15,8 +15,11 @@ public class PerformanceValue {
     @ManyToOne
     PerformanceDescription performanceDescription;
 
-    @Column(length = 1000)
-    Double value;
+    Double minValue;
+    Double maxValue;
+
+    @Column
+    String comment;
 
     public PerformanceValue() {
     }
@@ -37,11 +40,27 @@ public class PerformanceValue {
         this.performanceDescription = performanceDescription;
     }
 
-    public Double getValue() {
-        return value;
+    public Double getMinValue() {
+        return minValue;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setMinValue(Double minValue) {
+        this.minValue = minValue;
+    }
+
+    public Double getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(Double maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

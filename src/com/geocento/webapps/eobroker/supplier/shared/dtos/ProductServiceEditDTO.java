@@ -1,8 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 
 import java.util.List;
 
@@ -25,6 +23,12 @@ public class ProductServiceEditDTO {
     String apiURL;
     private List<DatasetAccess> samples;
     private List<AccessType> selectedDataAccessTypes;
+    private List<PerformanceDescription> performances;
+    private List<PerformanceValue> providedPerformances;
+    private String performancesComment;
+    private String geoinformationComment;
+    private String disseminationComment;
+    private String timeToDelivery;
 
     public ProductServiceEditDTO() {
     }
@@ -139,5 +143,53 @@ public class ProductServiceEditDTO {
 
     public void setSelectedDataAccessTypes(List<AccessType> selectedDataAccessTypes) {
         this.selectedDataAccessTypes = selectedDataAccessTypes;
+    }
+
+    public void setPerformances(List<PerformanceDescription> performances) {
+        this.performances = performances;
+    }
+
+    public List<PerformanceDescription> getPerformances() {
+        return performances;
+    }
+
+    public void setProvidedPerformances(List<PerformanceValue> providedPerformances) {
+        this.providedPerformances = providedPerformances;
+    }
+
+    public List<PerformanceValue> getProvidedPerformances() {
+        return providedPerformances;
+    }
+
+    public void setPerformancesComment(String performancesComment) {
+        this.performancesComment = performancesComment;
+    }
+
+    public String getPerformancesComment() {
+        return performancesComment;
+    }
+
+    public void setGeoinformationComment(String geoinformationComment) {
+        this.geoinformationComment = geoinformationComment;
+    }
+
+    public String getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    public String getDisseminationComment() {
+        return disseminationComment;
+    }
+
+    public void setDisseminationComment(String disseminationComment) {
+        this.disseminationComment = disseminationComment;
+    }
+
+    public String getTimeToDelivery() {
+        return timeToDelivery;
+    }
+
+    public void setTimeToDelivery(String timeToDelivery) {
+        this.timeToDelivery = timeToDelivery;
     }
 }

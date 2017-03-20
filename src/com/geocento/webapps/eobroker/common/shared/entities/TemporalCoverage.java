@@ -15,10 +15,10 @@ public class TemporalCoverage {
     @Temporal(TemporalType.TIMESTAMP)
     Date stopDate;
 
-    Integer refreshRate;
+    Boolean refreshed;
 
-    @Enumerated(EnumType.STRING)
-    DATE_UNIT dateUnit;
+    @Column(length = 100)
+    String refreshRateDescription;
 
     public TemporalCoverage() {
     }
@@ -39,19 +39,19 @@ public class TemporalCoverage {
         this.stopDate = stopDate;
     }
 
-    public Integer getRefreshRate() {
-        return refreshRate;
+    public Boolean getRefreshed() {
+        return refreshed;
     }
 
-    public void setRefreshRate(Integer refreshRate) {
-        this.refreshRate = refreshRate;
+    public void setRefreshed(Boolean refreshed) {
+        this.refreshed = refreshed;
     }
 
-    public DATE_UNIT getDateUnit() {
-        return dateUnit;
+    public String getRefreshRateDescription() {
+        return refreshRateDescription;
     }
 
-    public void setDateUnit(DATE_UNIT dateUnit) {
-        this.dateUnit = dateUnit;
+    public void setRefreshRateDescription(String refreshRateDescription) {
+        this.refreshRateDescription = refreshRateDescription;
     }
 }

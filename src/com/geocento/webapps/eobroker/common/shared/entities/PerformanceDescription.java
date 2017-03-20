@@ -12,11 +12,14 @@ public class PerformanceDescription {
     @GeneratedValue
     Long id;
 
-    @Column(length = 1000)
+    @Column(length = 100)
     String name;
 
     @Column(length = 1000)
     String description;
+
+    @Column(length = 100)
+    String unit;
 
     public PerformanceDescription() {
     }
@@ -43,5 +46,13 @@ public class PerformanceDescription {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

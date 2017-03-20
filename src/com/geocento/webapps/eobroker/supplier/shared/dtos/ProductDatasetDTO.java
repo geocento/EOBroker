@@ -1,8 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.ServiceType;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 import java.util.List;
@@ -26,6 +24,12 @@ public class ProductDatasetDTO {
     List<DatasetAccess> samples;
     List<FeatureDescription> productFeatures;
     List<Long> selectedFeatures;
+    List<PerformanceDescription> performances;
+    List<PerformanceValue> providedPerformances;
+    String performancesComment;
+    String geoinformationComment;
+    private TemporalCoverage temporalCoverage;
+    private String temporalCoverageComment;
 
     public ProductDatasetDTO() {
     }
@@ -140,5 +144,53 @@ public class ProductDatasetDTO {
 
     public void setSelectedFeatures(List<Long> selectedFeatures) {
         this.selectedFeatures = selectedFeatures;
+    }
+
+    public List<PerformanceDescription> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(List<PerformanceDescription> performances) {
+        this.performances = performances;
+    }
+
+    public List<PerformanceValue> getProvidedPerformances() {
+        return providedPerformances;
+    }
+
+    public void setProvidedPerformances(List<PerformanceValue> providedPerformances) {
+        this.providedPerformances = providedPerformances;
+    }
+
+    public String getPerformancesComment() {
+        return performancesComment;
+    }
+
+    public void setPerformancesComment(String performancesComment) {
+        this.performancesComment = performancesComment;
+    }
+
+    public String getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    public void setGeoinformationComment(String geoinformationComment) {
+        this.geoinformationComment = geoinformationComment;
+    }
+
+    public void setTemporalCoverage(TemporalCoverage temporalCoverage) {
+        this.temporalCoverage = temporalCoverage;
+    }
+
+    public TemporalCoverage getTemporalCoverage() {
+        return temporalCoverage;
+    }
+
+    public void setTemporalCoverageComment(String temporalCoverageComment) {
+        this.temporalCoverageComment = temporalCoverageComment;
+    }
+
+    public String getTemporalCoverageComment() {
+        return temporalCoverageComment;
     }
 }

@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +27,12 @@ public interface ProjectView extends IsWidget {
     void setIconUrl(String iconURL);
 
     HasText getDescription();
+
+    void setTimeFrame(Date start, Date stop);
+
+    Date getTimeFrameFrom();
+
+    Date getTimeFrameUntil();
 
     String getFullDescription();
 

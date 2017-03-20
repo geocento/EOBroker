@@ -3,6 +3,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
+             xmlns:forms="urn:import:com.geocento.webapps.eobroker.common.client.widgets.forms"
         >
     <ui:style>
         .panel header {
@@ -67,6 +68,11 @@
             -webkit-box-orient: vertical;
         }
 
+        .settings {
+            margin: 20px 0px;
+            font-size: 0.8em;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Dashboard" ui:field="template">
@@ -125,6 +131,32 @@
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="datasets">
                 </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="testimonialsPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Request testimonial" ui:field="requestTestimonial"></design:MaterialButton>
+                    <design:MaterialTitle title="Your testimonials"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="testimonials">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="successStoriesPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new success story" ui:field="addSuccessStory"></design:MaterialButton>
+                    <design:MaterialTitle title="Your success stories"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="successStories">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="settingsPanel">
+                <g:HTMLPanel>
+                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Save settings" ui:field="saveSettings"></design:MaterialButton>
+                    <design:MaterialTitle title="Your company settings"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialPanel addStyleNames="{style.settings}">
+                    <forms:FormCreator ui:field="settings">
+                    </forms:FormCreator>
+                </design:MaterialPanel>
             </design:MaterialPanel>
         </design:MaterialPanel>
     </views:TemplateView>

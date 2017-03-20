@@ -14,9 +14,6 @@ public class CompanyHelper {
         companyDTO.setIconURL(company.getIconURL());
         companyDTO.setName(company.getName());
         companyDTO.setDescription(company.getDescription());
-/*
-        companyDTO.setFullDescription(company.getFullDescription());
-*/
         companyDTO.setContactEmail(company.getContactEmail());
         companyDTO.setWebsite(company.getWebsite());
         return companyDTO;
@@ -25,6 +22,9 @@ public class CompanyHelper {
     public static CompanyDTO createFullCompanyDTO(Company company) {
         CompanyDTO companyDTO = createCompanyDTO(company);
         companyDTO.setFullDescription(company.getFullDescription());
+        companyDTO.setAddress(company.getAddress());
+        companyDTO.setCountryCode(company.getCountryCode());
+        companyDTO.setAwards(company.getAwards());
         return companyDTO;
     }
 }

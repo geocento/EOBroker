@@ -1,5 +1,9 @@
 package com.geocento.webapps.eobroker.common.shared.entities.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE;
+
+import java.util.List;
+
 /**
  * Created by thomas on 07/06/2016.
  */
@@ -12,6 +16,10 @@ public class CompanyDTO {
     String contactEmail;
     String fullDescription;
     String website;
+    String address;
+    String countryCode;
+    COMPANY_SIZE companySize;
+    List<String> awards;
 
     public CompanyDTO() {
     }
@@ -70,5 +78,37 @@ public class CompanyDTO {
 
     public String getWebsite() {
         return website;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public COMPANY_SIZE getCompanySize() {
+        return companySize;
+    }
+
+    public void setCompanySize(COMPANY_SIZE companySize) {
+        this.companySize = companySize;
+    }
+
+    public List<String> getAwards() {
+        return awards;
+    }
+
+    public void setAwards(List<String> awards) {
+        this.awards = awards;
     }
 }

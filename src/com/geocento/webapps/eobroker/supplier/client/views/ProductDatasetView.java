@@ -1,8 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.ServiceType;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.Callback;
@@ -65,7 +63,23 @@ public interface ProductDatasetView extends IsWidget {
 
     List<DatasetAccess> getSamples();
 
+    HasText getGeoinformationComment();
+
+    List<PerformanceValue> getSelectedPerformances();
+
+    void setProductPerformances(List<PerformanceDescription> performanceDescriptions);
+
+    void setProvidedPerformances(List<PerformanceValue> performanceValues);
+
+    HasText getPerformancesComment();
+
     void setSampleProductDatasetId(Long datasetId);
+
+    void setTemporalCoverage(TemporalCoverage temporalCoverage);
+
+    TemporalCoverage getTemporalCoverage();
+
+    HasText getTemporalCoverageComment();
 
     public interface Presenter {
         void productChanged();

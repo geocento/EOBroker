@@ -2,7 +2,6 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyRoleWidget;
@@ -26,6 +25,7 @@ import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.ui.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,6 +69,10 @@ public class ProjectViewImpl extends Composite implements ProjectView {
     ProductTextBox product;
     @UiField
     MaterialTextBox productPitch;
+    @UiField
+    MaterialDatePicker from;
+    @UiField
+    MaterialDatePicker until;
 
     public ProjectViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -76,7 +80,7 @@ public class ProjectViewImpl extends Composite implements ProjectView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        template.setPlace(Category.project);
+        template.setPlace("project");
     }
 
     @Override
@@ -117,6 +121,22 @@ public class ProjectViewImpl extends Composite implements ProjectView {
     @Override
     public HasText getDescription() {
         return description;
+    }
+
+    @Override
+    public void setTimeFrame(Date start, Date stop) {
+        from.setDate(start);
+        until.setDate(stop);
+    }
+
+    @Override
+    public Date getTimeFrameFrom() {
+        return from.getDate();
+    }
+
+    @Override
+    public Date getTimeFrameUntil() {
+        return until.getDate();
     }
 
     @Override
@@ -222,8 +242,8 @@ public class ProjectViewImpl extends Composite implements ProjectView {
 
     private void addCompanyRole(CompanyRoleDTO companyRoleDTO) {
         // make sure we remove the text before
-        if(getSelectedProducts().size() == 0) {
-            products.clear();
+        if(getConsortium().size() == 0) {
+            consortium.clear();
         }
         final CompanyRoleWidget companyRoleWidget = new CompanyRoleWidget(companyRoleDTO);
         companyRoleWidget.getRemove().addClickHandler(new ClickHandler() {

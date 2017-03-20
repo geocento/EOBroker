@@ -1,8 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.Callback;
@@ -50,6 +48,20 @@ public interface ProductServiceView extends IsWidget {
     void setProductGeoinformation(List<FeatureDescription> featureDescriptions);
 
     void setSelectedGeoinformation(List<FeatureDescription> featureDescriptions);
+
+    HasText getGeoinformationComment();
+
+    List<PerformanceValue> getSelectedPerformances();
+
+    void setProductPerformances(List<PerformanceDescription> performanceDescriptions);
+
+    void setProvidedPerformances(List<PerformanceValue> performanceValues);
+
+    HasText getPerformancesComment();
+
+    HasText getDeliveryTime();
+
+    HasText getDisseminationComment();
 
     void setExtent(AoIDTO extent);
 

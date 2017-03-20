@@ -59,21 +59,76 @@
             margin: 20px 0px;
         }
 
+        .sectionPanel {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid grey;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin: 20px 0px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Company Profile" ui:field="template">
+        <design:MaterialLink float="RIGHT" iconType="EXPLORE" ui:field="viewClient"></design:MaterialLink>
         <design:MaterialTitle title="Edit your company's profile" ui:field="title"></design:MaterialTitle>
         <design:MaterialRow>
-            <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
-            <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-            <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
-            <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
-            <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
-            <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="black" addStyleNames="{style.subtitle}"></design:MaterialLink>
-            <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
-            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-            </g:HTMLPanel>
+            <design:MaterialColumn grid="s12">
+                <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="black" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Address" iconType="LOCATION_CITY" ui:field="address"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <c:CountryEditor placeholder="Country" ui:field="country"></c:CountryEditor>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialListBox placeholder="Company size" ui:field="companySize"></design:MaterialListBox>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Awards" textColor="black" iconType="STAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="awardsMessage"></design:MaterialLabel>
+                    <design:MaterialRow ui:field="awards"></design:MaterialRow>
+                    <design:MaterialPanel>
+                        <design:MaterialButton text="Add award" ui:field="addAward"></design:MaterialButton>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn visible="false" grid="s12">
+                <design:MaterialLink text="Testimonials" textColor="black" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="testimonialsMessage"></design:MaterialLabel>
+                    <design:MaterialRow ui:field="testimonials"></design:MaterialRow>
+                    <design:MaterialPanel>
+                        <design:MaterialButton text="Request testimonial" ui:field="requestTestimonial"></design:MaterialButton>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
         </design:MaterialRow>
     </views:TemplateView>
 </ui:UiBinder>

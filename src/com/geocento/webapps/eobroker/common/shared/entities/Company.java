@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.common.shared.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,9 @@ public class Company {
     @Column(length = 1000)
     private String website;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    Date startedIn;
+
     @Column(length = 1000)
     String address;
 
@@ -45,8 +49,12 @@ public class Company {
     @ElementCollection
     List<String> awards;
 
+    // TODO - check if we need testimonials if we have success stories
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
     List<Testimonial> testimonials;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "supplier")
+    List<SuccessStory> successStories;
 
     @OneToOne
     SupplierSettings settings;
@@ -126,6 +134,14 @@ public class Company {
         this.website = website;
     }
 
+    public Date getStartedIn() {
+        return startedIn;
+    }
+
+    public void setStartedIn(Date startedIn) {
+        this.startedIn = startedIn;
+    }
+
     public String getAddress() {
         return address;
     }
@@ -164,6 +180,14 @@ public class Company {
 
     public void setTestimonials(List<Testimonial> testimonials) {
         this.testimonials = testimonials;
+    }
+
+    public List<SuccessStory> getSuccessStories() {
+        return successStories;
+    }
+
+    public void setSuccessStories(List<SuccessStory> successStories) {
+        this.successStories = successStories;
     }
 
     public SupplierSettings getSettings() {

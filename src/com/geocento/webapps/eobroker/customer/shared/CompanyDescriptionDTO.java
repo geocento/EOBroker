@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 import java.util.List;
@@ -16,11 +17,16 @@ public class CompanyDescriptionDTO {
     String contactEmail;
     String fullDescription;
     String website;
+    String address;
+    String countryCode;
+    COMPANY_SIZE companySize;
+    List<String> awards;
     List<ProductServiceDTO> productServices;
     List<ProductDatasetDTO> productDatasets;
     List<SoftwareDTO> software;
     List<ProjectDTO> project;
     private List<CompanyDTO> suggestedCompanies;
+    private List<TestimonialDTO> testimonials;
 
     public CompanyDescriptionDTO() {
     }
@@ -81,6 +87,38 @@ public class CompanyDescriptionDTO {
         this.website = website;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public COMPANY_SIZE getCompanySize() {
+        return companySize;
+    }
+
+    public void setCompanySize(COMPANY_SIZE companySize) {
+        this.companySize = companySize;
+    }
+
+    public List<String> getAwards() {
+        return awards;
+    }
+
+    public void setAwards(List<String> awards) {
+        this.awards = awards;
+    }
+
     public List<ProductServiceDTO> getProductServices() {
         return productServices;
     }
@@ -119,5 +157,13 @@ public class CompanyDescriptionDTO {
 
     public void setSuggestedCompanies(List<CompanyDTO> suggestedCompanies) {
         this.suggestedCompanies = suggestedCompanies;
+    }
+
+    public void setTestimonials(List<TestimonialDTO> testimonials) {
+        this.testimonials = testimonials;
+    }
+
+    public List<TestimonialDTO> getTestimonials() {
+        return testimonials;
     }
 }

@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.Testimonial;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
@@ -14,7 +15,6 @@ import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
-import it.geosolutions.geoserver.rest.HTTPUtils;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -824,6 +824,20 @@ public class AssetsResource implements AssetsService {
             companyDTO.setIconURL(company.getIconURL());
             companyDTO.setContactEmail(company.getContactEmail());
             companyDTO.setWebsite(company.getWebsite());
+            companyDTO.setAddress(company.getAddress());
+            companyDTO.setCountryCode(company.getCountryCode());
+            companyDTO.setAwards(company.getAwards());
+            companyDTO.setTestimonials(ListUtil.mutate(company.getTestimonials(), new ListUtil.Mutate<Testimonial, TestimonialDTO>() {
+                        @Override
+                        public TestimonialDTO mutate(Testimonial testimonial) {
+                            TestimonialDTO testimonialDTO = new TestimonialDTO();
+                            testimonialDTO.setId(testimonial.getId());
+                            testimonialDTO.setFromUser(UserHelper.createUserDTO(testimonial.getFromUser()));
+                            testimonialDTO.setTestimonial(testimonial.getTestimonial());
+                            testimonialDTO.setCreationDate(testimonial.getCreationDate());
+                            return testimonialDTO;
+                        }
+                    }));
             companyDTO.setProductServices(ListUtil.mutate(company.getServices(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
                 @Override
                 public ProductServiceDTO mutate(ProductService productService) {

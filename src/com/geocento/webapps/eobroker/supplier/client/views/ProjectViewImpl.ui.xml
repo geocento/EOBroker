@@ -21,7 +21,7 @@
         }
 
         .sectionPanel {
-            margin: 20px 0px;
+            margin: 20px 0px 20px 30px;
             padding: 10px;
             background: white;
         }
@@ -42,34 +42,57 @@
     <views:TemplateView titleText="Project" ui:field="template">
         <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
         <design:MaterialRow>
-            <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
-            <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
-            <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
-            <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
-            <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
-            <design:MaterialLink text="Project supported products" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-            <design:MaterialPanel addStyleNames="{style.productsPanel}">
-                <design:MaterialRow ui:field="products">
-                </design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Project dates" textColor="black" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
-                    <design:MaterialTextBox margin="10" placeholder="Provide a pitch" ui:field="productPitch"></design:MaterialTextBox>
-                    <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
+                    <design:MaterialDatePicker placeholder="From" ui:field="from"></design:MaterialDatePicker>
+                    <design:MaterialDatePicker placeholder="Until" ui:field="until"></design:MaterialDatePicker>
                 </design:MaterialPanel>
-            </design:MaterialPanel>
-            <design:MaterialLink text="Project consortium" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
-            <design:MaterialPanel addStyleNames="{style.consortiumPanel}">
-                <design:MaterialRow ui:field="consortium">
-                </design:MaterialRow>
-                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <widgets:CompanyTextBox addStyleNames="{style.product}" ui:field="company"></widgets:CompanyTextBox>
-                    <design:MaterialTextBox margin="10" placeholder="Specify a role" ui:field="companyRole"></design:MaterialTextBox>
-                    <design:MaterialButton text="Add company" ui:field="addCompany"></design:MaterialButton>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Project supported products" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.productsPanel}">
+                    <design:MaterialRow ui:field="products">
+                    </design:MaterialRow>
+                    <design:MaterialLabel paddingTop="20" paddingBottom="20" text="Add relevant product to the R&amp;D activity of the project"></design:MaterialLabel>
+                    <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                        <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
+                        <design:MaterialTextBox margin="10" placeholder="Provide a pitch" ui:field="productPitch"></design:MaterialTextBox>
+                        <design:MaterialButton text="Add product" ui:field="addProduct"></design:MaterialButton>
+                    </design:MaterialPanel>
                 </design:MaterialPanel>
-            </design:MaterialPanel>
-            <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
-            </g:HTMLPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Project consortium" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.consortiumPanel}">
+                    <design:MaterialRow ui:field="consortium">
+                    </design:MaterialRow>
+                    <design:MaterialLabel paddingTop="20" paddingBottom="20" text="Add company to consortium"></design:MaterialLabel>
+                    <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                        <widgets:CompanyTextBox addStyleNames="{style.product}" ui:field="company"></widgets:CompanyTextBox>
+                        <design:MaterialTextBox margin="10" placeholder="Specify a role" ui:field="companyRole"></design:MaterialTextBox>
+                        <design:MaterialButton text="Add company" ui:field="addCompany"></design:MaterialButton>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
         </design:MaterialRow>
     </views:TemplateView>
 </ui:UiBinder>

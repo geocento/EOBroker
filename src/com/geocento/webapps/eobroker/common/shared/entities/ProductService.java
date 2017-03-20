@@ -46,12 +46,15 @@ public class ProductService {
     @Column(length = 1000)
     String geoinformationComment;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "productservice_performances")
-    List<PerformanceDescription> performances;
+    List<PerformanceValue> performances;
 
     @Column(length = 1000)
     String performancesComment;
+
+    @Column(length = 1000)
+    String disseminationComment;
 
     @ManyToMany(fetch = FetchType.LAZY)
     List<Standard> applicableStandards;
@@ -183,11 +186,11 @@ public class ProductService {
         this.geoinformationComment = geoinformationComment;
     }
 
-    public List<PerformanceDescription> getPerformances() {
+    public List<PerformanceValue> getPerformances() {
         return performances;
     }
 
-    public void setPerformances(List<PerformanceDescription> performances) {
+    public void setPerformances(List<PerformanceValue> performances) {
         this.performances = performances;
     }
 
@@ -237,5 +240,13 @@ public class ProductService {
 
     public void setSelectedAccessTypes(List<AccessType> selectedAccessTypes) {
         this.selectedAccessTypes = selectedAccessTypes;
+    }
+
+    public String getDisseminationComment() {
+        return disseminationComment;
+    }
+
+    public void setDisseminationComment(String disseminationComment) {
+        this.disseminationComment = disseminationComment;
     }
 }

@@ -1,0 +1,32 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+        >
+    <ui:style>
+
+        .pitch, .uri {
+
+        }
+
+        .content {
+
+        }
+
+        .panel {
+            clear: both;
+        }
+
+    </ui:style>
+    <design:MaterialPanel backgroundColor="white" padding="20" margin="10">
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox length="100" placeholder="Name of the performance" marginBottom="10" ui:field="name"></design:MaterialTextBox>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox length="200" placeholder="Description of the performance" marginBottom="10" addStyleNames="{style.pitch}" ui:field="description"></design:MaterialTextBox>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Unit" ui:field="unit"></design:MaterialTextBox>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+    </design:MaterialPanel>
+</ui:UiBinder>

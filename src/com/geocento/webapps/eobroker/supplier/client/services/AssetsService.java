@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.services;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
@@ -141,7 +140,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/products/geoinformation/{id}")
     @Produces("application/json")
-    List<FeatureDescription> getProductGeoinformation(@PathParam("id") Long productId) throws RequestException;
+    ProductGeoinformation getProductGeoinformation(@PathParam("id") Long productId) throws RequestException;
 
     @GET
     @Path("/assets/companies/find/")
@@ -158,4 +157,31 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public List<String> getStyles() throws RequestException;
 
+    @GET
+    @Path("/assets/settings/")
+    @Produces("application/json")
+    SupplierSettingsDTO getSettings() throws RequestException;
+
+    @PUT
+    @Path("/assets/settings/")
+    void saveSettings(SupplierSettingsDTO supplierSettings) throws RequestException;
+
+    @GET
+    @Path("/assets/stories/")
+    @Produces("application/json")
+    List<SuccessStoryDTO> getSuccessStories() throws RequestException;
+
+    @GET
+    @Path("/assets/stories/{id}")
+    @Produces("application/json")
+    SuccessStoryEditDTO getSuccessStory(@PathParam("id") Long id) throws RequestException;
+
+    @POST
+    @Path("/assets/stories/")
+    Long updateSuccessStory(SuccessStoryEditDTO successStoryEditDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/testimonials/")
+    @Produces("application/json")
+    List<TestimonialDTO> getTestimonials() throws RequestException;
 }

@@ -17,6 +17,10 @@ import com.google.gwt.place.shared.WithTokenizers;
         SoftwaresPlace.Tokenizer.class,
         ProjectPlace.Tokenizer.class,
         ProjectsPlace.Tokenizer.class,
-        ConversationPlace.Tokenizer.class})
+        ConversationPlace.Tokenizer.class,
+        TestimonialsPlace.Tokenizer.class,
+        SuccessStoriesPlace.Tokenizer.class,
+        SuccessStoryPlace.Tokenizer.class,
+        SettingsPlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

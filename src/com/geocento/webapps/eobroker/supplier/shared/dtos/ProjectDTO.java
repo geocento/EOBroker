@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public class ProjectDTO {
     String website;
     String fullDescription;
     List<CompanyRoleDTO> consortium;
+    private Date until;
+    private Date from;
 
     public ProjectDTO() {
     }
@@ -90,5 +93,21 @@ public class ProjectDTO {
 
     public void setConsortium(List<CompanyRoleDTO> consortium) {
         this.consortium = consortium;
+    }
+
+    public Date getUntil() {
+        return until;
+    }
+
+    public void setUntil(Date until) {
+        this.until = until;
+    }
+
+    public Date getFrom() {
+        return from;
+    }
+
+    public void setFrom(Date from) {
+        this.from = from;
     }
 }

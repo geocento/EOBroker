@@ -41,6 +41,19 @@
         .samples {
         }
 
+        .timePeriod {
+
+        }
+
+        .timePeriod > * {
+            display: inline-block !important;
+        }
+
+        .comment {
+            font-style: italic;
+            font-size: 0.8em;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Off the shelf data" ui:field="template">
@@ -69,8 +82,30 @@
                 <design:MaterialLink text="Product implemented" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
-                    <design:MaterialLabel margin="10" text="Select geoinformation provided"></design:MaterialLabel>
-                    <design:MaterialPanel padding="10" ui:field="geoinformation"></design:MaterialPanel>
+                    <design:MaterialPanel ui:field="productPanel">
+                        <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                            <design:MaterialPanel ui:field="geoinformation"></design:MaterialPanel>
+                            <design:MaterialTextBox placeholder="Comment on geoinformation provided" ui:field="geoinformationComment"></design:MaterialTextBox>
+                        </design:MaterialPanel>
+                        <design:MaterialLabel margin="10" text="Provide performances"></design:MaterialLabel>
+                        <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                            <design:MaterialPanel ui:field="performances"></design:MaterialPanel>
+                            <design:MaterialTextBox placeholder="Comment on performances provided" ui:field="performancesComment"></design:MaterialTextBox>
+                        </design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Temporal coverage" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialPanel addStyleNames="{style.timePeriod}">
+                        <design:MaterialDatePicker placeholder="From" ui:field="from"></design:MaterialDatePicker>
+                        <design:MaterialCheckBox text="" ui:field="untilCheck"></design:MaterialCheckBox>
+                        <design:MaterialDatePicker placeholder="Until" ui:field="until"></design:MaterialDatePicker>
+                        <design:MaterialCheckBox text="Refreshed" ui:field="refreshed"></design:MaterialCheckBox>
+                        <design:MaterialTextBox placeholder="Describe refresh rate" length="100" ui:field="refreshRateDescription"></design:MaterialTextBox>
+                    </design:MaterialPanel>
+                    <design:MaterialTextBox placeholder="Comment on temporal coverage offered" ui:field="temporalCoverageComment"></design:MaterialTextBox>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
@@ -96,16 +131,22 @@
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="samples"></design:MaterialRow>
+                    <design:MaterialLabel paddingTop="20" paddingBottom="20" text="Add samples from your own servers or upload files to the EO Broker. Samples are an important way for the customer to understand the dataset is fit for their purpose."></design:MaterialLabel>
                     <design:MaterialRow addStyleNames="{style.samples}">
                         <design:MaterialColumn>
-                            <design:MaterialListBox marginRight="10" display="INLINE_BLOCK" ui:field="sampleAccessType"></design:MaterialListBox>
-                            <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
+                            <design:MaterialCard padding="20">
+                                <design:MaterialCardContent layoutPosition="RELATIVE">
+                                    <design:MaterialLabel marginBottom="20">Add a sample of your product hosted on an external server</design:MaterialLabel>
+                                    <design:MaterialListBox marginRight="10" display="INLINE_BLOCK" ui:field="sampleAccessType"></design:MaterialListBox>
+                                    <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
+                                </design:MaterialCardContent>
+                            </design:MaterialCard>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
                             <c:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
                                     <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
-                                        <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to server</design:MaterialLabel>
+                                        <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to the EO Broker samples server</design:MaterialLabel>
                                         <design:MaterialLabel textColor="grey" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
                                         <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white" ui:field="uploadSampleButton"></design:MaterialButton>
                                     </design:MaterialCardContent>

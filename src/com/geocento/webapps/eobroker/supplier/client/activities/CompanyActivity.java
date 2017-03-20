@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.CompanyView;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -69,6 +70,10 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                     companyView.getWebsite().setText(companyDTO.getWebsite());
                     companyView.setFullDescription(companyDTO.getFullDescription());
                     companyView.setIconUrl(companyDTO.getIconURL());
+                    companyView.getAddress().setText(companyDTO.getAddress());
+                    companyView.setCountryCode(companyDTO.getCountryCode());
+                    companyView.setCompanySize(companyDTO.getCompanySize());
+                    companyView.setAwards(companyDTO.getAwards());
                 }
 
             }).call(ServicesUtil.assetsService).getCompany();
@@ -91,6 +96,10 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                 companyDTO.setWebsite(companyView.getWebsite().getText());
                 companyDTO.setFullDescription(companyView.getFullDescription());
                 companyDTO.setIconURL(companyView.getIconUrl());
+                companyDTO.setAddress(companyView.getAddress().getText());
+                companyDTO.setCountryCode(companyView.getCountryCode());
+                companyDTO.setCompanySize(companyView.getCompanySize());
+                companyDTO.setAwards(companyView.getAwards());
                 try {
                     displayLoading("Saving company...");
                     REST.withCallback(new MethodCallback<Void>() {
@@ -111,6 +120,14 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                 } catch (RequestException e) {
                     e.printStackTrace();
                 }
+            }
+        }));
+
+        handlers.add(companyView.getViewClient().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // TODO - how do we get to use the place instead?
+                Window.open(GWT.getHostPageBaseURL() + "#fullview:companyid=" + companyDTO.getId(), "_fullview;", null);
             }
         }));
     }

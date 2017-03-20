@@ -2,6 +2,8 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.admin.client.views"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.admin.client.widgets"
+             xmlns:forms="urn:import:com.geocento.webapps.eobroker.common.client.widgets.forms"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.SettingsViewImpl.Style">
         .panel header {
@@ -70,8 +72,7 @@
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView link="settings" ui:field="template">
         <design:MaterialTitle title="Application Settings"></design:MaterialTitle>
-        <g:HTMLPanel addStyleNames="{style.services}" ui:field="settingsPanel">
-        </g:HTMLPanel>
+        <forms:FormCreator addStyleNames="{style.services}" ui:field="formCreator"></forms:FormCreator>
         <g:HTMLPanel>
             <design:MaterialButton text="Submit" ui:field="submit"/>
         </g:HTMLPanel>

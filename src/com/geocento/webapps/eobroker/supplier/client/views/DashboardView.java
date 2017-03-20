@@ -16,6 +16,10 @@ public interface DashboardView extends IsWidget {
 
     void displayServices(List<ProductServiceDTO> response);
 
+    void displayTestimonials(List<TestimonialDTO> testimonials);
+
+    HasClickHandlers getRequestTestimonial();
+
     void setCompany(CompanyDTO companyDTO);
 
     HasClickHandlers getAddService();
@@ -41,6 +45,16 @@ public interface DashboardView extends IsWidget {
     void displayProjects(List<ProjectDTO> projectDTOs);
 
     void displayMessage();
+
+    HasClickHandlers getSaveSettings();
+
+    SupplierSettingsDTO getSettings() throws Exception;
+
+    void displaySettings(SupplierSettingsDTO supplierSettings);
+
+    void displaySuccessStories(List<SuccessStoryDTO> successStoryDTOs);
+
+    HasClickHandlers getAddSuccessStory();
 
     public interface Presenter {
     }

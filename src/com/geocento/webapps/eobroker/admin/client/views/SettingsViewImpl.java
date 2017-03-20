@@ -1,22 +1,18 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
-import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
+import com.geocento.webapps.eobroker.common.client.widgets.forms.FormCreator;
 import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.*;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialLabel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,9 +40,9 @@ public class SettingsViewImpl extends Composite implements SettingsView {
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    HTMLPanel settingsPanel;
-    @UiField
     MaterialButton submit;
+    @UiField
+    FormCreator formCreator;
 
     private ApplicationSettings settings;
 
@@ -68,28 +64,41 @@ public class SettingsViewImpl extends Composite implements SettingsView {
     @Override
     public void setSettings(ApplicationSettings settings) {
         this.settings = settings;
-        settingsPanel.clear();
-        addTitle("Generic settings");
-        addTextEditor(settings.getApplicationName(), "Application Name", "The name for this application", 5, 100);
-        addTextEditor(settings.getAbout(), "About", "Add a link to the about broker URL", 5, 1000);
-        addTitle("Email settings");
-        addTextEditor(settings.getEmailServer(), "Server", "The email server", 5, 100);
-        addTextEditor(settings.getEmailFrom(), "From", "The from email address for the emails", 5, 100);
-        addTextEditor(settings.getEmailAccount(), "Account", "The account for the email", 5, 100);
-        addTextEditor(settings.getEmailPassword(), "Password", "The password for the email account", 5, 100);
-        addIntegerEditor(settings.getEmailPort(), "Port", "The port for the email server");
-        addBooleanEditor(settings.isSmtps(), "SMTPS", "If the email server uses SMPTS");
-        addBooleanEditor(settings.isEnableTLS(), "Enable TLS", "If the email server uses TLS");
+        formCreator.clear();
+        formCreator.addTitle("Generic settings");
+        formCreator.addTextEditor(settings.getApplicationName(), "Application Name", "The name for this application", 5, 100);
+        formCreator.addTextEditor(settings.getAbout(), "About", "Add a link to the about broker URL", 5, 1000);
+        formCreator.addTextEditor(settings.getHelpLink(), "Help", "Link to the help page URL", 5, 1000);
+        formCreator.addIntegerEditor(settings.getMaxSampleSizeMB(), "Max Sample size (MB)", "Max size in MB for the samples");
+        formCreator.addTitle("Email settings");
+        formCreator.addTextEditor(settings.getEmailServer(), "Server", "The email server", 5, 100);
+        formCreator.addTextEditor(settings.getEmailFrom(), "From", "The from email address for the emails", 5, 100);
+        formCreator.addTextEditor(settings.getEmailAccount(), "Account", "The account for the email", 5, 100);
+        formCreator.addTextEditor(settings.getEmailPassword(), "Password", "The password for the email account", 5, 100);
+        formCreator.addIntegerEditor(settings.getEmailPort(), "Port", "The port for the email server");
+        formCreator.addBooleanEditor(settings.isSmtps(), "SMTPS", "If the email server uses SMPTS");
+        formCreator.addBooleanEditor(settings.isEnableTLS(), "Enable TLS", "If the email server uses TLS");
+        formCreator.addTitle("Geoserver parameters");
+        formCreator.addTextEditor(settings.getGeoserverOWS(), "OWS URL", "The URL for the Geoserver OWS service", 5, 100);
+        formCreator.addTextEditor(settings.getGeoserverRESTUri(), "REST URL", "The URL for the Geoserver REST API", 5, 100);
+        formCreator.addTextEditor(settings.getGeoserverUser(), "User", "The user name for the Geoserver REST API", 5, 100);
+        formCreator.addTextEditor(settings.getGeoserverPassword(), "Password", "The password for the Geoserver REST API", 5, 100);
+        formCreator.addTitle("Internal parameters");
+        formCreator.addTextEditor(settings.getDataDirectory(), "Data directory", "The path for the data directory on the local machine", 5, 100);
+        formCreator.addTextEditor(settings.getServerType(), "Server type", "The server type, whether local, staging or production", 5, 100);
+        formCreator.addTextEditor(settings.getWebsiteUrl(), "Website URL", "The website URL, used for links in emails", 5, 100);
     }
 
     @Override
     public ApplicationSettings getSettings() throws Exception {
         // update settings
-        List<FormElementValue> values = getFormElementValues();
+        List<FormElementValue> values = formCreator.getFormElementValues();
         int index = 0;
         // generic settings
         settings.setApplicationName(String.valueOf(values.get(index++).getValue()));
         settings.setAbout(String.valueOf(values.get(index++).getValue()));
+        settings.setHelpLink(String.valueOf(values.get(index++).getValue()));
+        settings.setMaxSampleSizeMB(Integer.valueOf(values.get(index++).getValue()));
         // email settings
         settings.setEmailServer(String.valueOf(values.get(index++).getValue()));
         settings.setEmailFrom(String.valueOf(values.get(index++).getValue()));
@@ -98,66 +107,17 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         settings.setEmailPort(Integer.valueOf(values.get(index++).getValue()));
         settings.setSmtps(Boolean.valueOf(values.get(index++).getValue()));
         settings.setEnableTLS(Boolean.valueOf(values.get(index++).getValue()));
+        // geoserver parameters
+        settings.setGeoserverOWS(String.valueOf(values.get(index++).getValue()));
+        settings.setGeoserverRESTUri(String.valueOf(values.get(index++).getValue()));
+        settings.setGeoserverUser(String.valueOf(values.get(index++).getValue()));
+        settings.setGeoserverPassword(String.valueOf(values.get(index++).getValue()));
+        // internal parameters
+        settings.setDataDirectory(String.valueOf(values.get(index++).getValue()));
+        settings.setServerType(String.valueOf(values.get(index++).getValue()));
+        settings.setWebsiteUrl(String.valueOf(values.get(index++).getValue()));
+
         return settings;
-    }
-
-    private void addTitle(String title) {
-        MaterialLabel materialLabel = new MaterialLabel(title);
-        materialLabel.addStyleName(style.title());
-        settingsPanel.add(materialLabel);
-    }
-
-    private void addTextEditor(String value, String name, String description, int min, int max) {
-        TextFormElement textFormElement = new TextFormElement();
-        textFormElement.setName(name);
-        textFormElement.setDescription(description);
-        textFormElement.setMin(min);
-        textFormElement.setMax(max);
-        ElementEditor editor = createEditor(textFormElement);
-        // TODO - check this is OK
-        if(value != null) {
-            editor.setFormElementValue(value.toString());
-        }
-    }
-
-    private void addIntegerEditor(Integer value, String name, String description) {
-        IntegerFormElement integerFormElement = new IntegerFormElement();
-        integerFormElement.setName(name);
-        integerFormElement.setDescription(description);
-        ElementEditor editor = createEditor(integerFormElement);
-        // TODO - check this is OK
-        if(value != null) {
-            editor.setFormElementValue(value.toString());
-        }
-    }
-
-    private void addBooleanEditor(Boolean value, String name, String description) {
-        BooleanFormElement booleanFormElement = new BooleanFormElement();
-        booleanFormElement.setName(name);
-        booleanFormElement.setDescription(description);
-        ElementEditor editor = createEditor(booleanFormElement);
-        // TODO - check this is OK
-        if(value != null) {
-            editor.setFormElementValue(value.toString());
-        }
-    }
-
-    private ElementEditor createEditor(FormElement formElement) {
-        ElementEditor editor = FormHelper.createEditor(formElement);
-        editor.addStyleName(style.editor());
-        settingsPanel.add(editor);
-        return editor;
-    }
-
-    public List<FormElementValue> getFormElementValues() throws Exception {
-        List<FormElementValue> formElementValues = new ArrayList<FormElementValue>();
-        for(int index = 0; index < settingsPanel.getWidgetCount(); index++) {
-            Widget widget = settingsPanel.getWidget(index);
-            if(widget instanceof ElementEditor) {
-                formElementValues.add(((ElementEditor) widget).getFormElementValue());
-            }
-        }
-        return formElementValues;
     }
 
     @Override

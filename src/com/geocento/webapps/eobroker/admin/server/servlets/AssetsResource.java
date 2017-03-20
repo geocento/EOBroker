@@ -94,6 +94,12 @@ public class AssetsResource implements AssetsService {
                     em.persist(featureDescription);
                 }
             }
+            product.setPerformances(productDTO.getPerformances());
+            for(PerformanceDescription performanceDescription : productDTO.getPerformances()) {
+                if(performanceDescription.getId() == null) {
+                    em.persist(performanceDescription);
+                }
+            }
             product.setFormFields(productDTO.getFormFields());
             for(FormElement formElement : product.getFormFields()) {
                 if(formElement.getId() == null) {
@@ -171,6 +177,8 @@ public class AssetsResource implements AssetsService {
             productDTO.setFormFields(product.getFormFields());
             productDTO.setApiFormFields(product.getApiFormFields());
             productDTO.setRecommendationRule(product.getRecommendationRule());
+            productDTO.setGeoinformation(product.getGeoinformation());
+            productDTO.setPerformances(product.getPerformances());
             return productDTO;
         } catch (Exception e) {
             throw new RequestException("Error");

@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.TemporalCoverage;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.ProductDatasetPlace;
@@ -10,6 +11,7 @@ import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductDatasetView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductGeoinformation;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -22,7 +24,6 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -105,9 +106,29 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         productDatasetView.setServiceType(productDatasetDTO.getServiceType());
         productDatasetView.setFullDescription(productDatasetDTO.getFullDescription());
         productDatasetView.setSelectedProduct(productDatasetDTO.getProduct());
+        if(productDatasetDTO.getProduct() != null) {
+            // add geoinformation
+            productDatasetView.setProductGeoinformation(productDatasetDTO.getProductFeatures());
+            productDatasetView.setSelectedGeoinformation(ListUtil.filterValues(productDatasetDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
+                @Override
+                public boolean isValue(FeatureDescription value) {
+                    return productDatasetDTO.getSelectedFeatures().contains(value.getId());
+                }
+            }));
+            productDatasetView.getGeoinformationComment().setText(productDatasetDTO.getGeoinformationComment());
+            // add performances
+            productDatasetView.setProductPerformances(productDatasetDTO.getPerformances());
+            productDatasetView.setProvidedPerformances(productDatasetDTO.getProvidedPerformances());
+            productDatasetView.getPerformancesComment().setText(productDatasetDTO.getPerformancesComment());
+        } else {
+            productDatasetView.setProductGeoinformation(null);
+        }
+        productDatasetView.setTemporalCoverage(productDatasetDTO.getTemporalCoverage() == null ? new TemporalCoverage() : productDatasetDTO.getTemporalCoverage());
+        productDatasetView.getTemporalCoverageComment().setText(productDatasetDTO.getTemporalCoverageComment());
         productDatasetView.setExtent(AoIUtil.fromWKT(productDatasetDTO.getExtent()));
         productDatasetView.setDataAccess(productDatasetDTO.getDatasetAccesses());
         productDatasetView.setSampleDataAccess(productDatasetDTO.getSamples());
+/*
         productDatasetView.setProductGeoinformation(productDatasetDTO.getProductFeatures());
         productDatasetView.setSelectedGeoinformation(ListUtil.filterValues(productDatasetDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
             @Override
@@ -115,6 +136,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 return productDatasetDTO.getSelectedFeatures().contains(value.getId());
             }
         }));
+*/
         productDatasetView.setSampleProductDatasetId(productDatasetDTO.getId());
     }
 
@@ -140,6 +162,11 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                         return featureDescription.getId();
                     }
                 }));
+                productDatasetDTO.setGeoinformationComment(productDatasetView.getGeoinformationComment().getText());
+                productDatasetDTO.setProvidedPerformances(productDatasetView.getSelectedPerformances());
+                productDatasetDTO.setPerformancesComment(productDatasetView.getPerformancesComment().getText());
+                productDatasetDTO.setTemporalCoverage(productDatasetView.getTemporalCoverage());
+                productDatasetDTO.setTemporalCoverageComment(productDatasetView.getTemporalCoverageComment().getText());
                 // do some checks
                 try {
                     if (productDatasetDTO.getName() == null || productDatasetDTO.getName().length() < 3) {
@@ -190,7 +217,28 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
     @Override
     public void productChanged() {
         displayLoading("Loading product geoinformation");
-        ProductDTO selectedProduct = productDatasetView.getSelectedProduct();
+        final ProductDTO selectedProduct = productDatasetView.getSelectedProduct();
+        try {
+            REST.withCallback(new MethodCallback<ProductGeoinformation>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideLoading();
+                    displayError("Could not load product geoinformation");
+                }
+
+                @Override
+                public void onSuccess(Method method, ProductGeoinformation productGeoinformation) {
+                    hideLoading();
+                    productDatasetView.setSelectedProduct(selectedProduct);
+                    productDatasetView.setProductGeoinformation(productGeoinformation.getFeatureDescriptions());
+                    productDatasetView.setProductPerformances(productGeoinformation.getPerformanceDescriptions());
+                }
+
+            }).call(ServicesUtil.assetsService).getProductGeoinformation(selectedProduct.getId());
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
+/*
         try {
             REST.withCallback(new MethodCallback<List<FeatureDescription>>() {
                 @Override
@@ -202,12 +250,15 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 @Override
                 public void onSuccess(Method method, List<FeatureDescription> featureDescriptions) {
                     hideLoading();
-                    productDatasetView.setProductGeoinformation(featureDescriptions);
+                    productServiceView.setSelectedProduct(selectedProduct);
+                    productServiceView.setProductGeoinformation(productGeoinformation.getFeatureDescriptions());
+                    productServiceView.setProductPerformances(productGeoinformation.getPerformanceDescriptions());
                 }
 
             }).call(ServicesUtil.assetsService).getProductGeoinformation(selectedProduct.getId());
         } catch (RequestException e) {
             e.printStackTrace();
         }
+*/
     }
 }

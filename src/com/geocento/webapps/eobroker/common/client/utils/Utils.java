@@ -45,4 +45,14 @@ public class Utils {
     public static String getImageMaybe(String imageUrl) {
         return imageUrl == null ? "./images/noImage.png" : imageUrl;
     }
+
+    public static <T extends Enum<T>> String[] enumNameToStringArray(T[] values) {
+        int i = 0;
+        String[] result = new String[values.length];
+        for (T value: values) {
+            result[i++] = value.name();
+        }
+        return result;
+    }
+
 }

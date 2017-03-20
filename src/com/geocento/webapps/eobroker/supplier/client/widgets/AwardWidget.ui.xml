@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <design:MaterialPanel>
+        <design:MaterialButton type="FLOATING" float="RIGHT" iconType="DELETE" ui:field="remove"/>
+        <design:MaterialTextBox marginRight="50" placeholder="The award name and year" ui:field="value"></design:MaterialTextBox>
+    </design:MaterialPanel>
+</ui:UiBinder>

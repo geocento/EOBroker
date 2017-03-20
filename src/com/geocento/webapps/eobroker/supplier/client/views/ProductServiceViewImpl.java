@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.PerformanceValueWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
@@ -97,6 +98,18 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     MaterialLabel uploadSampleTitle;
     @UiField
     MaterialLabel uploadSampleComment;
+    @UiField
+    MaterialPanel performances;
+    @UiField
+    MaterialTextBox geoinformationComment;
+    @UiField
+    MaterialTextBox performancesComment;
+    @UiField
+    MaterialPanel productPanel;
+    @UiField
+    MaterialTextBox disseminationComment;
+    @UiField
+    MaterialTextBox deliveryTime;
 
     public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -179,7 +192,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             dataAccess.add(materialCheckBox);
         }
 
-        template.setPlace(Category.productservices);
+        template.setPlace("productservices");
     }
 
     @Override
@@ -250,6 +263,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     @Override
     public void setSelectedProduct(ProductDTO productDTO) {
         product.setProduct(productDTO);
+        productPanel.setVisible(productDTO != null);
     }
 
     @Override
@@ -297,6 +311,73 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                 materialCheckBox.setValue(selectedFeatures.contains(((FeatureDescription) materialCheckBox.getObject()).getId()));
             }
         }
+    }
+
+    @Override
+    public HasText getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    @Override
+    public List<PerformanceValue> getSelectedPerformances() {
+        List<PerformanceValue> performanceValues = new ArrayList<PerformanceValue>();
+        for(int index = 0; index < performances.getWidgetCount(); index++) {
+            Widget widget = performances.getWidget(index);
+            if(widget instanceof PerformanceValueWidget) {
+                PerformanceValueWidget performanceValueWidget = (PerformanceValueWidget) widget;
+                PerformanceValue performanceValue = performanceValueWidget.getPerformanceValue();
+                if(performanceValue != null) {
+                    performanceValues.add(performanceValue);
+                }
+            }
+        }
+        return performanceValues;
+    }
+
+    @Override
+    public void setProductPerformances(List<PerformanceDescription> performanceDescriptions) {
+        performances.clear();
+        if(performanceDescriptions == null || performanceDescriptions.size() == 0) {
+            performances.add(new MaterialLabel("No performance associated to this product"));
+        } else {
+            for (PerformanceDescription performanceDescription : performanceDescriptions) {
+                PerformanceValueWidget performanceValueWidget = new PerformanceValueWidget();
+                performanceValueWidget.setPerformanceDescription(performanceDescription);
+                performances.add(performanceValueWidget);
+            }
+        }
+    }
+
+    @Override
+    public void setProvidedPerformances(List<PerformanceValue> performanceValues) {
+        for(int index = 0; index < performances.getWidgetCount(); index++) {
+            Widget widget = performances.getWidget(index);
+            if(widget instanceof PerformanceValueWidget) {
+                final PerformanceValueWidget performanceValueWidget = (PerformanceValueWidget) widget;
+                PerformanceValue performanceValue = ListUtil.findValue(performanceValues, new ListUtil.CheckValue<PerformanceValue>() {
+                    @Override
+                    public boolean isValue(PerformanceValue value) {
+                        return value.getPerformanceDescription().getId().equals(performanceValueWidget.getPerformanceDescription().getId());
+                    }
+                });
+                performanceValueWidget.setPerformanceValue(performanceValue);
+            }
+        }
+    }
+
+    @Override
+    public HasText getPerformancesComment() {
+        return performancesComment;
+    }
+
+    @Override
+    public HasText getDisseminationComment() {
+        return disseminationComment;
+    }
+
+    @Override
+    public HasText getDeliveryTime() {
+        return deliveryTime;
     }
 
     @Override

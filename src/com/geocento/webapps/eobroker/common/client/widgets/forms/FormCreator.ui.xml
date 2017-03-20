@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.common.client.widgets.forms.FormCreator.Style">
+
+        .editor {
+            margin-left: 1em;
+        }
+
+        .title {
+            margin: 2em 0px;
+            font-size: 1.6em;
+        }
+
+    </ui:style>
+    <g:HTMLPanel ui:field="panel">
+
+    </g:HTMLPanel>
+</ui:UiBinder>

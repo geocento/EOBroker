@@ -35,6 +35,13 @@
             margin: 20px 0px;
         }
 
+        .subSection {
+            margin-left: 10px;
+            margin-bottom: 20px;
+            border-left: 1px solid #888;
+            padding-left: 10px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="Edit product" link="products" ui:field="template">
@@ -64,10 +71,18 @@
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialLink addStyleNames="{style.label}" text="Geoinformation provided" iconType="RSS_FEED"/>
-                    <design:MaterialPanel>
+                    <design:MaterialPanel addStyleNames="{style.subSection}">
                         <design:MaterialLabel addStyleNames="{style.message}" ui:field="geoinformationMessage"></design:MaterialLabel>
                         <design:MaterialRow ui:field="geoinformation"></design:MaterialRow>
                         <design:MaterialButton text="Add geoinformation" ui:field="addGeoinformation"></design:MaterialButton>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialLink addStyleNames="{style.label}" text="Performances" iconType="PIE_CHART"/>
+                    <design:MaterialPanel addStyleNames="{style.subSection}">
+                        <design:MaterialLabel addStyleNames="{style.message}" ui:field="performanceMessage"></design:MaterialLabel>
+                        <design:MaterialRow ui:field="performances"></design:MaterialRow>
+                        <design:MaterialButton text="Add performance" ui:field="addPerformance"></design:MaterialButton>
                     </design:MaterialPanel>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">

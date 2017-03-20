@@ -56,15 +56,18 @@ public class ProductDataset {
     @Column(length = 1000)
     String geoinformationComment;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "productdataset_performances")
-    List<PerformanceDescription> performances;
+    List<PerformanceValue> performances;
 
     @Column(length = 1000)
     String performancesComment;
 
     @Embedded
     TemporalCoverage temporalCoverage;
+
+    @Column(length = 1000)
+    String temporalCoverageComment;
 
     @ManyToMany(fetch = FetchType.LAZY)
     List<Standard> applicableStandards;
@@ -206,11 +209,11 @@ public class ProductDataset {
         this.geoinformationComment = geoinformationComment;
     }
 
-    public List<PerformanceDescription> getPerformances() {
+    public List<PerformanceValue> getPerformances() {
         return performances;
     }
 
-    public void setPerformances(List<PerformanceDescription> performances) {
+    public void setPerformances(List<PerformanceValue> performances) {
         this.performances = performances;
     }
 
@@ -236,5 +239,13 @@ public class ProductDataset {
 
     public void setTemporalCoverage(TemporalCoverage temporalCoverage) {
         this.temporalCoverage = temporalCoverage;
+    }
+
+    public String getTemporalCoverageComment() {
+        return temporalCoverageComment;
+    }
+
+    public void setTemporalCoverageComment(String temporalCoverageComment) {
+        this.temporalCoverageComment = temporalCoverageComment;
     }
 }

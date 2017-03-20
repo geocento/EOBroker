@@ -89,6 +89,7 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
         projectView.getName().setText(projectDTO.getName());
         projectView.setIconUrl(projectDTO.getImageUrl());
         projectView.getDescription().setText(projectDTO.getDescription());
+        projectView.setTimeFrame(projectDTO.getFrom(), projectDTO.getUntil());
         projectView.setFullDescription(projectDTO.getFullDescription());
         projectView.setSelectedProducts(projectDTO.getProducts());
         projectView.setConsortium(projectDTO.getConsortium());
@@ -104,6 +105,8 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
                 projectDTO.setName(projectView.getName().getText());
                 projectDTO.setImageUrl(projectView.getImageUrl());
                 projectDTO.setDescription(projectView.getDescription().getText());
+                projectDTO.setFrom(projectView.getTimeFrameFrom());
+                projectDTO.setUntil(projectView.getTimeFrameUntil());
                 projectDTO.setFullDescription(projectView.getFullDescription());
                 projectDTO.setProducts(projectView.getSelectedProducts());
                 projectDTO.setConsortium(projectView.getConsortium());

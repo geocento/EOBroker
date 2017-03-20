@@ -1,7 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.client.widgets.forms.FormCreator;
+import com.geocento.webapps.eobroker.common.shared.entities.NOTIFICATION_DELAY;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.*;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
@@ -69,6 +71,24 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialPanel datasetServicesPanel;
     @UiField
     MaterialPanel messagePanel;
+    @UiField
+    MaterialPanel settingsPanel;
+    @UiField
+    FormCreator settings;
+    @UiField
+    MaterialButton saveSettings;
+    @UiField
+    MaterialRow successStories;
+    @UiField
+    MaterialButton addSuccessStory;
+    @UiField
+    MaterialPanel testimonialsPanel;
+    @UiField
+    MaterialButton requestTestimonial;
+    @UiField
+    MaterialRow testimonials;
+    @UiField
+    MaterialPanel successStoriesPanel;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -85,7 +105,7 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public void displayServices(List<ProductServiceDTO> productServiceDTOs) {
         hideAll();
-        template.setPlace(Category.productservices);
+        template.setPlace("productservices");
         servicesPanel.setVisible(true);
         services.clear();
         if(productServiceDTOs == null || productServiceDTOs.size() == 0) {
@@ -121,7 +141,7 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public void displayProductDatasets(List<ProductDatasetDTO> productDatasetDTOs) {
         hideAll();
-        template.setPlace(Category.productdatasets);
+        template.setPlace("productdatasets");
         datasetsPanel.setVisible(true);
         productdatasets.clear();
         if(productDatasetDTOs == null || productDatasetDTOs.size() == 0) {
@@ -144,13 +164,16 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         datasetsPanel.setVisible(false);
         softwarePanel.setVisible(false);
         projectsPanel.setVisible(false);
+        testimonialsPanel.setVisible(false);
+        successStoriesPanel.setVisible(false);
+        settingsPanel.setVisible(false);
         datasetServicesPanel.setVisible(false);
     }
 
     @Override
     public void displaySoftwares(List<SoftwareDTO> softwareDTOs) {
         hideAll();
-        template.setPlace(Category.software);
+        template.setPlace("software");
         softwarePanel.setVisible(true);
         softwares.clear();
         if(softwareDTOs == null || softwareDTOs.size() == 0) {
@@ -169,7 +192,7 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public void displayProjects(List<ProjectDTO> projectDTOs) {
         hideAll();
-        template.setPlace(Category.project);
+        template.setPlace("project");
         projectsPanel.setVisible(true);
         projects.clear();
         if(projectDTOs == null || projectDTOs.size() == 0) {
@@ -192,6 +215,79 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         messagePanel.setVisible(true);
         messagePanel.clear();
         messagePanel.add(new MaterialTitle("Welcome to the supplier management interface", "Please use the navigation menus on the side to edit your company assets"));
+    }
+
+    @Override
+    public HasClickHandlers getSaveSettings() {
+        return saveSettings;
+    }
+
+    @Override
+    public SupplierSettingsDTO getSettings() throws Exception {
+        SupplierSettingsDTO supplierSettings = new SupplierSettingsDTO();
+        List<FormElementValue> formElementValues = settings.getFormElementValues();
+        int index = 0;
+        supplierSettings.setNotificationDelayMessages(NOTIFICATION_DELAY.valueOf(formElementValues.get(index++).getValue()));
+        supplierSettings.setNotificationDelayRequests(NOTIFICATION_DELAY.valueOf(formElementValues.get(index++).getValue()));
+        return supplierSettings;
+    }
+
+    @Override
+    public void displaySettings(SupplierSettingsDTO supplierSettings) {
+        hideAll();
+        template.setPlace("settings");
+        settingsPanel.setVisible(true);
+        settings.clear();
+        settings.addChoiceEnumEditor(NOTIFICATION_DELAY.values(), supplierSettings.getNotificationDelayMessages(), "Notifications on messages", "Set the frequency at which notifications on messages will be sent by email");
+        settings.addChoiceEnumEditor(NOTIFICATION_DELAY.values(), supplierSettings.getNotificationDelayRequests(), "Notifications on requests", "Set the frequency at which notifications on requests will be sent by email");
+    }
+
+    @Override
+    public void displaySuccessStories(List<SuccessStoryDTO> successStoryDTOs) {
+        hideAll();
+        template.setPlace("stories");
+        successStoriesPanel.setVisible(true);
+        successStories.clear();
+        if(successStoryDTOs == null || successStoryDTOs.size() == 0) {
+            successStories.add(new MaterialLabel("No success story, click on the button to add a new success story"));
+            return;
+        }
+        MaterialRow materialRow = new MaterialRow();
+        successStories.add(materialRow);
+        for(SuccessStoryDTO successStoryDTO : successStoryDTOs) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+            materialColumn.add(new SuccessStoryWidget(successStoryDTO));
+            materialRow.add(materialColumn);
+        }
+    }
+
+    @Override
+    public HasClickHandlers getAddSuccessStory() {
+        return addSuccessStory;
+    }
+
+    @Override
+    public void displayTestimonials(List<TestimonialDTO> testimonials) {
+        hideAll();
+        template.setPlace("testimonials");
+        testimonialsPanel.setVisible(true);
+        this.testimonials.clear();
+        if(testimonials == null || testimonials.size() == 0) {
+            this.testimonials.add(new MaterialLabel("No testimonials, request a testimonial using the request button"));
+            return;
+        }
+        MaterialRow materialRow = new MaterialRow();
+        this.testimonials.add(materialRow);
+        for(TestimonialDTO testimonialDTO : testimonials) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+            materialColumn.add(new TestimonialWidget(testimonialDTO));
+            materialRow.add(materialColumn);
+        }
+    }
+
+    @Override
+    public HasClickHandlers getRequestTestimonial() {
+        return requestTestimonial;
     }
 
     @Override

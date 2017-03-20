@@ -10,6 +10,8 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.PerformanceValueWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
@@ -31,7 +33,6 @@ import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
 import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
 import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
-import gwt.material.design.client.base.SearchObject;
 import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
@@ -63,7 +64,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    MaterialSearch product;
+    ProductTextBox product;
     @UiField
     MaterialTextArea description;
     @UiField
@@ -98,6 +99,26 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialLabel uploadSampleComment;
     @UiField
     MaterialButton uploadSampleButton;
+    @UiField
+    MaterialPanel performances;
+    @UiField
+    MaterialTextBox performancesComment;
+    @UiField
+    MaterialPanel productPanel;
+    @UiField
+    MaterialTextBox geoinformationComment;
+    @UiField
+    MaterialDatePicker from;
+    @UiField
+    MaterialCheckBox untilCheck;
+    @UiField
+    MaterialDatePicker until;
+    @UiField
+    MaterialCheckBox refreshed;
+    @UiField
+    MaterialTextBox refreshRateDescription;
+    @UiField
+    MaterialTextBox temporalCoverageComment;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -189,7 +210,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             }
         });
 
-        template.setPlace(Category.productdatasets);
+        template.setPlace("productdatasets");
     }
 
     @Override
@@ -259,8 +280,8 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
 
     @Override
     public void setSelectedProduct(ProductDTO productDTO) {
-        product.setSelectedObject(productDTO == null ? null : new SearchObject(productDTO.getName(), "", productDTO));
-        product.setText(productDTO == null ? "" : productDTO.getName());
+        product.setProduct(productDTO);
+        productPanel.setVisible(productDTO != null);
     }
 
     @Override
@@ -302,7 +323,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         dataAccessWidget.getRemove().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if(Window.confirm("Are you sure you want to remove this data access?")) {
+                if (Window.confirm("Are you sure you want to remove this data access?")) {
                     dataAccess.remove(materialColumn);
                 }
             }
@@ -445,6 +466,63 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     @Override
+    public HasText getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    @Override
+    public List<PerformanceValue> getSelectedPerformances() {
+        List<PerformanceValue> performanceValues = new ArrayList<PerformanceValue>();
+        for(int index = 0; index < performances.getWidgetCount(); index++) {
+            Widget widget = performances.getWidget(index);
+            if(widget instanceof PerformanceValueWidget) {
+                PerformanceValueWidget performanceValueWidget = (PerformanceValueWidget) widget;
+                PerformanceValue performanceValue = performanceValueWidget.getPerformanceValue();
+                if(performanceValue != null) {
+                    performanceValues.add(performanceValue);
+                }
+            }
+        }
+        return performanceValues;
+    }
+
+    @Override
+    public void setProductPerformances(List<PerformanceDescription> performanceDescriptions) {
+        performances.clear();
+        if(performanceDescriptions == null || performanceDescriptions.size() == 0) {
+            performances.add(new MaterialLabel("No performance associated to this product"));
+        } else {
+            for (PerformanceDescription performanceDescription : performanceDescriptions) {
+                PerformanceValueWidget performanceValueWidget = new PerformanceValueWidget();
+                performanceValueWidget.setPerformanceDescription(performanceDescription);
+                performances.add(performanceValueWidget);
+            }
+        }
+    }
+
+    @Override
+    public void setProvidedPerformances(List<PerformanceValue> performanceValues) {
+        for(int index = 0; index < performances.getWidgetCount(); index++) {
+            Widget widget = performances.getWidget(index);
+            if(widget instanceof PerformanceValueWidget) {
+                final PerformanceValueWidget performanceValueWidget = (PerformanceValueWidget) widget;
+                PerformanceValue performanceValue = ListUtil.findValue(performanceValues, new ListUtil.CheckValue<PerformanceValue>() {
+                    @Override
+                    public boolean isValue(PerformanceValue value) {
+                        return value.getPerformanceDescription().getId().equals(performanceValueWidget.getPerformanceDescription().getId());
+                    }
+                });
+                performanceValueWidget.setPerformanceValue(performanceValue);
+            }
+        }
+    }
+
+    @Override
+    public HasText getPerformancesComment() {
+        return performancesComment;
+    }
+
+    @Override
     public void setSampleProductDatasetId(Long datasetId) {
         uploadSampleTitle.setText("Upload sample files to our servers");
         if(datasetId == null) {
@@ -457,6 +535,32 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             uploadSampleButton.setEnabled(true);
             sampleUploader.setParameter("resourceId", datasetId + "");
         }
+    }
+
+    @Override
+    public void setTemporalCoverage(TemporalCoverage temporalCoverage) {
+        from.setDate(temporalCoverage.getStartDate());
+        untilCheck.setValue(temporalCoverage.getStopDate() != null);
+        until.setDate(temporalCoverage.getStopDate());
+        refreshed.setValue(temporalCoverage.getRefreshed());
+        refreshRateDescription.setText(temporalCoverage.getRefreshRateDescription());
+    }
+
+    @Override
+    public TemporalCoverage getTemporalCoverage() {
+        TemporalCoverage temporalCoverage = new TemporalCoverage();
+        temporalCoverage.setStartDate(from.getDate());
+        if(untilCheck.getValue()) {
+            temporalCoverage.setStopDate(until.getDate());
+        }
+        temporalCoverage.setRefreshed(refreshed.getValue());
+        temporalCoverage.setRefreshRateDescription(refreshRateDescription.getValue());
+        return temporalCoverage;
+    }
+
+    @Override
+    public HasText getTemporalCoverageComment() {
+        return temporalCoverageComment;
     }
 
     @UiHandler("addDataAccess")

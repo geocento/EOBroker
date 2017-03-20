@@ -98,7 +98,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<FeatureDescription> getProductGeoinformation(Long productId) throws RequestException {
+    public ProductGeoinformation getProductGeoinformation(Long productId) throws RequestException {
         UserUtils.verifyUserSupplier(request);
         if(productId == null) {
             throw new RequestException("Id cannot be null");
@@ -109,7 +109,10 @@ public class AssetsResource implements AssetsService {
             if(product == null) {
                 throw new RequestException("Unknown product");
             }
-            return product.getGeoinformation();
+            ProductGeoinformation productGeoinformation = new ProductGeoinformation();
+            productGeoinformation.setFeatureDescriptions(product.getGeoinformation());
+            productGeoinformation.setPerformanceDescriptions(product.getPerformances());
+            return productGeoinformation;
         } catch (Exception e) {
             throw new RequestException("Error");
         } finally {
@@ -138,16 +141,24 @@ public class AssetsResource implements AssetsService {
             productServiceDTO.setWebsite(productService.getWebsite());
             productServiceDTO.setServiceImage(productService.getImageUrl());
             productServiceDTO.setExtent(productService.getExtent());
-            productServiceDTO.setProduct(productService.getProduct() == null ? null : ProductHelper.createProductDTO(productService.getProduct()));
-            productServiceDTO.setProductFeatures(productService.getProduct() == null ? null : productService.getProduct().getGeoinformation());
-            productServiceDTO.setSelectedFeatures(ListUtil.mutate(productService.getGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
-                @Override
-                public Long mutate(FeatureDescription featureDescription) {
-                    return featureDescription.getId();
-                }
-            }));
+            if(productService.getProduct() != null) {
+                productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+                productServiceDTO.setProductFeatures(productService.getProduct().getGeoinformation());
+                productServiceDTO.setSelectedFeatures(ListUtil.mutate(productService.getGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
+                    @Override
+                    public Long mutate(FeatureDescription featureDescription) {
+                        return featureDescription.getId();
+                    }
+                }));
+                productServiceDTO.setGeoinformationComment(productService.getGeoinformationComment());
+                productServiceDTO.setPerformances(productService.getProduct().getPerformances());
+                productServiceDTO.setProvidedPerformances(productService.getPerformances());
+                productServiceDTO.setPerformancesComment(productService.getPerformancesComment());
+            }
             productServiceDTO.setApiURL(productService.getApiUrl());
             productServiceDTO.setSelectedDataAccessTypes(productService.getSelectedAccessTypes());
+            productServiceDTO.setDisseminationComment(productService.getDisseminationComment());
+            productServiceDTO.setTimeToDelivery(productService.getTimeToDelivery());
             productServiceDTO.setSamples(productService.getSamples());
             return productServiceDTO;
         } catch (Exception e) {
@@ -233,8 +244,14 @@ public class AssetsResource implements AssetsService {
                     return productServiceDTO.getSelectedFeatures().contains(value.getId());
                 }
             }));
+            productService.setGeoinformationComment(productServiceDTO.getGeoinformationComment());
+            List<PerformanceValue> performances = updatePerformances(em, productService.getPerformances(), productServiceDTO.getProvidedPerformances());
+            productService.setPerformances(performances);
+            productService.setPerformancesComment(productServiceDTO.getPerformancesComment());
             productService.setSelectedAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
             productService.setApiUrl(productServiceDTO.getApiURL());
+            productService.setDisseminationComment(productServiceDTO.getDisseminationComment());
+            productService.setTimeToDelivery(productServiceDTO.getTimeToDelivery());
             // update the sample access
             List<DatasetAccess> dbSamples = updateSamples(em, productService.getSamples(), productServiceDTO.getSamples());
             productService.setSamples(dbSamples);
@@ -253,6 +270,35 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private List<PerformanceValue> updatePerformances(EntityManager em, List<PerformanceValue> dbPerformanceValues, List<PerformanceValue> performanceValues) {
+        List<PerformanceValue> changedDbPerformances = new ArrayList<PerformanceValue>();
+        if (performanceValues != null && performanceValues.size() > 0) {
+            for (final PerformanceValue performanceValue : performanceValues) {
+                PerformanceValue dbPerformanceValue = null;
+                if (performanceValue.getId() != null) {
+                    dbPerformanceValue = ListUtil.findValue(dbPerformanceValues, new ListUtil.CheckValue<PerformanceValue>() {
+                        @Override
+                        public boolean isValue(PerformanceValue value) {
+                            return value.getId().equals(performanceValue.getId());
+                        }
+                    });
+                }
+                if (dbPerformanceValue == null) {
+                    em.persist(performanceValue);
+                    dbPerformanceValue = performanceValue;
+                }
+                dbPerformanceValue.setPerformanceDescription(performanceValue.getPerformanceDescription());
+                dbPerformanceValue.setComment(performanceValue.getComment());
+                dbPerformanceValue.setMinValue(performanceValue.getMinValue());
+                dbPerformanceValue.setMaxValue(performanceValue.getMaxValue());
+                changedDbPerformances.add(dbPerformanceValue);
+            }
+        }
+        // TODO - check for values which have been removed
+
+        return changedDbPerformances;
     }
 
     private List<DatasetAccess> updateSamples(EntityManager em, List<DatasetAccess> dbSamples, List<DatasetAccess> samples) {
@@ -310,9 +356,8 @@ public class AssetsResource implements AssetsService {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
-            Company company = null;
             User user = em.find(User.class, userName);
-            company = user.getCompany();
+            Company company = user.getCompany();
             if (company == null) {
                 throw new RequestException("No company assigned!");
             }
@@ -351,6 +396,10 @@ public class AssetsResource implements AssetsService {
             company.setContactEmail(companyDTO.getContactEmail());
             company.setFullDescription(companyDTO.getFullDescription());
             company.setIconURL(companyDTO.getIconURL());
+            company.setAddress(companyDTO.getAddress());
+            company.setCountryCode(companyDTO.getCountryCode());
+            company.setCompanySize(companyDTO.getCompanySize());
+            company.setAwards(companyDTO.getAwards());
             em.getTransaction().commit();
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
@@ -490,6 +539,163 @@ public class AssetsResource implements AssetsService {
             return styles;
         } catch (Exception e) {
             throw new RequestException("Failed to call geoserver service");
+        }
+    }
+
+    @Override
+    public SupplierSettingsDTO getSettings() throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, logUserName);
+            SupplierSettings settings = user.getCompany().getSettings();
+            SupplierSettingsDTO supplierSettingsDTO = new SupplierSettingsDTO();
+            supplierSettingsDTO.setNotificationDelayMessages(settings.getNotificationDelayMessages());
+            supplierSettingsDTO.setNotificationDelayRequests(settings.getNotificationDelayRequests());
+            return supplierSettingsDTO;
+        } catch (Exception e) {
+            throw new RequestException("Problem retrieving settings");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void saveSettings(SupplierSettingsDTO supplierSettings) throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, logUserName);
+            SupplierSettings dbSupplierSettings = user.getCompany().getSettings();
+            dbSupplierSettings.setNotificationDelayMessages(supplierSettings.getNotificationDelayMessages());
+            dbSupplierSettings.setNotificationDelayRequests(supplierSettings.getNotificationDelayRequests());
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Problem retrieving settings");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<SuccessStoryDTO> getSuccessStories() throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, logUserName);
+            return ListUtil.mutate(user.getCompany().getSuccessStories(), new ListUtil.Mutate<SuccessStory, SuccessStoryDTO>() {
+                @Override
+                public SuccessStoryDTO mutate(SuccessStory successStory) {
+                    SuccessStoryDTO successStoryDTO = new SuccessStoryDTO();
+                    successStoryDTO.setName(successStory.getName());
+                    successStoryDTO.setDescription(successStory.getDescription());
+                    successStoryDTO.setDate(successStory.getDate());
+                    return successStoryDTO;
+                }
+            });
+        } catch (Exception e) {
+            throw new RequestException("Problem retrieving success stories");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public SuccessStoryEditDTO getSuccessStory(final Long id) throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, logUserName);
+            SuccessStory successStory = ListUtil.findValue(user.getCompany().getSuccessStories(), new ListUtil.CheckValue<SuccessStory>() {
+                @Override
+                public boolean isValue(SuccessStory value) {
+                    return value.getId().equals(id);
+                }
+            });
+            if(successStory == null) {
+                throw new RequestException("Could not find success story");
+            }
+            SuccessStoryEditDTO successStoryEditDTO = new SuccessStoryEditDTO();
+            successStoryEditDTO.setName(successStory.getName());
+            successStoryEditDTO.setDescription(successStory.getDescription());
+            successStoryEditDTO.setCustomer(CompanyHelper.createCompanyDTO(successStory.getCustomer()));
+            successStoryEditDTO.setDate(successStory.getDate());
+            successStoryEditDTO.setFullDescription(successStory.getFullDescription());
+            return successStoryEditDTO;
+        } catch (Exception e) {
+            throw new RequestException("Problem retrieving success stories");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Long updateSuccessStory(SuccessStoryEditDTO successStoryEditDTO) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            SuccessStory successStory = null;
+            if(successStoryEditDTO.getId() == null) {
+                successStory = new SuccessStory();
+                successStory.setSupplier(user.getCompany());
+                em.persist(successStory);
+                user.getCompany().getSuccessStories().add(successStory);
+            } else {
+                successStory = em.find(SuccessStory.class, successStoryEditDTO.getId());
+                if(successStory == null) {
+                    throw new RequestException("Could not find success story");
+                }
+                if(user.getCompany() != successStory.getSupplier()) {
+                    throw new RequestException("Not allowed");
+                }
+            }
+            // update values
+            successStory.setImageUrl(successStoryEditDTO.getImageUrl());
+            successStory.setName(successStoryEditDTO.getName());
+            successStory.setDescription(successStoryEditDTO.getDescription());
+            successStory.setDate(successStory.getDate());
+            successStory.setFullDescription(successStoryEditDTO.getFullDescription());
+            em.getTransaction().commit();
+            return successStory.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving success story");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<TestimonialDTO> getTestimonials() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            TypedQuery<Testimonial> query = em.createQuery("select t from Testimonial t where t.company = :company", Testimonial.class);
+            query.setParameter("company", user.getCompany());
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Testimonial, TestimonialDTO>() {
+                @Override
+                public TestimonialDTO mutate(Testimonial testimonial) {
+                    TestimonialDTO testimonialDTO = new TestimonialDTO();
+                    testimonialDTO.setId(testimonial.getId());
+                    testimonialDTO.setFromUser(UserHelper.createUserDTO(testimonial.getFromUser()));
+                    testimonialDTO.setTestimonial(testimonial.getTestimonial());
+                    testimonialDTO.setCreationDate(testimonial.getCreationDate());
+                    return testimonialDTO;
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving success story");
+        } finally {
+            em.close();
         }
     }
 
@@ -663,6 +869,7 @@ public class AssetsResource implements AssetsService {
             }
             ProductDatasetDTO productDatasetDTO = createProductDatasetDTO(productDataset);
             productDatasetDTO.setFullDescription(productDataset.getFullDescription());
+/*
             productDatasetDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
             productDatasetDTO.setProductFeatures(productDataset.getProduct() == null ? null : productDataset.getProduct().getGeoinformation());
             productDatasetDTO.setSelectedFeatures(ListUtil.mutate(productDataset.getGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
@@ -671,6 +878,23 @@ public class AssetsResource implements AssetsService {
                     return featureDescription.getId();
                 }
             }));
+*/
+            if(productDataset.getProduct() != null) {
+                productDatasetDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+                productDatasetDTO.setProductFeatures(productDataset.getProduct().getGeoinformation());
+                productDatasetDTO.setSelectedFeatures(ListUtil.mutate(productDataset.getGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
+                    @Override
+                    public Long mutate(FeatureDescription featureDescription) {
+                        return featureDescription.getId();
+                    }
+                }));
+                productDatasetDTO.setGeoinformationComment(productDataset.getGeoinformationComment());
+                productDatasetDTO.setPerformances(productDataset.getProduct().getPerformances());
+                productDatasetDTO.setProvidedPerformances(productDataset.getPerformances());
+                productDatasetDTO.setPerformancesComment(productDataset.getPerformancesComment());
+            }
+            productDatasetDTO.setTemporalCoverage(productDataset.getTemporalCoverage());
+            productDatasetDTO.setTemporalCoverageComment(productDataset.getTemporalCoverageComment());
             productDatasetDTO.setExtent(productDataset.getExtent());
             productDatasetDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             productDatasetDTO.setSamples(productDataset.getSamples());
@@ -743,6 +967,12 @@ public class AssetsResource implements AssetsService {
                     return productDatasetDTO.getSelectedFeatures().contains(value.getId());
                 }
             }));
+            productDataset.setGeoinformationComment(productDatasetDTO.getGeoinformationComment());
+            List<PerformanceValue> performances = updatePerformances(em, productDataset.getPerformances(), productDatasetDTO.getProvidedPerformances());
+            productDataset.setPerformances(performances);
+            productDataset.setPerformancesComment(productDatasetDTO.getPerformancesComment());
+            productDataset.setTemporalCoverage(productDatasetDTO.getTemporalCoverage());
+            productDataset.setTemporalCoverageComment(productDatasetDTO.getTemporalCoverageComment());
             // update the data access
             {
                 List<DatasetAccess> datasetAccesses = productDatasetDTO.getDatasetAccesses();
@@ -1029,6 +1259,8 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Not allowed");
             }
             ProjectDTO projectDTO = createProjectDTO(project);
+            projectDTO.setFrom(project.getStartDate());
+            projectDTO.setUntil(project.getStopDate());
             projectDTO.setFullDescription(project.getFullDescription());
             projectDTO.setProducts(ListUtil.mutate(project.getProducts(), new ListUtil.Mutate<ProductProject, ProductProjectDTO>() {
                 @Override
@@ -1088,6 +1320,8 @@ public class AssetsResource implements AssetsService {
             // update values
             project.setName(projectDTO.getName());
             project.setDescription(projectDTO.getDescription());
+            project.setStartDate(projectDTO.getFrom());
+            project.setStopDate(projectDTO.getUntil());
             project.setFullDescription(projectDTO.getFullDescription());
 
             // set project products

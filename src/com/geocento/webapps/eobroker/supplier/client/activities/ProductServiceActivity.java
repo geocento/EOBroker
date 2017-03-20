@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.supplier.client.places.ProductServicePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductServiceView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductGeoinformation;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -22,7 +23,6 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -114,6 +114,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         productServiceView.getEmail().setText(productServiceDTO.getEmail());
         productServiceView.setSelectedProduct(productServiceDTO.getProduct());
         if(productServiceDTO.getProduct() != null) {
+            // add geoinformation
             productServiceView.setProductGeoinformation(productServiceDTO.getProductFeatures());
             productServiceView.setSelectedGeoinformation(ListUtil.filterValues(productServiceDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
                 @Override
@@ -121,6 +122,11 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                     return productServiceDTO.getSelectedFeatures().contains(value.getId());
                 }
             }));
+            productServiceView.getGeoinformationComment().setText(productServiceDTO.getGeoinformationComment());
+            // add performances
+            productServiceView.setProductPerformances(productServiceDTO.getPerformances());
+            productServiceView.setProvidedPerformances(productServiceDTO.getProvidedPerformances());
+            productServiceView.getPerformancesComment().setText(productServiceDTO.getPerformancesComment());
         } else {
             productServiceView.setProductGeoinformation(null);
         }
@@ -128,6 +134,8 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         productServiceView.getWebsite().setText(productServiceDTO.getWebsite());
         productServiceView.getAPIUrl().setText(productServiceDTO.getApiURL() == null ? "" : productServiceDTO.getApiURL());
         productServiceView.setSelectedDataAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
+        productServiceView.getDisseminationComment().setText(productServiceDTO.getDisseminationComment());
+        productServiceView.getDeliveryTime().setText(productServiceDTO.getTimeToDelivery());
         productServiceView.setSampleDataAccess(productServiceDTO.getSamples());
         // needed for the upload of samples on the broker server
         productServiceView.setSampleProductServiceId(productServiceDTO.getId());
@@ -150,12 +158,17 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                         return featureDescription.getId();
                     }
                 }));
+                productServiceDTO.setGeoinformationComment(productServiceView.getGeoinformationComment().getText());
+                productServiceDTO.setProvidedPerformances(productServiceView.getSelectedPerformances());
+                productServiceDTO.setPerformancesComment(productServiceView.getPerformancesComment().getText());
                 productServiceDTO.setExtent(productServiceView.getExtent() == null ? null : AoIUtil.toWKT(productServiceView.getExtent()));
                 productServiceDTO.setEmail(productServiceView.getEmail().getText());
                 productServiceDTO.setWebsite(productServiceView.getWebsite().getText());
                 productServiceDTO.setFullDescription(productServiceView.getFullDescription());
                 productServiceDTO.setApiURL(productServiceView.getAPIUrl().getText().length() > 0 ? productServiceView.getAPIUrl().getText() : null);
                 productServiceDTO.setSelectedDataAccessTypes(productServiceView.getSelectedDataAccessTypes());
+                productServiceDTO.setDisseminationComment(productServiceView.getDisseminationComment().getText());
+                productServiceDTO.setTimeToDelivery(productServiceView.getDeliveryTime().getText());
                 productServiceDTO.setSamples(productServiceView.getSamples());
                 // do some checks
                 try {
@@ -205,9 +218,10 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
     @Override
     public void productChanged() {
         displayLoading("Loading product geoinformation");
-        ProductDTO selectedProduct = productServiceView.getSelectedProduct();
+        // TODO - load the geoinformation and the performances and update the display
+        final ProductDTO selectedProduct = productServiceView.getSelectedProduct();
         try {
-            REST.withCallback(new MethodCallback<List<FeatureDescription>>() {
+            REST.withCallback(new MethodCallback<ProductGeoinformation>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideLoading();
@@ -215,9 +229,11 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                 }
 
                 @Override
-                public void onSuccess(Method method, List<FeatureDescription> featureDescriptions) {
+                public void onSuccess(Method method, ProductGeoinformation productGeoinformation) {
                     hideLoading();
-                    productServiceView.setProductGeoinformation(featureDescriptions);
+                    productServiceView.setSelectedProduct(selectedProduct);
+                    productServiceView.setProductGeoinformation(productGeoinformation.getFeatureDescriptions());
+                    productServiceView.setProductPerformances(productGeoinformation.getPerformanceDescriptions());
                 }
 
             }).call(ServicesUtil.assetsService).getProductGeoinformation(selectedProduct.getId());

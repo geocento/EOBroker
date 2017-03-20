@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:bubble="urn:import:gwt.material.design.addins.client.bubble"
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+    <bubble:MaterialBubble ui:field="panel">
+        <widgets:UserWidget float="LEFT" size="50" ui:field="user"></widgets:UserWidget>
+        <design:MaterialPanel marginLeft="70">
+            <g:HTMLPanel ui:field="testimonial"></g:HTMLPanel>
+            <design:MaterialLabel float="RIGHT" fontSize="0.6em" ui:field="creationDate"></design:MaterialLabel>
+        </design:MaterialPanel>
+    </bubble:MaterialBubble>
+</ui:UiBinder>

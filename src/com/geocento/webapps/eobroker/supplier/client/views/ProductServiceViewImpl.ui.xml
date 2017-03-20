@@ -134,21 +134,33 @@
                 <design:MaterialLink text="Service product" textColor="black" iconType="MAP"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <cwidgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></cwidgets:ProductTextBox>
-                    <design:MaterialLabel margin="10" text="Select geoinformation provided"></design:MaterialLabel>
-                    <design:MaterialPanel padding="10" ui:field="geoinformation"></design:MaterialPanel>
+                    <design:MaterialPanel ui:field="productPanel">
+                        <design:MaterialLabel margin="10" text="Select geoinformation provided"></design:MaterialLabel>
+                        <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                            <design:MaterialPanel ui:field="geoinformation"></design:MaterialPanel>
+                            <design:MaterialTextBox placeholder="Comment on geoinformation provided" ui:field="geoinformationComment"></design:MaterialTextBox>
+                        </design:MaterialPanel>
+                        <design:MaterialLabel margin="10" text="Provide performances"></design:MaterialLabel>
+                        <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                            <design:MaterialPanel ui:field="performances"></design:MaterialPanel>
+                            <design:MaterialTextBox placeholder="Comment on performances provided" ui:field="performancesComment"></design:MaterialTextBox>
+                        </design:MaterialPanel>
+                    </design:MaterialPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink addStyleNames="{style.label}" text="API URL" textColor="black" iconType="SETTINGS"/>
-                <design:MaterialTextBox type="URL" ui:field="apiURL"/>
-                <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the API URL conforming to the product API specifications. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Dissemination of results" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Dissemination of results" textColor="black" iconType="RSS_FEED" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="dataAccessMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="dataAccess"></design:MaterialRow>
                     <design:MaterialLabel fontSize="0.8em" textColor="grey">Specify the type of dissemination your service supports.</design:MaterialLabel>
+                    <design:MaterialTextBox placeholder="Comment on the dissemination of results" ui:field="disseminationComment"></design:MaterialTextBox>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Time to delivery" textColor="black" iconType="ACCESS_TIME" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialTextBox placeholder="Specify your time to delivery conditions" ui:field="deliveryTime"></design:MaterialTextBox>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
@@ -175,9 +187,14 @@
                     </design:MaterialRow>
                 </design:MaterialPanel>
             </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink addStyleNames="{style.label}" text="API URL" textColor="black" iconType="SETTINGS"/>
+                <design:MaterialTextBox type="URL" ui:field="apiURL"/>
+                <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the API URL conforming to the product API specifications. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
+            </design:MaterialColumn>
         </design:MaterialRow>
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-            <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+            <design:MaterialButton text="UPDATE" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

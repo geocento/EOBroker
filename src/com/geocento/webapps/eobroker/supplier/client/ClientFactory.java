@@ -34,4 +34,6 @@ public interface ClientFactory {
     SoftwareView getSoftwareView();
 
     ProjectView getProjectView();
+
+    SuccessStoryView getSuccessStoryView();
 }

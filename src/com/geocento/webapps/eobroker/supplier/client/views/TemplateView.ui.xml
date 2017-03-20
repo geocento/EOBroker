@@ -98,6 +98,13 @@
             padding-left: 300px;
         }
 
+        .settings:before {
+            content: "";
+            display: block;
+            margin: 10px 0px;
+            border-top: 1px solid #aaa;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -138,11 +145,14 @@
                 <g:HTMLPanel addStyleNames="{style.menus}">
                     <m:MaterialLabel addStyleNames="{style.navBrand}" text="Access your"/>
                     <g:HTMLPanel ui:field="links">
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Company settings" addStyleNames="{style.category}" ui:field="company"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Company information" addStyleNames="{style.category}" ui:field="company"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="On-demand services" addStyleNames="{style.category}" ui:field="services"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Off the shelf data" addStyleNames="{style.category}" ui:field="datasets"></m:MaterialLink>
-                        <m:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="blue" text="Software solutions" addStyleNames="{style.category}" ui:field="software"></m:MaterialLink>
-                        <m:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="blue" text="Projects" addStyleNames="{style.category}" ui:field="projects"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Software solutions" addStyleNames="{style.category}" ui:field="software"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="R&amp;D Projects" addStyleNames="{style.category}" ui:field="projects"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Testimonials" addStyleNames="{style.category}, {style.settings}" ui:field="testimonials"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Success stories" addStyleNames="{style.category}" ui:field="successStories"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Settings" addStyleNames="{style.category}, {style.settings}" ui:field="settings"></m:MaterialLink>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
             </g:HTMLPanel>

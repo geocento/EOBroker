@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
@@ -60,6 +61,10 @@ public interface ProductView extends IsWidget {
     void setGeoinformation(List<FeatureDescription> geoinformation);
 
     List<FeatureDescription> getGeoinformation();
+
+    void setPerformances(List<PerformanceDescription> performanceDescriptions);
+
+    List<PerformanceDescription> getPerformances();
 
     TemplateView getTemplateView();
 
