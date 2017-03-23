@@ -45,13 +45,13 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
-    <design:MaterialCard backgroundColor="green" axis="VERTICAL">
+    <design:MaterialCard backgroundColor="GREEN" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage resource="{res.loading300by200}" ui:field="imageLoading"></design:MaterialImage>
             <design:MaterialImage visible="false" ui:field="image"></design:MaterialImage>
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white" padding="10">
+        <design:MaterialCardContent textColor="WHITE" padding="10">
             <design:MaterialLabel fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
@@ -59,7 +59,7 @@
             <design:MaterialTooltip text="Favourited 0 times" ui:field="starsTooltip">
                 <design:MaterialLink text="0" float="RIGHT" textColor="LIME" iconType="STAR" iconColor="LIME" marginRight="0" addStyleNames="{style.stars}" ui:field="stars"></design:MaterialLink>
             </design:MaterialTooltip>
-            <design:MaterialLink text="INFO" textColor="white" ui:field="info"></design:MaterialLink>
+            <design:MaterialLink text="INFO" textColor="WHITE" ui:field="info"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

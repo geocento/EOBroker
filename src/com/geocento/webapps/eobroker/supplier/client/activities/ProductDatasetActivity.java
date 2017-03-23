@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductGeoinformation;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -210,6 +211,14 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                     }).call(ServicesUtil.assetsService).saveProductDataset(productDatasetDTO);
                 } catch (RequestException e) {
                 }
+            }
+        }));
+
+        handlers.add(productDatasetView.getViewClient().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // TODO - how do we get to use the place instead?
+                Window.open(GWT.getHostPageBaseURL() + "#fullview:productdatasetid=" + productDatasetDTO.getId(), "_fullview;", null);
             }
         }));
     }

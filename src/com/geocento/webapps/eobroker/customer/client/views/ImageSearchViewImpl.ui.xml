@@ -65,40 +65,40 @@
     <views:TemplateView footer="false" ui:field="template" titleText="Image Search">
         <views:header>
             <widgetsc:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
-                <sideprofile:MaterialSideProfile backgroundColor="blue">
-                    <m:MaterialLink text="Supplier" activates="provider" textColor="white" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
+                <sideprofile:MaterialSideProfile backgroundColor="BLUE">
+                    <m:MaterialLink text="Supplier" activates="provider" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
                     <m:MaterialDropDown activator="provider" ui:field="providerDropdown">
                     </m:MaterialDropDown>
                 </sideprofile:MaterialSideProfile>
                 <m:MaterialRow padding="0" margin="0" overflow="HIDDEN" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
                     <m:MaterialColumn grid="s12" padding="0" width="100%" height="100%">
-                        <m:MaterialTab ui:field="tab" backgroundColor="teal lighten-2">
+                        <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
                             <m:MaterialTabItem waves="YELLOW" grid="s6">
-                                <m:MaterialLink text="Query" href="#query" textColor="white"></m:MaterialLink>
+                                <m:MaterialLink text="Query" href="#query" textColor="WHITE"></m:MaterialLink>
                             </m:MaterialTabItem>
                             <m:MaterialTabItem waves="YELLOW" grid="s6">
-                                <m:MaterialLink text="Results" href="#results" textColor="white"></m:MaterialLink>
+                                <m:MaterialLink text="Results" href="#results" textColor="WHITE"></m:MaterialLink>
                             </m:MaterialTabItem>
                         </m:MaterialTab>
                     </m:MaterialColumn>
-                    <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="white">
+                    <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
                         <m:MaterialRow marginTop="20">
                             <m:MaterialColumn grid="s6">
-                                <m:MaterialDatePicker textColor="black" ui:field="startDate" placeholder="Start Date" />
+                                <m:MaterialDatePicker textColor="BLACK" ui:field="startDate" placeholder="Start Date" />
                             </m:MaterialColumn>
                             <m:MaterialColumn grid="s6">
-                                <m:MaterialDatePicker textColor="black" ui:field="stopDate" placeholder="Stop Date" />
+                                <m:MaterialDatePicker textColor="BLACK" ui:field="stopDate" placeholder="Stop Date" />
                             </m:MaterialColumn>
                             <m:MaterialColumn grid="s12">
 <!--
-                                <m:MaterialTextBox placeholder="Sensors" textColor="black" ui:field="sensors"></m:MaterialTextBox>
+                                <m:MaterialTextBox placeholder="Sensors" textColor="BLACK" ui:field="sensors"></m:MaterialTextBox>
 -->
-                                <widgets:MaterialSensorsSuggestion placeholder="Sensors - type in keywords" textColor="black" ui:field="sensors"></widgets:MaterialSensorsSuggestion>
+                                <widgets:MaterialSensorsSuggestion placeholder="Sensors - type in keywords" textColor="BLACK" ui:field="sensors"></widgets:MaterialSensorsSuggestion>
                             </m:MaterialColumn>
                         </m:MaterialRow>
                         <m:MaterialRow addStyleNames="{style.queryButton}">
                             <m:MaterialColumn grid="s12">
-                                <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="blue" textColor="white" ui:field="update"/>
+                                <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" ui:field="update"/>
                             </m:MaterialColumn>
                         </m:MaterialRow>
                     </m:MaterialColumn>
@@ -106,7 +106,7 @@
                         <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
                         </g:SimplePanel>
                         <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                            <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="green" enabled="false" ui:field="submitForQuote"/>
+                            <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="GREEN" enabled="false" ui:field="submitForQuote"/>
                         </g:HTMLPanel>
                     </m:MaterialColumn>
                 </m:MaterialRow>

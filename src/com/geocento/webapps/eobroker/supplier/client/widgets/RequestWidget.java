@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialCardContent;
 import gwt.material.design.client.ui.MaterialLabel;
@@ -38,19 +39,19 @@ public class RequestWidget extends Composite {
         switch (requestDTO.getType()) {
             case image:
                 title.setText("Request for images");
-                content.setBackgroundColor("grey");
+                content.setBackgroundColor(Color.GREY);
                 break;
             case imageservice:
                 title.setText("Request for image service");
-                content.setBackgroundColor("orange");
+                content.setBackgroundColor(Color.ORANGE);
                 break;
             case imageprocessing:
                 title.setText("Request for image processing");
-                content.setBackgroundColor("green");
+                content.setBackgroundColor(Color.GREEN);
                 break;
             case product:
                 title.setText("Request for product");
-                content.setBackgroundColor("blue-grey");
+                content.setBackgroundColor(Color.BLUE_GREY);
                 break;
         }
         description.setText(requestDTO.getDescription());

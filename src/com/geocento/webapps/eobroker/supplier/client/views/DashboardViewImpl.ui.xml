@@ -80,7 +80,7 @@
             <design:MaterialPanel visible="false" ui:field="messagePanel"></design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="companyPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Edit Company" ui:field="editCompany"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Edit Company" ui:field="editCompany"></design:MaterialButton>
                     <design:MaterialTitle title="Company"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow>
@@ -94,7 +94,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="servicesPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new service" ui:field="addService"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new service" ui:field="addService"></design:MaterialButton>
                     <design:MaterialTitle title="On-demand services"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="services">
@@ -102,7 +102,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="datasetsPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
                     <design:MaterialTitle title="Off the shelf data"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="productdatasets">
@@ -110,7 +110,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="softwarePanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new software" ui:field="addSoftware"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new software" ui:field="addSoftware"></design:MaterialButton>
                     <design:MaterialTitle title="Software solutions"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="softwares">
@@ -118,7 +118,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="projectsPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new project" ui:field="addProject"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new project" ui:field="addProject"></design:MaterialButton>
                     <design:MaterialTitle title="Projects"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="projects">
@@ -126,7 +126,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="datasetServicesPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new dataset" ui:field="addDataset"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new dataset" ui:field="addDataset"></design:MaterialButton>
                     <design:MaterialTitle title="Your datasets"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="datasets">
@@ -134,7 +134,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="testimonialsPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Request testimonial" ui:field="requestTestimonial"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Request testimonial" ui:field="requestTestimonial"></design:MaterialButton>
                     <design:MaterialTitle title="Your testimonials"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="testimonials">
@@ -142,7 +142,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="successStoriesPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Add new success story" ui:field="addSuccessStory"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new success story" ui:field="addSuccessStory"></design:MaterialButton>
                     <design:MaterialTitle title="Your success stories"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="successStories">
@@ -150,7 +150,7 @@
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="settingsPanel">
                 <g:HTMLPanel>
-                    <design:MaterialButton backgroundColor="blue" float="RIGHT" text="Save settings" ui:field="saveSettings"></design:MaterialButton>
+                    <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Save settings" ui:field="saveSettings"></design:MaterialButton>
                     <design:MaterialTitle title="Your company settings"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialPanel addStyleNames="{style.settings}">

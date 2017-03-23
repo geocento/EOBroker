@@ -14,17 +14,17 @@
         }
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
-    <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL" shadow="1">
+    <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL" shadow="1">
         <design:MaterialCardImage>
             <design:MaterialImage resource="{res.loading300by200}" ui:field="imageLoading"></design:MaterialImage>
             <design:MaterialImage visible="false" ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white" padding="10">
+        <design:MaterialCardContent textColor="WHITE" padding="10">
             <design:MaterialLabel truncate="true" fontSize="1.2em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action" padding="10">
-            <design:MaterialLink text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
+            <design:MaterialLink text="INFO" textColor="WHITE" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

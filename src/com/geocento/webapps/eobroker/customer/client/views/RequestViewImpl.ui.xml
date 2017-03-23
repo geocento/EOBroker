@@ -86,7 +86,7 @@
     </ui:style>
     <views:TemplateView titleText="Request Management" ui:field="template">
         <design:MaterialPanel addStyleNames="{style.panel}">
-            <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="white" paddingTop="10" paddingBottom="10">
+            <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
                 <design:MaterialColumn grid="s12">
                     <design:MaterialButton activates="statuses" width="150px" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
                     <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
@@ -94,12 +94,12 @@
                     <design:MaterialDropDown activator="statuses" ui:field="statuses"></design:MaterialDropDown>
                 </design:MaterialColumn>
             </design:MaterialRow>
-            <design:MaterialPanel backgroundColor="green" addStyleNames="{style.tabsPanel}" ui:field="tabs">
+            <design:MaterialPanel backgroundColor="GREEN" addStyleNames="{style.tabsPanel}" ui:field="tabs">
                 <design:MaterialRow marginBottom="0">
-                    <design:MaterialTab backgroundColor="transparent" textColor="white" indicatorColor="white" ui:field="tab">
+                    <design:MaterialTab backgroundColor="TRANSPARENT" textColor="WHITE" indicatorColor="WHITE" ui:field="tab">
                         <design:MaterialTabItem ui:field="request">
                             <design:MaterialColumn>
-                                <design:MaterialLink text="Your Request" textColor="white" href="#request" ui:field="requestLink"></design:MaterialLink>
+                                <design:MaterialLink text="Your Request" textColor="WHITE" href="#request" ui:field="requestLink"></design:MaterialLink>
                             </design:MaterialColumn>
                         </design:MaterialTabItem>
                     </design:MaterialTab>

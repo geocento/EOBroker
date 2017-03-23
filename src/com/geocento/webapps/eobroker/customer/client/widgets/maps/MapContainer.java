@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.SelectAoI;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialToast;
@@ -28,7 +29,7 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
         // add select and save buttons
         // add save buttom
         saveButton = new MaterialButton();
-        saveButton.setBackgroundColor("green");
+        saveButton.setBackgroundColor(Color.GREEN);
         saveButton.setIconType(IconType.SAVE);
         addButton(saveButton, "Save the current AoI");
         saveButton.addClickHandler(new ClickHandler() {
@@ -57,12 +58,12 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 saveButton.setVisible(true);
-                                MaterialToast.fireToast("Could not save AoI, please retry", "red");
+                                MaterialToast.fireToast("Could not save AoI, please retry", Color.RED.getCssName());
                             }
 
                             @Override
                             public void onSuccess(Method method, Void response) {
-                                MaterialToast.fireToast("AoI saved", "green");
+                                MaterialToast.fireToast("AoI saved", Color.GREEN.getCssName());
                                 presenter.aoiChanged(null);
                             }
                         }).call(ServicesUtil.assetsService).removeLatestAoI();
@@ -79,7 +80,7 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
 /*
         MaterialAnchorButton selectButton = new MaterialAnchorButton();
         selectButton.setLayoutPosition(Style.Position.ABSOLUTE);
-        selectButton.setBackgroundColor("green");
+        selectButton.setBackgroundColor(Color.GREEN);
         selectButton.setIconType(IconType.FILTER);
         addFABButton(selectButton, "Select a saved AoI");
 */
@@ -108,12 +109,12 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     saveButton.setVisible(true);
-                    MaterialToast.fireToast("Could not save AoI, please retry", "red");
+                    MaterialToast.fireToast("Could not save AoI, please retry", Color.RED.getCssName());
                 }
 
                 @Override
                 public void onSuccess(Method method, AoIDTO aoIDTO) {
-                    MaterialToast.fireToast("AoI saved", "green");
+                    MaterialToast.fireToast("AoI saved", Color.GREEN.getCssName());
                     presenter.aoiChanged(aoIDTO);
                 }
             }).call(ServicesUtil.assetsService).updateAoI(aoi);

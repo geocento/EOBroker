@@ -57,7 +57,15 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Off the shelf data" ui:field="template">
-        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialPanel>
+            <design:MaterialTooltip text="Visible or not in customer application">
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="View in client application">
+                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        </design:MaterialPanel>
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
                 <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
@@ -69,17 +77,17 @@
                 <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Service type" textColor="black" iconType="MONETIZATION_ON" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Service type" textColor="BLACK" iconType="MONETIZATION_ON" addStyleNames="{style.subtitle}"/>
                 <design:MaterialListBox ui:field="serviceType"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Product implemented" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Product implemented" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
                     <design:MaterialPanel ui:field="productPanel">
@@ -96,7 +104,7 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Temporal coverage" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Temporal coverage" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialPanel addStyleNames="{style.timePeriod}">
                         <design:MaterialDatePicker placeholder="From" ui:field="from"></design:MaterialDatePicker>
@@ -109,14 +117,14 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Extent of data" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Extent of data" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
                 </design:MaterialPanel>
-                <design:MaterialLabel margin="20" textColor="orange" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
+                <design:MaterialLabel margin="20" textColor="ORANGE" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Full data access" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Full data access" textColor="BLACK" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="dataAccessMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="dataAccess"></design:MaterialRow>
@@ -127,7 +135,7 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Samples" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Samples" textColor="BLACK" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="samples"></design:MaterialRow>
@@ -143,12 +151,12 @@
                             </design:MaterialCard>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
-                            <c:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
+                            <c:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
                                     <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
                                         <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to the EO Broker samples server</design:MaterialLabel>
-                                        <design:MaterialLabel textColor="grey" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
-                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white" ui:field="uploadSampleButton"></design:MaterialButton>
+                                        <design:MaterialLabel textColor="GREY" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
+                                        <design:MaterialButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></design:MaterialButton>
                                     </design:MaterialCardContent>
                                 </design:MaterialCard>
                             </c:MaterialFileUploader>
@@ -158,7 +166,7 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                    <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
                 </g:HTMLPanel>
             </design:MaterialColumn>
         </design:MaterialRow>

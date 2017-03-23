@@ -40,7 +40,15 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Software" ui:field="template">
-        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialPanel>
+            <design:MaterialTooltip text="Visible or not in customer application">
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="View in client application">
+                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        </design:MaterialPanel>
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
                 <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
@@ -52,11 +60,11 @@
                 <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
                 <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Software supported products" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Software supported products" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.productsPanel}">
                     <design:MaterialRow ui:field="products">
                     </design:MaterialRow>
@@ -69,7 +77,7 @@
             </design:MaterialColumn>
         </design:MaterialRow>
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-            <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+            <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

@@ -34,6 +34,8 @@ public interface SoftwareView extends IsWidget {
 
     void setSelectedProducts(List<ProductSoftwareDTO> selectedProducts);
 
+    HasClickHandlers getViewClient();
+
     TemplateView getTemplateView();
 
     public interface Presenter {

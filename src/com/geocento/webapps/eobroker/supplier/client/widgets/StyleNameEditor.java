@@ -61,7 +61,7 @@ public class StyleNameEditor {
     // TODO - clean the dropzone?
     public void display(final Presenter presenter) {
         this.presenter = presenter;
-        materialModal.openModal();
+        materialModal.open();
         listStyles.clear();
         listStyles.add(new LoadingWidget("Loading styles..."));
         loadStyles();
@@ -124,7 +124,7 @@ public class StyleNameEditor {
     }
 
     public void hide() {
-        materialModal.closeModal();
+        materialModal.close();
     }
 
 }

@@ -9,7 +9,7 @@
     </ui:style>
     <g:HTMLPanel>
         <design:MaterialPreLoader addStyleNames="{style.loader}" size="SMALL">
-            <design:MaterialSpinner color="blue-only"/>
+            <design:MaterialSpinner color="BLUE_ONLY"/>
         </design:MaterialPreLoader>
         <design:MaterialLabel display="INLINE_BLOCK" padding="10" ui:field="text"></design:MaterialLabel>
     </g:HTMLPanel>

@@ -147,7 +147,7 @@
                             <design:MaterialLink addStyleNames="{style.category}" text="Projects" iconType="MAP" ui:field="projectsCategory"></design:MaterialLink>
                             <design:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></design:MaterialLink>
                         </g:HTMLPanel>
-                        <design:MaterialLink visible="false" text="Filter by" fontSize="1em" textColor="blue-grey" iconType="SEARCH"/>
+                        <design:MaterialLink visible="false" text="Filter by" fontSize="1em" textColor="BLUE_GREY" iconType="SEARCH"/>
                         <g:HTMLPanel addStyleNames="{style.filterBy}">
                             <g:HTMLPanel ui:field="settings">
                             </g:HTMLPanel>
@@ -164,7 +164,7 @@
             </widgets:MaterialSideNav>
         </views:header>
         <g:HTMLPanel addStyleNames="{style.resultsPanel}">
-            <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="blue-grey" ui:field="resultsTitle"/>
+            <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="BLUE_GREY" ui:field="resultsTitle"/>
             <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.loadingPanel}">
                 <widgets:LoadingWidget ui:field="loading"></widgets:LoadingWidget>

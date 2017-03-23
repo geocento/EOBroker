@@ -111,7 +111,7 @@
     <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
         <header>
             <!-- NavBar -->
-            <m:MaterialNavBar activates="sideNav" backgroundColor="green" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
+            <m:MaterialNavBar activates="sideNav" backgroundColor="GREEN" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
                 <m:MaterialNavSection flex="NONE">
                     <m:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
                     <m:MaterialLabel display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
@@ -119,12 +119,12 @@
                 <m:MaterialNavSection float="RIGHT">
                     <m:MaterialTooltip text="View your requests" position="BOTTOM">
                         <m:MaterialLink iconType="SHOPPING_CART" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="orders">
-                            <m:MaterialBadge text="" backgroundColor="blue" textColor="white" circle="true" ui:field="ordersBadge"/>
+                            <m:MaterialBadge text="" backgroundColor="BLUE" textColor="WHITE" circle="true" ui:field="ordersBadge"/>
                         </m:MaterialLink>
                     </m:MaterialTooltip>
                     <m:MaterialTooltip text="View your notifications" position="BOTTOM">
                         <m:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" ui:field="notifications" layoutPosition="RELATIVE" activates="notifications">
-                            <m:MaterialBadge text="" backgroundColor="pink" textColor="white" circle="true" ui:field="notificationsBadge"/>
+                            <m:MaterialBadge text="" backgroundColor="PINK" textColor="WHITE" circle="true" ui:field="notificationsBadge"/>
                         </m:MaterialLink>
                     </m:MaterialTooltip>
                     <m:MaterialTooltip text="Log out" position="BOTTOM">
@@ -138,21 +138,21 @@
         </header>
         <widgets:MaterialSideNav type="FIXED" m:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="sideNav">
             <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
-                <m:MaterialPanel backgroundColor="green lighten-2">
+                <m:MaterialPanel backgroundColor="GREEN_LIGHTEN_2">
                     <widgets:MaterialLabelIcon imageHeight="50px" spacing="20" addStyleNames="{style.company}" text="" ui:field="companyImage"/>
                     <m:MaterialLabel visible="false" ui:field="companyName"></m:MaterialLabel>
                 </m:MaterialPanel>
                 <g:HTMLPanel addStyleNames="{style.menus}">
                     <m:MaterialLabel addStyleNames="{style.navBrand}" text="Access your"/>
                     <g:HTMLPanel ui:field="links">
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Company information" addStyleNames="{style.category}" ui:field="company"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="On-demand services" addStyleNames="{style.category}" ui:field="services"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Off the shelf data" addStyleNames="{style.category}" ui:field="datasets"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Software solutions" addStyleNames="{style.category}" ui:field="software"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="R&amp;D Projects" addStyleNames="{style.category}" ui:field="projects"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Testimonials" addStyleNames="{style.category}, {style.settings}" ui:field="testimonials"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Success stories" addStyleNames="{style.category}" ui:field="successStories"></m:MaterialLink>
-                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Settings" addStyleNames="{style.category}, {style.settings}" ui:field="settings"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Company information" addStyleNames="{style.category}" ui:field="company"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="On-demand services" addStyleNames="{style.category}" ui:field="services"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Off the shelf data" addStyleNames="{style.category}" ui:field="datasets"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Software solutions" addStyleNames="{style.category}" ui:field="software"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="R&amp;D Projects" addStyleNames="{style.category}" ui:field="projects"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Testimonials" addStyleNames="{style.category}, {style.settings}" ui:field="testimonials"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Success stories" addStyleNames="{style.category}" ui:field="successStories"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}, {style.settings}" ui:field="settings"></m:MaterialLink>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
             </g:HTMLPanel>
@@ -161,15 +161,15 @@
             <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
             <m:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></m:MaterialPanel>
         </m:MaterialContainer>
-        <m:MaterialFooter backgroundColor="green lighten-1">
+        <m:MaterialFooter backgroundColor="GREEN_LIGHTEN_1">
             <m:MaterialRow>
                 <m:MaterialColumn grid="s12 m6 l6">
-                    <m:MaterialTitle textColor="white" title="Join The Discussion" description="Come and join us in the EO Broker Gerrit Lobby. Share your opinion, make comments, report bugs and request new features. We welcome feedback!"/>
-                    <m:MaterialAnchorButton ui:field="chat" href="https://gitter.im/EO-Broker/Lobby#" target="_blank;" text="CHAT" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                    <m:MaterialTitle textColor="WHITE" title="Join The Discussion" description="Come and join us in the EO Broker Gerrit Lobby. Share your opinion, make comments, report bugs and request new features. We welcome feedback!"/>
+                    <m:MaterialAnchorButton ui:field="chat" href="https://gitter.im/EO-Broker/Lobby#" target="_blank;" text="CHAT" backgroundColor="BLUE_LIGHTEN_2" waves="LIGHT"/>
                 </m:MaterialColumn>
                 <m:MaterialColumn grid="s12 m6 l6">
-                    <m:MaterialTitle textColor="white" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
-                    <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="blue lighten-2" waves="LIGHT"/>
+                    <m:MaterialTitle textColor="WHITE" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
+                    <m:MaterialButton ui:field="aboutus" text="ABOUT US" backgroundColor="BLUE_LIGHTEN_2" waves="LIGHT"/>
                 </m:MaterialColumn>
             </m:MaterialRow>
             <m:MaterialFooterCopyright>

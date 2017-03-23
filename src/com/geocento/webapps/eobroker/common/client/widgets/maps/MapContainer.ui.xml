@@ -36,33 +36,33 @@
         <design:MaterialPanel layoutPosition="ABSOLUTE" top="20" right="20" ui:field="basemapTogglePanel">
             <design:MaterialPanel ui:field="basemapToggle"></design:MaterialPanel>
         </design:MaterialPanel>
-        <design:MaterialButton visible="false" activates="layers" layoutPosition="ABSOLUTE" top="30" right="20" type="FLOATING" waves="LIGHT" backgroundColor="white" iconType="LAYERS" iconSize="SMALL" iconColor="black" addStyleNames="{style.fabButton}" ui:field="layers"/>
+        <design:MaterialButton visible="false" activates="layers" layoutPosition="ABSOLUTE" top="30" right="20" type="FLOATING" waves="LIGHT" backgroundColor="WHITE" iconType="LAYERS" iconSize="SMALL" iconColor="BLACK" addStyleNames="{style.fabButton}" ui:field="layers"/>
         <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%" height="50%">
             <design:MaterialPanel ui:field="listLayers"></design:MaterialPanel>
         </design:MaterialDropDown>
         <design:MaterialPanel layoutPosition="ABSOLUTE" bottom="30" right="60" ui:field="buttonsPanel">
             <design:MaterialTooltip text="Clear AoI" position="TOP">
-                <design:MaterialButton type="FLOATING" backgroundColor="amber" marginRight="10" iconType="LAYERS_CLEAR" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="clearAoIs"/>
+                <design:MaterialButton type="FLOATING" backgroundColor="AMBER" marginRight="10" iconType="LAYERS_CLEAR" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="clearAoIs"/>
             </design:MaterialTooltip>
             <design:MaterialTooltip text="Edit the current AoI" position="TOP">
-                <design:MaterialButton type="FLOATING" backgroundColor="blue" marginRight="10" iconType="EDIT" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="editGeometry"/>
+                <design:MaterialButton type="FLOATING" backgroundColor="BLUE" marginRight="10" iconType="EDIT" iconSize="SMALL" addStyleNames="{style.fabButton}" ui:field="editGeometry"/>
             </design:MaterialTooltip>
         </design:MaterialPanel>
         <!-- FAB -->
         <design:MaterialFAB layoutPosition="ABSOLUTE" bottom="30" right="20" addStyleNames="{style.fabPanel}" ui:field="addButton">
-            <design:MaterialButton type="FLOATING" backgroundColor="red" iconType="ADD" iconSize="SMALL" opacity="1.0" ui:field="fabButton"/>
+            <design:MaterialButton type="FLOATING" backgroundColor="RED" iconType="ADD" iconSize="SMALL" opacity="1.0" ui:field="fabButton"/>
             <design:MaterialFABList ui:field="addButtons">
                 <design:MaterialTooltip text="Select saved AoI" position="LEFT">
-                    <design:MaterialAnchorButton visible="false" type="FLOATING" waves="LIGHT" backgroundColor="green" iconType="FILTER" iconSize="SMALL" ui:field="selectButton"/>
+                    <design:MaterialAnchorButton visible="false" type="FLOATING" waves="LIGHT" backgroundColor="GREEN" iconType="FILTER" iconSize="SMALL" ui:field="selectButton"/>
                 </design:MaterialTooltip>
                 <design:MaterialTooltip text="Upload an AoI" position="LEFT">
-                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="green" iconType="FILE_UPLOAD" iconSize="SMALL" ui:field="uploadFile"/>
+                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="GREEN" iconType="FILE_UPLOAD" iconSize="SMALL" ui:field="uploadFile"/>
                 </design:MaterialTooltip>
                 <design:MaterialTooltip text="Draw polygon" position="LEFT">
-                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CREATE" iconSize="SMALL" ui:field="drawPolygon"/>
+                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="BLUE" iconType="CREATE" iconSize="SMALL" ui:field="drawPolygon"/>
                 </design:MaterialTooltip>
                 <design:MaterialTooltip text="Draw Extent" position="LEFT">
-                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="blue" iconType="CHECK_BOX_OUTLINE_BLANK" iconSize="SMALL" ui:field="drawExtent"/>
+                    <design:MaterialAnchorButton type="FLOATING" waves="LIGHT" backgroundColor="BLUE" iconType="CHECK_BOX_OUTLINE_BLANK" iconSize="SMALL" ui:field="drawExtent"/>
                 </design:MaterialTooltip>
             </design:MaterialFABList>
         </design:MaterialFAB>

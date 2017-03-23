@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialIcon;
@@ -68,7 +69,7 @@ public class DataAccessWidget extends Composite {
                 actionIconType = IconType.INFO;
             }
         }
-        String color = isFree ? "green" : "blue";
+        Color color = isFree ? Color.GREEN : Color.BLUE;
         image.setBackgroundColor(color);
         action.setText("");
         action.setIconType(actionIconType);

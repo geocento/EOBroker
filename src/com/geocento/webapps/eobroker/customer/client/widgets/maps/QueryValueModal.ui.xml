@@ -8,7 +8,7 @@
         }
 
     </ui:style>
-    <design:MaterialModal dismissable="true" inDuration="500" outDuration="500" width="450px">
+    <design:MaterialModal dismissible="true" inDuration="500" outDuration="500" width="450px">
         <design:MaterialModalContent>
             <design:MaterialTitle title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
             <design:MaterialRow>
@@ -20,10 +20,10 @@
             </design:MaterialRow>
             <design:MaterialRow width="100%">
                 <design:MaterialColumn grid="s6" textAlign="LEFT">
-                    <design:MaterialButton text="Submit" backgroundColor="brown" textColor="white" textAlign="CENTER" ui:field="submit"></design:MaterialButton>
+                    <design:MaterialButton text="Submit" backgroundColor="BROWN" textColor="WHITE" textAlign="CENTER" ui:field="submit"></design:MaterialButton>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s6" textAlign="RIGHT">
-                    <design:MaterialButton text="Cancel" backgroundColor="grey" textColor="white" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
+                    <design:MaterialButton text="Cancel" backgroundColor="GREY" textColor="WHITE" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
                 </design:MaterialColumn>
             </design:MaterialRow>
         </design:MaterialModalContent>

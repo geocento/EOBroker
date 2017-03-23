@@ -54,11 +54,11 @@
     <views:TemplateView titleText="View datasets" footer="false" ui:field="template">
         <views:header>
             <widgets:MaterialSideNav width="350" design:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" addStyleNames="{resCommon.style.slimScrollbar}" ui:field="resourcesBar">
-                <sideprofile:MaterialSideProfile backgroundColor="blue">
+                <sideprofile:MaterialSideProfile backgroundColor="BLUE">
                     <design:MaterialPanel>
                         <design:MaterialImage float="LEFT" ui:field="image"></design:MaterialImage>
                         <design:MaterialPanel marginLeft="70" marginTop="10">
-                            <design:MaterialLabel text="" fontSize="1.2em" textColor="white" padding="10" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
+                            <design:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
                             <design:MaterialPanel>
                                 <design:MaterialChip fontSize="0.8em" ui:field="supplier"></design:MaterialChip>
                                 <design:MaterialChip visible="false" ui:field="resource"></design:MaterialChip>
@@ -70,7 +70,7 @@
                 <design:MaterialDropDown activator="datasets" ui:field="dataAccessList">
                 </design:MaterialDropDown>
                 <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
-                <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="red" ui:field="errorMessage"></design:MaterialLabel>
+                <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="RED" ui:field="errorMessage"></design:MaterialLabel>
                 <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
                     <design:MaterialLabel paddingBottom="20" ui:field="description"></design:MaterialLabel>
                     <design:MaterialRow>

@@ -17,7 +17,7 @@
         }
 
     </ui:style>
-    <design:MaterialPanel backgroundColor="white" padding="20" margin="10">
+    <design:MaterialPanel backgroundColor="WHITE" padding="20" margin="10">
         <design:MaterialRow ui:field="fields">
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink ui:field="type"></design:MaterialLink>

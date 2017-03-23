@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialLink;
 
@@ -42,7 +43,7 @@ public class FeasibilityHeader extends Composite {
         indicator.setText(text);
     }
 
-    public void setIndicatorColor(String color) {
+    public void setIndicatorColor(Color color) {
         indicator.setTextColor(color);
     }
 

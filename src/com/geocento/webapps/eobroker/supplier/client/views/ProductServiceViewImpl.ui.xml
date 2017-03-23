@@ -100,7 +100,15 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Product Service" ui:field="template">
-        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialPanel>
+            <design:MaterialTooltip text="Visible or not in customer application">
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="View in client application">
+                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        </design:MaterialPanel>
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
                 <widgets:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></widgets:MaterialImageUploader>
@@ -118,20 +126,20 @@
                 <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS"/>
+                <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Service extent" textColor="black" iconType="MAP"/>
+                <design:MaterialLink text="Service extent" textColor="BLACK" iconType="MAP"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
                 </design:MaterialPanel>
-                <design:MaterialLabel margin="20" textColor="orange" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
+                <design:MaterialLabel margin="20" textColor="ORANGE" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Service product" textColor="black" iconType="MAP"/>
+                <design:MaterialLink text="Service product" textColor="BLACK" iconType="MAP"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <cwidgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></cwidgets:ProductTextBox>
                     <design:MaterialPanel ui:field="productPanel">
@@ -149,22 +157,22 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Dissemination of results" textColor="black" iconType="RSS_FEED" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Dissemination of results" textColor="BLACK" iconType="RSS_FEED" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="dataAccessMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="dataAccess"></design:MaterialRow>
-                    <design:MaterialLabel fontSize="0.8em" textColor="grey">Specify the type of dissemination your service supports.</design:MaterialLabel>
+                    <design:MaterialLabel fontSize="0.8em" textColor="GREY">Specify the type of dissemination your service supports.</design:MaterialLabel>
                     <design:MaterialTextBox placeholder="Comment on the dissemination of results" ui:field="disseminationComment"></design:MaterialTextBox>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Time to delivery" textColor="black" iconType="ACCESS_TIME" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Time to delivery" textColor="BLACK" iconType="ACCESS_TIME" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialTextBox placeholder="Specify your time to delivery conditions" ui:field="deliveryTime"></design:MaterialTextBox>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Samples" textColor="black" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Samples" textColor="BLACK" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="samplesMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="samples"></design:MaterialRow>
@@ -174,12 +182,12 @@
                             <design:MaterialButton text="Add hosted sample" ui:field="addHostedSample"></design:MaterialButton>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
-                            <widgets:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="transparent" shadow="0" ui:field="sampleUploader">
+                            <widgets:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
                                     <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
                                         <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to server</design:MaterialLabel>
-                                        <design:MaterialLabel textColor="grey" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
-                                        <design:MaterialButton backgroundColor="pink" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="white" ui:field="uploadSampleButton"></design:MaterialButton>
+                                        <design:MaterialLabel textColor="GREY" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
+                                        <design:MaterialButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></design:MaterialButton>
                                     </design:MaterialCardContent>
                                 </design:MaterialCard>
                             </widgets:MaterialFileUploader>
@@ -188,13 +196,13 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink addStyleNames="{style.label}" text="API URL" textColor="black" iconType="SETTINGS"/>
+                <design:MaterialLink addStyleNames="{style.label}" text="API URL" textColor="BLACK" iconType="SETTINGS"/>
                 <design:MaterialTextBox type="URL" ui:field="apiURL"/>
                 <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the API URL conforming to the product API specifications. Leave empty if you do not wish to support this feature."></design:MaterialLabel>
             </design:MaterialColumn>
         </design:MaterialRow>
         <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-            <design:MaterialButton text="UPDATE" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+            <design:MaterialButton text="UPDATE" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

@@ -122,6 +122,17 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
                 }
             }
         }));
+
+        handlers.add(successStoryView.getViewClient().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Window.alert("Not implemented yet");
+/*
+                // TODO - how do we get to use the place instead?
+                Window.open(GWT.getHostPageBaseURL() + "#fullview:softwareid=" + softwareDTO.getId(), "_fullview;", null);
+*/
+            }
+        }));
     }
 
 }

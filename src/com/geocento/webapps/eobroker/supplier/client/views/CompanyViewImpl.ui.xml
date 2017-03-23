@@ -73,8 +73,15 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Company Profile" ui:field="template">
-        <design:MaterialLink float="RIGHT" iconType="EXPLORE" ui:field="viewClient"></design:MaterialLink>
-        <design:MaterialTitle title="Edit your company's profile" ui:field="title"></design:MaterialTitle>
+        <design:MaterialPanel>
+            <design:MaterialTooltip text="Visible or not in customer application">
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="View in client application">
+                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTitle title="Edit your company's profile" ui:field="title"></design:MaterialTitle>
+        </design:MaterialPanel>
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
                 <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
@@ -92,7 +99,7 @@
                 <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="black" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
                 <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
@@ -105,7 +112,7 @@
                 <design:MaterialListBox placeholder="Company size" ui:field="companySize"></design:MaterialListBox>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Awards" textColor="black" iconType="STAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Awards" textColor="BLACK" iconType="STAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="awardsMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="awards"></design:MaterialRow>
@@ -115,7 +122,7 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn visible="false" grid="s12">
-                <design:MaterialLink text="Testimonials" textColor="black" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Testimonials" textColor="BLACK" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="testimonialsMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="testimonials"></design:MaterialRow>
@@ -126,7 +133,7 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                    <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
                 </g:HTMLPanel>
             </design:MaterialColumn>
         </design:MaterialRow>

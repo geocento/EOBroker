@@ -16,7 +16,7 @@
         }
 
     </ui:style>
-    <design:MaterialPanel backgroundColor="white" padding="20" margin="10">
+    <design:MaterialPanel backgroundColor="WHITE" padding="20" margin="10">
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
                 <design:MaterialTextBox length="100" placeholder="Name of the performance" marginBottom="10" ui:field="name"></design:MaterialTextBox>

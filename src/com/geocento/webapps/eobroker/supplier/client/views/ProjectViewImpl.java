@@ -73,6 +73,8 @@ public class ProjectViewImpl extends Composite implements ProjectView {
     MaterialDatePicker from;
     @UiField
     MaterialDatePicker until;
+    @UiField
+    MaterialLink viewClient;
 
     public ProjectViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -279,6 +281,11 @@ public class ProjectViewImpl extends Composite implements ProjectView {
         // reset the values
         company.clearCompany();
         companyRole.setText("");
+    }
+
+    @Override
+    public HasClickHandlers getViewClient() {
+        return viewClient;
     }
 
     @Override

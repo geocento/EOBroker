@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.base.MaterialImageCell;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.ImageType;
 import gwt.material.design.client.ui.*;
 
@@ -120,7 +121,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        tab.setBackgroundColor("teal lighten-2");
+        tab.setBackgroundColor(Color.TEAL_LIGHTEN_2);
 
         startDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
@@ -445,8 +446,8 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         providerDropdown.clear();
         for(final ImageService imageService : imageServices) {
             MaterialLink materialLink = new MaterialLink(imageService.getName());
-            materialLink.setBackgroundColor("white");
-            materialLink.setTextColor("black");
+            materialLink.setBackgroundColor(Color.WHITE);
+            materialLink.setTextColor(Color.BLACK);
             materialLink.setTooltip(imageService.getDescription());
             materialLink.addClickHandler(new ClickHandler() {
                 @Override

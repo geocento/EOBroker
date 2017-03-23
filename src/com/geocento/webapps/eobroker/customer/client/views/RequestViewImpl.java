@@ -22,6 +22,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.ui.*;
@@ -135,7 +136,7 @@ public class RequestViewImpl extends Composite implements RequestView {
         MaterialRow materialRow = new MaterialRow();
         materialRow.setMarginBottom(0);
         messages.add(materialRow);
-        String colour = "white";
+        Color colour = Color.WHITE;
         UserWidget userWidget = new UserWidget(userName);
         userWidget.setMarginTop(8);
         userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);
@@ -175,7 +176,7 @@ public class RequestViewImpl extends Composite implements RequestView {
         if(response == null) {
             MaterialLabel materialLabel = new MaterialLabel("This supplier hasn't provided an offer yet...");
             materialLabel.setMargin(20);
-            materialLabel.setTextColor("grey");
+            materialLabel.setTextColor(Color.GREY);
             requestResponse.add(materialLabel);
         } else {
             requestResponse.add(new HTML(response));
@@ -189,7 +190,7 @@ public class RequestViewImpl extends Composite implements RequestView {
         if(messages.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No messages yet...");
             materialLabel.setMargin(20);
-            materialLabel.setTextColor("grey");
+            materialLabel.setTextColor(Color.GREY);
             this.messages.add(materialLabel);
             message.setPlaceholder("Start a conversation...");
         } else {
@@ -234,7 +235,7 @@ public class RequestViewImpl extends Composite implements RequestView {
     }
 
     protected void setCategory(Category category) {
-        String color = CategoryUtils.getColor(category);
+        Color color = CategoryUtils.getColor(category);
         tabs.setBackgroundColor(color);
         colorPanel.setBackgroundColor(color);
     }
@@ -252,7 +253,7 @@ public class RequestViewImpl extends Composite implements RequestView {
         MaterialColumn materialColumn = new MaterialColumn();
         MaterialLink materialLink = new MaterialLink(name);
         materialLink.setHref("#" + id);
-        materialLink.setTextColor("white");
+        materialLink.setTextColor(Color.WHITE);
         materialTabItem.add(materialLink);
         materialLink.addClickHandler(clickHandler);
         materialColumn.add(materialLink);

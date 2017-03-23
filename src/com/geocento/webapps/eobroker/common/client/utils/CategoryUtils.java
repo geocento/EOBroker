@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.client.utils;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 
 /**
@@ -32,23 +33,23 @@ public class CategoryUtils {
         return null;
     }
 
-    public static String getColor(Category type) {
+    public static Color getColor(Category type) {
         switch (type) {
             case products:
-                return "blue-grey";
+                return Color.BLUE_GREY;
             case productservices:
-                return "orange";
+                return Color.ORANGE;
             case productdatasets:
-                return "green";
+                return Color.GREEN;
             case software:
-                return "brown";
+                return Color.BROWN;
             case project:
-                return "blue";
+                return Color.BLUE;
             case companies:
-                return "blue";
+                return Color.BLUE;
             case imagery:
-                return "blue";
+                return Color.BLUE;
         }
-        return "grey";
+        return Color.GREY;
     }
 }

@@ -52,7 +52,7 @@
             <m:MaterialTitle title="Request quotation for imagery" description="Please fill in the form below"></m:MaterialTitle>
 <!--
             <m:MaterialLabel addStyleNames="{style.title}">Request quotation for imagery</m:MaterialLabel>
-            <m:MaterialLabel textColor="blue-grey" addStyleNames="{style.subsection}">Please fill in the form below</m:MaterialLabel>
+            <m:MaterialLabel textColor="BLUE_GREY" addStyleNames="{style.subsection}">Please fill in the form below</m:MaterialLabel>
 -->
             <m:MaterialRow>
                 <m:MaterialColumn grid="s12 m12 l6">

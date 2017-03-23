@@ -12,6 +12,7 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductGeoinformation;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceEditDTO;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -211,6 +212,14 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                 } catch (RequestException e) {
                     e.printStackTrace();
                 }
+            }
+        }));
+
+        handlers.add(productServiceView.getViewClient().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // TODO - how do we get to use the place instead?
+                Window.open(GWT.getHostPageBaseURL() + "#fullview:productserviceid=" + productServiceDTO.getId(), "_fullview;", null);
             }
         }));
     }

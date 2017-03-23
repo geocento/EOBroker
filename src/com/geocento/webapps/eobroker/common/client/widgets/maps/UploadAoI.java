@@ -11,7 +11,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import gwt.material.design.addins.client.fileuploader.MaterialFileUploader;
 import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.events.*;
+import gwt.material.design.addins.client.fileuploader.base.UploadResponse;
+import gwt.material.design.addins.client.fileuploader.events.AddedFileEvent;
+import gwt.material.design.addins.client.fileuploader.events.ErrorEvent;
+import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
+import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
+import gwt.material.design.client.events.DragOverEvent;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialProgress;
@@ -60,7 +65,7 @@ public class UploadAoI {
                 String fileName = event.getTarget().getName();
                 if(!fileName.endsWith(".kml")) {
                     Window.alert("Sorry on KML files allowed for now");
-                    uploadAoI.fireErrorEvent(fileName, event.getTarget().getLastModified() + "", event.getTarget().getFileSize() + "", event.getTarget().getType(), "500", "", "Only KML files are allowed");
+                    ErrorEvent.fire(uploadAoI, event.getTarget(), new UploadResponse("500", "Only KML files are allowed", "Only KML files are allowed"));
                 }
             }
         });
@@ -116,11 +121,11 @@ public class UploadAoI {
     // TODO - clean the dropzone?
     public void display(final Presenter presenter) {
         this.presenter = presenter;
-        materialModal.openModal();
+        materialModal.open();
     }
 
     private void hide() {
-        materialModal.closeModal();
+        materialModal.close();
     }
 
 }

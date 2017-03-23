@@ -13,14 +13,12 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.client.places.FeedbackPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -36,9 +34,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.base.HasHref;
-import gwt.material.design.client.constants.Position;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.html.Option;
+import gwt.material.design.jquery.client.api.Functions;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -235,13 +234,13 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         MaterialPanel materialPanel = new MaterialPanel();
         if(moreUrl != null) {
             MaterialLink moreLink = new MaterialLink("More");
-            moreLink.setTextColor("blue");
+            moreLink.setTextColor(Color.BLUE);
             moreLink.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
             materialPanel.add(moreLink);
             moreLink.setHref(moreUrl);
         }
         MaterialLabel title = new MaterialLabel(message);
-        title.setTextColor("black");
+        title.setTextColor(Color.BLACK);
         materialPanel.add(title);
         materialPanel.addStyleName(style);
         productRow.add(materialPanel);
@@ -478,13 +477,13 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         for(Widget widget : categories) {
             widget.removeStyleName(style.selected());
             if(widget instanceof MaterialLink) {
-                ((MaterialLink) widget).setTextColor("none");
+                ((MaterialLink) widget).setTextColor(null);
             }
         }
         if(category == null) {
             return;
         }
-        String color = CategoryUtils.getColor(category);
+        Color color = CategoryUtils.getColor(category);
         switch (category) {
             case products:
                 productsCategory.addStyleName(style.selected());
@@ -565,9 +564,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 materialColumn.add(new ProductWidget(productDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
                     @Override
-                    public void run() {
+                    public void call() {
                         presenter.loadMoreProducts();
                     }
                 });
@@ -593,11 +592,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 materialColumn.add(new ProductServiceWidget(productServiceDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
-                    @Override
-                    public void run() {
-                        presenter.loadMoreProductServices();
-                    }
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
+                        @Override
+                        public void call() {
+                            presenter.loadMoreProductServices();
+                        }
                 });
             }
         }
@@ -621,9 +620,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
                     @Override
-                    public void run() {
+                    public void call() {
                         presenter.loadMoreProductDatasets();
                     }
                 });
@@ -649,9 +648,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 materialColumn.add(new SoftwareWidget(softwareDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
                     @Override
-                    public void run() {
+                    public void call() {
                         presenter.loadMoreSofware();
                     }
                 });
@@ -677,9 +676,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 materialColumn.add(new ProjectWidget(projectDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
                     @Override
-                    public void run() {
+                    public void call() {
                         presenter.loadMoreProjects();
                     }
                 });
@@ -705,9 +704,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 materialColumn.add(new CompanyWidget(companyDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Runnable() {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
                     @Override
-                    public void run() {
+                    public void call() {
                         presenter.loadMoreProducts();
                     }
                 });

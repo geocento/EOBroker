@@ -81,6 +81,8 @@ public interface ProductServiceView extends IsWidget {
 
     List<DatasetAccess> getSamples();
 
+    HasClickHandlers getViewClient();
+
     public interface Presenter {
         void productChanged();
     }

@@ -182,7 +182,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         for(Widget widget : links) {
             widget.removeStyleName(style.selected());
             if(widget instanceof MaterialLink) {
-                ((MaterialLink) widget).setTextColor("none");
+                ((MaterialLink) widget).setTextColor(null);
             }
         }
         if(place == null) {

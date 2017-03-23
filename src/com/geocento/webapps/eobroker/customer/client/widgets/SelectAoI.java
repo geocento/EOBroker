@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
@@ -64,7 +65,7 @@ public class SelectAoI {
     // TODO - clean the dropzone?
     public void display(final Presenter presenter) {
         this.presenter = presenter;
-        materialModal.openModal();
+        materialModal.open();
         listOfAoIs.clear();
         listOfAoIs.add(new LoadingWidget("Loading AoIs..."));
         // load user's AOIs
@@ -130,12 +131,12 @@ public class SelectAoI {
             REST.withCallback(new MethodCallback<Void>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    MaterialToast.fireToast("Could not remove AoI, please retry", "red");
+                    MaterialToast.fireToast("Could not remove AoI, please retry", Color.RED.getCssName());
                 }
 
                 @Override
                 public void onSuccess(Method method, Void response) {
-                    MaterialToast.fireToast("AoI removed", "green");
+                    MaterialToast.fireToast("AoI removed", Color.GREEN.getCssName());
                     WidgetUtil.removeWidgets(listOfAoIs, new WidgetUtil.CheckValue() {
                         @Override
                         public boolean isValue(Widget widget) {
@@ -150,7 +151,7 @@ public class SelectAoI {
     }
 
     private void hide() {
-        materialModal.closeModal();
+        materialModal.close();
     }
 
 }

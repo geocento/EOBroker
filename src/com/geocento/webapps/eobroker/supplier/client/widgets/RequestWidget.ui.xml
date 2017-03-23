@@ -14,13 +14,13 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="white" axis="VERTICAL">
-        <design:MaterialCardContent textColor="white" backgroundColor="grey" ui:field="content">
+    <design:MaterialCard backgroundColor="WHITE" axis="VERTICAL">
+        <design:MaterialCardContent textColor="WHITE" backgroundColor="GREY" ui:field="content">
             <design:MaterialLabel fontSize="1.4em" truncate="true" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action">
-            <design:MaterialButton text="View Request" backgroundColor="blue-grey" textColor="white" ui:field="request"></design:MaterialButton>
+            <design:MaterialButton text="View Request" backgroundColor="BLUE_GREY" textColor="WHITE" ui:field="request"></design:MaterialButton>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

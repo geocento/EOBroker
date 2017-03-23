@@ -25,7 +25,7 @@
             <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
             <design:MaterialTextBox placeholder="URI" type="URL" iconType="WEB" ui:field="uri"/>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
             </g:HTMLPanel>
         </design:MaterialRow>
     </views:TemplateView>

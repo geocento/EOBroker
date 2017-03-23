@@ -5,7 +5,7 @@
       <configuration>
         <setting name="compilerMaxHeapSize" value="1024" />
         <setting name="gwtScriptOutputStyle" value="OBF" />
-        <setting name="gwtSdkUrl" value="file://$USER_HOME$/gwt/gwt-2.7.0" />
+        <setting name="gwtSdkUrl" value="file://$USER_HOME$/gwt/gwt-2.8.0-latest" />
         <setting name="webFacet" value="Web" />
         <packaging>
           <module name="com.geocento.webapps.eobroker.common.common" enabled="false" />
@@ -42,12 +42,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="gwt-user" level="project" />
     <orderEntry type="library" name="libraries" level="project" />
     <orderEntry type="library" name="client libraries" level="project" />
-    <orderEntry type="library" name="antlr-4.5.3-complete" level="project" />
-    <orderEntry type="library" name="gwt-servlet" level="project" />
     <orderEntry type="library" name="geoserver" level="project" />
+    <orderEntry type="library" name="gwt-user" level="project" />
   </component>
 </module>
 

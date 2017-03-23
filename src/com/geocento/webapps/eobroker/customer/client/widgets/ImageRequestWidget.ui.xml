@@ -13,13 +13,13 @@
             color: #ccc;
         }
     </ui:style>
-    <design:MaterialCard backgroundColor="white" axis="VERTICAL">
-        <design:MaterialCardContent textColor="white" backgroundColor="grey">
+    <design:MaterialCard backgroundColor="WHITE" axis="VERTICAL">
+        <design:MaterialCardContent textColor="WHITE" backgroundColor="GREY">
             <design:MaterialLabel fontSize="1.4em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action">
-            <design:MaterialButton text="Request Imagery" backgroundColor="blue-grey" textColor="white" ui:field="request"></design:MaterialButton>
+            <design:MaterialButton text="Request Imagery" backgroundColor="BLUE_GREY" textColor="WHITE" ui:field="request"></design:MaterialButton>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

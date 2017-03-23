@@ -11,6 +11,7 @@ import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialRow;
+import gwt.material.design.jquery.client.api.Functions;
 
 import java.util.List;
 
@@ -88,9 +89,9 @@ public abstract class AsyncPagingWidgetList<T extends Object> extends Composite 
             cellList.add(materialColumn);
         }
         if(hasMore) {
-            MaterialScrollfire.apply(cellList.getWidget(cellList.getWidgetCount() - 1).getElement(), new Runnable() {
+            MaterialScrollfire.apply(cellList.getWidget(cellList.getWidgetCount() - 1).getElement(), new Functions.Func() {
                 @Override
-                public void run() {
+                public void call() {
                     presenter.loadMore();
                 }
             });

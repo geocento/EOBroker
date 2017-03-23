@@ -55,6 +55,8 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     ProductTextBox product;
     @UiField
     MaterialTextBox productPitch;
+    @UiField
+    MaterialLink viewClient;
 
     public SoftwareViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -169,6 +171,11 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
         // reset the values
         product.clearProduct();
         productPitch.setText("");
+    }
+
+    @Override
+    public HasClickHandlers getViewClient() {
+        return viewClient;
     }
 
     @Override

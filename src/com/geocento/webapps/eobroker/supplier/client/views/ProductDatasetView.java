@@ -81,6 +81,8 @@ public interface ProductDatasetView extends IsWidget {
 
     HasText getTemporalCoverageComment();
 
+    HasClickHandlers getViewClient();
+
     public interface Presenter {
         void productChanged();
     }

@@ -68,7 +68,7 @@ public class StyleEditor {
     // TODO - clean the dropzone?
     public void display(final Presenter presenter) {
         this.presenter = presenter;
-        materialModal.openModal();
+        materialModal.open();
         styleEditor.add(new Label("Loading..."));
         ScriptInjector.fromUrl("./js/ace/ace.js").setWindow(ScriptInjector.TOP_WINDOW).setCallback(new Callback<Void, Exception>() {
             @Override
@@ -114,7 +114,7 @@ public class StyleEditor {
     }
 
     public void hide() {
-        materialModal.closeModal();
+        materialModal.close();
     }
 
     public String getCode() {

@@ -31,6 +31,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextBox;
 import gwt.material.design.client.base.HasActive;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.InputType;
 import gwt.material.design.client.ui.MaterialIcon;
@@ -288,8 +289,8 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
         // Populate the search result items
         for(final Suggestion suggestion : listSearches) {
             MaterialLink link = new MaterialLink();
-            link.setIconColor("grey");
-            link.setTextColor("black");
+            link.setIconColor(Color.GREY);
+            link.setTextColor(Color.BLACK);
             // Generate an icon
             link.setIconType(CategoryUtils.getIconType(suggestion.getCategory()));
 

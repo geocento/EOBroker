@@ -39,6 +39,8 @@ public interface SuccessStoryView extends IsWidget {
 
     void setConsortium(List<CompanyRoleDTO> companyRoleDTOs);
 
+    HasClickHandlers getViewClient();
+
     TemplateView getTemplateView();
 
     public interface Presenter {

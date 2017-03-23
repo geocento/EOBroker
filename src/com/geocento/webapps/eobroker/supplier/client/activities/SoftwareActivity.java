@@ -8,6 +8,7 @@ import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.SoftwareView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductSoftwareDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SoftwareDTO;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -122,7 +123,7 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                                 return value.getPitch().length() > 0 && value.getProduct() != null;
                             }
                         }));
-                        if(softwareDTO.getProducts().size() == 0) {
+                        if (softwareDTO.getProducts().size() == 0) {
                             throw new Exception("Please select at least one product or fill in the missing fields");
                         }
                     }
@@ -149,6 +150,14 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                     }).call(ServicesUtil.assetsService).saveSoftware(softwareDTO);
                 } catch (RequestException e) {
                 }
+            }
+        }));
+
+        handlers.add(softwareView.getViewClient().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // TODO - how do we get to use the place instead?
+                Window.open(GWT.getHostPageBaseURL() + "#fullview:softwareid=" + softwareDTO.getId(), "_fullview;", null);
             }
         }));
     }

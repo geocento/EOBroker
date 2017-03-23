@@ -13,17 +13,17 @@
             color: #ccc;
         }
     </ui:style>
-    <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL" shadow="1">
+    <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL" shadow="1">
         <design:MaterialCardImage>
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
+        <design:MaterialCardContent textColor="WHITE">
             <design:MaterialLabel truncate="true" fontSize="1.4em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action">
-            <design:MaterialLink iconType="EDIT" text="EDIT" textColor="white" ui:field="edit"></design:MaterialLink>
-            <design:MaterialLink iconType="REMOVE" text="REMOVE" textColor="white" ui:field="remove"></design:MaterialLink>
+            <design:MaterialLink iconType="EDIT" text="EDIT" textColor="WHITE" ui:field="edit"></design:MaterialLink>
+            <design:MaterialLink iconType="REMOVE" text="REMOVE" textColor="WHITE" ui:field="remove"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

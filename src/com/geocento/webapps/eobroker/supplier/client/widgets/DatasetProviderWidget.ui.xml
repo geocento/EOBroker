@@ -29,11 +29,11 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="indigo lighten-1" axis="VERTICAL">
+    <design:MaterialCard backgroundColor="INDIGO_LIGHTEN_1" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
+        <design:MaterialCardContent textColor="WHITE">
             <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
         </design:MaterialCardContent>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">

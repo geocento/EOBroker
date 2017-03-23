@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
 import gwt.material.design.client.constants.ButtonType;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
@@ -99,7 +100,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         } else {
             for (final ConversationDTO conversationDTO : conversationDTOs) {
                 MaterialBubble materialBubble = new MaterialBubble();
-                materialBubble.setBackgroundColor("white");
+                materialBubble.setBackgroundColor(Color.WHITE);
                 materialBubble.setFloat(Style.Float.LEFT);
                 materialBubble.setPosition(Position.LEFT);
                 materialBubble.setMarginLeft(12);
@@ -159,7 +160,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         MaterialRow materialRow = new MaterialRow();
         materialRow.setMarginBottom(0);
         messages.add(materialRow);
-        String colour = "white";
+        Color colour = Color.WHITE;
         UserWidget userWidget = new UserWidget(userName);
         userWidget.setMarginTop(8);
         userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);

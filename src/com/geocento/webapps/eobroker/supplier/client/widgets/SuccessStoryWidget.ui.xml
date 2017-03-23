@@ -28,8 +28,8 @@
             <design:MaterialLabel fontSize="1em" addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
             <design:MaterialPanel>
                 <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.date}" ui:field="date"></design:MaterialLabel>
-                <design:MaterialLink text="EDIT" textColor="white" ui:field="edit"></design:MaterialLink>
-                <design:MaterialLink text="REMOVE" textColor="white" ui:field="remove"></design:MaterialLink>
+                <design:MaterialLink text="EDIT" textColor="WHITE" ui:field="edit"></design:MaterialLink>
+                <design:MaterialLink text="REMOVE" textColor="WHITE" ui:field="remove"></design:MaterialLink>
             </design:MaterialPanel>
         </design:MaterialPanel>
     </bubble:MaterialBubble>

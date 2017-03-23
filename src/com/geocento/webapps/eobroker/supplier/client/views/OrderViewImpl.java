@@ -25,6 +25,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 
@@ -206,7 +207,7 @@ public class OrderViewImpl extends Composite implements OrderView {
         MaterialRow materialRow = new MaterialRow();
         materialRow.setMarginBottom(0);
         messages.add(materialRow);
-        String colour = "white";
+        Color colour = Color.WHITE;
         UserWidget userWidget = new UserWidget(userName);
         userWidget.setMarginTop(8);
         userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);

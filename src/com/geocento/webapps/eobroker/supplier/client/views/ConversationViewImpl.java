@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialRow;
@@ -104,7 +105,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         MaterialRow materialRow = new MaterialRow();
         materialRow.setMarginBottom(0);
         messages.add(materialRow);
-        String colour = "white";
+        Color colour = Color.WHITE;
         UserWidget userWidget = new UserWidget(userName);
         userWidget.setMarginTop(8);
         userWidget.setFloat(isCustomer ? Style.Float.LEFT : Style.Float.RIGHT);

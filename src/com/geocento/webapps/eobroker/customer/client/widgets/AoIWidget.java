@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.*;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -78,7 +79,7 @@ public class AoIWidget extends Composite {
     void validate(ClickEvent clickEvent) {
         String name = editName.getText();
         if(name.length() == 0) {
-            MaterialToast.fireToast("Please provide a valid name", "red");
+            MaterialToast.fireToast("Please provide a valid name", Color.RED.getCssName());
             return;
         }
         // update aoi
@@ -90,12 +91,12 @@ public class AoIWidget extends Composite {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     setEditing(true);
-                    MaterialToast.fireToast("Could not save AoI, please retry", "red");
+                    MaterialToast.fireToast("Could not save AoI, please retry", Color.RED.getCssName());
                 }
 
                 @Override
                 public void onSuccess(Method method, Void response) {
-                    MaterialToast.fireToast("AoI saved", "green");
+                    MaterialToast.fireToast("AoI saved", Color.GREEN.getCssName());
                     updateName();
                 }
             }).call(ServicesUtil.assetsService).updateAoIName(aoi.getId(), name);

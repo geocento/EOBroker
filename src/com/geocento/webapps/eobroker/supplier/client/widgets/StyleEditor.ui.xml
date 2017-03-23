@@ -14,7 +14,7 @@
         }
 
     </ui:style>
-    <design:MaterialModal type="FIXED_FOOTER" dismissable="true" inDuration="500" outDuration="500" width="600px" overflow="HIDDEN">
+    <design:MaterialModal type="FIXED_FOOTER" dismissible="true" inDuration="500" outDuration="500" width="600px" overflow="HIDDEN">
         <design:MaterialModalContent>
             <design:MaterialTitle title="Create a style" addStyleNames="{style.title}"></design:MaterialTitle>
             <design:MaterialTextBox placeholder="Style Name" ui:field="styleName"></design:MaterialTextBox>
@@ -22,8 +22,8 @@
             <design:MaterialPanel height="300px" ui:field="styleEditor"></design:MaterialPanel>
         </design:MaterialModalContent>
         <design:MaterialModalFooter>
-            <design:MaterialButton marginRight="20" text="Cancel" backgroundColor="grey" textColor="white" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
-            <design:MaterialButton marginRight="20" text="CREATE" backgroundColor="blue" textColor="white" textAlign="CENTER" ui:field="create"></design:MaterialButton>
+            <design:MaterialButton marginRight="20" text="Cancel" backgroundColor="GREY" textColor="WHITE" textAlign="CENTER" ui:field="cancel"></design:MaterialButton>
+            <design:MaterialButton marginRight="20" text="CREATE" backgroundColor="BLUE" textColor="WHITE" textAlign="CENTER" ui:field="create"></design:MaterialButton>
         </design:MaterialModalFooter>
     </design:MaterialModal>
 </ui:UiBinder>

@@ -29,19 +29,19 @@
         }
 
     </ui:style>
-    <design:MaterialCard backgroundColor="indigo lighten-1" axis="VERTICAL">
+    <design:MaterialCard backgroundColor="INDIGO_LIGHTEN_1" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
+        <design:MaterialCardContent textColor="WHITE">
             <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.shortDescription}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
             <design:MaterialLink iconType="EDIT" text="EDIT" ui:field="edit"></design:MaterialLink>
             <design:MaterialLink iconType="REMOVE" text="REMOVE" ui:field="remove"></design:MaterialLink>
-            <design:MaterialButton iconType="PLUS_ONE" iconColor="grey" backgroundColor="grey lighten-2" shadow="0" type="FLOATING" float="RIGHT"/>
+            <design:MaterialButton iconType="PLUS_ONE" iconColor="GREY" backgroundColor="GREY_LIGHTEN_2" shadow="0" type="FLOATING" float="RIGHT"/>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

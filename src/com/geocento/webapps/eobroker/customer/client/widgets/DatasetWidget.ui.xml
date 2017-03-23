@@ -13,16 +13,16 @@
             color: #ccc;
         }
     </ui:style>
-    <design:MaterialCard backgroundColor="blue-grey" axis="VERTICAL">
-        <design:MaterialCardImage backgroundColor="white">
+    <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL">
+        <design:MaterialCardImage backgroundColor="WHITE">
             <design:MaterialImage ui:field="image"></design:MaterialImage>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="white">
-            <design:MaterialLink iconType="CLASS" text="INFO" iconColor="grey" textColor="grey" margin="10" display="BLOCK" ui:field="type"></design:MaterialLink>
+        <design:MaterialCardContent textColor="WHITE">
+            <design:MaterialLink iconType="CLASS" text="INFO" iconColor="GREY" textColor="GREY" margin="10" display="BLOCK" ui:field="type"></design:MaterialLink>
             <design:MaterialLabel fontSize="1.2em" addStyleNames="{style.description}" ui:field="description"/>
         </design:MaterialCardContent>
         <design:MaterialCardAction>
-            <design:MaterialLink iconType="INFO" text="INFO" textColor="white" ui:field="information"></design:MaterialLink>
+            <design:MaterialLink iconType="INFO" text="INFO" textColor="WHITE" ui:field="information"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

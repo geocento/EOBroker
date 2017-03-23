@@ -8,7 +8,7 @@
         }
 
     </ui:style>
-    <design:MaterialModal dismissable="true" inDuration="500" outDuration="500">
+    <design:MaterialModal dismissible="true" inDuration="500" outDuration="500">
         <design:MaterialModalContent>
             <design:MaterialTitle title="Choose from your saved AoI" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
             <design:MaterialRow>

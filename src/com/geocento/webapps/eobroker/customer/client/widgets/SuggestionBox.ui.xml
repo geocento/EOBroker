@@ -3,7 +3,7 @@
     <g:MaterialValueBox>
         <design:MaterialIcon iconType="SEARCH"></design:MaterialIcon>
         <!-- Activator -->
-        <design:MaterialButton text="Dropdown" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="white" backgroundColor="blue" activates="categories"/>
+        <design:MaterialButton text="Dropdown" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="WHITE" backgroundColor="BLUE" activates="categories"/>
         <!-- My Drop Down -->
         <design:MaterialDropDown activator="categories" constrainWidth="true">
              <design:MaterialLink text="First" />

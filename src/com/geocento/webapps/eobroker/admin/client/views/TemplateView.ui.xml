@@ -86,7 +86,7 @@
     <g:HTMLPanel addStyleNames="{style.panel}" ui:field="panel">
         <header>
             <!-- NavBar -->
-            <design:MaterialNavBar activates="sideNav" backgroundColor="purple" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
+            <design:MaterialNavBar activates="sideNav" backgroundColor="PURPLE" layoutPosition="FIXED" addStyleNames="{style.navBar}" ui:field="navBar">
                 <design:MaterialNavSection>
                     <design:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></design:MaterialImage>
                     <design:MaterialLabel text="Admin dashboard" display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
@@ -94,7 +94,7 @@
                 <design:MaterialNavSection float="RIGHT">
                     <design:MaterialTooltip text="Notifications" position="BOTTOM">
                         <design:MaterialLink iconType="NOTIFICATIONS" iconPosition="NONE" layoutPosition="RELATIVE" ui:field="notifications" activates="notifications">
-                            <design:MaterialBadge text="2" backgroundColor="pink" textColor="white" circle="true" ui:field="notificationsBadge"/>
+                            <design:MaterialBadge text="2" backgroundColor="PINK" textColor="WHITE" circle="true" ui:field="notificationsBadge"/>
                         </design:MaterialLink>
                     </design:MaterialTooltip>
                     <design:MaterialTooltip text="Log out" position="BOTTOM">
@@ -110,13 +110,13 @@
                     <g:HTMLPanel addStyleNames="{style.menus}">
                         <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
                         <g:HTMLPanel ui:field="links">
-                            <design:MaterialLink iconType="VERIFIED_USER" iconPosition="LEFT" textColor="blue" text="Users" addStyleNames="{style.category}" ui:field="users"></design:MaterialLink>
-                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Companies" addStyleNames="{style.category}" ui:field="companies"></design:MaterialLink>
-                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="blue" text="Products" addStyleNames="{style.category}" ui:field="products"></design:MaterialLink>
-                            <design:MaterialLink iconType="NEW_RELEASES" iconPosition="LEFT" textColor="blue" text="News Items" addStyleNames="{style.category}" ui:field="newsItems"></design:MaterialLink>
-                            <design:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="blue" text="Feedback" addStyleNames="{style.category}" ui:field="feedback"></design:MaterialLink>
-                            <design:MaterialLink iconType="SETTINGS" iconPosition="LEFT" textColor="blue" text="Settings" addStyleNames="{style.category}" ui:field="settings"></design:MaterialLink>
-                            <design:MaterialLink iconType="DEVELOPER_BOARD" iconPosition="LEFT" textColor="blue" text="Logs" addStyleNames="{style.category}" ui:field="logs"></design:MaterialLink>
+                            <design:MaterialLink iconType="VERIFIED_USER" iconPosition="LEFT" textColor="BLUE" text="Users" addStyleNames="{style.category}" ui:field="users"></design:MaterialLink>
+                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Companies" addStyleNames="{style.category}" ui:field="companies"></design:MaterialLink>
+                            <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Products" addStyleNames="{style.category}" ui:field="products"></design:MaterialLink>
+                            <design:MaterialLink iconType="NEW_RELEASES" iconPosition="LEFT" textColor="BLUE" text="News Items" addStyleNames="{style.category}" ui:field="newsItems"></design:MaterialLink>
+                            <design:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="BLUE" text="Feedback" addStyleNames="{style.category}" ui:field="feedback"></design:MaterialLink>
+                            <design:MaterialLink iconType="SETTINGS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}" ui:field="settings"></design:MaterialLink>
+                            <design:MaterialLink iconType="DEVELOPER_BOARD" iconPosition="LEFT" textColor="BLUE" text="Logs" addStyleNames="{style.category}" ui:field="logs"></design:MaterialLink>
                         </g:HTMLPanel>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
@@ -126,7 +126,7 @@
         <design:MaterialContainer fontSize="0.8em" paddingTop="64">
             <design:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></design:MaterialPanel>
         </design:MaterialContainer>
-        <design:MaterialFooter backgroundColor="transparent" textColor="black">
+        <design:MaterialFooter backgroundColor="TRANSPARENT" textColor="BLACK">
             <design:MaterialFooterCopyright>
                 <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
             </design:MaterialFooterCopyright>

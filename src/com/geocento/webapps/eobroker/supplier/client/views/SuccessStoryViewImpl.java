@@ -54,6 +54,8 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     MaterialDatePicker date;
     @UiField
     CompanyTextBox customer;
+    @UiField
+    MaterialLink viewClient;
 
     public SuccessStoryViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -166,6 +168,11 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
             }
         });
         consortium.add(companyRoleWidget);
+    }
+
+    @Override
+    public HasClickHandlers getViewClient() {
+        return viewClient;
     }
 
     @Override

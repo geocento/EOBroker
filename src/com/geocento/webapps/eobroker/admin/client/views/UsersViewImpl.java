@@ -134,12 +134,12 @@ public class UsersViewImpl extends Composite implements UsersView {
         email.setText(userDescriptionDTO.getEmail());
         role.setSelectedValue(userDescriptionDTO.getUserRole().toString());
         company.setCompany(userDescriptionDTO.getCompanyDTO());
-        editUser.openModal();
+        editUser.open();
     }
 
     @UiHandler("cancel")
     public void cancel(ClickEvent clickEvent) {
-        editUser.closeModal();
+        editUser.close();
     }
 
     @Override
@@ -174,7 +174,7 @@ public class UsersViewImpl extends Composite implements UsersView {
 
     @Override
     public void hideEditUser() {
-        editUser.closeModal();
+        editUser.close();
     }
 
     @Override

@@ -40,7 +40,15 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Success story" ui:field="template">
-        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        <design:MaterialPanel>
+            <design:MaterialTooltip text="Visible or not in customer application">
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="View in client application">
+                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
+        </design:MaterialPanel>
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
                 <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
@@ -49,7 +57,7 @@
                 <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Customer" textColor="black" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Customer" textColor="BLACK" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <widgets:CompanyTextBox addStyleNames="{style.product}" ui:field="customer"></widgets:CompanyTextBox>
                     <design:MaterialPanel marginTop="20">
@@ -59,7 +67,7 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Date (only month and year count)" textColor="black" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Date (only month and year count)" textColor="BLACK" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialDatePicker placeholder="Month and year" ui:field="date"></design:MaterialDatePicker>
                 </design:MaterialPanel>
@@ -68,16 +76,16 @@
                 <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Full description" textColor="black" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
                 <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Offering used" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Offering used" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.productsPanel}">
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Partners" textColor="black" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Partners" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.consortiumPanel}">
                     <design:MaterialRow ui:field="consortium">
                     </design:MaterialRow>
@@ -86,7 +94,7 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                    <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                    <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
                 </g:HTMLPanel>
             </design:MaterialColumn>
         </design:MaterialRow>

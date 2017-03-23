@@ -42,7 +42,7 @@
                 </design:MaterialColumn>
             </design:MaterialRow>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
             </g:HTMLPanel>
         </design:MaterialPanel>
     </views:TemplateView>

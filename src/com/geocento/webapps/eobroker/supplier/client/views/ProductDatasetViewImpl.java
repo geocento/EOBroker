@@ -29,10 +29,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.events.DragOverEvent;
 import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
 import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
+import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.events.DragOverEvent;
 import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
@@ -119,6 +120,8 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialTextBox refreshRateDescription;
     @UiField
     MaterialTextBox temporalCoverageComment;
+    @UiField
+    MaterialLink viewClient;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -527,11 +530,11 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         uploadSampleTitle.setText("Upload sample files to our servers");
         if(datasetId == null) {
             uploadSampleComment.setText("Sorry, you need to SUBMIT before you can upload files to our servers");
-            uploadSampleComment.setTextColor("orange");
+            uploadSampleComment.setTextColor(Color.ORANGE);
             uploadSampleButton.setEnabled(false);
         } else {
             uploadSampleComment.setText("Allowed files are shapefiles (zipped), GeoTIFF and documents (PDF, doc, xls...)");
-            uploadSampleComment.setTextColor("dark_grey");
+            uploadSampleComment.setTextColor(Color.GREY_DARKEN_1);
             uploadSampleButton.setEnabled(true);
             sampleUploader.setParameter("resourceId", datasetId + "");
         }
@@ -596,6 +599,11 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         AccessType selectedType = AccessType.valueOf(sampleAccessType.getValue());
         addSample(createDataAccess(selectedType, true));
         updateSamplesMessage();
+    }
+
+    @Override
+    public HasClickHandlers getViewClient() {
+        return viewClient;
     }
 
 }

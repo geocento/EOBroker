@@ -60,7 +60,7 @@ public class QueryValueModal {
         this.title.setTitle(title);
         this.title.setDescription(description);
         value.setText(initialValue != null ? initialValue : "");
-        materialModal.openModal();
+        materialModal.open();
     }
 
     @UiHandler("submit")
@@ -77,7 +77,7 @@ public class QueryValueModal {
     }
 
     private void hide() {
-        materialModal.closeModal();
+        materialModal.close();
     }
 
 }

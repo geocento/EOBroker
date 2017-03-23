@@ -31,14 +31,14 @@
         }
 
         .tags {
+            float: right;
             font-size: 1em;
-            padding: 10px 0px;
+            padding: 0px;
         }
 
         .tabPanel {
             margin-bottom: 50px;
             padding: 20px 0px;
-            border-bottom: 1px solid #c8ddd4;
         }
 
         .description {
@@ -52,7 +52,7 @@
         }
 
         .title {
-            font-size: 1.4em;
+            font-size: 1.6em;
             margin: 10px 0px;
         }
 
@@ -84,18 +84,24 @@
     </ui:style>
     <views:TemplateView ui:field="template">
         <design:MaterialPanel addStyleNames="{style.panel}">
-            <design:MaterialRow margin="0" padding="0" backgroundColor="BLUE_GREY" ui:field="navigation"></design:MaterialRow>
-            <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="white" paddingTop="10" paddingBottom="10">
-                    <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
-                        <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
-                    </design:MaterialColumn>
-                    <design:MaterialColumn grid="s12 m8 l8">
-                        <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
-                        <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+            <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE" ui:field="navigation">
+            </design:MaterialNavBar>
+            <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+                <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                    <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m8 l8">
+                    <design:MaterialPanel>
                         <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
-                    </design:MaterialColumn>
+                        <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                    </design:MaterialPanel>
+                    <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
+                        <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
             </design:MaterialRow>
-            <design:MaterialPanel backgroundColor="blue" addStyleNames="{style.tabsPanel}" ui:field="tabsPanel">
+            <design:MaterialPanel backgroundColor="BLUE" addStyleNames="{style.tabsPanel}" ui:field="tabsPanel">
             </design:MaterialPanel>
             <design:MaterialPanel layoutPosition="RELATIVE">
                 <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>

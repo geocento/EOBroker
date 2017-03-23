@@ -29,6 +29,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.GwtEvent;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialTextBox;
 
@@ -211,7 +212,7 @@ public class MaterialSensorsSuggestion extends MaterialTextBox {
         // Populate the search result items
         for(final Suggestion suggestion : listSearches) {
             MaterialLink link = new MaterialLink();
-            link.setTextColor("black");
+            link.setTextColor(Color.BLACK);
             // Generate an image
             link.setText(suggestion.getCategory() == Category.imagery ? suggestion.getName() : "suitable for '" + suggestion.getName() + "'");
             link.getElement().getStyle().setProperty("lineHeight", "normal");

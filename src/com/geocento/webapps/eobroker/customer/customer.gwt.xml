@@ -16,7 +16,9 @@
     <source path='client'/>
     <source path='shared'/>
 
-    <!-- Fallback User Agent for use by CRAWLERS -->
+<!--
+    &lt;!&ndash; Fallback User Agent for use by CRAWLERS &ndash;&gt;
     <set-property-fallback name="user.agent" value="gecko1_8" />
+-->
 
 </module>

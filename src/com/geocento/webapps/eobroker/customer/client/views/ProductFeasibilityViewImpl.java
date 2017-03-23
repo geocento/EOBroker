@@ -43,6 +43,7 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
@@ -121,7 +122,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        tab.setBackgroundColor("teal lighten-2");
+        tab.setBackgroundColor(Color.TEAL_LIGHTEN_2);
         resultsTab.setVisible(false);
 
         startDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
@@ -219,8 +220,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         serviceDropdown.clear();
         for(final ProductServiceFeasibilityDTO productServiceFeasibilityDTO : productServices) {
             MaterialLink materialLink = new MaterialLink(productServiceFeasibilityDTO.getName());
-            materialLink.setBackgroundColor("white");
-            materialLink.setTextColor("black");
+            materialLink.setBackgroundColor(Color.WHITE);
+            materialLink.setTextColor(Color.BLACK);
             materialLink.setTooltip("Service provided by " + productServiceFeasibilityDTO.getCompanyDTO().getName());
             materialLink.addClickHandler(new ClickHandler() {
                 @Override
@@ -299,7 +300,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         results.clear();
         // add main collapsible panel
         MaterialCollapsible materialCollapsible = new MaterialCollapsible();
-        materialCollapsible.setBackgroundColor("white");
+        materialCollapsible.setBackgroundColor(Color.WHITE);
         results.add(materialCollapsible);
 
         // add feasibility result
@@ -315,14 +316,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             materialCollapsibleItem.add(materialCollapsibleBody);
             if (response.getFeasible() == ProductFeasibilityResponse.FEASIBILITY.NONE) {
                 feasibilityHeader.setIndicatorText("NOT FEASIBLE");
-                feasibilityHeader.setIndicatorColor("red");
+                feasibilityHeader.setIndicatorColor(Color.RED);
                 return;
             } else if (response.getFeasible() == ProductFeasibilityResponse.FEASIBILITY.PARTIAL) {
                 feasibilityHeader.setIndicatorText("PARTIAL");
-                feasibilityHeader.setIndicatorColor("orange");
+                feasibilityHeader.setIndicatorColor(Color.ORANGE);
             } else if (response.getFeasible() == ProductFeasibilityResponse.FEASIBILITY.GOOD) {
                 feasibilityHeader.setIndicatorText("LIKELY");
-                feasibilityHeader.setIndicatorColor("green");
+                feasibilityHeader.setIndicatorColor(Color.AMBER);
             }
         }
 
@@ -508,12 +509,12 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                 chart.draw(dataTable, opt.get());
             }
         });
-        cutOut.openCutOut();
+        cutOut.open();
     }
 
     @UiHandler("btnCutOutClose")
     void closeCutOut(ClickEvent clickEvent) {
-        cutOut.closeCutOut();
+        cutOut.close();
     }
 
     @Override

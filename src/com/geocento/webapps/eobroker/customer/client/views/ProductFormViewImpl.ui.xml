@@ -72,7 +72,7 @@
                     <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="name"></design:MaterialLabel>
                     <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
                     <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags">
-                        <design:MaterialChip textColor="white" backgroundColor="grey" text="Information" letter="i" letterColor="white" letterBackgroundColor="red" ui:field="information"></design:MaterialChip>
+                        <design:MaterialChip textColor="WHITE" backgroundColor="GREY" text="Information" letter="i" letterColor="WHITE" letterBackgroundColor="RED" ui:field="information"></design:MaterialChip>
                     </g:HTMLPanel>
                 </design:MaterialColumn>
             </design:MaterialRow>
@@ -98,7 +98,7 @@
                 </g:HTMLPanel>
             </g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-                <design:MaterialButton text="SUBMIT" textColor="white" backgroundColor="blue" ui:field="submit"></design:MaterialButton>
+                <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
             </g:HTMLPanel>
         </g:HTMLPanel>
     </views:TemplateView>
