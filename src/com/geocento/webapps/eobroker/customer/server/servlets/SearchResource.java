@@ -191,7 +191,7 @@ public class SearchResource implements SearchService {
         }
         // now search for datasets
         {
-            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, aoiId);
+            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, aoiId, null, null, null);
             boolean more = productDatasetDTOs.size() > 4;
             if (more) {
                 productDatasetDTOs = productDatasetDTOs.subList(0, 4);
@@ -201,7 +201,7 @@ public class SearchResource implements SearchService {
         }
         // now search for software
         {
-            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, aoiId);
+            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, aoiId, null);
             boolean more = softwareDTOs.size() > 4;
             if (more) {
                 softwareDTOs = softwareDTOs.subList(0, 4);
@@ -539,17 +539,34 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+    public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit, Long aoiId,
+                                                       ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame) throws RequestException {
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
-        String additionalStatement = null;
+        List<String> additionalStatements = new ArrayList<String>();
         if(aoiId != null) {
             AoI aoi = em.find(AoI.class, aoiId);
             if(aoi != null) {
-                additionalStatement = "ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'";
+                additionalStatements.add("ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'");
             }
         }
-        List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit, additionalStatement);
+        if(serviceType != null) {
+            additionalStatements.add("servicetype = '" + serviceType.toString() + "'");
+        }
+        // TODO - add filter for inclusiveness or not of time frame
+/*
+        SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd");
+*/
+        if(startTimeFrame != null && stopTimeFrame != null) {
+            additionalStatements.add("startdate < " + stopTimeFrame + " AND " +
+                    "stopdate > " + startTimeFrame + "");
+        } else if(startTimeFrame != null) {
+            additionalStatements.add("stopdate > " + startTimeFrame + "");
+        } else if(stopTimeFrame != null) {
+            additionalStatements.add("startdate < " + stopTimeFrame + "");
+        }
+        List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit,
+                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
         if(productIds.size() > 0) {
             TypedQuery<ProductDataset> productQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
             productQuery.setParameter("productIds", productIds);
@@ -577,10 +594,15 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<SoftwareDTO> listSoftware(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+    public List<SoftwareDTO> listSoftware(String textFilter, Integer start, Integer limit, Long aoiId, SoftwareType softwareType) throws RequestException {
         List<Software> softwares = null;
         EntityManager em = EMF.get().createEntityManager();
-        List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit, null);
+        List<String> additionalStatements = new ArrayList<String>();
+        if(softwareType != null) {
+            additionalStatements.add("softwaretype = '" + softwareType.toString() + "'");
+        }
+        List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit,
+                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
         if(softwareIds.size() > 0) {
             TypedQuery<Software> softwareQuery = em.createQuery("select p from Software p where p.id IN :softwareIds", Software.class);
             softwareQuery.setParameter("softwareIds", softwareIds);
@@ -805,9 +827,25 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<CompanyDTO> listCompanies(String textFilter, Integer start, Integer limit, Long aoiId) {
+    public List<CompanyDTO> listCompanies(String textFilter, Integer start, Integer limit, Long aoiId, COMPANY_SIZE companySize, int minYears, String countryCode) {
         EntityManager em = EMF.get().createEntityManager();
-        List<Long> companyIds = getFilteredIds(em, "company", textFilter, start, limit, null);
+        List<String> additionalStatements = new ArrayList<String>();
+        if(companySize != null) {
+            additionalStatements.add("companysize = '" + companySize.toString() + "'");
+        }
+        if(minYears > 0) {
+/*
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.YEAR, -1 * minYears);
+*/
+            additionalStatements.add("startedin < date 'today' - interval '" + minYears +" year'");
+        }
+        if(countryCode != null) {
+            additionalStatements.add("countrycode = '" + countryCode + "'");
+        }
+        List<Long> companyIds = getFilteredIds(em, "company", textFilter, start, limit,
+                additionalStatements.size() > 0 ? StringUtils.join(additionalStatements, " AND ") : null);
         List<Company> companies = null;
         if(companyIds.size() > 0) {
             TypedQuery<Company> companyQuery = em.createQuery("select c from Company c where c.id IN :companyIds", Company.class);
@@ -820,19 +858,9 @@ public class SearchResource implements SearchService {
         // make sure order has stayed the same
         List<Company> sortedItems = new ArrayList<Company>();
         for(final Long id : companyIds) {
-            sortedItems.add(ListUtil.findValue(companies, new ListUtil.CheckValue<Company>() {
-                @Override
-                public boolean isValue(Company value) {
-                    return value.getId().equals(id);
-                }
-            }));
+            sortedItems.add(ListUtil.findValue(companies, value -> value.getId().equals(id)));
         }
-        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<Company, CompanyDTO>() {
-            @Override
-            public CompanyDTO mutate(Company company) {
-                return CompanyHelper.createCompanyDTO(company);
-            }
-        });
+        return ListUtil.mutate(sortedItems, company -> CompanyHelper.createCompanyDTO(company));
     }
 
     @Override

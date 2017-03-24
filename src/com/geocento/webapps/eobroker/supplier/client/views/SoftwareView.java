@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.entities.SoftwareType;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductSoftwareDTO;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
@@ -25,6 +26,10 @@ public interface SoftwareView extends IsWidget {
     void setIconUrl(String iconURL);
 
     HasText getDescription();
+
+    void setSoftwareType(SoftwareType softwareType);
+
+    SoftwareType getSoftwareType();
 
     String getFullDescription();
 

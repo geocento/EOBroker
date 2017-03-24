@@ -40,6 +40,9 @@ public class Software {
     @Column(length = 100000)
     String fullDescription;
 
+    @Enumerated(EnumType.STRING)
+    SoftwareType softwareType;
+
     public Software() {
     }
 
@@ -89,6 +92,14 @@ public class Software {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public SoftwareType getSoftwareType() {
+        return softwareType;
+    }
+
+    public void setSoftwareType(SoftwareType softwareType) {
+        this.softwareType = softwareType;
     }
 
     public String getImageUrl() {

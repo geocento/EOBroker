@@ -20,6 +20,7 @@ import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.html.Option;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,6 +66,8 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     MaterialButton addAward;
     @UiField
     MaterialLink viewClient;
+    @UiField
+    MaterialDatePicker startedIn;
 
     public CompanyViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -142,6 +145,16 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     @Override
     public TemplateView getTemplateView() {
         return template;
+    }
+
+    @Override
+    public Date getStartedIn() {
+        return startedIn.getDate();
+    }
+
+    @Override
+    public void setStartedIn(Date date) {
+        startedIn.setDate(date);
     }
 
     @Override

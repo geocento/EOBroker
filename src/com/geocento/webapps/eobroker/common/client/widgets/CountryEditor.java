@@ -10,7 +10,7 @@ public class CountryEditor extends MaterialListBox {
 	public CountryEditor() {
 		// fill the list with countries names
 		for(String countryCode : names.loadSortedRegionCodes()) {
-			addItem(getDisplayName(countryCode), countryCode);
+			addItem(countryCode, getDisplayName(countryCode));
 		}
 		setSelectedIndex(0);
 	}

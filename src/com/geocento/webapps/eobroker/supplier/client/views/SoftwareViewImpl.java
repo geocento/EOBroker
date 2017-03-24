@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.shared.entities.SoftwareType;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductSoftwarePitch;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
@@ -57,6 +58,8 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     MaterialTextBox productPitch;
     @UiField
     MaterialLink viewClient;
+    @UiField
+    MaterialListValueBox<SoftwareType> softwareType;
 
     public SoftwareViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -65,6 +68,10 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
         initWidget(ourUiBinder.createAndBindUi(this));
 
         template.setPlace("software");
+
+        for(SoftwareType softwareType : SoftwareType.values()) {
+            this.softwareType.addItem(softwareType, softwareType.getName());
+        }
     }
 
     @Override
@@ -105,6 +112,16 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     @Override
     public HasText getDescription() {
         return description;
+    }
+
+    @Override
+    public void setSoftwareType(SoftwareType softwareType) {
+        this.softwareType.setValue(softwareType);
+    }
+
+    @Override
+    public SoftwareType getSoftwareType() {
+        return softwareType.getValue();
     }
 
     @Override

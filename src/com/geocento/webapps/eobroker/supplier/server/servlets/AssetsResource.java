@@ -391,11 +391,12 @@ public class AssetsResource implements AssetsService {
         try {
             em.getTransaction().begin();
             company.setName(companyDTO.getName());
-            company.setDescription(companyDTO.getDescription());
+            company.setIconURL(companyDTO.getIconURL());
             company.setWebsite(companyDTO.getWebsite());
             company.setContactEmail(companyDTO.getContactEmail());
+            company.setDescription(companyDTO.getDescription());
             company.setFullDescription(companyDTO.getFullDescription());
-            company.setIconURL(companyDTO.getIconURL());
+            company.setStartedIn(companyDTO.getStartedIn());
             company.setAddress(companyDTO.getAddress());
             company.setCountryCode(companyDTO.getCountryCode());
             company.setCompanySize(companyDTO.getCompanySize());
@@ -1076,6 +1077,7 @@ public class AssetsResource implements AssetsService {
         softwareDTO.setName(software.getName());
         softwareDTO.setImageUrl(software.getImageUrl());
         softwareDTO.setDescription(software.getDescription());
+        softwareDTO.setSoftwareType(software.getSoftwareType());
         return softwareDTO;
     }
 
@@ -1190,6 +1192,7 @@ public class AssetsResource implements AssetsService {
             }
             software.setProducts(productSoftwares);
             software.setImageUrl(softwareDTO.getImageUrl());
+            software.setSoftwareType(softwareDTO.getSoftwareType());
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE software SET tsv = " + getSoftwareTSV(software) +
                     ", tsvname = " + getSoftwareNameTSV(software) + " where id = " + software.getId() +

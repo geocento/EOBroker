@@ -60,6 +60,10 @@
                 <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Software type" textColor="BLACK" iconType="MONETIZATION_ON" addStyleNames="{style.subtitle}"/>
+                <design:MaterialListValueBox ui:field="softwareType"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
                 <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
             </design:MaterialColumn>

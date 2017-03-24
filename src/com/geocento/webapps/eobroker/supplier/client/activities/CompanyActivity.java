@@ -65,11 +65,12 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                     hideFullLoading();
                     CompanyActivity.this.companyDTO = companyDTO;
                     companyView.getName().setText(companyDTO.getName());
-                    companyView.getDescription().setText(companyDTO.getDescription());
+                    companyView.setIconUrl(companyDTO.getIconURL());
                     companyView.getEmail().setText(companyDTO.getContactEmail());
                     companyView.getWebsite().setText(companyDTO.getWebsite());
+                    companyView.getDescription().setText(companyDTO.getDescription());
                     companyView.setFullDescription(companyDTO.getFullDescription());
-                    companyView.setIconUrl(companyDTO.getIconURL());
+                    companyView.setStartedIn(companyDTO.getStartedIn());
                     companyView.getAddress().setText(companyDTO.getAddress());
                     companyView.setCountryCode(companyDTO.getCountryCode());
                     companyView.setCompanySize(companyDTO.getCompanySize());
@@ -91,15 +92,21 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
             @Override
             public void onClick(ClickEvent event) {
                 companyDTO.setName(companyView.getName().getText());
+                companyDTO.setIconURL(companyView.getIconUrl());
                 companyDTO.setDescription(companyView.getDescription().getText());
                 companyDTO.setContactEmail(companyView.getEmail().getText());
                 companyDTO.setWebsite(companyView.getWebsite().getText());
                 companyDTO.setFullDescription(companyView.getFullDescription());
-                companyDTO.setIconURL(companyView.getIconUrl());
+                companyDTO.setStartedIn(companyView.getStartedIn());
                 companyDTO.setAddress(companyView.getAddress().getText());
                 companyDTO.setCountryCode(companyView.getCountryCode());
                 companyDTO.setCompanySize(companyView.getCompanySize());
                 companyDTO.setAwards(companyView.getAwards());
+                // do some checks
+                if(companyDTO.getStartedIn() == null) {
+                    displayError("Please provide a date for the incorporation of your company");
+                    return;
+                }
                 try {
                     displayLoading("Saving company...");
                     REST.withCallback(new MethodCallback<Void>() {

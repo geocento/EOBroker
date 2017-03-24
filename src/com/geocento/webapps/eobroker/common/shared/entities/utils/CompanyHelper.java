@@ -22,6 +22,7 @@ public class CompanyHelper {
     public static CompanyDTO createFullCompanyDTO(Company company) {
         CompanyDTO companyDTO = createCompanyDTO(company);
         companyDTO.setFullDescription(company.getFullDescription());
+        companyDTO.setStartedIn(company.getStartedIn());
         companyDTO.setAddress(company.getAddress());
         companyDTO.setCountryCode(company.getCountryCode());
         companyDTO.setAwards(company.getAwards());

@@ -1,8 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.Sector;
-import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
@@ -11,6 +9,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import gwt.material.design.client.base.HasHref;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,11 +83,29 @@ public interface SearchPageView extends IsWidget {
 
     HasValue<Boolean> getFilterByAoI();
 
+    HasValue<Boolean> getProductCommercialFilterActivated();
+
+    HasValue<ServiceType> getProductServiceType();
+
+    HasValue<Boolean> getTimeFrameFilterActivated();
+
+    HasValue<Date> getStartTimeFrameFilter();
+
+    HasValue<Date> getStopTimeFrameFilter();
+
     Sector getSectorFilter();
 
     Thematic getThematicFilter();
 
     void centerOnAoI();
+
+    COMPANY_SIZE getCompanySizeFilter();
+
+    int getCompanyAgeFilter();
+
+    String getCompanyCountryFilter();
+
+    SoftwareType getSoftwareType();
 
     public interface Presenter {
 

@@ -1,12 +1,11 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.Sector;
-import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -21,8 +20,6 @@ import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -42,9 +39,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -73,6 +68,21 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         String subtext();
 
         String selected();
+    }
+
+    static HashMap<String, COMPANY_SIZE> companySize = new HashMap<String, COMPANY_SIZE>();
+    static {
+        companySize.put("Small", COMPANY_SIZE.small);
+        companySize.put("Medium", COMPANY_SIZE.medium);
+        companySize.put("Large", COMPANY_SIZE.large);
+    }
+
+    static HashMap<String, Integer> companyAge = new HashMap<String, Integer>();
+    static {
+        companyAge.put("Min 2 years", 2);
+        companyAge.put("Min 5 years", 5);
+        companyAge.put("Min 10 years", 10);
+        companyAge.put("Min 20 years", 20);
     }
 
     @UiField
@@ -114,10 +124,32 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     Anchor sendRequirements;
     @UiField
     HTMLPanel timeFrame;
+    @UiField
+    HTMLPanel areaOfInterest;
+    @UiField
+    MaterialDatePicker start;
+    @UiField
+    MaterialDatePicker stop;
+    @UiField
+    MaterialCheckBox filterByTimeFrame;
 
     // possible filters
+    // for products and product based offerings
     private MaterialListBox sectorSelection;
     private MaterialListBox thematicSelection;
+    // for product data sets
+    private MaterialCheckBox productCommercialFilterActivated;
+    private MaterialListValueBox<ServiceType> productCommercialFilter;
+    // for software
+    private MaterialCheckBox softwareCommercialFilterActivated;
+    private MaterialListValueBox<SoftwareType> softwareCommercialFilter;
+    // for companies
+    private MaterialCheckBox companySizeFilterActivated;
+    private MaterialListValueBox<COMPANY_SIZE> companySizeFilter;
+    private MaterialCheckBox companyAgeFilterActivated;
+    private MaterialListValueBox<Integer> companyAgeFilter;
+    private MaterialCheckBox companyCountryFilterActivated;
+    private CountryEditor companyCountryFilter;
 
     private Presenter presenter;
 
@@ -162,12 +194,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         });
 
         // add handlers on filters
-        filterByAoI.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> event) {
-                presenter.filtersChanged();
-            }
-        });
+        filterByAoI.addValueChangeHandler(event -> presenter.filtersChanged());
+        filterByTimeFrame.addValueChangeHandler(event -> presenter.filtersChanged());
+        start.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) presenter.filtersChanged();});
+        stop.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) presenter.filtersChanged();});
 
         onResize(null);
     }
@@ -514,7 +544,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void displayFilters(Category category) {
+        areaOfInterest.setVisible(false);
         timeFrame.setVisible(false);
+
         settings.clear();
         if(category == null) {
         } else {
@@ -529,6 +561,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     displayProductDatasetsFilters();
                     break;
                 case software:
+                    displaySoftwareFilters();
                     break;
                 case project:
                     break;
@@ -537,14 +570,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     break;
             }
         }
-    }
-
-    private void displayProductDatasetsFilters() {
-        timeFrame.setVisible(true);
-    }
-
-    private void displayProductServicesFilters() {
-
     }
 
     @Override
@@ -777,45 +802,121 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         }
     }
 
+    private void displayProductDatasetsFilters() {
+        areaOfInterest.setVisible(true);
+        timeFrame.setVisible(true);
+
+        settings.clear();
+
+        {
+            productCommercialFilterActivated = new MaterialCheckBox("Filter by type");
+            productCommercialFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
+            productCommercialFilterActivated.addStyleName(style.optionTitle());
+            settings.add(productCommercialFilterActivated);
+            productCommercialFilter = new MaterialListValueBox<ServiceType>();
+            for (ServiceType name : ServiceType.values()) {
+                productCommercialFilter.addItem(name, name.getName());
+            }
+            productCommercialFilter.addStyleName(style.option());
+            productCommercialFilter.addClickHandler(event -> presenter.filtersChanged());
+            settings.add(productCommercialFilter);
+        }
+    }
+
+    private void displayProductServicesFilters() {
+        areaOfInterest.setVisible(true);
+    }
+
+    private void displaySoftwareFilters() {
+        {
+            softwareCommercialFilterActivated = new MaterialCheckBox("Filter by type");
+            softwareCommercialFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
+            softwareCommercialFilterActivated.addStyleName(style.optionTitle());
+            settings.add(softwareCommercialFilterActivated);
+            softwareCommercialFilter = new MaterialListValueBox<SoftwareType>();
+            for (SoftwareType name : SoftwareType.values()) {
+                softwareCommercialFilter.addItem(name, name.getName());
+            }
+            softwareCommercialFilter.addStyleName(style.option());
+            softwareCommercialFilter.addClickHandler(event -> presenter.filtersChanged());
+            settings.add(softwareCommercialFilter);
+        }
+    }
+
     private void displayCompaniesFilters() {
         settings.clear();
-        MaterialLabel materialLabel = new MaterialLabel("Company size");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        for(String option : new String[] {"Large corporation > 4000", "Large < 4000", "Medium-sized < 250", "Small < 50", "Micro < 10"}) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(option);
-            materialCheckBox.setObject(option);
-            materialCheckBox.addStyleName(style.option());
-            settings.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
+
+        // add company size filter
+        {
+            companySizeFilterActivated = new MaterialCheckBox("Filter by company size");
+            companySizeFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
+            companySizeFilterActivated.addStyleName(style.optionTitle());
+            settings.add(companySizeFilterActivated);
+            companySizeFilter = new MaterialListValueBox<COMPANY_SIZE>();
+            for (String name : companySize.keySet()) {
+                companySizeFilter.addItem(companySize.get(name), name);
+            }
+            companySizeFilter.addStyleName(style.option());
+            companySizeFilter.addClickHandler(event -> presenter.filtersChanged());
+            settings.add(companySizeFilter);
         }
-        materialLabel = new MaterialLabel("Company certifications");
-        materialLabel.addStyleName(style.optionTitle());
-        settings.add(materialLabel);
-        for(String option : new String[] {"Certification 1", "Certification 2", "Certification 3"}) {
-            MaterialCheckBox materialCheckBox = new MaterialCheckBox();
-            materialCheckBox.setText(option);
-            materialCheckBox.setObject(option);
-            materialCheckBox.addStyleName(style.option());
-            settings.add(materialCheckBox);
-            materialCheckBox.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    // TODO - update display
-                }
-            });
+
+        // add years in office filter
+        {
+            companyAgeFilterActivated = new MaterialCheckBox("Filter by years since incorporation");
+            companyAgeFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
+            companyAgeFilterActivated.addStyleName(style.optionTitle());
+            settings.add(companyAgeFilterActivated);
+            companyAgeFilter = new MaterialListValueBox<Integer>();
+            for (String name : companyAge.keySet()) {
+                companyAgeFilter.addItem(companyAge.get(name), name);
+            }
+            companyAgeFilter.addStyleName(style.option());
+            companyAgeFilter.addClickHandler(event -> presenter.filtersChanged());
+            settings.add(companyAgeFilter);
+        }
+
+        // add country filter
+        {
+            companyCountryFilterActivated = new MaterialCheckBox("Filter by country of incorporation");
+            companyCountryFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
+            companyCountryFilterActivated.addStyleName(style.optionTitle());
+            settings.add(companyCountryFilterActivated);
+            companyCountryFilter = new CountryEditor();
+            companyCountryFilter.addStyleName(style.option());
+            companyCountryFilter.addClickHandler(event -> presenter.filtersChanged());
+            settings.add(companyCountryFilter);
         }
     }
 
     @Override
     public HasValue<Boolean> getFilterByAoI() {
         return filterByAoI;
+    }
+
+    @Override
+    public HasValue<Boolean> getProductCommercialFilterActivated() {
+        return productCommercialFilterActivated;
+    }
+
+    @Override
+    public HasValue<ServiceType> getProductServiceType() {
+        return productCommercialFilter;
+    }
+
+    @Override
+    public HasValue<Boolean> getTimeFrameFilterActivated() {
+        return filterByTimeFrame;
+    }
+
+    @Override
+    public HasValue<Date> getStartTimeFrameFilter() {
+        return start;
+    }
+
+    @Override
+    public HasValue<Date> getStopTimeFrameFilter() {
+        return stop;
     }
 
     @Override
@@ -831,6 +932,26 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void centerOnAoI() {
         mapContainer.centerOnAoI();
+    }
+
+    @Override
+    public COMPANY_SIZE getCompanySizeFilter() {
+        return companySizeFilterActivated.getValue() ? companySizeFilter.getSelectedValue() : null;
+    }
+
+    @Override
+    public int getCompanyAgeFilter() {
+        return companyAgeFilterActivated.getValue() ? companyAgeFilter.getSelectedValue() : 0;
+    }
+
+    @Override
+    public String getCompanyCountryFilter() {
+        return companyCountryFilterActivated.getValue() ? companyCountryFilter.getCountry() : null;
+    }
+
+    @Override
+    public SoftwareType getSoftwareType() {
+        return softwareCommercialFilterActivated.getValue() ? softwareCommercialFilter.getValue() : null;
     }
 
     @Override

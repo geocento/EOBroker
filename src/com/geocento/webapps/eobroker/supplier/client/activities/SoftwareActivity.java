@@ -84,6 +84,7 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
         softwareView.getName().setText(softwareDTO.getName());
         softwareView.setIconUrl(softwareDTO.getImageUrl());
         softwareView.getDescription().setText(softwareDTO.getDescription());
+        softwareView.setSoftwareType(softwareDTO.getSoftwareType());
         softwareView.setFullDescription(softwareDTO.getFullDescription());
         softwareView.setSelectedProducts(softwareDTO.getProducts());
     }
@@ -98,6 +99,7 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                 softwareDTO.setName(softwareView.getName().getText());
                 softwareDTO.setImageUrl(softwareView.getImageUrl());
                 softwareDTO.setDescription(softwareView.getDescription().getText());
+                softwareDTO.setSoftwareType(softwareView.getSoftwareType());
                 softwareDTO.setFullDescription(softwareView.getFullDescription());
                 softwareDTO.setProducts(softwareView.getSelectedProducts());
                 // do some checks
@@ -110,6 +112,9 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                     }
                     if (softwareDTO.getDescription() == null || softwareDTO.getDescription().length() < 3) {
                         throw new Exception("Please provide a valid description");
+                    }
+                    if(softwareDTO.getSoftwareType() == null) {
+                        throw new Exception("Please provide a software type");
                     }
                     if (softwareDTO.getFullDescription() == null || softwareDTO.getFullDescription().length() < 3) {
                         throw new Exception("Please provide a valid full description");

@@ -1,9 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.Sector;
-import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
@@ -24,6 +22,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -283,6 +282,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         try {
             searchPageView.displayLoadingResults("Loading data...");
             boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+            Date startTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStartTimeFrameFilter().getValue() : null;
+            Date stopTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStopTimeFrameFilter().getValue() : null;
+            ServiceType serviceType = searchPageView.getProductCommercialFilterActivated().getValue() ? searchPageView.getProductServiceType().getValue() : null;
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -295,7 +297,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProductDatasets(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, filterByAoI ? currentAoI.getId() : null);
+            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, filterByAoI ? currentAoI.getId() : null,
+                    serviceType, startTimeFrame == null ? null : startTimeFrame.getTime() / 1000, stopTimeFrame == null ? null : stopTimeFrame.getTime() / 1000);
         } catch (RequestException e) {
         }
     }
@@ -316,7 +319,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addSoftware(softwareDTOs, start, softwareDTOs != null && softwareDTOs.size() != 0 && softwareDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, filterByAoI ? currentAoI.getId() : null);
+            }).call(ServicesUtil.searchService).listSoftware(text, start, limit, filterByAoI ? currentAoI.getId() : null,
+                    searchPageView.getSoftwareType());
         } catch (RequestException e) {
         }
     }
@@ -344,6 +348,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     private void loadCompanies(final String text, final int start, final int limit) {
         try {
+            COMPANY_SIZE companySize = searchPageView.getCompanySizeFilter();
+            int minYears = searchPageView.getCompanyAgeFilter();
+            String countryCode = searchPageView.getCompanyCountryFilter();
             REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -354,9 +361,11 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 public void onSuccess(Method method, List<CompanyDTO> companyDTOs) {
                     searchPageView.hideLoadingResults();
                     // add all results to the interface
-                    searchPageView.addCompanies(companyDTOs, start, companyDTOs != null && companyDTOs.size() != 0 && companyDTOs.size() % limit == 0, text);
+                    searchPageView.addCompanies(companyDTOs, start,
+                            companyDTOs != null && companyDTOs.size() != 0 && companyDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listCompanies(text, start, limit, currentAoI == null ? null : currentAoI.getId());
+            }).call(ServicesUtil.searchService).listCompanies(text, start, limit,
+                    currentAoI == null ? null : currentAoI.getId(), companySize, minYears, countryCode);
         } catch (RequestException e) {
         }
     }

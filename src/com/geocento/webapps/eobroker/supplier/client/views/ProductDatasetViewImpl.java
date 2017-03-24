@@ -73,7 +73,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField
     MapContainer mapContainer;
     @UiField
-    MaterialListBox serviceType;
+    MaterialListValueBox<ServiceType> serviceType;
     @UiField
     MaterialRow dataAccess;
     @UiField
@@ -130,7 +130,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         initWidget(ourUiBinder.createAndBindUi(this));
 
         for(ServiceType serviceType : ServiceType.values()) {
-            this.serviceType.addItem(serviceType.getName(), serviceType.toString());
+            this.serviceType.addItem(serviceType, serviceType.getName());
         }
 
         product.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
@@ -238,12 +238,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
 
     @Override
     public void setServiceType(ServiceType serviceType) {
-        this.serviceType.setSelectedValue(serviceType == null ? ServiceType.commercial.toString() : serviceType.toString());
+        this.serviceType.setValue(serviceType == null ? ServiceType.commercial : serviceType);
     }
 
     @Override
     public ServiceType getServiceType() {
-        return ServiceType.valueOf(serviceType.getSelectedValue());
+        return serviceType.getSelectedValue();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.SoftwareType;
+
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ public class SoftwareDTO {
     String email;
     String website;
     String fullDescription;
+    private SoftwareType softwareType;
 
     public SoftwareDTO() {
     }
@@ -81,5 +84,13 @@ public class SoftwareDTO {
 
     public void setFullDescription(String fullDescription) {
         this.fullDescription = fullDescription;
+    }
+
+    public void setSoftwareType(SoftwareType softwareType) {
+        this.softwareType = softwareType;
+    }
+
+    public SoftwareType getSoftwareType() {
+        return softwareType;
     }
 }

@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.common.shared.entities.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class CompanyDTO {
     String countryCode;
     COMPANY_SIZE companySize;
     List<String> awards;
+    private Date startedIn;
 
     public CompanyDTO() {
     }
@@ -110,5 +112,13 @@ public class CompanyDTO {
 
     public void setAwards(List<String> awards) {
         this.awards = awards;
+    }
+
+    public void setStartedIn(Date startedIn) {
+        this.startedIn = startedIn;
+    }
+
+    public Date getStartedIn() {
+        return startedIn;
     }
 }

@@ -1,10 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.entities.SearchQuery;
-import com.geocento.webapps.eobroker.common.shared.entities.Sector;
-import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
@@ -14,6 +11,7 @@ import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.*;
+import java.util.Date;
 import java.util.List;
 
 public interface SearchService extends DirectRestService {
@@ -71,12 +69,12 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/productdatasets")
     @Produces("application/json")
-    public List<ProductDatasetDTO> listProductDatasets(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    public List<ProductDatasetDTO> listProductDatasets(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("serviceType") ServiceType serviceType, @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame) throws RequestException;
 
     @GET
     @Path("/search/software")
     @Produces("application/json")
-    public List<SoftwareDTO> listSoftware(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    public List<SoftwareDTO> listSoftware(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, SoftwareType softwareType) throws RequestException;
 
     @GET
     @Path("/search/projects")
@@ -86,6 +84,6 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/companies")
     @Produces("application/json")
-    List<CompanyDTO> listCompanies(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    List<CompanyDTO> listCompanies(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("size") COMPANY_SIZE companySize, @QueryParam("years") int minYears, @QueryParam("country") String countryCode) throws RequestException;
 
 }

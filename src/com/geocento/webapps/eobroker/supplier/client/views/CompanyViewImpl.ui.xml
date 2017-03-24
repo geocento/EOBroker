@@ -103,7 +103,12 @@
                 <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextArea placeholder="Address" iconType="LOCATION_CITY" ui:field="address"/>
+                <design:MaterialLink text="Founded in" iconType="ACCESS_TIME" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialDatePicker placeholder="Date of the incorporation of the company" dateSelectionType="YEAR_MONTH_DAY" ui:field="startedIn"></design:MaterialDatePicker>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Address" iconType="LOCATION_CITY" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialTextArea placeholder="The postal address of your company" ui:field="address"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <c:CountryEditor placeholder="Country" ui:field="country"></c:CountryEditor>
