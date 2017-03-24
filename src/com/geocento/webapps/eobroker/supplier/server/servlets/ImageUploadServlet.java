@@ -67,6 +67,22 @@ public class ImageUploadServlet extends HttpServlet {
 		    if(filecontent == null) {
 		    	throw new FileNotFoundException("no file provided");
 		    }
+            String parameterValue = request.getParameter("width");
+            if(parameterValue != null) {
+                try {
+                    width = Integer.parseInt(parameterValue);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+            parameterValue = request.getParameter("height");
+            if(parameterValue != null) {
+                try {
+                    height = Integer.parseInt(parameterValue);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
 	        System.out.println("Reading file content");
             // Process the input stream
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -81,7 +97,7 @@ public class ImageUploadServlet extends HttpServlet {
             System.out.println(imagePath);
             
 		    // return the url of the file
-			writer.println("<value>" + imagePath + "</value>");
+			writer.println("<html><body><value>" + imagePath + "</value></body></html>");
 		} catch (FileUploadException e) {
 			writeError(writer, "Could not read file");
 	    } catch(IOException e) {

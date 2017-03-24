@@ -155,10 +155,10 @@
                                 <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
                                 <design:MaterialRow>
                                     <design:MaterialColumn grid="s6 m6 l6">
-                                        <design:MaterialDatePicker placeholder="Start date" ui:field="start"></design:MaterialDatePicker>
+                                        <design:MaterialDatePicker placeholder="Start date" dateSelectionType="YEAR_MONTH_DAY" ui:field="start"></design:MaterialDatePicker>
                                     </design:MaterialColumn>
                                     <design:MaterialColumn grid="s6 m6 l6">
-                                        <design:MaterialDatePicker placeholder="Stop date" ui:field="stop"></design:MaterialDatePicker>
+                                        <design:MaterialDatePicker placeholder="Stop date" dateSelectionType="YEAR_MONTH_DAY" ui:field="stop"></design:MaterialDatePicker>
                                     </design:MaterialColumn>
                                 </design:MaterialRow>
                             </g:HTMLPanel>

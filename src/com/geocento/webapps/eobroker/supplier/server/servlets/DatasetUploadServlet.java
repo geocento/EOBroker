@@ -81,6 +81,14 @@ public class DatasetUploadServlet extends HttpServlet {
             if(filecontent == null) {
                 throw new FileNotFoundException("no file provided");
             }
+            String parameterValue = request.getParameter("resourceId");
+            if(parameterValue != null) {
+                try {
+                    resourceId = Long.parseLong(parameterValue);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
             if(resourceId == null) {
                 throw new Exception("Resource id missing");
             }

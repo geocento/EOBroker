@@ -11,7 +11,6 @@ import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.*;
-import java.util.Date;
 import java.util.List;
 
 public interface SearchService extends DirectRestService {
@@ -74,7 +73,7 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/software")
     @Produces("application/json")
-    public List<SoftwareDTO> listSoftware(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, SoftwareType softwareType) throws RequestException;
+    public List<SoftwareDTO> listSoftware(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("type") SoftwareType softwareType) throws RequestException;
 
     @GET
     @Path("/search/projects")

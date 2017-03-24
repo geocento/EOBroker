@@ -55,6 +55,27 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
 
     public void setParameter(String name, String value) {
         parameters.put(name, value);
+        updateUrl();
+    }
+
+    private void updateUrl() {
+        String url = getUrl();
+        if(url != null && url.length() > 0) {
+            setUrl(url);
+        }
+    }
+
+    @Override
+    public void setUrl(String url) {
+        if(url.indexOf("?") == -1) {
+            url += "?";
+        } else {
+            url = url.substring(0, url.indexOf("?") + 1);
+        }
+        for(String name : parameters.keySet()) {
+            url += (name + "=" + parameters.get(name)) + "&";
+        }
+        super.setUrl(url);
     }
 
     private void addFormParameters(JavaScriptObject formData) {

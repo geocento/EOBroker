@@ -558,12 +558,12 @@ public class SearchResource implements SearchService {
         SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd");
 */
         if(startTimeFrame != null && stopTimeFrame != null) {
-            additionalStatements.add("startdate < " + stopTimeFrame + " AND " +
-                    "stopdate > " + startTimeFrame + "");
+            additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ") AND " +
+                    "(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
         } else if(startTimeFrame != null) {
-            additionalStatements.add("stopdate > " + startTimeFrame + "");
+            additionalStatements.add("(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
         } else if(stopTimeFrame != null) {
-            additionalStatements.add("startdate < " + stopTimeFrame + "");
+            additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ")");
         }
         List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit,
                 additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));

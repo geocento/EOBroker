@@ -838,7 +838,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 softwareCommercialFilter.addItem(name, name.getName());
             }
             softwareCommercialFilter.addStyleName(style.option());
-            softwareCommercialFilter.addClickHandler(event -> presenter.filtersChanged());
+            softwareCommercialFilter.addValueChangeHandler(event -> {if(softwareCommercialFilterActivated.getValue()) presenter.filtersChanged();});
             settings.add(softwareCommercialFilter);
         }
     }
@@ -857,7 +857,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 companySizeFilter.addItem(companySize.get(name), name);
             }
             companySizeFilter.addStyleName(style.option());
-            companySizeFilter.addClickHandler(event -> presenter.filtersChanged());
+            companySizeFilter.addValueChangeHandler(event -> {if(companySizeFilterActivated.getValue()) presenter.filtersChanged();});
             settings.add(companySizeFilter);
         }
 
@@ -872,7 +872,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 companyAgeFilter.addItem(companyAge.get(name), name);
             }
             companyAgeFilter.addStyleName(style.option());
-            companyAgeFilter.addClickHandler(event -> presenter.filtersChanged());
+            companyAgeFilter.addValueChangeHandler(event -> {if(companyAgeFilterActivated.getValue()) presenter.filtersChanged();});
             settings.add(companyAgeFilter);
         }
 
@@ -884,7 +884,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             settings.add(companyCountryFilterActivated);
             companyCountryFilter = new CountryEditor();
             companyCountryFilter.addStyleName(style.option());
-            companyCountryFilter.addClickHandler(event -> presenter.filtersChanged());
+            companyCountryFilter.addValueChangeHandler(event -> {if(companyCountryFilterActivated.getValue()) presenter.filtersChanged();});
             settings.add(companyCountryFilter);
         }
     }

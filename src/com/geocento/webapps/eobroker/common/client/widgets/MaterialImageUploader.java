@@ -6,9 +6,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
-import gwt.material.design.addins.client.fileuploader.events.TotalUploadProgressEvent;
 import gwt.material.design.client.events.DragOverEvent;
 import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialLabel;
@@ -43,20 +40,12 @@ public class MaterialImageUploader extends Composite {
         final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/image/";
         imageUploader.setUrl(uploadUrl);
         // Added the progress to card uploader
-        imageUploader.addTotalUploadProgressHandler(new TotalUploadProgressEvent.TotalUploadProgressHandler() {
-            @Override
-            public void onTotalUploadProgress(TotalUploadProgressEvent event) {
-                iconProgress.setPercent(event.getProgress());
-            }
-        });
+        imageUploader.addTotalUploadProgressHandler(event -> iconProgress.setPercent(event.getProgress()));
 
-        imageUploader.addSuccessHandler(new SuccessEvent.SuccessHandler<UploadFile>() {
-            @Override
-            public void onSuccess(SuccessEvent<UploadFile> event) {
-                iconName.setText(event.getTarget().getName());
-                iconSize.setText(event.getTarget().getType());
-                iconPreview.setUrl(StringUtils.extract(event.getResponse().getMessage(), "<value>", "</value>"));
-            }
+        imageUploader.addSuccessHandler(event -> {
+            iconName.setText(event.getTarget().getName());
+            iconSize.setText(event.getTarget().getType());
+            iconPreview.setUrl(StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>"));
         });
 
         imageUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {
