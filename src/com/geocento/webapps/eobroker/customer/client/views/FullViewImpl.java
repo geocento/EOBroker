@@ -15,6 +15,7 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -50,6 +51,8 @@ public class FullViewImpl extends Composite implements FullView {
         String vertical();
     }
 
+    static DateTimeFormat fmt = DateTimeFormat.getFormat("MMM-YYYY");
+
     @UiField Style style;
 
     @UiField(provided = true)
@@ -74,6 +77,8 @@ public class FullViewImpl extends Composite implements FullView {
     MaterialNavBar navigation;
     @UiField
     MaterialPanel actions;
+    @UiField
+    MaterialBreadcrumb recommendationsLabel;
 
     public FullViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -130,23 +135,10 @@ public class FullViewImpl extends Composite implements FullView {
         description.setText(productDescriptionDTO.getShortDescription());
         setTabPanelColor(CategoryUtils.getColor(Category.products));
         // add tags
-        MaterialChip thematic = new MaterialChip();
-        thematic.setText(productDescriptionDTO.getThematic().toString());
-        thematic.setBackgroundColor(Color.GREY);
-        thematic.setTextColor(Color.WHITE);
-        thematic.setLetterBackgroundColor(Color.BLUE);
-        thematic.setLetterColor(Color.WHITE);
-        thematic.setLetter("T");
-        thematic.setMarginRight(20);
-        tags.add(thematic);
-        MaterialChip sector = new MaterialChip();
-        sector.setText(productDescriptionDTO.getSector().getName());
-        sector.setBackgroundColor(Color.GREY);
-        sector.setTextColor(Color.WHITE);
-        sector.setLetterBackgroundColor(Color.AMBER);
-        sector.setLetterColor(Color.WHITE);
-        sector.setLetter("S");
-        tags.add(sector);
+        {
+            addTag(productDescriptionDTO.getThematic().toString(), Color.BLUE, Color.WHITE);
+            addTag(productDescriptionDTO.getSector().toString(), Color.GREY, Color.WHITE);
+        }
         // add actions
         {
             addAction("FOLLOW", event -> Window.alert("TODO..."));
@@ -286,7 +278,7 @@ public class FullViewImpl extends Composite implements FullView {
         materialTab.selectTab("fullViewTab0");
         // add suggestions
         recommendationsPanel.clear();
-        recommendationsPanel.add(createSubsection("Similar products..."));
+        recommendationsLabel.setText("Similar products...");
         List<ProductDTO> suggestedProducts = productDescriptionDTO.getSuggestedProducts();
         if(suggestedProducts == null || suggestedProducts.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
@@ -476,7 +468,7 @@ public class FullViewImpl extends Composite implements FullView {
         this.tabsPanel.add(materialTab);
 
         recommendationsPanel.clear();
-        recommendationsPanel.add(createSubsection("You might also be interested in..."));
+        recommendationsLabel.setText("You might also be interested in...");
         List<ProductServiceDTO> suggestedServices = productServiceDescriptionDTO.getSuggestedServices();
         if(suggestedServices == null || suggestedServices.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
@@ -508,12 +500,7 @@ public class FullViewImpl extends Composite implements FullView {
         }
         // add tags
         {
-            MaterialChip commercial = new MaterialChip();
-            commercial.setText(productDatasetDescriptionDTO.isCommercial() ? "Commercial" : "Free");
-            commercial.setBackgroundColor(productDatasetDescriptionDTO.isCommercial() ? Color.AMBER : Color.AMBER);
-            commercial.setTextColor(Color.WHITE);
-            commercial.setMarginRight(20);
-            tags.add(commercial);
+            addTag(IconType.MONETIZATION_ON, productDatasetDescriptionDTO.isCommercial() ? "Commercial" : "Free", Color.AMBER, Color.WHITE);
         }
 
         MaterialPanel tabsPanel = createTabsPanel();
@@ -621,7 +608,7 @@ public class FullViewImpl extends Composite implements FullView {
 
         // add recommendations
         recommendationsPanel.clear();
-        recommendationsPanel.add(createSubsection("You might also be interested in..."));
+        recommendationsLabel.setText("You might also be interested in...");
         List<ProductDatasetDTO> suggestedDatasets = productDatasetDescriptionDTO.getSuggestedDatasets();
         if(suggestedDatasets == null || suggestedDatasets.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
@@ -645,44 +632,12 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(softwareDescriptionDTO.getImageUrl()));
         title.setText(softwareDescriptionDTO.getName());
         description.setText(softwareDescriptionDTO.getDescription());
+        addBreadcrumb(softwareDescriptionDTO.getCompanyDTO(), Category.software);
         setTabPanelColor(CategoryUtils.getColor(Category.software));
         // add tags
         {
-            MaterialChip commercial = new MaterialChip();
-            commercial.setText(softwareDescriptionDTO.isCommercial() ? "Commercial" : "Free");
-            commercial.setBackgroundColor(softwareDescriptionDTO.isCommercial() ? Color.AMBER : Color.GREEN);
-            commercial.setTextColor(Color.WHITE);
-            commercial.setMarginRight(20);
-            tags.add(commercial);
+            addTag(IconType.MONETIZATION_ON, softwareDescriptionDTO.getSoftwareType().getName(), Color.AMBER, Color.WHITE);
         }
-        if(softwareDescriptionDTO.isOpenSource()) {
-            MaterialChip commercial = new MaterialChip();
-            commercial.setText("Open Source");
-            commercial.setBackgroundColor(Color.AMBER);
-            commercial.setTextColor(Color.WHITE);
-            commercial.setMarginRight(20);
-            tags.add(commercial);
-        }
-/*
-        {
-            MaterialChip company = new MaterialChip();
-            final CompanyDTO companyDTO = softwareDescriptionDTO.getCompanyDTO();
-            company.setText(companyDTO.getName());
-            company.setBackgroundColor(Color.GREY);
-            company.setTextColor(Color.WHITE);
-            company.setUrl(Utils.getImageMaybe(companyDTO.getIconURL()));
-            company.setMarginRight(20);
-            company.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()));
-                }
-            });
-            company.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
-            badges.add(company);
-        }
-        tags.add(badges);
-*/
         MaterialPanel tabsPanel = createTabsPanel();
         MaterialTab materialTab = createTabs(tabsPanel);
         int numTabs = 4;
@@ -740,7 +695,7 @@ public class FullViewImpl extends Composite implements FullView {
 
         // add recommendations
         recommendationsPanel.clear();
-        recommendationsPanel.add(createSubsection("You might also be interested in..."));
+        recommendationsLabel.setText("You might also be interested in...");
         List<SoftwareDTO> suggestedSoftware = softwareDescriptionDTO.getSuggestedSoftware();
         if(suggestedSoftware == null || suggestedSoftware.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
@@ -765,23 +720,17 @@ public class FullViewImpl extends Composite implements FullView {
         title.setText(projectDescriptionDTO.getName());
         description.setText(projectDescriptionDTO.getDescription());
         setTabPanelColor(CategoryUtils.getColor(Category.project));
+
+        // add company
+        addBreadcrumb(projectDescriptionDTO.getCompanyDTO(), Category.project);
+
         // add tags
         {
-            MaterialChip company = new MaterialChip();
-            final CompanyDTO companyDTO = projectDescriptionDTO.getCompanyDTO();
-            company.setText(companyDTO.getName());
-            company.setBackgroundColor(Color.GREY);
-            company.setTextColor(Color.WHITE);
-            company.setUrl(Utils.getImageMaybe(companyDTO.getIconURL()));
-            company.setMarginRight(20);
-            company.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + companyDTO.getId()));
-                }
-            });
-            company.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
-            tags.add(company);
+            if(projectDescriptionDTO.getStartDate() != null) {
+                String timeFrame = fmt.format(projectDescriptionDTO.getStartDate()) + " - " +
+                        projectDescriptionDTO.getStopDate() == null ? " on-going" : fmt.format(projectDescriptionDTO.getStopDate());
+                addTag(IconType.TIMELINE, timeFrame, Color.AMBER, Color.WHITE);
+            }
         }
 
         MaterialPanel tabsPanel = createTabsPanel();
@@ -882,7 +831,7 @@ public class FullViewImpl extends Composite implements FullView {
 
         // add recommendations
         recommendationsPanel.clear();
-        recommendationsPanel.add(createSubsection("You might also be interested in..."));
+        recommendationsLabel.setText("You might also be interested in...");
         List<ProjectDTO> suggestedProjects = projectDescriptionDTO.getSuggestedProjects();
         if(suggestedProjects == null || suggestedProjects.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
@@ -900,6 +849,43 @@ public class FullViewImpl extends Composite implements FullView {
         }
     }
 
+    private MaterialChip addTag(String text, Color backgroundColor) {
+        return addTag(null, text, backgroundColor, Color.WHITE);
+    }
+
+    private MaterialChip addTag(String text, Color backgroundColor, Color textColor) {
+        return addTag(null, text, backgroundColor, textColor);
+    }
+
+    private MaterialChip addTag(IconType iconType, String text, Color backgroundColor, Color textColor) {
+        return addTag(iconType, text, backgroundColor, textColor, null, null);
+    }
+
+    private MaterialChip addTag(IconType iconType, String text, Color backgroundColor, Color textColor, String tooltip) {
+        return addTag(iconType, text, backgroundColor, textColor, tooltip, null);
+    }
+
+    private MaterialChip addTag(IconType iconType, String text, Color backgroundColor, Color textColor, String tooltip, ClickHandler clickHandler) {
+        MaterialChip materialChip = new MaterialChip();
+        materialChip.setText(text);
+        materialChip.setBackgroundColor(backgroundColor);
+        materialChip.setTextColor(textColor);
+        materialChip.setMarginLeft(20);
+        if(iconType != null) {
+            materialChip.setIconPosition(IconPosition.LEFT);
+            materialChip.setIconType(iconType);
+        }
+        if(clickHandler != null) {
+            materialChip.addClickHandler(clickHandler);
+            materialChip.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
+        }
+        if(tooltip != null) {
+            materialChip.setTooltip(tooltip);
+        }
+        tags.add(materialChip);
+        return materialChip;
+    }
+
     @Override
     public void displayCompany(final CompanyDescriptionDTO companyDescriptionDTO) {
         clearDetails();
@@ -909,28 +895,10 @@ public class FullViewImpl extends Composite implements FullView {
         setTabPanelColor(CategoryUtils.getColor(Category.companies));
         // add tags
         if(companyDescriptionDTO.getCompanySize() != null) {
-            MaterialChip companySize = new MaterialChip();
-            companySize.setText(companyDescriptionDTO.getCompanySize().toString());
-            companySize.setBackgroundColor(Color.BLUE);
-            companySize.setTextColor(Color.WHITE);
-            companySize.setLetterBackgroundColor(Color.AMBER);
-            companySize.setLetterColor(Color.WHITE);
-            companySize.setIconType(IconType.FORMAT_SIZE);
-            companySize.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
-            companySize.setTooltip("The company size using the European Commission definition");
-            tags.add(companySize);
+            addTag(IconType.FORMAT_SIZE, companyDescriptionDTO.getCompanySize().toString(), Color.BLUE, Color.WHITE, "The company size using the European Commission definition");
         }
         if(companyDescriptionDTO.getCountryCode() != null) {
-            MaterialChip country = new MaterialChip();
-            country.setText(CountryEditor.getDisplayName(companyDescriptionDTO.getCountryCode()));
-            country.setBackgroundColor(Color.GREY);
-            country.setTextColor(Color.WHITE);
-            country.setLetterBackgroundColor(Color.AMBER);
-            country.setLetterColor(Color.WHITE);
-            country.setIconType(IconType.LOCATION_CITY);
-            country.setIconPosition(IconPosition.LEFT);
-            country.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
-            tags.add(country);
+            addTag(IconType.MY_LOCATION, CountryEditor.getDisplayName(companyDescriptionDTO.getCountryCode()), Color.GREY, Color.WHITE);
         }
 
         MaterialPanel tabsPanel = createTabsPanel();
@@ -965,6 +933,10 @@ public class FullViewImpl extends Composite implements FullView {
         // create tab panel for offers
         int offerCount = 0;
         MaterialPanel servicesPanel = new MaterialPanel();
+        MaterialLabel offeringLabel = new MaterialLabel();
+        offeringLabel.setMarginTop(20);
+        offeringLabel.setMarginBottom(20);
+        servicesPanel.add(offeringLabel);
         MaterialRow materialRow = new MaterialRow();
         servicesPanel.add(materialRow);
         if(companyDescriptionDTO.getProductServices().size() == 0) {
@@ -1014,6 +986,8 @@ public class FullViewImpl extends Composite implements FullView {
                 materialRow.add(materialColumn);
             }
         }
+        offeringLabel.setText(offerCount == 0 ? "This company has not registered any offering yet" :
+            "This company has registered the following offering");
         addTab(materialTab, tabsPanel, "Offer (" + offerCount + ")", servicesPanel, size);
         MaterialRow credentialsPanel = new MaterialRow();
         {
@@ -1078,7 +1052,7 @@ public class FullViewImpl extends Composite implements FullView {
 
         // add recommendations
         recommendationsPanel.clear();
-        recommendationsPanel.add(createSubsection("Other similar companies..."));
+        recommendationsLabel.setText("Other similar companies...");
         List<CompanyDTO> suggestedCompanies = companyDescriptionDTO.getSuggestedCompanies();
         if(suggestedCompanies == null || suggestedCompanies.size() == 0) {
             MaterialLabel materialLabel = new MaterialLabel("No suggestions...");

@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style>
 
@@ -14,7 +15,7 @@
             right: auto !important;
             left: 10px !important;
             top: auto !important;
-            bottom: 10px !important;
+            bottom: -5px !important;
             max-width: 60px;
             max-height: 32px;
             margin-right: -16px;
@@ -28,10 +29,14 @@
 */
         }
 
+        .image {
+            cursor: pointer;
+        }
+
     </ui:style>
     <design:MaterialCard backgroundColor="INDIGO_LIGHTEN_1" axis="VERTICAL">
         <design:MaterialCardImage waves="LIGHT">
-            <design:MaterialImage ui:field="image"></design:MaterialImage>
+            <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="imagePanel"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="WHITE">
             <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>

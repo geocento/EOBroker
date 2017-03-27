@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:design="urn:import:gwt.material.design.client.ui">
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
     <ui:style>
 
         .description {
@@ -17,15 +18,24 @@
             margin-right: 5px !important;
         }
 
+        .image {
+            cursor: pointer;
+        }
+
+        .title {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
     <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL">
         <design:MaterialCardImage backgroundColor="WHITE">
-            <design:MaterialImage resource="{res.loading300by200}" ui:field="imageLoading"></design:MaterialImage>
-            <design:MaterialImage visible="false" ui:field="image"></design:MaterialImage>
+            <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="imagePanel"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="WHITE" padding="10">
-            <design:MaterialLabel fontSize="1.2em" ui:field="title"/>
+            <design:MaterialLabel fontSize="1.2em" truncate="true" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction padding="10">

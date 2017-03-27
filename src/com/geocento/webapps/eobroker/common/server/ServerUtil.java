@@ -226,7 +226,7 @@ public class ServerUtil {
 
     public static List<User> getUsersAdministrator() {
         EntityManager em = EMF.get().createEntityManager();
-        TypedQuery<User> query = em.createQuery("Select u from User u where u.userRole = :userRole", User.class);
+        TypedQuery<User> query = em.createQuery("Select u from users u where u.role = :userRole", User.class);
         query.setParameter("userRole", User.USER_ROLE.administrator);
         return query.getResultList();
     }

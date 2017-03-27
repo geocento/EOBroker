@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style>
 
@@ -25,7 +26,7 @@
             right: auto !important;
             left: 10px !important;
             top: auto !important;
-            bottom: 10px !important;
+            bottom: -5px !important;
             max-width: 60px;
             max-height: 32px;
             margin-right: -16px;
@@ -43,12 +44,15 @@
             margin-right: 5px !important;
         }
 
+        .image {
+            cursor: pointer;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
     <design:MaterialCard backgroundColor="BROWN" axis="VERTICAL">
         <design:MaterialCardImage>
-            <design:MaterialImage resource="{res.loading300by200}" ui:field="imageLoading"></design:MaterialImage>
-            <design:MaterialImage visible="false" ui:field="image"></design:MaterialImage>
+            <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="imagePanel"></widgets:MaterialImageLoading>
             <design:MaterialLink addStyleNames="{style.companyLogo}, z-depth-1" text="" ui:field="companyLogo"></design:MaterialLink>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="WHITE" padding="10">

@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.entities.SoftwareType;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 import java.util.List;
@@ -18,8 +19,7 @@ public class SoftwareDescriptionDTO {
     String fullDescription;
     CompanyDTO companyDTO;
     List<ProductSoftwareDTO> products;
-    private boolean commercial;
-    private boolean openSource;
+    private SoftwareType softwareType;
     private List<SoftwareDTO> suggestedSoftware;
 
     public SoftwareDescriptionDTO() {
@@ -97,27 +97,19 @@ public class SoftwareDescriptionDTO {
         this.companyDTO = companyDTO;
     }
 
-    public boolean isCommercial() {
-        return commercial;
-    }
-
-    public void setCommercial(boolean commercial) {
-        this.commercial = commercial;
-    }
-
-    public boolean isOpenSource() {
-        return openSource;
-    }
-
-    public void setOpenSource(boolean openSource) {
-        this.openSource = openSource;
-    }
-
     public List<SoftwareDTO> getSuggestedSoftware() {
         return suggestedSoftware;
     }
 
     public void setSuggestedSoftware(List<SoftwareDTO> suggestedSoftware) {
         this.suggestedSoftware = suggestedSoftware;
+    }
+
+    public void setSoftwareType(SoftwareType softwareType) {
+        this.softwareType = softwareType;
+    }
+
+    public SoftwareType getSoftwareType() {
+        return softwareType;
     }
 }

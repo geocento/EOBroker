@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSuggestion;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.place.shared.PlaceChangeEvent;
@@ -233,7 +234,9 @@ public class TemplateView extends Composite implements HasWidgets {
             for(NotificationDTO notificationDTO : notifications) {
                 MaterialLink message = new MaterialLink(notificationDTO.getMessage());
                 message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
-                message.add(new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(notificationDTO.getCreationDate()) + "</span>"));
+                HTML timePanel = new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(notificationDTO.getCreationDate()) + "</span>");
+                timePanel.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.RIGHT);
+                message.add(timePanel);
                 EOBrokerPlace place = null;
                 switch(notificationDTO.getType()) {
                     case MESSAGE:

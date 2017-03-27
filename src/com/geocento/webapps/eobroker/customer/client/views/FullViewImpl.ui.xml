@@ -107,6 +107,9 @@
                 <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
                 <design:MaterialRow addStyleNames="{style.tabsContent}" ui:field="tabsContent"></design:MaterialRow>
             </design:MaterialPanel>
+            <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE">
+                <design:MaterialBreadcrumb ui:field="recommendationsLabel"></design:MaterialBreadcrumb>
+            </design:MaterialNavBar>
             <design:MaterialPanel padding="20" ui:field="recommendationsPanel"></design:MaterialPanel>
         </design:MaterialPanel>
     </views:TemplateView>

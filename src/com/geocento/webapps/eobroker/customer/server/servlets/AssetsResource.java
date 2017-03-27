@@ -532,12 +532,8 @@ public class AssetsResource implements AssetsService {
             softwareDescriptionDTO.setDescription(software.getDescription());
             softwareDescriptionDTO.setFullDescription(software.getFullDescription());
             softwareDescriptionDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(software.getCompany()));
-            softwareDescriptionDTO.setProducts(ListUtil.mutate(software.getProducts(), new ListUtil.Mutate<ProductSoftware, ProductSoftwareDTO>() {
-                @Override
-                public ProductSoftwareDTO mutate(ProductSoftware productSoftware) {
-                    return createProductSoftwareDTO(productSoftware);
-                }
-            }));
+            softwareDescriptionDTO.setSoftwareType(software.getSoftwareType());
+            softwareDescriptionDTO.setProducts(ListUtil.mutate(software.getProducts(), productSoftware -> createProductSoftwareDTO(productSoftware)));
             // TODO - add suggestions
             {
                 softwareDescriptionDTO.setSuggestedSoftware(new ArrayList<SoftwareDTO>());
@@ -583,6 +579,8 @@ public class AssetsResource implements AssetsService {
                     return companyRoleDTO;
                 }
             }));
+            projectDescriptionDTO.setStartDate(project.getStartDate());
+            projectDescriptionDTO.setStopDate(project.getStopDate());
             // TODO - add suggestions
             {
                 projectDescriptionDTO.setSuggestedProjects(new ArrayList<ProjectDTO>());

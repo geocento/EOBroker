@@ -91,6 +91,7 @@
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
                     <design:MaterialPanel ui:field="productPanel">
+                        <design:MaterialLabel margin="10" text="Specify geoinformation provided"></design:MaterialLabel>
                         <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                             <design:MaterialPanel ui:field="geoinformation"></design:MaterialPanel>
                             <design:MaterialTextBox placeholder="Comment on geoinformation provided" ui:field="geoinformationComment"></design:MaterialTextBox>

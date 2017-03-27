@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,8 @@ public class ProjectDescriptionDTO {
     List<ProductProjectDTO> products;
     private List<CompanyRoleDTO> consortium;
     private List<ProjectDTO> suggestedProjects;
+    private Date startDate;
+    private Date stopDate;
 
     public ProjectDescriptionDTO() {
     }
@@ -110,5 +113,21 @@ public class ProjectDescriptionDTO {
 
     public void setSuggestedProjects(List<ProjectDTO> suggestedProjects) {
         this.suggestedProjects = suggestedProjects;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStopDate(Date stopDate) {
+        this.stopDate = stopDate;
+    }
+
+    public Date getStopDate() {
+        return stopDate;
     }
 }

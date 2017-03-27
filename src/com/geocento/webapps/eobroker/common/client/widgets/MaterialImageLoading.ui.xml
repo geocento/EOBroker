@@ -1,0 +1,8 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
+    <design:MaterialPanel ui:field="panel">
+        <design:MaterialImage resource="{res.loading300by200}" ui:field="imageLoading"></design:MaterialImage>
+        <design:MaterialImage visible="false" ui:field="image"></design:MaterialImage>
+    </design:MaterialPanel>
+</ui:UiBinder>

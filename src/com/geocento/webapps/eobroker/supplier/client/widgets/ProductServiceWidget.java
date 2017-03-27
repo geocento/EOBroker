@@ -1,19 +1,16 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.RemoveService;
 import com.geocento.webapps.eobroker.supplier.client.places.ProductServicePlace;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialCardAction;
-import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 
@@ -28,10 +25,6 @@ public class ProductServiceWidget extends Composite {
     private static ProductServiceUiBinder ourUiBinder = GWT.create(ProductServiceUiBinder.class);
 
     @UiField
-    MaterialImage image;
-    @UiField
-    MaterialLink companyLogo;
-    @UiField
     MaterialCardAction action;
     @UiField
     MaterialLabel title;
@@ -41,27 +34,19 @@ public class ProductServiceWidget extends Composite {
     MaterialLink edit;
     @UiField
     MaterialLink remove;
+    @UiField
+    MaterialImageLoading imagePanel;
 
     public ProductServiceWidget(final ProductServiceDTO productServiceDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        Image logoImage = new Image(productServiceDTO.getCompanyLogo());
-        logoImage.setHeight("20px");
-        companyLogo.add(logoImage);
-        image.setUrl(productServiceDTO.getServiceImage());
+
+        imagePanel.setImageUrl(productServiceDTO.getServiceImage());
+        imagePanel.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId())));
+
         title.setText(productServiceDTO.getName());
         shortDescription.setText(productServiceDTO.getDescription());
-        edit.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId()));
-            }
-        });
-        remove.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                Supplier.clientFactory.getEventBus().fireEvent(new RemoveService(productServiceDTO.getId()));
-            }
-        });
+        edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId())));
+        remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveService(productServiceDTO.getId())));
     }
 
 }

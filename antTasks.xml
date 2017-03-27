@@ -73,7 +73,7 @@
     </target>
 
     <target name="buildwar">
-	    <war basedir="${artifactsdir}" destfile="EOBroker.war" webxml="war/WEB-INF/web.xml" excludes="**/sessions/**, **.log**, **/libraries.jar, **/gwt-user.jar, **/junit**">
+	    <war basedir="${artifactsdir}" destfile="EOBroker.war" webxml="war/WEB-INF/web.xml" excludes="**/sessions/**, **.log**, **/libraries.jar, **/junit**">
 	    </war>
 	</target>
 	
