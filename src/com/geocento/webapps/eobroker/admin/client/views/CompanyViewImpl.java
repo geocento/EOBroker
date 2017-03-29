@@ -33,7 +33,7 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     @UiField
     MaterialTextArea description;
     @UiField
-    MaterialRichEditor fullDescription;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor fullDescription;
     @UiField
     MaterialButton submit;
     @UiField

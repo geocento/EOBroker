@@ -5,6 +5,7 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
 
@@ -55,7 +56,7 @@
                 </design:MaterialCollapsibleHeader>
                 <design:MaterialCollapsibleBody>
                     <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
-                        <richeditor:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></richeditor:MaterialRichEditor>
+                        <material:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></material:MaterialRichEditor>
                         <g:HTMLPanel addStyleNames="{style.buttonPanel}">
                             <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
                             </widgets:ProgressButton>

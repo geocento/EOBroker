@@ -36,8 +36,8 @@ public class ImageUploadServlet extends HttpServlet {
             String userName = UserUtils.verifyUser(request);
 	        System.out.println("Start");
 			// default values for width and height
-			int width = 50;
-			int height = 50;
+			int width = 0;
+			int height = 0;
 			InputStream filecontent = null;
 			String saveFile = null;
 			List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
@@ -131,6 +131,7 @@ public class ImageUploadServlet extends HttpServlet {
             } else {
                 // do not resize
                 Thumbnails.of(new ByteArrayInputStream(out.toByteArray())).scale(1.0).toFile(realPath);
+                // TODO - add max width and height
             }
             return filePath;
         } catch (Exception e) {

@@ -6,6 +6,7 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
              xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
         .panel header {
@@ -128,7 +129,7 @@
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
+                    <material:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">

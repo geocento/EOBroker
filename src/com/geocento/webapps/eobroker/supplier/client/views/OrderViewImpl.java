@@ -66,7 +66,7 @@ public class OrderViewImpl extends Composite implements OrderView {
     @UiField
     ProgressButton submitResponse;
     @UiField
-    MaterialRichEditor responseEditor;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor responseEditor;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 

@@ -15,7 +15,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.ui.*;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     @UiField
     MaterialTextArea description;
     @UiField
-    MaterialRichEditor fullDescription;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor fullDescription;
     @UiField
     MaterialRow consortium;
     @UiField

@@ -4,6 +4,7 @@
              xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
              xmlns:c="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.admin.client.views"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
         .buttonsPanel {
@@ -33,7 +34,7 @@
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialIcon text="Full description" iconType="TEXT_FIELDS"></design:MaterialIcon>
-                    <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></richeditor:MaterialRichEditor>
+                    <material:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></material:MaterialRichEditor>
                 </design:MaterialColumn>
             </design:MaterialRow>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">

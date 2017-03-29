@@ -47,7 +47,7 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     @UiField
     MaterialTextArea description;
     @UiField
-    MaterialRichEditor fullDescription;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor fullDescription;
     @UiField
     MaterialRow products;
     @UiField

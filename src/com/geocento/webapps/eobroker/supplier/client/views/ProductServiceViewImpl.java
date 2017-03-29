@@ -67,7 +67,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     @UiField
     MaterialButton submit;
     @UiField
-    MaterialRichEditor fullDescription;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor fullDescription;
     @UiField
     ProductTextBox product;
     @UiField(provided = true)

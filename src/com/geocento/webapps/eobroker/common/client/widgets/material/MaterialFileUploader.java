@@ -1,43 +1,49 @@
-package com.geocento.webapps.eobroker.common.client.widgets;
+package com.geocento.webapps.eobroker.common.client.widgets.material;
 
-/*
- * #%L
- * GwtMaterial
- * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import gwt.material.design.addins.client.MaterialAddins;
+import gwt.material.design.addins.client.base.constants.AddinsCssName;
+import gwt.material.design.addins.client.fileuploader.MaterialUploadLabel;
+import gwt.material.design.addins.client.fileuploader.MaterialUploadPreview;
+import gwt.material.design.addins.client.fileuploader.base.HasFileUpload;
+import gwt.material.design.addins.client.fileuploader.base.UploadFile;
+import gwt.material.design.addins.client.fileuploader.base.UploadResponse;
+import gwt.material.design.addins.client.fileuploader.constants.FileMethod;
+import gwt.material.design.addins.client.fileuploader.events.*;
+import gwt.material.design.addins.client.fileuploader.js.File;
+import gwt.material.design.addins.client.fileuploader.js.JsFileUploaderOptions;
+import gwt.material.design.client.MaterialDesignBase;
+import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.constants.CssName;
+import gwt.material.design.client.constants.Display;
+import gwt.material.design.client.events.*;
+import gwt.material.design.client.ui.MaterialToast;
+import gwt.material.design.jquery.client.api.Functions;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
+import java.util.Date;
+import java.util.HashMap;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 //@formatter:off
-
-import com.google.gwt.core.client.JavaScriptObject;
-
-import java.util.HashMap;
 
 /**
  * Custom file uploader with Dnd support with the help of dropzone.js. It has multiple
  * feature just like the GWT File Uploader core widget.
- *
+ * <p>
  * <h3>XML Namespace Declaration</h3>
  * <pre>
  * {@code
  * xmlns:ma='urn:import:gwt.material.design.addins.client'
  * }
  * </pre>
- *
+ * <p>
  * <h3>UiBinder Usage:</h3>
  * <pre>
  * {@code
@@ -49,33 +55,17 @@ import java.util.HashMap;
  * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#fileuploader">File Uploader</a>
  */
 //@formatter:on
-public class MaterialFileUploader extends gwt.material.design.addins.client.fileuploader.MaterialFileUploader {
+public class MaterialFileUploader extends MaterialWidget implements HasFileUpload<UploadFile> {
+
+    // to inject the resources
+    static {
+        new gwt.material.design.addins.client.fileuploader.MaterialFileUploader();
+    }
 
     private HashMap<String, String> parameters = new HashMap<String, String>();
 
     public void setParameter(String name, String value) {
         parameters.put(name, value);
-        updateUrl();
-    }
-
-    private void updateUrl() {
-        String url = getUrl();
-        if(url != null && url.length() > 0) {
-            setUrl(url);
-        }
-    }
-
-    @Override
-    public void setUrl(String url) {
-        if(url.indexOf("?") == -1) {
-            url += "?";
-        } else {
-            url = url.substring(0, url.indexOf("?") + 1);
-        }
-        for(String name : parameters.keySet()) {
-            url += (name + "=" + parameters.get(name)) + "&";
-        }
-        super.setUrl(url);
     }
 
     private void addFormParameters(JavaScriptObject formData) {
@@ -87,12 +77,6 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
     private native void addFormParameter(JavaScriptObject formData, String name, String value) /*-{
         formData.append(name, value);
     }-*/;
-
-/*
-    static {
-        // do this to inject the js and css files
-        new gwt.material.design.addins.client.fileuploader.MaterialFileUploader();
-    }
 
     private boolean preview = true;
     private boolean initialize = false;
@@ -198,14 +182,12 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
         }
     }
 
-    */
-/**
+    /**
      * Intialize the dropzone component with element and form url to provide a
      * dnd feature for the file upload
      *
      * @param e
-     *//*
-
+     */
     protected void initDropzone(Element e, Element template, String previews, Element uploadPreview, Element uploadedFiles ) {
         JQueryElement previewNode = $(template);
         previewNode.asElement().setId("");
@@ -310,9 +292,17 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
             }
         });
 
-        uploader.on("sending", file -> {
-            //addFormParameters(formData);
+/*
+        uploader.on("sending", (File file, JavaScriptObject request, JavaScriptObject formData) -> {
+            addFormParameters(formData);
             SendingEvent.fire(this, convertUploadFile(file), new UploadResponse(file.xhr.status, file.xhr.statusText));
+            return "";
+        });
+*/
+        uploader.on("sending", (File file, JavaScriptObject request, JavaScriptObject formData) -> {
+            addFormParameters(formData);
+            SendingEvent.fire(this, convertUploadFile(file), new UploadResponse(file.xhr.status, file.xhr.statusText));
+            return null;
         });
 
         uploader.on("success", (file, response) -> {
@@ -338,11 +328,9 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
         });
     }
 
-    */
-/**
+    /**
      * Converts a Native File Object to Upload File object
-     *//*
-
+     */
     protected UploadFile convertUploadFile(File file) {
         Date lastModifiedDate = new Date();
         // Avoid parsing error on last modified date
@@ -353,132 +341,103 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
     }
 
 
-    */
-/**
+    /**
      * Get the form url.
-     *//*
-
+     */
     public String getUrl() {
         return options.url;
     }
 
-    */
-/**
+    /**
      * Set the form url e.g /file/post.
-     *//*
-
+     */
     public void setUrl(String url) {
         options.url = url;
     }
 
-    */
-/**
+    /**
      * Get the maximum file size value of the uploader.
-     *//*
-
+     */
     public int getMaxFileSize() {
         return options.maxFilesize;
     }
 
-    */
-/**
+    /**
      * Set the maximum file size of the uploader, default 20(MB).
-     *//*
-
+     */
     public void setMaxFileSize(int maxFileSize) {
         options.maxFilesize = maxFileSize;
     }
 
-    */
-/**
+    /**
      * Check whether it's auto queue or not.
-     *//*
-
+     */
     public boolean isAutoQueue() {
         return options.autoQueue;
     }
 
-    */
-/**
+    /**
      * Set the auto queue boolean value.
-     *//*
-
+     */
     public void setAutoQueue(boolean autoQueue) {
         options.autoQueue = autoQueue;
     }
 
-    */
-/**
+    /**
      * Get the method param of file uploader.
-     *//*
-
+     */
     public FileMethod getMethod() {
         return FileMethod.fromStyleName(options.method);
     }
 
-    */
-/**
+    /**
      * Set the method param of file upload (POST or PUT), default POST.
-     *//*
-
+     */
     public void setMethod(FileMethod method) {
         options.method = method.getCssName();
     }
 
-    */
-/**
+    /**
      * Get the max number of files.
-     *//*
-
+     */
     public int getMaxFiles() {
         return options.maxFiles;
     }
 
-    */
-/**
+    /**
      * Set the max number of files.
      * Default 100 but if you want to accept only one file just set the max file to 1.
      * If the number of files you upload exceeds, the event maxfilesexceeded will be called.
-     *//*
-
+     */
     public void setMaxFiles(int maxFiles) {
         options.maxFiles = maxFiles;
     }
 
-    */
-/**
+    /**
      * Check whether it's withCredentials or not.
-     *//*
-
+     */
     public boolean isWithCredentials() {
         return options.withCredentials;
     }
 
-    */
-/**
+    /**
      * Set the withCredentials boolean value.
-     *//*
-
+     */
     public void setWithCredentials(boolean withCredentials) {
         options.withCredentials = withCredentials;
     }
 
-    */
-/**
+    /**
      * Get the accepted file string.
-     *//*
-
+     */
     public String getAcceptedFiles() {
         return options.acceptedFiles;
     }
 
-    */
-/**
+    /**
      * Set the default implementation of accept checks the file's mime type or extension against this list.
-     * This is a comma separated list of mime types or file extensions. Eg.: image*/
-/*,application/pdf,.psd.
-     *//*
-
+     * This is a comma separated list of mime types or file extensions. Eg.: image/*,application/pdf,.psd.
+     */
     public void setAcceptedFiles(String acceptedFiles) {
         options.acceptedFiles = acceptedFiles;
     }
@@ -641,20 +600,16 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
         this.preview = preview;
     }
 
-    */
-/**
+    /**
      * Check whether the component has been initialized.
-     *//*
-
+     */
     public boolean isInitialize() {
         return initialize;
     }
 
-    */
-/**
+    /**
      * Set the initialization of the component.
-     *//*
-
+     */
     public void setInitialize(boolean initialize) {
         this.initialize = initialize;
     }
@@ -666,5 +621,4 @@ public class MaterialFileUploader extends gwt.material.design.addins.client.file
     public MaterialUploadPreview getUploadPreview() {
         return uploadPreview;
     }
-*/
 }

@@ -58,7 +58,7 @@
                     <design:MaterialPanel>
                         <design:MaterialImage float="LEFT" ui:field="image"></design:MaterialImage>
                         <design:MaterialPanel marginLeft="70" marginTop="10">
-                            <design:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
+                            <design:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
                             <design:MaterialPanel>
                                 <design:MaterialChip fontSize="0.8em" ui:field="supplier"></design:MaterialChip>
                                 <design:MaterialChip visible="false" ui:field="resource"></design:MaterialChip>

@@ -5,6 +5,7 @@
              xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:widget="urn:import:com.geocento.webapps.eobroker.admin.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.ProductViewImpl.Style">
         .buttonsPanel {
@@ -56,18 +57,18 @@
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Thematic"></design:MaterialLink>
-                    <design:MaterialListBox ui:field="thematic"></design:MaterialListBox>
+                    <design:MaterialListValueBox ui:field="thematic"></design:MaterialListValueBox>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialLink addStyleNames="{style.label}" iconType="SETTINGS" text="Sector"></design:MaterialLink>
-                    <design:MaterialListBox ui:field="sector"></design:MaterialListBox>
+                    <design:MaterialListValueBox ui:field="sector"></design:MaterialListValueBox>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialTextBox placeholder="Short Description" type="TEXT" iconType="DESCRIPTION" ui:field="shortDescription"/>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialLink addStyleNames="{style.label}" text="Full description" iconType="TEXT_FIELDS"/>
-                    <richeditor:MaterialRichEditor ui:field="fullDescription"></richeditor:MaterialRichEditor>
+                    <material:MaterialRichEditor ui:field="fullDescription"></material:MaterialRichEditor>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialLink addStyleNames="{style.label}" text="Geoinformation provided" iconType="RSS_FEED"/>

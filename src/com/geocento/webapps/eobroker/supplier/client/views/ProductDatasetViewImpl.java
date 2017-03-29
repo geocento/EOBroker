@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -28,7 +27,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
@@ -64,7 +62,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField
     MaterialTextArea description;
     @UiField
-    MaterialRichEditor fullDescription;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor fullDescription;
     @UiField
     MapContainer mapContainer;
     @UiField
@@ -78,7 +76,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField
     MaterialButton addHostedSample;
     @UiField
-    MaterialFileUploader sampleUploader;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader sampleUploader;
     @UiField
     MaterialListBox sampleAccessType;
     @UiField

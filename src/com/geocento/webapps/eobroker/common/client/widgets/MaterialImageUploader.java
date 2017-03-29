@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.events.DragOverEvent;
@@ -32,7 +33,7 @@ public class MaterialImageUploader extends Composite {
     @UiField
     MaterialProgress iconProgress;
     @UiField
-    MaterialFileUploader imageUploader;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader imageUploader;
 
     public MaterialImageUploader() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -45,7 +46,14 @@ public class MaterialImageUploader extends Composite {
         imageUploader.addSuccessHandler(event -> {
             iconName.setText(event.getTarget().getName());
             iconSize.setText(event.getTarget().getType());
-            iconPreview.setUrl(StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>"));
+            String error = StringUtils.extract(event.getResponse().getBody(), "<error>", "</error>");
+            if(error.length() > 0) {
+                // TODO - send error event
+                Window.alert(error);
+                return;
+            }
+            String url = StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>");
+            iconPreview.setUrl(url);
         });
 
         imageUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {

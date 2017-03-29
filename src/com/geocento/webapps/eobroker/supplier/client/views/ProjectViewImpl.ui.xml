@@ -5,6 +5,7 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
              xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
         .buttonsPanel {
@@ -68,7 +69,7 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
-                <richeditor:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
+                <material:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Project supported products" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>

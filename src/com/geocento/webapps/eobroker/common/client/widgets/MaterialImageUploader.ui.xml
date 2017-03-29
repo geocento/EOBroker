@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
-    <widgets:MaterialFileUploader acceptedFiles="image/*" url="" maxFileSize="100" backgroundColor="TRANSPARENT" height="auto" width="auto" display="INLINE_BLOCK" paddingLeft="50" shadow="0" ui:field="imageUploader">
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material">
+    <material:MaterialFileUploader acceptedFiles="image/*" url="" maxFileSize="100" backgroundColor="TRANSPARENT" height="auto" width="auto" display="INLINE_BLOCK" paddingLeft="50" shadow="0" ui:field="imageUploader">
         <design:MaterialCard>
             <design:MaterialCardImage>
                 <design:MaterialImage ui:field="iconPreview"/>
@@ -13,5 +14,5 @@
                 <design:MaterialButton design:id="cardUpload" layoutPosition="ABSOLUTE" top="-25" right="25" type="FLOATING" backgroundColor="PINK" size="LARGE" iconType="CLOUD_UPLOAD" iconColor="WHITE"/>
             </design:MaterialCardContent>
         </design:MaterialCard>
-    </widgets:MaterialFileUploader>
+    </material:MaterialFileUploader>
 </ui:UiBinder>

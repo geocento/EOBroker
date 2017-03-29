@@ -20,7 +20,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.ui.*;
 
 import java.util.ArrayList;
@@ -51,15 +50,15 @@ public class ProductViewImpl extends Composite implements ProductView {
     @UiField
     MaterialTextBox shortDescription;
     @UiField
-    MaterialRichEditor fullDescription;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor fullDescription;
     @UiField
     MaterialButton submit;
     @UiField
     MaterialImageUploader imageUploader;
     @UiField
-    MaterialListBox thematic;
+    MaterialListValueBox<Thematic> thematic;
     @UiField
-    MaterialListBox sector;
+    MaterialListValueBox<Sector> sector;
     @UiField
     FormEditor formFields;
     @UiField
@@ -88,11 +87,11 @@ public class ProductViewImpl extends Composite implements ProductView {
         initWidget(ourUiBinder.createAndBindUi(this));
 
         for(Sector sector : Sector.values()) {
-            this.sector.addItem(sector.getName(), sector.toString());
+            this.sector.addItem(sector, sector.getName());
         }
 
         for(Thematic thematic : Thematic.values()) {
-            this.thematic.addItem(thematic.getName(), thematic.toString());
+            this.thematic.addItem(thematic, thematic.getName());
         }
 
     }
@@ -139,29 +138,29 @@ public class ProductViewImpl extends Composite implements ProductView {
 
     @Override
     public Sector getSector() {
-        return Sector.valueOf(sector.getSelectedValue());
+        return sector.getSelectedValue();
     }
 
     @Override
     public void setSector(Sector sector) {
         if(sector == null) {
-            this.sector.setSelectedIndex(0);
+            this.sector.setValue(Sector.all);
         } else {
-            this.sector.setSelectedValue(sector.name());
+            this.sector.setValue(sector);
         }
     }
 
     @Override
     public Thematic getThematic() {
-        return Thematic.valueOf(thematic.getSelectedValue());
+        return thematic.getSelectedValue();
     }
 
     @Override
     public void setThematic(Thematic thematic) {
         if(thematic == null) {
-            this.thematic.setSelectedIndex(0);
+            this.thematic.setValue(Thematic.all);
         } else {
-            this.thematic.setSelectedValue(thematic.name());
+            this.thematic.setValue(thematic);
         }
     }
 

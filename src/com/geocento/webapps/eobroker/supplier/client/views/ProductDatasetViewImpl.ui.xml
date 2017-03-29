@@ -6,6 +6,7 @@
              xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
         .buttonsPanel {
@@ -83,7 +84,7 @@
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <richeditor:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
+                    <material:MaterialRichEditor height="10em" placeholder="Full Description" ui:field="fullDescription"/>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
@@ -152,7 +153,7 @@
                             </design:MaterialCard>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
-                            <c:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="sampleUploader">
+                            <material:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="sampleUploader">
                                 <design:MaterialCard padding="20">
                                     <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
                                         <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to the EO Broker samples server</design:MaterialLabel>
@@ -160,7 +161,7 @@
                                         <design:MaterialButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></design:MaterialButton>
                                     </design:MaterialCardContent>
                                 </design:MaterialCard>
-                            </c:MaterialFileUploader>
+                            </material:MaterialFileUploader>
                         </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>

@@ -45,7 +45,7 @@ public class FormEditor extends Composite {
     public FormEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        selectElement.addItem("Area of Interest", TYPE.aoi.toString());
+        //selectElement.addItem("Area of Interest", TYPE.aoi.toString());
         selectElement.addItem("Text", TYPE.text.toString());
         selectElement.addItem("Date", TYPE.date.toString());
         selectElement.addItem("Choice", TYPE.choice.toString());
