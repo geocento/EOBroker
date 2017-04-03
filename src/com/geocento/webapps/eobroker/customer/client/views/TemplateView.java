@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
@@ -13,9 +14,10 @@ import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSuggestion;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.place.shared.PlaceChangeEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -24,8 +26,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
+import gwt.material.design.jquery.client.api.JQuery;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +38,7 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class TemplateView extends Composite implements HasWidgets {
+public class TemplateView extends Composite implements HasWidgets, ResizeHandler {
 
     interface TemplateViewUiBinder extends UiBinder<Widget, TemplateView> {
     }
@@ -43,6 +48,10 @@ public class TemplateView extends Composite implements HasWidgets {
     public static interface Style extends CssResource {
 
         String navOpened();
+
+        String selected();
+
+        String category();
     }
 
     public static interface Presenter {
@@ -86,12 +95,6 @@ public class TemplateView extends Composite implements HasWidgets {
     @UiField
     MaterialSuggestion textSearch;
     @UiField
-    MaterialLink allCategories;
-    @UiField
-    MaterialDropDown categoriesDropdown;
-    @UiField
-    MaterialLink categories;
-    @UiField
     MaterialBadge notificationsBadge;
     @UiField
     MaterialDropDown notificationsPanel;
@@ -103,6 +106,38 @@ public class TemplateView extends Composite implements HasWidgets {
     MaterialPanel content;
     @UiField
     LoadingWidget loading;
+    @UiField
+    MaterialSideNav navigationPanel;
+    @UiField
+    MaterialLink productsCategory;
+    @UiField
+    MaterialLink productServicesCategory;
+    @UiField
+    MaterialLink productDatasetsCategory;
+    @UiField
+    MaterialLink softwareCategory;
+    @UiField
+    MaterialLink projectsCategory;
+    @UiField
+    MaterialLink companiesCategory;
+    @UiField
+    MaterialLink homeCategory;
+    @UiField
+    HTMLPanel menus;
+    @UiField
+    MaterialLink conversationsCategory;
+    @UiField
+    MaterialLink requestsCategory;
+    @UiField
+    MaterialLink notificationsCategory;
+    @UiField
+    MaterialLink testimoniesCategory;
+    @UiField
+    MaterialLink settingsCategory;
+    @UiField
+    MaterialLink feedbackCategory;
+    @UiField
+    MaterialLink helpCategory;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -122,6 +157,30 @@ public class TemplateView extends Composite implements HasWidgets {
 
         orders.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
 
+        // update icons
+        productsCategory.setIconType(CategoryUtils.getIconType(Category.products));
+        addCategoryTooltip(productsCategory, "See all relevant products");
+        productServicesCategory.setIconType(CategoryUtils.getIconType(Category.productservices));
+        addCategoryTooltip(productServicesCategory, "See all on demand services able to supply your request");
+        productDatasetsCategory.setIconType(CategoryUtils.getIconType(Category.productdatasets));
+        addCategoryTooltip(productDatasetsCategory, "See all off the shelf datasets matching your search");
+        softwareCategory.setIconType(CategoryUtils.getIconType(Category.software));
+        addCategoryTooltip(softwareCategory, "See all software solutions matching your search");
+        projectsCategory.setIconType(CategoryUtils.getIconType(Category.project));
+        addCategoryTooltip(projectsCategory, "See all relevant projects for your search");
+        companiesCategory.setIconType(CategoryUtils.getIconType(Category.companies));
+        addCategoryTooltip(companiesCategory, "See all relevant companies for your search");
+
+        // set basic links
+        homeCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new LandingPagePlace()));
+        conversationsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new ConversationPlace()));
+        requestsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
+        //notificationsCategory.setHref(PlaceHistoryHelper.convertPlace(new NotificationPlace()));
+        testimoniesCategory.setHref(PlaceHistoryHelper.convertPlace(new TestimonialsPlace()));
+        settingsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new SettingsPlace()));
+        feedbackCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new FeedbackPlace()));
+        //helpCategory.setHref(Customer.getApplicationSettings().getHelpUrl());
+
         textSearch.setPresenter(new MaterialSuggestion.Presenter() {
             @Override
             public void textChanged(String text) {
@@ -138,33 +197,97 @@ public class TemplateView extends Composite implements HasWidgets {
                 presenter.textSelected(text);
             }
         });
-        // add categories
-        for(final Category category : Category.values()) {
-            MaterialLink categoryLink = new MaterialLink(category.getName());
-            categoryLink.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    displayCategory(category);
-                    presenter.categoryChanged(category);
-                }
-            });
-            categoriesDropdown.add(categoryLink);
-        }
-        allCategories.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                displayCategory(null);
-                presenter.categoryChanged(null);
-            }
-        });
+        onResize(null);
     }
 
-    public void displayCategory(Category category) {
-        if(category == null) {
-            categories.setText("All categories");
-        } else {
-            categories.setText(category.getName());
+    public HasHref getProductsCategory() {
+        return productsCategory;
+    }
+
+    public HasHref getProductServicesCategory() {
+        return productServicesCategory;
+    }
+
+    public HasHref getProductDatasetsCategory() {
+        return productDatasetsCategory;
+    }
+
+    public HasHref getSoftwareCategory() {
+        return softwareCategory;
+    }
+
+    public HasHref getProjectsCategory() {
+        return projectsCategory;
+    }
+
+    public HasHref getCompaniesCategory() {
+        return companiesCategory;
+    }
+
+    public void setMenu(String menuName) {
+        JQueryElement menuItems = JQuery.$("." + style.category(), menus);
+        menuItems.removeClass(style.selected());
+        if(menuName == null) {
+            return;
         }
+        Widget widget = null;
+        switch (menuName) {
+            case "home":
+                widget = homeCategory;
+                break;
+            case "products":
+                widget = productsCategory;
+                break;
+            case "productservices":
+                widget = productServicesCategory;
+                break;
+            case "productdatasets":
+                widget = productDatasetsCategory;
+                break;
+            case "software":
+                widget = softwareCategory;
+                break;
+            case "project":
+                widget = projectsCategory;
+                break;
+            case "companies":
+                widget = companiesCategory;
+                break;
+            case "notifications":
+                widget = notificationsCategory;
+                break;
+            case "conversations":
+                widget = conversationsCategory;
+                break;
+            case "requests":
+                widget = requestsCategory;
+                break;
+            case "testimonies":
+                widget = testimoniesCategory;
+                break;
+            case "settings":
+                widget = settingsCategory;
+                break;
+            case "feedback":
+                widget = feedbackCategory;
+                break;
+            case "help":
+                widget = helpCategory;
+                break;
+        }
+        if(widget != null) {
+            widget.addStyleName(style.selected());
+        }
+    }
+
+    private void addCategoryTooltip(MaterialLink materialLink, String message) {
+/*
+        MaterialTooltip materialTooltip = new MaterialTooltip();
+        materialTooltip.setWidget(materialLink);
+        materialTooltip.setPosition(Position.RIGHT);
+        materialTooltip.setText(message);
+        categories.add(materialTooltip);
+*/
     }
 
     public void setPresenter(Presenter presenter) {
@@ -333,6 +456,11 @@ public class TemplateView extends Composite implements HasWidgets {
     @Override
     public boolean remove(Widget w) {
         return content.remove(w);
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        setPanelStyleName(style.navOpened(), navigationPanel.isVisible());
     }
 
 }

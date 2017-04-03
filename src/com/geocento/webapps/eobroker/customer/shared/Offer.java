@@ -15,4 +15,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value=ProjectDTO.class, name="project"),
 })
 public class Offer {
+    private boolean following;
+
+    public boolean getFollowing() {
+        return following;
+    }
+
+    public boolean isFollowing() {
+        return following;
+    }
+
+    public void setFollowing(boolean following) {
+        this.following = following;
+    }
 }

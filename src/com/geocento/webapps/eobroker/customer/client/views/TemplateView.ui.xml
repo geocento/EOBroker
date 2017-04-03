@@ -84,6 +84,61 @@
                 margin: 50px;
             }
 
+            .sidenavPanel {
+                height: 100%;
+            }
+
+            .sideNav {
+                height: auto !important;
+                bottom: 0px !important;
+                background: rgb(238, 238, 238) !important;
+            }
+
+            a.category {
+                height: inherit;
+                font-size: 1em;
+                line-height: 2.6em;
+                padding: 0 !important;
+                margin: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .category.selected {
+                color: blue !important;
+            }
+
+            .navOpened main, .navOpened footer {
+                padding-left: 260px;
+            }
+
+            .menus {
+                padding: 30px;
+                line-height: normal !important;
+                font-size: 0.9em;
+            }
+
+            .notlinked {
+            }
+
+            .offering {
+                padding-left: 20px;
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+                border-bottom: 1px solid darkgrey;
+            }
+
+            .interactions {
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+                border-bottom: 1px solid darkgrey;
+            }
+
+            .settings {
+
+            }
+
         </ui:style>
         <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
         <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -95,7 +150,6 @@
                         <m:MaterialNavSection>
                             <m:MaterialImage height="54px" marginLeft="5" marginTop="5" resource="{resCommon.logoEOBroker}" addStyleNames="{style.logoImage}" ui:field="logo"></m:MaterialImage>
                             <m:MaterialLabel text="" display="INLINE" paddingLeft="20" marginLeft="20" paddingRight="20" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></m:MaterialLabel>
-                            <m:MaterialLink visible="false" text="All categories" activates="categories" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.categories}" ui:field="categories"></m:MaterialLink>
                         </m:MaterialNavSection>
                         <m:MaterialNavSection float="RIGHT">
                             <m:MaterialTooltip text="View your requests" position="BOTTOM">
@@ -121,11 +175,38 @@
                             <widgets:MaterialSuggestion layoutPosition="RELATIVE" iconColor="WHITE" backgroundColor="BLUE_GREY" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
-                    <m:MaterialDropDown activator="categories" constrainWidth="true" ui:field="categoriesDropdown">
-                        <m:MaterialLink waves="DEFAULT" textColor="BLACK" text="All categories" ui:field="allCategories"/>
-                    </m:MaterialDropDown>
                 </m:MaterialPanel>
                 <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
+                <!-- SideNav -->
+                <m:MaterialSideNav type="FIXED" m:id="sideNav" alwaysShowActivator="true" top="64" width="250" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="navigationPanel">
+                    <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
+                        <g:HTMLPanel addStyleNames="{style.menus}" ui:field="menus">
+                            <g:HTMLPanel>
+                                <m:MaterialLink addStyleNames="{style.category}" text="Home" iconType="HOME" ui:field="homeCategory"></m:MaterialLink>
+                                <m:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></m:MaterialLink>
+                                <m:MaterialLink addStyleNames="{style.category}" text="Products" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></m:MaterialLink>
+                                <m:MaterialLink addStyleNames="{style.category}, {style.notlinked}" text="Offering" iconSize="TINY" iconType="ARROW_FORWARD"></m:MaterialLink>
+                                <m:MaterialPanel addStyleNames="{style.offering}" ui:field="offering">
+                                    <m:MaterialLink addStyleNames="{style.category}" text="On-demand services" iconType="MAP" ui:field="productServicesCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf data" iconType="MAP" ui:field="productDatasetsCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Software solutions" iconType="MAP" ui:field="softwareCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="R&amp;D Projects" iconType="MAP" ui:field="projectsCategory"></m:MaterialLink>
+                                </m:MaterialPanel>
+                                <m:MaterialPanel addStyleNames="{style.interactions}" ui:field="interactions">
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Conversations" iconType="CHAT_BUBBLE" ui:field="conversationsCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Requests" iconType="SHOPPING_CART" ui:field="requestsCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Notifications" iconType="NOTIFICATIONS" ui:field="notificationsCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Testimonials" iconType="SPEAKER_NOTES" ui:field="testimoniesCategory"></m:MaterialLink>
+                                </m:MaterialPanel>
+                                <m:MaterialPanel addStyleNames="{style.settings}" ui:field="settings">
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Settings" iconType="SETTINGS" ui:field="settingsCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Feedback" iconType="FEEDBACK" ui:field="feedbackCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Help" iconType="HELP" ui:field="helpCategory"></m:MaterialLink>
+                                </m:MaterialPanel>
+                            </g:HTMLPanel>
+                        </g:HTMLPanel>
+                    </g:HTMLPanel>
+                </m:MaterialSideNav>
             </header>
             <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">
                 <cwidgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></cwidgets:LoadingWidget>

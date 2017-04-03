@@ -79,6 +79,9 @@ public class CompanyViewImpl extends Composite implements CompanyView {
         for(COMPANY_SIZE companySize : COMPANY_SIZE.values()) {
             this.companySize.add(new Option(companySize.toString()));
         }
+
+        // issue with horizontal position of the widget which is not preserved
+        //MaterialPushpin.apply(viewClient, 100.0, 64.0);
     }
 
     @Override

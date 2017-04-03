@@ -5,7 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 /**
  * Created by thomas on 06/06/2016.
  */
-public class ProjectDTO {
+public class ProjectDTO extends Offer {
 
     Long id;
     String name;

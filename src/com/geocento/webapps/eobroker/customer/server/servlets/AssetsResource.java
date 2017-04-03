@@ -1007,4 +1007,46 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+    @Override
+    public Boolean followCompany(Long companyId, Boolean follow) throws RequestException {
+        return dummyFollow(companyId, follow);
+    }
+
+    private Boolean dummyFollow(Long companyId, Boolean follow) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // just for testing
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return follow;
+    }
+
+    @Override
+    public Boolean followProduct(Long productId, Boolean follow) throws RequestException {
+        return dummyFollow(productId, follow);
+    }
+
+    @Override
+    public Boolean followProductService(Long serviceId, Boolean follow) throws RequestException {
+        return dummyFollow(serviceId, follow);
+    }
+
+    @Override
+    public Boolean followProductDataset(Long productDatasetId, Boolean follow) throws RequestException {
+        return dummyFollow(productDatasetId, follow);
+    }
+
+    @Override
+    public Boolean followSoftware(Long softwareId, Boolean follow) throws RequestException {
+        return dummyFollow(softwareId, follow);
+    }
+
+    @Override
+    public Boolean followProject(Long projectId, Boolean follow) throws RequestException {
+        return dummyFollow(projectId, follow);
+    }
+
 }

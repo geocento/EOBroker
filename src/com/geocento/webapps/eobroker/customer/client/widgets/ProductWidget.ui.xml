@@ -18,6 +18,10 @@
             cursor: pointer;
         }
 
+        .stars > i {
+            margin-right: 5px !important;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
     <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL" shadow="1">
@@ -29,7 +33,12 @@
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction ui:field="action" padding="10">
-            <design:MaterialLink text="FOLLOW" textColor="WHITE" ui:field="information"></design:MaterialLink>
+            <design:MaterialTooltip text="Favourited 0 times" ui:field="starsTooltip">
+                <design:MaterialLink text="0" float="RIGHT" textColor="LIME" iconType="STAR" iconColor="LIME" marginRight="0" addStyleNames="{style.stars}" ui:field="stars"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="" ui:field="followTooltip">
+                <widgets:MaterialLoadingLink text="FOLLOW" textColor="WHITE" ui:field="follow"></widgets:MaterialLoadingLink>
+            </design:MaterialTooltip>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

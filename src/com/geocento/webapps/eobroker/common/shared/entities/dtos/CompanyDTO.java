@@ -22,6 +22,7 @@ public class CompanyDTO {
     COMPANY_SIZE companySize;
     List<String> awards;
     private Date startedIn;
+    private boolean following;
 
     public CompanyDTO() {
     }
@@ -120,5 +121,13 @@ public class CompanyDTO {
 
     public Date getStartedIn() {
         return startedIn;
+    }
+
+    public void setFollowing(boolean following) {
+        this.following = following;
+    }
+
+    public boolean getFollowing() {
+        return following;
     }
 }

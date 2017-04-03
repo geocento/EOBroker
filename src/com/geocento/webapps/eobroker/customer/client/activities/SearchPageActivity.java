@@ -99,8 +99,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         this.limit = 24;
         // now start the search
         setSearchText(text);
-        showCategories(true, text);
-        selectCategory(category);
+        selectMenu(category);
         searchPageView.displayFilters(category);
 
         // add current AoI
@@ -123,9 +122,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     }
 
-    private void selectCategory(Category category) {
+    public void selectMenu(Category category) {
+        super.selectMenu(category == null ? null : category.toString());
         this.category = category;
-        searchPageView.selectCategory(category);
     }
 
     private void setSearchText(String text) {
@@ -137,6 +136,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         searchPageView.clearResults();
         if(category != null) {
             // search using the category
+            searchPageView.showFilters(true);
             switch (category) {
                 case products: {
                     searchPageView.setTitleText("Browse products");
@@ -179,6 +179,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     public void onSuccess(Method method, SearchResult searchResult) {
                         searchPageView.hideLoadingResults();
                         searchPageView.setResultsTitle("");
+                        searchPageView.showFilters(false);
                         // add all results to the interface
                         // start with products
                         {
@@ -232,6 +233,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             } catch (RequestException e) {
             }
         }
+        // forces title text to explore instead
+        searchPageView.setTitleText("Explore");
     }
 
     private void loadProducts(final String text, final int start, final int limit) {
@@ -284,7 +287,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
             Date startTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStartTimeFrameFilter().getValue() : null;
             Date stopTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStopTimeFrameFilter().getValue() : null;
-            ServiceType serviceType = searchPageView.getProductCommercialFilterActivated().getValue() ? searchPageView.getProductServiceType().getValue() : null;
+            ServiceType serviceType = searchPageView.getProductServiceType();
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -375,16 +378,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 SearchPagePlace.TOKENS.category.toString(), category.toString(),
                 SearchPagePlace.TOKENS.text.toString(), text == null ? "" : text
         )));
-    }
-
-    private void showCategories(boolean display, String text) {
-        searchPageView.displayCategories(display);
-        searchPageView.getProductsCategory().setHref(getSearchCategoryUrl(Category.products, text));
-        searchPageView.getProductServicesCategory().setHref(getSearchCategoryUrl(Category.productservices, text));
-        searchPageView.getProductDatasetsCategory().setHref(getSearchCategoryUrl(Category.productdatasets, text));
-        searchPageView.getSoftwareCategory().setHref(getSearchCategoryUrl(Category.software, text));
-        searchPageView.getProjectsCategory().setHref(getSearchCategoryUrl(Category.project, text));
-        searchPageView.getCompaniesCategory().setHref(getSearchCategoryUrl(Category.companies, text));
     }
 
     @Override

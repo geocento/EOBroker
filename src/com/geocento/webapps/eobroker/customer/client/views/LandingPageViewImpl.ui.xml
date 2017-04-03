@@ -40,7 +40,7 @@
         }
 
     </ui:style>
-    <views:TemplateView titleText="Home" ui:field="template">
+    <views:TemplateView titleText="Home" menu="home" ui:field="template">
         <g:HTMLPanel addStyleNames="{style.mainPanel}">
             <g:HTMLPanel addStyleNames="{style.content}">
                 <cwidgets:MaterialSlider ui:field="slider" fullscreen="false">

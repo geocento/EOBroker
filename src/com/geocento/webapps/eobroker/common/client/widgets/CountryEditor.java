@@ -7,14 +7,14 @@ public class CountryEditor extends MaterialListBox {
 
 	private static DefaultLocalizedNames names = new DefaultLocalizedNames();
 
-	public CountryEditor() {
+    public CountryEditor() {
 		// fill the list with countries names
 		for(String countryCode : names.loadSortedRegionCodes()) {
 			addItem(countryCode, getDisplayName(countryCode));
 		}
 		setSelectedIndex(0);
 	}
-	
+
 	static public String getDisplayName(String countryCode) {
 		return names.getRegionName(countryCode);
 	}

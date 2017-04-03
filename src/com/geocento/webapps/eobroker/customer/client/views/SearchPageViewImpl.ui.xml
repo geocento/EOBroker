@@ -5,6 +5,7 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
 
@@ -48,15 +49,13 @@
             cursor: pointer;
         }
 
-        .navOpened main, .navOpened footer {
-            padding-left: 360px;
-        }
-
         .mapPanel {
         }
+
         .mapPanel a {
             padding: 0px !important;
         }
+
         .mapPanel i {
             font-size: 1.3rem !important;
         }
@@ -103,6 +102,7 @@
         .resultsPanel {
             padding: 10px 20px;
             max-width: 960px;
+            margin: 0 auto;
         }
 
         a.category {
@@ -114,9 +114,9 @@
         }
 
         .category.selected {
-/*
-            color: blue !important;
-*/
+            /*
+                        color: blue !important;
+            */
         }
 
         .filterBy {
@@ -130,27 +130,31 @@
             text-align: center;
         }
 
+        .filtersPanel {
+            border: none !important;
+            border-bottom: 1px solid #333;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <views:TemplateView titleText="Search" footer="false" ui:field="template">
-        <views:header>
-            <!-- SideNav -->
-            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="filtersPanel">
-                <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
-                    <g:HTMLPanel addStyleNames="{style.filters}">
-                        <g:HTMLPanel ui:field="categories">
-                            <design:MaterialLink addStyleNames="{style.category}" text="Products" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></design:MaterialLink>
-                            <design:MaterialLink addStyleNames="{style.category}" text="On-demand services" iconType="MAP" ui:field="productServicesCategory"></design:MaterialLink>
-                            <design:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf data" iconType="MAP" ui:field="productDatasetsCategory"></design:MaterialLink>
-                            <design:MaterialLink addStyleNames="{style.category}" text="Software solutions" iconType="MAP" ui:field="softwareCategory"></design:MaterialLink>
-                            <design:MaterialLink addStyleNames="{style.category}" text="Projects" iconType="MAP" ui:field="projectsCategory"></design:MaterialLink>
-                            <design:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></design:MaterialLink>
-                        </g:HTMLPanel>
-                        <design:MaterialLink visible="false" text="Filter by" fontSize="1em" textColor="BLUE_GREY" iconType="SEARCH"/>
-                        <g:HTMLPanel addStyleNames="{style.filterBy}">
-                            <g:HTMLPanel ui:field="settings">
-                            </g:HTMLPanel>
+        <g:HTMLPanel addStyleNames="{style.resultsPanel}">
+            <design:MaterialCollapsible shadow="0" addStyleNames="{style.filtersPanel}" ui:field="filtersPanel">
+                <design:MaterialCollapsibleItem>
+                    <design:MaterialCollapsibleHeader backgroundColor="BLUE_GREY_LIGHTEN_2">
+                        <design:MaterialLink text="FILTER BY" fontSize="1em" textColor="WHITE" iconType="FILTER" iconColor="WHITE"/>
+                        <design:MaterialIcon float="RIGHT" circle="true" waves="DEFAULT" iconType="CLEAR" iconColor="WHITE" ui:field="clearFilters"></design:MaterialIcon>
+                    </design:MaterialCollapsibleHeader>
+                    <design:MaterialCollapsibleBody backgroundColor="BLUE_GREY_LIGHTEN_4">
+                        <design:MaterialRow ui:field="filters">
+                            <design:MaterialListValueBox placeholder="Sector" addStyleNames="{style.option}" ui:field="sectorFilter"></design:MaterialListValueBox>
+                            <design:MaterialListValueBox placeholder="Thematic" addStyleNames="{style.option}" ui:field="thematicFilter"></design:MaterialListValueBox>
+                            <material:MaterialListValueBox placeholder="Company Size" addStyleNames="{style.option}" ui:field="companySizeFilter"></material:MaterialListValueBox>
+                            <design:MaterialListValueBox placeholder="Years since incorporation" addStyleNames="{style.option}" ui:field="companyAgeFilter"></design:MaterialListValueBox>
+                            <widgets:CountryEditor placeholder="Country of incorporation" addStyleNames="{style.option}" ui:field="companyCountryFilter"></widgets:CountryEditor>
+                            <material:MaterialListValueBox placeholder="Data type" addStyleNames="{style.option}" ui:field="productCommercialFilter"></material:MaterialListValueBox>
+                            <material:MaterialListValueBox placeholder="Software type" addStyleNames="{style.option}" ui:field="softwareCommercialFilter"></material:MaterialListValueBox>
                             <g:HTMLPanel ui:field="timeFrame">
                                 <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
                                 <design:MaterialRow>
@@ -166,12 +170,10 @@
                                 <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
                                 <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="200px" layer="false" basemapVisible="false" ui:field="mapContainer"></cmaps:MapContainer>
                             </g:HTMLPanel>
-                        </g:HTMLPanel>
-                    </g:HTMLPanel>
-                </g:HTMLPanel>
-            </widgets:MaterialSideNav>
-        </views:header>
-        <g:HTMLPanel addStyleNames="{style.resultsPanel}">
+                        </design:MaterialRow>
+                    </design:MaterialCollapsibleBody>
+                </design:MaterialCollapsibleItem>
+            </design:MaterialCollapsible>
             <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="BLUE_GREY" ui:field="resultsTitle"/>
             <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.loadingPanel}">

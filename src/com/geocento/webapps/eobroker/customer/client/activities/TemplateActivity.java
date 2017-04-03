@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -73,8 +74,29 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         templateView.setPresenter(this);
         // reset some values
         templateView.setSearchText(null);
+
+        // set the menu links
+        templateView.getProductsCategory().setHref(getSearchCategoryUrl(Category.products, text));
+        templateView.getProductServicesCategory().setHref(getSearchCategoryUrl(Category.productservices, text));
+        templateView.getProductDatasetsCategory().setHref(getSearchCategoryUrl(Category.productdatasets, text));
+        templateView.getSoftwareCategory().setHref(getSearchCategoryUrl(Category.software, text));
+        templateView.getProjectsCategory().setHref(getSearchCategoryUrl(Category.project, text));
+        templateView.getCompaniesCategory().setHref(getSearchCategoryUrl(Category.companies, text));
+
         // make sure page scrolls to the top
         templateView.scrollToTop();
+    }
+
+    private String getSearchCategoryUrl(Category category, String text) {
+        return "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), category.toString(),
+                SearchPagePlace.TOKENS.text.toString(), text == null ? "" : text
+        )));
+    }
+
+    public void selectMenu(String menu) {
+        // TODO - change somehow
+        templateView.setMenu(menu);
     }
 
     // TODO - change for a request count instead?

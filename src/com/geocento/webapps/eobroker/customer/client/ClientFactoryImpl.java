@@ -21,31 +21,35 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private SearchPageView searchPageView = null;
 
-    private LoginPageViewImpl loginPageView = null;
+    private LoginPageView loginPageView = null;
 
-    private ImageSearchViewImpl imageSearchView = null;
+    private ImageSearchView imageSearchView = null;
 
-    private RequestImageryViewImpl requestImageryView = null;
+    private RequestImageryView requestImageryView = null;
 
-    private ProductFormViewImpl productFormView = null;
+    private ProductFormView productFormView = null;
 
-    private FullViewImpl fullView = null;
+    private FullView fullView = null;
 
-    private ProductFeasibilityViewImpl productFeasibilityView = null;
+    private ProductFeasibilityView productFeasibilityView = null;
 
-    private RequestsViewImpl ordersView = null;
+    private RequestsView ordersView = null;
 
-    private ProductResponseViewImpl productResponseView = null;
+    private ProductResponseView productResponseView = null;
 
-    private ImageryResponseViewImpl imageryResponseView = null;
+    private ImageryResponseView imageryResponseView = null;
 
     private ImagesResponseView imagesResponseView = null;
 
     private VisualisationView visualisationView = null;
 
-    private ConversationViewImpl conversationView = null;
+    private ConversationView conversationView = null;
 
-    private FeedbackViewImpl feedbackView = null;
+    private FeedbackView feedbackView = null;
+
+    private SettingsView settingsView = null;
+
+    private TestimonialsView testimonialsView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -180,6 +184,22 @@ public class ClientFactoryImpl implements ClientFactory {
             feedbackView = new FeedbackViewImpl(this);
         }
         return feedbackView;
+    }
+
+    @Override
+    public SettingsView getSettingsView() {
+        if(settingsView == null) {
+            settingsView = new SettingsViewImpl(this);
+        }
+        return settingsView;
+    }
+
+    @Override
+    public TestimonialsView getTestimonialsView() {
+        if(testimonialsView == null) {
+            testimonialsView = new TestimonialsViewImpl(this);
+        }
+        return testimonialsView;
     }
 
 }

@@ -29,4 +29,7 @@ public interface StyleResources extends ClientBundle {
     @Source("images/loadingLarge.gif")
     ImageResource loading300by200();
 
+    @Source("images/ajax-loader.gif")
+    ImageResource loadingSmall();
+
 }

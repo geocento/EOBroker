@@ -136,8 +136,8 @@ public class FullViewImpl extends Composite implements FullView {
         setTabPanelColor(CategoryUtils.getColor(Category.products));
         // add tags
         {
-            addTag(productDescriptionDTO.getThematic().toString(), Color.BLUE, Color.WHITE);
-            addTag(productDescriptionDTO.getSector().toString(), Color.GREY, Color.WHITE);
+            addTag(productDescriptionDTO.getThematic().getName(), Color.BLUE, Color.WHITE);
+            addTag(productDescriptionDTO.getSector().getName(), Color.GREY, Color.WHITE);
         }
         // add actions
         {
@@ -146,7 +146,7 @@ public class FullViewImpl extends Composite implements FullView {
         // add the tabs now
         MaterialPanel tabsPanel = createTabsPanel();
         MaterialTab materialTab = createTabs(tabsPanel);
-        int numTabs = 4;
+        int numTabs = 2;
         int size = (int) Math.floor(12 / numTabs);
         // add description
         MaterialPanel fullDescriptionPanel = new MaterialPanel();
@@ -156,10 +156,20 @@ public class FullViewImpl extends Composite implements FullView {
         fullDescriptionPanel.setPadding(10);
         addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
         // create tab panel for services
-        MaterialPanel servicesPanel = new MaterialPanel();
+        MaterialPanel offeringPanel = new MaterialPanel();
+        setMatchingServices(offeringPanel, productDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
+        setMatchingDatasets(offeringPanel, productDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString()))));
+        setMatchingSoftwares(offeringPanel, productDescriptionDTO.getSoftwares(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.software.toString()))));
+        setMatchingProjects(offeringPanel, productDescriptionDTO.getProjects(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.project.toString()))));
+        addTab(materialTab, tabsPanel, "Offering", offeringPanel, size);
+/*
         if(productDescriptionDTO.getProductServices().size() == 0) {
-            servicesPanel.add(createSubsection("No on-demand services are available for this product"));
-            servicesPanel.add(new HTML("<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>"));
+            offeringPanel.add(createSubsection("No on-demand services are available for this product"));
+            offeringPanel.add(new HTML("<p>We are sorry but we do not have any supplier currently supporting on-demand generation of this product as a service</p>"));
         } else {
             {
                 MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
@@ -171,7 +181,7 @@ public class FullViewImpl extends Composite implements FullView {
                     }
                 });
                 materialAnchorButton.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
-                servicesPanel.add(materialAnchorButton);
+                offeringPanel.add(materialAnchorButton);
             }
             {
                 MaterialAnchorButton materialAnchorButton = new MaterialAnchorButton();
@@ -179,12 +189,12 @@ public class FullViewImpl extends Composite implements FullView {
                 materialAnchorButton.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFormPlace(productDescriptionDTO.getId())));
                 materialAnchorButton.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
                 materialAnchorButton.setMarginRight(20);
-                servicesPanel.add(materialAnchorButton);
+                offeringPanel.add(materialAnchorButton);
             }
-            servicesPanel.add(createSubsection("This product can be provided by the following on-demand services"));
+            offeringPanel.add(createSubsection("This product can be provided by the following on-demand services"));
             MaterialRow materialRow = new MaterialRow();
             materialRow.setMarginTop(20);
-            servicesPanel.add(materialRow);
+            offeringPanel.add(materialRow);
             for (ProductServiceDTO productServiceDTO : productDescriptionDTO.getProductServices()) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 ProductServiceWidget productServiceWidget = new ProductServiceWidget(productServiceDTO);
@@ -192,7 +202,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialRow.add(materialColumn);
             }
         }
-        addTab(materialTab, tabsPanel, "On-demand (" + productDescriptionDTO.getProductServices().size() + ")", servicesPanel, size);
+        addTab(materialTab, tabsPanel, "On-demand (" + productDescriptionDTO.getProductServices().size() + ")", offeringPanel, size);
         // create tab panel for services
         MaterialPanel productDatasetPanel = new MaterialPanel();
         if(productDescriptionDTO.getProductDatasets().size() == 0) {
@@ -269,6 +279,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         addTab(materialTab, tabsPanel, "Others (" + othersCount + ")", othersPanel, size);
+*/
         tabsContent.add(tabsPanel);
 
         // TODO - change?
@@ -338,7 +349,7 @@ public class FullViewImpl extends Composite implements FullView {
                                 ProductFormPlace.TOKENS.id.toString() + "=" + productServiceDescriptionDTO.getProduct().getId())));
             }
             {
-                addAction("ASK QUESTION", "#" + PlaceHistoryHelper.convertPlace(
+                addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
                         new ConversationPlace(
                                 Utils.generateTokens(
                                         ConversationPlace.TOKENS.companyid.toString(), productServiceDescriptionDTO.getCompany().getId() + "",
@@ -509,7 +520,7 @@ public class FullViewImpl extends Composite implements FullView {
         int size = (int) Math.floor(12 / numTabs);
 
         // add actions
-        addAction("ASK QUESTION", "#" + PlaceHistoryHelper.convertPlace(
+        addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
                 new ConversationPlace(
                         Utils.generateTokens(
                                 ConversationPlace.TOKENS.companyid.toString(), productDatasetDescriptionDTO.getCompany().getId() + "",
@@ -644,7 +655,7 @@ public class FullViewImpl extends Composite implements FullView {
         int size = (int) Math.floor(12 / numTabs);
 
         // add actions
-        addAction("ASK QUESTION", "#" + PlaceHistoryHelper.convertPlace(
+        addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
                     new ConversationPlace(
                             Utils.generateTokens(
                                     ConversationPlace.TOKENS.companyid.toString(), softwareDescriptionDTO.getCompanyDTO().getId() + "",
@@ -740,7 +751,7 @@ public class FullViewImpl extends Composite implements FullView {
 
         // add actions
         {
-            addAction("ASK QUESTION", "#" + PlaceHistoryHelper.convertPlace(
+            addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
                     new ConversationPlace(
                             Utils.generateTokens(
                                     ConversationPlace.TOKENS.companyid.toString(), projectDescriptionDTO.getCompanyDTO().getId() + "",
@@ -920,7 +931,7 @@ public class FullViewImpl extends Composite implements FullView {
                     Window.alert("TODO...");
                 }
             });
-            addAction("ASK QUESTION", "#" + PlaceHistoryHelper.convertPlace(
+            addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
                     new ConversationPlace(
                             ConversationPlace.TOKENS.companyid.toString() + "=" + companyDescriptionDTO.getId() +
                                     "&" + ConversationPlace.TOKENS.topic.toString() + "=Request for information"
@@ -1160,23 +1171,23 @@ public class FullViewImpl extends Composite implements FullView {
         dataAccessWidget.getAction().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if(datasetAccess instanceof DatasetAccessFile) {
+                if (datasetAccess instanceof DatasetAccessFile) {
                     String fileUri = datasetAccess.getUri();
-                    if(fileUri.startsWith("./")) {
+                    if (fileUri.startsWith("./")) {
                         fileUri = GWT.getHostPageBaseURL() + "uploaded/" + fileUri;
                     }
                     Window.open(fileUri, "_blank", null);
-                } else if(datasetAccess instanceof DatasetAccessAPP) {
+                } else if (datasetAccess instanceof DatasetAccessAPP) {
                     Window.open(datasetAccess.getUri(), "_blank", null);
-                } else if(datasetAccess instanceof DatasetAccessOGC) {
-                    if(freeAvailable) {
+                } else if (datasetAccess instanceof DatasetAccessOGC) {
+                    if (freeAvailable) {
                         template.getClientFactory().getPlaceController().goTo(new VisualisationPlace(
                                 Utils.generateTokens(
                                         VisualisationPlace.TOKENS.productServiceId.toString(), productServiceDescriptionDTO.getId() + "",
                                         VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
                                 )));
                     }
-                } else if(datasetAccess instanceof DatasetAccessAPI) {
+                } else if (datasetAccess instanceof DatasetAccessAPI) {
                     Window.alert("TODO - show API end point and redirect to API help page? eg " + datasetAccess.getUri());
                 }
             }
@@ -1248,6 +1259,106 @@ public class FullViewImpl extends Composite implements FullView {
         MaterialLabel label = new MaterialLabel(message);
         label.addStyleName(style.subsection());
         return label;
+    }
+
+    private void addTitle(MaterialRow productRow, String message, String style, String moreUrl) {
+        MaterialPanel materialPanel = new MaterialPanel();
+        if(moreUrl != null) {
+            MaterialLink moreLink = new MaterialLink("More");
+            moreLink.setTextColor(Color.BLUE);
+            moreLink.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
+            materialPanel.add(moreLink);
+            moreLink.setHref(moreUrl);
+        }
+        MaterialLabel title = new MaterialLabel(message);
+        title.setTextColor(Color.BLACK);
+        materialPanel.add(title);
+        materialPanel.addStyleName(style);
+        productRow.add(materialPanel);
+    }
+
+    public void setMatchingServices(MaterialPanel container, List<ProductServiceDTO> productServices, String moreUrl) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "On-demand services", style.section(), moreUrl);
+        if(productServices != null && productServices.size() > 0) {
+            for (ProductServiceDTO productServiceDTO : productServices) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new ProductServiceWidget(productServiceDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No services found...");
+            label.addStyleName(style.subsection());
+            productRow.add(label);
+        }
+    }
+
+    public void setMatchingDatasets(MaterialPanel container, List<ProductDatasetDTO> productDatasets, String moreUrl) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "Off-the-shelf data", style.section(), moreUrl);
+        if(productDatasets != null && productDatasets.size() > 0) {
+            for (ProductDatasetDTO productDatasetDTO : productDatasets) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new ProductDatasetWidget(productDatasetDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No off-the-shelf data found...");
+            label.addStyleName(style.subsection());
+            productRow.add(label);
+        }
+    }
+
+    public void setMatchingSoftwares(MaterialPanel container, List<SoftwareDTO> softwares, String moreUrl) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "Software solutions", style.section(), moreUrl);
+        if(softwares != null && softwares.size() > 0) {
+            for (SoftwareDTO softwareDTO : softwares) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new SoftwareWidget(softwareDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No software solutions found...");
+            label.addStyleName(style.subsection());
+            productRow.add(label);
+        }
+    }
+
+    public void setMatchingProjects(MaterialPanel container, List<ProjectDTO> projects, String moreUrl) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        boolean more = projects != null && projects.size() > 4;
+        addTitle(productRow, "R&D Projects", style.section(), moreUrl);
+        if(projects != null && projects.size() > 0) {
+            if(more) {
+                projects = projects.subList(0, 4);
+            }
+            for (ProjectDTO projectDTO : projects) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new ProjectWidget(projectDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No projects found...");
+            label.addStyleName(style.subsection());
+            productRow.add(label);
+        }
+    }
+
+    public void setMatchingImagery(MaterialPanel container, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        addTitle(productRow, "Search or request imagery for '" + text + "'", style.section(), null);
+        MaterialColumn serviceColumn = new MaterialColumn(12, 6, 4);
+        productRow.add(serviceColumn);
+        serviceColumn.add(new ImageSearchWidget(text));
+        serviceColumn = new MaterialColumn(12, 6, 4);
+        productRow.add(serviceColumn);
+        serviceColumn.add(new ImageRequestWidget(text));
     }
 
     @Override

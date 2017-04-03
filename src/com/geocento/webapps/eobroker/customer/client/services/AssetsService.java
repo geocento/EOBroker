@@ -138,4 +138,28 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     LayerInfoDTO getLayerInfo(@PathParam("id") Long id) throws RequestException;
 
+    @PUT
+    @Path("/assets/company/{id}/follow")
+    Boolean followCompany(@PathParam("id") Long companyId, Boolean follow) throws RequestException;
+
+    @PUT
+    @Path("/assets/product/{id}/follow")
+    Boolean followProduct(@PathParam("id") Long productId, Boolean follow) throws RequestException;
+
+    @PUT
+    @Path("/assets/service/{id}/follow")
+    Boolean followProductService(@PathParam("id") Long serviceId, Boolean follow) throws RequestException;
+
+    @PUT
+    @Path("/assets/dataset/{id}/follow")
+    Boolean followProductDataset(@PathParam("id") Long productDatasetId, Boolean follow) throws RequestException;
+
+    @PUT
+    @Path("/assets/software/{id}/follow")
+    Boolean followSoftware(@PathParam("id") Long softwareId, Boolean follow) throws RequestException;
+
+    @PUT
+    @Path("/assets/project/{id}/follow")
+    Boolean followProject(@PathParam("id") Long projectId, Boolean follow) throws RequestException;
+
 }

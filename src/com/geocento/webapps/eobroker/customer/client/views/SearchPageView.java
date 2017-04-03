@@ -7,7 +7,6 @@ import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import gwt.material.design.client.base.HasHref;
 
 import java.util.Date;
 import java.util.List;
@@ -53,22 +52,6 @@ public interface SearchPageView extends IsWidget {
 
     void setResultsTitle(String message);
 
-    HasHref getProductsCategory();
-
-    HasHref getProductServicesCategory();
-
-    HasHref getProductDatasetsCategory();
-
-    HasHref getSoftwareCategory();
-
-    HasHref getProjectsCategory();
-
-    HasHref getCompaniesCategory();
-
-    void displayCategories(boolean display);
-
-    void selectCategory(Category category);
-
     void displayFilters(Category category);
 
     void addProductServices(List<ProductServiceDTO> products, int start, boolean hasMore, String text);
@@ -83,9 +66,7 @@ public interface SearchPageView extends IsWidget {
 
     HasValue<Boolean> getFilterByAoI();
 
-    HasValue<Boolean> getProductCommercialFilterActivated();
-
-    HasValue<ServiceType> getProductServiceType();
+    ServiceType getProductServiceType();
 
     HasValue<Boolean> getTimeFrameFilterActivated();
 
@@ -106,6 +87,8 @@ public interface SearchPageView extends IsWidget {
     String getCompanyCountryFilter();
 
     SoftwareType getSoftwareType();
+
+    void showFilters(boolean display);
 
     public interface Presenter {
 

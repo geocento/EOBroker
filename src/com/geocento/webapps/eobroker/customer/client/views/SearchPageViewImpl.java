@@ -22,8 +22,6 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -33,7 +31,7 @@ import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.*;
-import gwt.material.design.client.ui.html.Option;
+import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.jquery.client.api.Functions;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -57,8 +55,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         String productServicesTitle();
         String alternativesTitle();
 
-        String navOpened();
-
         String option();
 
         String optionTitle();
@@ -79,6 +75,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     static HashMap<String, Integer> companyAge = new HashMap<String, Integer>();
     static {
+        companyAge.put("No minimum", 0);
         companyAge.put("Min 2 years", 2);
         companyAge.put("Min 5 years", 5);
         companyAge.put("Min 10 years", 10);
@@ -93,35 +90,21 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @UiField
     MaterialLink resultsTitle;
     @UiField
-    HTMLPanel categories;
-    @UiField
-    MaterialSideNav filtersPanel;
+    MaterialCollapsible filtersPanel;
     @UiField
     HTMLPanel container;
     @UiField
     MapContainer mapContainer;
     @UiField
-    HTMLPanel settings;
-    @UiField
     MaterialCheckBox filterByAoI;
-    @UiField
-    MaterialLink productsCategory;
-    @UiField
-    MaterialLink productServicesCategory;
-    @UiField
-    MaterialLink productDatasetsCategory;
-    @UiField
-    MaterialLink softwareCategory;
-    @UiField
-    MaterialLink projectsCategory;
     @UiField
     LoadingWidget loading;
     @UiField
     HTMLPanel requirementsPanel;
     @UiField
-    MaterialLink companiesCategory;
-    @UiField
     Anchor sendRequirements;
+    @UiField
+    MaterialRow filters;
     @UiField
     HTMLPanel timeFrame;
     @UiField
@@ -132,24 +115,25 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialDatePicker stop;
     @UiField
     MaterialCheckBox filterByTimeFrame;
-
     // possible filters
     // for products and product based offerings
-    private MaterialListBox sectorSelection;
-    private MaterialListBox thematicSelection;
-    // for product data sets
-    private MaterialCheckBox productCommercialFilterActivated;
-    private MaterialListValueBox<ServiceType> productCommercialFilter;
-    // for software
-    private MaterialCheckBox softwareCommercialFilterActivated;
-    private MaterialListValueBox<SoftwareType> softwareCommercialFilter;
+    @UiField
+    MaterialListValueBox<Sector> sectorFilter;
+    @UiField
+    MaterialListValueBox<Thematic> thematicFilter;
     // for companies
-    private MaterialCheckBox companySizeFilterActivated;
-    private MaterialListValueBox<COMPANY_SIZE> companySizeFilter;
-    private MaterialCheckBox companyAgeFilterActivated;
-    private MaterialListValueBox<Integer> companyAgeFilter;
-    private MaterialCheckBox companyCountryFilterActivated;
-    private CountryEditor companyCountryFilter;
+    @UiField
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialListValueBox<COMPANY_SIZE> companySizeFilter;
+    @UiField
+    MaterialListValueBox<Integer> companyAgeFilter;
+    @UiField
+    CountryEditor companyCountryFilter;
+    // for product datasets
+    @UiField
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialListValueBox<ServiceType> productCommercialFilter;
+    // for software
+    @UiField
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialListValueBox<SoftwareType> softwareCommercialFilter;
 
     private Presenter presenter;
 
@@ -158,22 +142,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
-
-        filtersPanel.show();
-
-        // update icons
-        productsCategory.setIconType(CategoryUtils.getIconType(Category.products));
-        addCategoryTooltip(productsCategory, "See all relevant products");
-        productServicesCategory.setIconType(CategoryUtils.getIconType(Category.productservices));
-        addCategoryTooltip(productServicesCategory, "See all on demand services able to supply your request");
-        productDatasetsCategory.setIconType(CategoryUtils.getIconType(Category.productdatasets));
-        addCategoryTooltip(productDatasetsCategory, "See all off the shelf datasets matching your search");
-        softwareCategory.setIconType(CategoryUtils.getIconType(Category.software));
-        addCategoryTooltip(softwareCategory, "See all software solutions matching your search");
-        projectsCategory.setIconType(CategoryUtils.getIconType(Category.project));
-        addCategoryTooltip(projectsCategory, "See all relevant projects for your search");
-        companiesCategory.setIconType(CategoryUtils.getIconType(Category.companies));
-        addCategoryTooltip(companiesCategory, "See all relevant companies for your search");
 
         // hide the loading results widget
         hideLoadingResults();
@@ -192,6 +160,60 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 presenter.aoiChanged(aoi);
             }
         });
+
+        // set filter values
+        // sort by name with all first in the list
+        {
+            List<Sector> sortedValues = ListUtil.toList(Sector.values());
+            Collections.sort(sortedValues, (o1, o2) -> o1 == Sector.all ? -1 :
+                    o1.getName().compareTo(o2.getName()));
+            for (Sector sector : sortedValues) {
+                sectorFilter.addItem(sector, sector.getName());
+            }
+            sectorFilter.addValueChangeHandler(event -> presenter.filtersChanged());
+        }
+        {
+            List<Thematic> sortedValues = ListUtil.toList(Thematic.values());
+            Collections.sort(sortedValues, (o1, o2) -> o1 == Thematic.all ? -1 :
+                    o1.getName().compareTo(o2.getName()));
+            for (Thematic thematic : sortedValues) {
+                thematicFilter.addItem(thematic, thematic.getName());
+            }
+            thematicFilter.addValueChangeHandler(event -> presenter.filtersChanged());
+        }
+        // company filters
+        {
+            companySizeFilter.addNullItem("All");
+            for (String name : companySize.keySet()) {
+                companySizeFilter.addTypedItem(companySize.get(name), name);
+            }
+            companySizeFilter.addValueChangeHandler(event -> {presenter.filtersChanged();});
+        }
+        {
+            for (String name : companyAge.keySet()) {
+                companyAgeFilter.addItem(companyAge.get(name), name);
+            }
+            companyAgeFilter.addValueChangeHandler(event -> {
+                presenter.filtersChanged();
+            });
+        }
+        {
+            companyCountryFilter.insertItem("", "All", 0);
+            companyCountryFilter.setSelectedIndex(0);
+            companyCountryFilter.addValueChangeHandler(event -> {presenter.filtersChanged();});
+        }
+        // product datasets filters
+        productCommercialFilter.addNullItem("All");
+        for (ServiceType name : ServiceType.values()) {
+            productCommercialFilter.addTypedItem(name, name.getName());
+        }
+        productCommercialFilter.addClickHandler(event -> presenter.filtersChanged());
+        // software filters
+        softwareCommercialFilter.addNullItem("All");
+        for (SoftwareType name : SoftwareType.values()) {
+            softwareCommercialFilter.addTypedItem(name, name.getName());
+        }
+        softwareCommercialFilter.addValueChangeHandler(event -> {presenter.filtersChanged();});
 
         // add handlers on filters
         filterByAoI.addValueChangeHandler(event -> presenter.filtersChanged());
@@ -289,18 +311,18 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void setMatchingProducts(List<ProductDTO> suggestedProducts, String moreUrl) {
+    public void setMatchingProducts(List<ProductDTO> productDTOs, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         addTitle(productRow, "Products", style.productTitle(), moreUrl);
-        if(suggestedProducts != null && suggestedProducts.size() > 0) {
-            for (ProductDTO productDTO : suggestedProducts) {
+        if(productDTOs != null && productDTOs.size() > 0) {
+            for (ProductDTO productDTO : productDTOs) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 materialColumn.add(new ProductWidget(productDTO));
                 productRow.add(materialColumn);
             }
         } else {
-            MaterialLabel label = new MaterialLabel("No suitable products found...");
+            MaterialLabel label = new MaterialLabel("No matching products found...");
             label.addStyleName(style.subtext());
             productRow.add(label);
         }
@@ -468,86 +490,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public HasHref getProductsCategory() {
-        return productsCategory;
-    }
-
-    @Override
-    public HasHref getProductServicesCategory() {
-        return productServicesCategory;
-    }
-
-    @Override
-    public HasHref getProductDatasetsCategory() {
-        return productDatasetsCategory;
-    }
-
-    @Override
-    public HasHref getSoftwareCategory() {
-        return softwareCategory;
-    }
-
-    @Override
-    public HasHref getProjectsCategory() {
-        return projectsCategory;
-    }
-
-    @Override
-    public HasHref getCompaniesCategory() {
-        return companiesCategory;
-    }
-
-    @Override
-    public void displayCategories(boolean display) {
-        categories.setVisible(true);
-    }
-
-    @Override
-    public void selectCategory(Category category) {
-        for(Widget widget : categories) {
-            widget.removeStyleName(style.selected());
-            if(widget instanceof MaterialLink) {
-                ((MaterialLink) widget).setTextColor(null);
-            }
-        }
-        if(category == null) {
-            return;
-        }
-        Color color = CategoryUtils.getColor(category);
-        switch (category) {
-            case products:
-                productsCategory.addStyleName(style.selected());
-                productsCategory.setTextColor(color);
-                break;
-            case productservices:
-                productServicesCategory.addStyleName(style.selected());
-                productServicesCategory.setTextColor(color);
-                break;
-            case productdatasets:
-                productDatasetsCategory.addStyleName(style.selected());
-                productDatasetsCategory.setTextColor(color);
-                break;
-            case software:
-                softwareCategory.addStyleName(style.selected());
-                softwareCategory.setTextColor(color);
-                break;
-            case project:
-                projectsCategory.addStyleName(style.selected());
-                projectsCategory.setTextColor(color);
-                break;
-            case companies:
-                companiesCategory.addStyleName(style.selected());
-                companiesCategory.setTextColor(color);
-                break;
-        }
-    }
-
-    @Override
     public void displayFilters(Category category) {
-        areaOfInterest.setVisible(false);
-        timeFrame.setVisible(false);
-
-        settings.clear();
+        filters.clear();
         if(category == null) {
         } else {
             switch (category) {
@@ -564,6 +508,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     displaySoftwareFilters();
                     break;
                 case project:
+                    displayProjectFilters();
                     break;
                 case companies:
                     displayCompaniesFilters();
@@ -740,153 +685,50 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         displaySendRequirements(!hasMore);
     }
 
+    private void addFilter(Widget widget, String gridValue) {
+        MaterialColumn materialColumn = new MaterialColumn();
+        materialColumn.setGrid(gridValue);
+        materialColumn.add(widget);
+        filters.add(materialColumn);
+    }
+
     private void displayProductFilters() {
-        settings.clear();
         // add sector selection
-        {
-            MaterialLabel materialLabel = new MaterialLabel("Sector");
-            materialLabel.addStyleName(style.optionTitle());
-            settings.add(materialLabel);
-            sectorSelection = new MaterialListBox();
-            sectorSelection.addStyleName(style.option());
-            List<Sector> sortedValues = ListUtil.toList(Sector.values());
-            Collections.sort(sortedValues, new Comparator<Sector>() {
-                @Override
-                public int compare(Sector o1, Sector o2) {
-                    return o1 == Sector.all ? -1 :
-                            o1.getName().compareTo(o2.getName());
-                }
-            });
-            for (Sector option : sortedValues) {
-                Option optionWidget = new Option();
-                optionWidget.setText(option.getName());
-                optionWidget.setValue(option.toString());
-                sectorSelection.add(optionWidget);
-            }
-            sectorSelection.addValueChangeHandler(new ValueChangeHandler<String>() {
-                @Override
-                public void onValueChange(ValueChangeEvent<String> event) {
-                    presenter.filtersChanged();
-                }
-            });
-            settings.add(sectorSelection);
-        }
+        addFilter(sectorFilter, "s12 m6 l4");
         // add thematic selection
-        {
-            MaterialLabel materialLabel = new MaterialLabel("Thematic");
-            materialLabel.addStyleName(style.optionTitle());
-            settings.add(materialLabel);
-            thematicSelection = new MaterialListBox();
-            thematicSelection.addStyleName(style.option());
-            List<Thematic> sortedValues = ListUtil.toList(Thematic.values());
-            Collections.sort(sortedValues, new Comparator<Thematic>() {
-                @Override
-                public int compare(Thematic o1, Thematic o2) {
-                    return o1 == Thematic.all ? -1 :
-                            o1.getName().compareTo(o2.getName());
-                }
-            });
-            for (Thematic option : sortedValues) {
-                Option optionWidget = new Option();
-                optionWidget.setText(option.getName());
-                optionWidget.setValue(option.toString());
-                thematicSelection.add(optionWidget);
-            }
-            thematicSelection.addValueChangeHandler(new ValueChangeHandler<String>() {
-                @Override
-                public void onValueChange(ValueChangeEvent<String> event) {
-                    presenter.filtersChanged();
-                }
-            });
-            settings.add(thematicSelection);
-        }
+        addFilter(thematicFilter, "s12 m6 l4");
     }
 
     private void displayProductDatasetsFilters() {
-        areaOfInterest.setVisible(true);
-        timeFrame.setVisible(true);
-
-        settings.clear();
-
-        {
-            productCommercialFilterActivated = new MaterialCheckBox("Filter by type");
-            productCommercialFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
-            productCommercialFilterActivated.addStyleName(style.optionTitle());
-            settings.add(productCommercialFilterActivated);
-            productCommercialFilter = new MaterialListValueBox<ServiceType>();
-            for (ServiceType name : ServiceType.values()) {
-                productCommercialFilter.addItem(name, name.getName());
-            }
-            productCommercialFilter.addStyleName(style.option());
-            productCommercialFilter.addClickHandler(event -> presenter.filtersChanged());
-            settings.add(productCommercialFilter);
-        }
+        addFilter(areaOfInterest, "s12 m12 l6");
+        MaterialPanel materialPanel = new MaterialPanel();
+        addFilter(materialPanel, "s12 m12 l6");
+        materialPanel.add(timeFrame);
+        materialPanel.add(productCommercialFilter);
     }
 
     private void displayProductServicesFilters() {
-        areaOfInterest.setVisible(true);
+        addFilter(areaOfInterest, "s12 m12 l6");
+        MaterialPanel materialPanel = new MaterialPanel();
+        addFilter(materialPanel, "s12 m12 l6");
+        materialPanel.add(timeFrame);
     }
 
     private void displaySoftwareFilters() {
-        {
-            softwareCommercialFilterActivated = new MaterialCheckBox("Filter by type");
-            softwareCommercialFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
-            softwareCommercialFilterActivated.addStyleName(style.optionTitle());
-            settings.add(softwareCommercialFilterActivated);
-            softwareCommercialFilter = new MaterialListValueBox<SoftwareType>();
-            for (SoftwareType name : SoftwareType.values()) {
-                softwareCommercialFilter.addItem(name, name.getName());
-            }
-            softwareCommercialFilter.addStyleName(style.option());
-            softwareCommercialFilter.addValueChangeHandler(event -> {if(softwareCommercialFilterActivated.getValue()) presenter.filtersChanged();});
-            settings.add(softwareCommercialFilter);
-        }
+        addFilter(softwareCommercialFilter, "s12 m6 l4");
+    }
+
+    private void displayProjectFilters() {
+        addFilter(timeFrame, "s12 m6 l4");
     }
 
     private void displayCompaniesFilters() {
-        settings.clear();
-
         // add company size filter
-        {
-            companySizeFilterActivated = new MaterialCheckBox("Filter by company size");
-            companySizeFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
-            companySizeFilterActivated.addStyleName(style.optionTitle());
-            settings.add(companySizeFilterActivated);
-            companySizeFilter = new MaterialListValueBox<COMPANY_SIZE>();
-            for (String name : companySize.keySet()) {
-                companySizeFilter.addItem(companySize.get(name), name);
-            }
-            companySizeFilter.addStyleName(style.option());
-            companySizeFilter.addValueChangeHandler(event -> {if(companySizeFilterActivated.getValue()) presenter.filtersChanged();});
-            settings.add(companySizeFilter);
-        }
-
+        addFilter(companySizeFilter, "s12 m6 l4");
         // add years in office filter
-        {
-            companyAgeFilterActivated = new MaterialCheckBox("Filter by years since incorporation");
-            companyAgeFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
-            companyAgeFilterActivated.addStyleName(style.optionTitle());
-            settings.add(companyAgeFilterActivated);
-            companyAgeFilter = new MaterialListValueBox<Integer>();
-            for (String name : companyAge.keySet()) {
-                companyAgeFilter.addItem(companyAge.get(name), name);
-            }
-            companyAgeFilter.addStyleName(style.option());
-            companyAgeFilter.addValueChangeHandler(event -> {if(companyAgeFilterActivated.getValue()) presenter.filtersChanged();});
-            settings.add(companyAgeFilter);
-        }
-
+        addFilter(companyAgeFilter, "s12 m6 l4");
         // add country filter
-        {
-            companyCountryFilterActivated = new MaterialCheckBox("Filter by country of incorporation");
-            companyCountryFilterActivated.addValueChangeHandler(event -> presenter.filtersChanged());
-            companyCountryFilterActivated.addStyleName(style.optionTitle());
-            settings.add(companyCountryFilterActivated);
-            companyCountryFilter = new CountryEditor();
-            companyCountryFilter.addStyleName(style.option());
-            companyCountryFilter.addValueChangeHandler(event -> {if(companyCountryFilterActivated.getValue()) presenter.filtersChanged();});
-            settings.add(companyCountryFilter);
-        }
+        addFilter(companyCountryFilter, "s12 m6 l4");
     }
 
     @Override
@@ -895,13 +737,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public HasValue<Boolean> getProductCommercialFilterActivated() {
-        return productCommercialFilterActivated;
-    }
-
-    @Override
-    public HasValue<ServiceType> getProductServiceType() {
-        return productCommercialFilter;
+    public ServiceType getProductServiceType() {
+        return productCommercialFilter.getTypedValue(ServiceType.class);
     }
 
     @Override
@@ -921,12 +758,12 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public Sector getSectorFilter() {
-        return sectorSelection.getSelectedValue() == null ? null : Sector.valueOf(sectorSelection.getSelectedValue());
+        return sectorFilter.getValue();
     }
 
     @Override
     public Thematic getThematicFilter() {
-        return thematicSelection.getSelectedValue() == null ? null : Thematic.valueOf(thematicSelection.getSelectedValue());
+        return thematicFilter.getValue();
     }
 
     @Override
@@ -936,22 +773,27 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public COMPANY_SIZE getCompanySizeFilter() {
-        return companySizeFilterActivated.getValue() ? companySizeFilter.getSelectedValue() : null;
+        return companySizeFilter.getTypedValue(COMPANY_SIZE.class);
     }
 
     @Override
     public int getCompanyAgeFilter() {
-        return companyAgeFilterActivated.getValue() ? companyAgeFilter.getSelectedValue() : 0;
+        return companyAgeFilter.getSelectedValue();
     }
 
     @Override
     public String getCompanyCountryFilter() {
-        return companyCountryFilterActivated.getValue() ? companyCountryFilter.getCountry() : null;
+        return companyCountryFilter.getCountry().length() == 0 ? null : companyCountryFilter.getCountry();
     }
 
     @Override
     public SoftwareType getSoftwareType() {
-        return softwareCommercialFilterActivated.getValue() ? softwareCommercialFilter.getValue() : null;
+        return softwareCommercialFilter.getTypedValue(SoftwareType.class);
+    }
+
+    @Override
+    public void showFilters(boolean display) {
+        filtersPanel.setVisible(display);
     }
 
     @Override
@@ -961,7 +803,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void onResize(ResizeEvent event) {
-        template.setPanelStyleName(style.navOpened(), filtersPanel.isVisible());
     }
 
 }
