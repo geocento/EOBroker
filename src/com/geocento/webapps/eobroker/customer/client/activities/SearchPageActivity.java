@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -22,6 +23,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private String text;
     private int start;
     private int limit;
+
+    private int lastCall = 0;
 
     public SearchPageActivity(SearchPagePlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -74,7 +78,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        final String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
+        String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
         Long aoiId = null;
         if(tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
             try {
@@ -92,13 +96,16 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         }
         // either text or product is provided
         if(text == null && category == null) {
+/*
             clientFactory.getPlaceController().goTo(new LandingPagePlace());
             return;
+*/
+            text = "";
         }
         this.start = 0;
         this.limit = 24;
         // now start the search
-        setSearchText(text);
+        setSearchText(text, true);
         selectMenu(category);
         searchPageView.displayFilters(category);
 
@@ -127,9 +134,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         this.category = category;
     }
 
-    private void setSearchText(String text) {
+    private void setSearchText(String text, boolean forceFocus) {
         this.text = text;
-        searchPageView.setSearchText(text);
+        searchPageView.setSearchText(text, forceFocus);
     }
 
     private void updateSearchResults() {
@@ -378,6 +385,211 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 SearchPagePlace.TOKENS.category.toString(), category.toString(),
                 SearchPagePlace.TOKENS.text.toString(), text == null ? "" : text
         )));
+    }
+
+    @Override
+    public void textChanged(String text) {
+        this.text = text;
+        updateSuggestions();
+    }
+
+    private void updateSuggestions() {
+        this.lastCall++;
+        final long lastCall = this.lastCall;
+
+        if(text != null && text.length() > 0) {
+            REST.withCallback(new MethodCallback<List<Suggestion>>() {
+
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+
+                }
+
+                @Override
+                public void onSuccess(Method method, List<Suggestion> response) {
+                    // show only if last one to be called
+                    if (lastCall == SearchPageActivity.this.lastCall) {
+                        displayListSuggestions(response);
+                    }
+                }
+            }).call(ServicesUtil.searchService).complete(text, category, toWkt(currentAoI));
+        } else {
+/*
+            // TODO - move to the server side
+            List<Suggestion> suggestions = new ArrayList<Suggestion>();
+            for(Category suggestionCategory : Category.values()) {
+                suggestions.addAll(getSuggestion(suggestionCategory));
+            }
+            displayListSuggestions(suggestions);
+*/
+        }
+    }
+
+    private String toWkt(AoIDTO aoi) {
+        return aoi.getWktGeometry();
+    }
+
+    private List<Suggestion> getSuggestion(Category category) {
+        List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        switch (category) {
+            case products:
+                suggestions.add(new Suggestion("Browse products", Category.products, "browse::"));
+                break;
+            case companies:
+                suggestions.add(new Suggestion("Browse companies", Category.companies, "browse::"));
+                break;
+            case imagery:
+                suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
+                suggestions.add(new Suggestion("Request quotation for imagery", Category.imagery, "request::"));
+                break;
+        }
+        return suggestions;
+    }
+
+    @Override
+    public void suggestionSelected(Suggestion suggestion) {
+        // TODO - move to a helper class
+        String uri = suggestion.getUri();
+        String action = uri.split("::")[0];
+        String parameters = uri.split("::")[1];
+        if (parameters == null) {
+            parameters = "";
+        }
+        EOBrokerPlace searchPlace = null;
+        switch (suggestion.getCategory()) {
+            case imagery: {
+                if (action.contentEquals("search")) {
+                    searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
+/*
+                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId())
+*/
+                            "");
+                    //setText(parameters);
+                } else if (action.contentEquals("request")) {
+                    searchPlace = new RequestImageryPlace(parameters);
+                    //setText("");
+                }
+                ;
+            } break;
+            case products: {
+                String token = "";
+                Category category = suggestion.getCategory();
+                if (action.contentEquals("product")) {
+                    searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
+                } else if (action.contentEquals("browse")) {
+                    token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.products.toString();
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+/*
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
+                    }
+*/
+                    searchPlace = new SearchPagePlace(token);
+                } else {
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+/*
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
+                    }
+*/
+                    searchPlace = new SearchPagePlace(token);
+                }
+            } break;
+            case companies: {
+                String token = "";
+                Category category = suggestion.getCategory();
+                if (action.contentEquals("company")) {
+                    searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
+                } else if (action.contentEquals("browse")) {
+                    token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.companies.toString();
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+/*
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
+                    }
+*/
+                    searchPlace = new SearchPagePlace(token);
+                } else {
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    if (category != null) {
+                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+                    }
+/*
+                    if (currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
+                    }
+*/
+                    searchPlace = new SearchPagePlace(token);
+                }
+            } break;
+        }
+        if (searchPlace != null) {
+            clientFactory.getPlaceController().goTo(searchPlace);
+        } else {
+            displaySearchError("Sorry I could not understand your request...");
+        }
+    }
+
+    @Override
+    public void textSelected(String text) {
+        this.text = text;
+/*
+        if(text.trim().length() == 0) {
+            return;
+        }
+*/
+        EOBrokerPlace eoBrokerPlace = null;
+        if(category == null) {
+            // go to general search results page
+            String token = "";
+            token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+            if(category != null) {
+                token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+            }
+/*
+            if(currentAoI != null) {
+                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
+            }
+*/
+            eoBrokerPlace = new SearchPagePlace(token);
+        } else {
+            switch (category) {
+                case imagery:
+                    eoBrokerPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + text +
+/*
+                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId())
+*/
+                            ""
+                    );
+                    break;
+                case products:
+                case companies:
+                case datasets:
+                case software:
+                    // go to general search results page
+                    String token = "";
+                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+                    token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
+/*
+                    if(currentAoI != null) {
+                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
+                    }
+*/
+                    eoBrokerPlace = new SearchPagePlace(token);
+            }
+        }
+        if(eoBrokerPlace != null) {
+            clientFactory.getPlaceController().goTo(eoBrokerPlace);
+        } else {
+            displaySearchError("Sorry I could not understand your request...");
+        }
     }
 
     @Override

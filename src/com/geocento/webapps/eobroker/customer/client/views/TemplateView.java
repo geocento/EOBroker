@@ -11,7 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.places.*;
-import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSuggestion;
+import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -56,8 +56,6 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
     public static interface Presenter {
 
-        void categoryChanged(Category category);
-
         void textChanged(String text);
 
         void suggestionSelected(Suggestion suggestion);
@@ -93,7 +91,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     @UiField
     HTMLPanel navbarElements;
     @UiField
-    MaterialSuggestion textSearch;
+    MaterialSearch textSearch;
     @UiField
     MaterialBadge notificationsBadge;
     @UiField
@@ -181,7 +179,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         feedbackCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new FeedbackPlace()));
         //helpCategory.setHref(Customer.getApplicationSettings().getHelpUrl());
 
-        textSearch.setPresenter(new MaterialSuggestion.Presenter() {
+        textSearch.setPresenter(new com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch.Presenter() {
             @Override
             public void textChanged(String text) {
                 presenter.textChanged(text);
@@ -403,6 +401,10 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         textSearch.setText(text);
     }
 
+    public void setSearchTextFocus(boolean focus) {
+        textSearch.setFocus(focus);
+    }
+
     public void displaySearchError(String message) {
         MaterialToast.fireToast(message);
     }
@@ -412,7 +414,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     }
 
     public void setFooter(boolean display) {
-        footer.setVisible(display);
+        // for to false for now
+        footer.setVisible(false); //display);
     }
 
     public void scrollToTop() {

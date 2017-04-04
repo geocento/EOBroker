@@ -249,8 +249,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void setSearchText(String search) {
+    public void setSearchText(String search, boolean forceFocus) {
         template.setSearchText(search);
+        if(forceFocus) {
+            template.setSearchTextFocus(true);
+        }
     }
 
     @Override

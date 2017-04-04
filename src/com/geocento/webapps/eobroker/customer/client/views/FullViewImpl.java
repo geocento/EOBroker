@@ -49,9 +49,13 @@ public class FullViewImpl extends Composite implements FullView {
         String tabPanel();
 
         String vertical();
+
+        String offeringSection();
+
+        String offeringSubSection();
     }
 
-    static DateTimeFormat fmt = DateTimeFormat.getFormat("MMM-YYYY");
+    static DateTimeFormat fmt = DateTimeFormat.getFormat("MMM-yyyy");
 
     @UiField Style style;
 
@@ -155,7 +159,7 @@ public class FullViewImpl extends Composite implements FullView {
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);
         addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
-        // create tab panel for services
+        // create tab panel for offering
         MaterialPanel offeringPanel = new MaterialPanel();
         setMatchingServices(offeringPanel, productDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
                 SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
@@ -942,6 +946,17 @@ public class FullViewImpl extends Composite implements FullView {
         addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
 
         // create tab panel for offers
+        MaterialPanel offeringPanel = new MaterialPanel();
+        setMatchingServices(offeringPanel, companyDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
+        setMatchingDatasets(offeringPanel, companyDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString()))));
+        setMatchingSoftwares(offeringPanel, companyDescriptionDTO.getSoftware(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.software.toString()))));
+        setMatchingProjects(offeringPanel, companyDescriptionDTO.getProject(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.project.toString()))));
+        addTab(materialTab, tabsPanel, "Offering", offeringPanel, size);
+/*
         int offerCount = 0;
         MaterialPanel servicesPanel = new MaterialPanel();
         MaterialLabel offeringLabel = new MaterialLabel();
@@ -951,16 +966,20 @@ public class FullViewImpl extends Composite implements FullView {
         MaterialRow materialRow = new MaterialRow();
         servicesPanel.add(materialRow);
         if(companyDescriptionDTO.getProductServices().size() == 0) {
+*/
 /*
             servicesPanel.add(createSubsection("This company does not provide on-demand services"));
-*/
+*//*
+
         } else {
             offerCount += companyDescriptionDTO.getProductServices().size();
+*/
 /*
             servicesPanel.add(createSubsection("On-demand services provided"));
             MaterialRow materialRow = new MaterialRow();
             servicesPanel.add(materialRow);
-*/
+*//*
+
             for (ProductServiceDTO productServiceDTO : companyDescriptionDTO.getProductServices()) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 materialColumn.add(new ProductServiceWidget(productServiceDTO));
@@ -968,9 +987,11 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         if(companyDescriptionDTO.getProductDatasets().size() == 0) {
+*/
 /*
             servicesPanel.add(createSubsection("This company does not provide off-the-shelf data"));
-*/
+*//*
+
         } else {
             offerCount += companyDescriptionDTO.getProductDatasets().size();
             for(ProductDatasetDTO productDatasetDTO : companyDescriptionDTO.getProductDatasets()) {
@@ -1000,6 +1021,7 @@ public class FullViewImpl extends Composite implements FullView {
         offeringLabel.setText(offerCount == 0 ? "This company has not registered any offering yet" :
             "This company has registered the following offering");
         addTab(materialTab, tabsPanel, "Offer (" + offerCount + ")", servicesPanel, size);
+*/
         MaterialRow credentialsPanel = new MaterialRow();
         {
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
@@ -1070,7 +1092,7 @@ public class FullViewImpl extends Composite implements FullView {
             materialLabel.setPadding(20);
             recommendationsPanel.add(materialLabel);
         } else {
-            materialRow = new MaterialRow();
+            MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for (CompanyDTO companyDTO : suggestedCompanies) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
@@ -1280,8 +1302,12 @@ public class FullViewImpl extends Composite implements FullView {
     public void setMatchingServices(MaterialPanel container, List<ProductServiceDTO> productServices, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "On-demand services", style.section(), moreUrl);
+        boolean hasMore = productServices != null && productServices.size() > 4;
+        addTitle(productRow, "On-demand services", style.offeringSection(), hasMore ? moreUrl : null);
         if(productServices != null && productServices.size() > 0) {
+            if(hasMore) {
+                productServices = productServices.subList(0, 4);
+            }
             for (ProductServiceDTO productServiceDTO : productServices) {
                 MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
                 productRow.add(serviceColumn);
@@ -1289,7 +1315,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
         } else {
             MaterialLabel label = new MaterialLabel("No services found...");
-            label.addStyleName(style.subsection());
+            label.addStyleName(style.offeringSubSection());
             productRow.add(label);
         }
     }
@@ -1297,8 +1323,12 @@ public class FullViewImpl extends Composite implements FullView {
     public void setMatchingDatasets(MaterialPanel container, List<ProductDatasetDTO> productDatasets, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "Off-the-shelf data", style.section(), moreUrl);
+        boolean hasMore = productDatasets != null && productDatasets.size() > 4;
+        addTitle(productRow, "Off-the-shelf data", style.offeringSection(), hasMore ? moreUrl : null);
         if(productDatasets != null && productDatasets.size() > 0) {
+            if(hasMore) {
+                productDatasets = productDatasets.subList(0, 4);
+            }
             for (ProductDatasetDTO productDatasetDTO : productDatasets) {
                 MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
                 productRow.add(serviceColumn);
@@ -1306,7 +1336,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
         } else {
             MaterialLabel label = new MaterialLabel("No off-the-shelf data found...");
-            label.addStyleName(style.subsection());
+            label.addStyleName(style.offeringSubSection());
             productRow.add(label);
         }
     }
@@ -1314,8 +1344,12 @@ public class FullViewImpl extends Composite implements FullView {
     public void setMatchingSoftwares(MaterialPanel container, List<SoftwareDTO> softwares, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "Software solutions", style.section(), moreUrl);
+        boolean hasMore = softwares != null && softwares.size() > 4;
+        addTitle(productRow, "Software solutions", style.offeringSection(), hasMore ? moreUrl : null);
         if(softwares != null && softwares.size() > 0) {
+            if(hasMore) {
+                softwares = softwares.subList(0, 4);
+            }
             for (SoftwareDTO softwareDTO : softwares) {
                 MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
                 productRow.add(serviceColumn);
@@ -1323,7 +1357,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
         } else {
             MaterialLabel label = new MaterialLabel("No software solutions found...");
-            label.addStyleName(style.subsection());
+            label.addStyleName(style.offeringSubSection());
             productRow.add(label);
         }
     }
@@ -1331,10 +1365,10 @@ public class FullViewImpl extends Composite implements FullView {
     public void setMatchingProjects(MaterialPanel container, List<ProjectDTO> projects, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        boolean more = projects != null && projects.size() > 4;
-        addTitle(productRow, "R&D Projects", style.section(), moreUrl);
+        boolean hasMore = projects != null && projects.size() > 4;
+        addTitle(productRow, "R&D Projects", style.offeringSection(), hasMore ? moreUrl : null);
         if(projects != null && projects.size() > 0) {
-            if(more) {
+            if(hasMore) {
                 projects = projects.subList(0, 4);
             }
             for (ProjectDTO projectDTO : projects) {
@@ -1344,7 +1378,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
         } else {
             MaterialLabel label = new MaterialLabel("No projects found...");
-            label.addStyleName(style.subsection());
+            label.addStyleName(style.offeringSubSection());
             productRow.add(label);
         }
     }

@@ -76,7 +76,7 @@ import java.util.List;
  * @see <a href="http://gwt-material-demo.herokuapp.com/#navigations">Material Search</a>
  */
 //@formatter:on
-public class MaterialSuggestion extends MaterialValueBox<String> implements HasCloseHandlers<String>, HasActive {
+public class MaterialSearch extends MaterialValueBox<String> implements HasCloseHandlers<String>, HasActive {
 
     public interface Presenter {
         void textChanged(String text);
@@ -108,7 +108,7 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
 
     private Presenter presenter;
 
-    public MaterialSuggestion() {
+    public MaterialSearch() {
         super(new TextBox());
         setType(InputType.SEARCH);
         label.add(iconSearch);
@@ -118,7 +118,7 @@ public class MaterialSuggestion extends MaterialValueBox<String> implements HasC
         iconClose.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                CloseEvent.fire(MaterialSuggestion.this, getText());
+                CloseEvent.fire(MaterialSearch.this, getText());
             }
         });
         // populate the lists of search result on search panel

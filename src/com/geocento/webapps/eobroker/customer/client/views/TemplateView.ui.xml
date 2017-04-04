@@ -172,7 +172,7 @@
                             </m:MaterialTooltip>
                         </m:MaterialNavSection>
                         <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
-                            <widgets:MaterialSuggestion layoutPosition="RELATIVE" iconColor="WHITE" backgroundColor="BLUE_GREY" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
+                            <widgets:MaterialSearch layoutPosition="RELATIVE" iconColor="WHITE" backgroundColor="BLUE_GREY" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
                 </m:MaterialPanel>
@@ -196,13 +196,14 @@
                                     <m:MaterialLink addStyleNames="{style.category}" text="Conversations" iconType="CHAT_BUBBLE" ui:field="conversationsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Requests" iconType="SHOPPING_CART" ui:field="requestsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Notifications" iconType="NOTIFICATIONS" ui:field="notificationsCategory"></m:MaterialLink>
-                                    <m:MaterialLink addStyleNames="{style.category}" text="Testimonials" iconType="SPEAKER_NOTES" ui:field="testimoniesCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Testimonials" iconType="STAR" ui:field="testimoniesCategory"></m:MaterialLink>
                                 </m:MaterialPanel>
                                 <m:MaterialPanel addStyleNames="{style.settings}" ui:field="settings">
                                     <m:MaterialLink addStyleNames="{style.category}" text="Settings" iconType="SETTINGS" ui:field="settingsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Feedback" iconType="FEEDBACK" ui:field="feedbackCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Help" iconType="HELP" ui:field="helpCategory"></m:MaterialLink>
                                 </m:MaterialPanel>
+                                <m:MaterialLabel fontSize="0.8em" text="© 2017 Copyright Geocento Ltd and partners" />
                             </g:HTMLPanel>
                         </g:HTMLPanel>
                     </g:HTMLPanel>
@@ -212,7 +213,7 @@
                 <cwidgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></cwidgets:LoadingWidget>
                 <m:MaterialPanel ui:field="content"></m:MaterialPanel>
             </m:MaterialContainer>
-            <m:MaterialFooter backgroundColor="BLUE_GREY" ui:field="footer">
+            <m:MaterialFooter backgroundColor="BLUE_GREY" visible="false" ui:field="footer">
                 <m:MaterialRow>
                     <m:MaterialColumn grid="s12 m6 l6">
                         <m:MaterialTitle textColor="WHITE" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>

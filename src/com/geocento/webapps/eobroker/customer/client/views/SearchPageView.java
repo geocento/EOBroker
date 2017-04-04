@@ -20,7 +20,7 @@ public interface SearchPageView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void setSearchText(String search);
+    void setSearchText(String search, boolean forceFocus);
 
     void displayAoI(AoIDTO aoi);
 

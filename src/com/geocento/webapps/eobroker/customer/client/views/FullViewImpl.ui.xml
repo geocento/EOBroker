@@ -81,6 +81,20 @@
             opacity: 0.1;
         }
 
+        .offeringSection {
+            margin: 7px 0;
+            padding-left: 20px;
+            line-height: 40px;
+            font-size: 1.2em;
+        }
+
+        .offeringSubSection {
+            margin: 7px 0;
+            padding-left: 30px;
+            line-height: 30px;
+            font-size: 1em;
+        }
+
     </ui:style>
     <views:TemplateView ui:field="template">
         <design:MaterialPanel addStyleNames="{style.panel}">
