@@ -20,8 +20,6 @@ public interface SearchPageView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void setSearchText(String search, boolean forceFocus);
-
     void displayAoI(AoIDTO aoi);
 
     void displayLoadingResults(String message);
@@ -29,8 +27,6 @@ public interface SearchPageView extends IsWidget {
     void hideLoadingResults();
 
     void clearResults();
-
-    void setTitleText(String title);
 
     void setMatchingProducts(List<ProductDTO> suggestedProducts, String moreUrl);
 
@@ -45,8 +41,6 @@ public interface SearchPageView extends IsWidget {
     void setMatchingProjects(List<ProjectDTO> projects, String moreUrl);
 
     void setMatchingImagery(String text);
-
-    TemplateView getTemplateView();
 
     void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoIDTO aoi);
 
@@ -89,6 +83,8 @@ public interface SearchPageView extends IsWidget {
     SoftwareType getSoftwareType();
 
     void showFilters(boolean display);
+
+    void setFilterTitle(String filterText);
 
     public interface Presenter {
 

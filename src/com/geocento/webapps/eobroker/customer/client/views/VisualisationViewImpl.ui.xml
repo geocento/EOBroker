@@ -16,19 +16,10 @@
 
         }
 
-        .navOpened main, .navOpened footer {
-            padding-left: 350px;
-        }
-
         .description {
-            overflow: hidden;
-            font-size: 0.8em;
-            line-height: 1em;
-            height: 2em;
-            /* TODO - find something more cross browser */
-            -webkit-line-clamp: 2;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
+            padding-bottom: 20px;
+            font-size: 0.9em;
+            font-style: italic;
         }
 
         span.dataAccess {
@@ -38,64 +29,97 @@
         }
 
         .selectedDataset {
-            color: white !important;
+            padding: 0px 20px;
         }
 
         .dataAccessDetails {
-            line-height: normal;
+            line-height: 1.6em;
         }
 
         .loading, .errorMessage {
             margin: 50px 20px;
         }
 
+        .content {
+            position: fixed;
+            top: 64px;
+            left: 0px;
+            bottom: 0px;
+            right: 0px;
+        }
+
+        .title {
+            padding: 10px 0px;
+            font-weight: bold;
+        }
+
+        .imagePanel {
+
+        }
+
+        .layer {
+            padding: 10px 0px;
+        }
+
+        .contentPanel {
+            width: 100%;
+            height: 100%;
+        }
+
     </ui:style>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
-    <views:TemplateView titleText="View datasets" footer="false" ui:field="template">
-        <views:header>
-            <widgets:MaterialSideNav width="350" design:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" addStyleNames="{resCommon.style.slimScrollbar}" ui:field="resourcesBar">
-                <sideprofile:MaterialSideProfile backgroundColor="BLUE">
-                    <design:MaterialPanel>
-                        <design:MaterialImage float="LEFT" ui:field="image"></design:MaterialImage>
-                        <design:MaterialPanel marginLeft="70" marginTop="10">
-                            <design:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
-                            <design:MaterialPanel>
-                                <design:MaterialChip fontSize="0.8em" ui:field="supplier"></design:MaterialChip>
-                                <design:MaterialChip visible="false" ui:field="resource"></design:MaterialChip>
+    <design:MaterialPanel addStyleNames="{style.content}">
+        <g:DockLayoutPanel addStyleNames="{style.contentPanel}">
+            <g:west size="350">
+                <g:HeaderPanel addStyleNames="{style.imagePanel}" ui:field="imagePanel">
+                    <sideprofile:MaterialSideProfile backgroundColor="BLUE">
+                        <design:MaterialPanel>
+                            <design:MaterialImage float="LEFT" ui:field="image"></design:MaterialImage>
+                            <design:MaterialPanel marginLeft="70" marginTop="10">
+                                <design:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
+                                <design:MaterialPanel>
+                                    <design:MaterialChip fontSize="0.8em" ui:field="supplier"></design:MaterialChip>
+                                    <design:MaterialChip visible="false" ui:field="resource"></design:MaterialChip>
+                                </design:MaterialPanel>
                             </design:MaterialPanel>
                         </design:MaterialPanel>
-                    </design:MaterialPanel>
-                    <design:MaterialLink text="" fontSize="1em" activates="datasets" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="WHITE" truncate="true" addStyleNames="{style.selectedDataset}" ui:field="selectedDataset"/>
-                </sideprofile:MaterialSideProfile>
-                <design:MaterialDropDown activator="datasets" ui:field="dataAccessList">
-                </design:MaterialDropDown>
-                <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
-                <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="RED" ui:field="errorMessage"></design:MaterialLabel>
-                <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
-                    <design:MaterialLabel paddingBottom="20" ui:field="description"></design:MaterialLabel>
-                    <design:MaterialRow>
-                        <design:MaterialColumn grid="s12">
-                            <design:MaterialLink iconType="LINK" truncate="true" ui:field="serverUrl"></design:MaterialLink>
-                        </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12">
-                            <design:MaterialLink iconType="LAYERS" overflow="HIDDEN" truncate="true" ui:field="layerName"></design:MaterialLink>
-                        </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12">
-                            <design:MaterialLabel>Layer controls</design:MaterialLabel>
+                    </sideprofile:MaterialSideProfile>
+                    <design:MaterialPanel>
+                        <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
+                        <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="RED" ui:field="errorMessage"></design:MaterialLabel>
+                        <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
+                            <design:MaterialLabel addStyleNames="{style.title}" ui:field="selectedDataset"></design:MaterialLabel>
+                            <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                            <design:MaterialLabel addStyleNames="{style.layer}">Layer parameters</design:MaterialLabel>
                             <design:MaterialRow>
+                                <design:MaterialColumn grid="s12">
+                                </design:MaterialColumn>
+                                <design:MaterialColumn grid="s12">
+                                    <design:MaterialLink iconType="LINK" truncate="true" ui:field="serverUrl"></design:MaterialLink>
+                                </design:MaterialColumn>
+                                <design:MaterialColumn grid="s12">
+                                    <design:MaterialLink iconType="LAYERS" overflow="HIDDEN" truncate="true" ui:field="layerName"></design:MaterialLink>
+                                </design:MaterialColumn>
                                 <design:MaterialColumn grid="s12">
                                     <design:MaterialLabel text="Opacity" marginRight="20" display="INLINE_BLOCK"></design:MaterialLabel>
                                     <design:MaterialRange min="0" max="100" display="INLINE_BLOCK" width="200px" ui:field="opacity"></design:MaterialRange>
                                 </design:MaterialColumn>
                             </design:MaterialRow>
-                        </design:MaterialColumn>
-                    </design:MaterialRow>
-                    <design:MaterialLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></design:MaterialLink>
-                </design:MaterialPanel>
-            </widgets:MaterialSideNav>
-        </views:header>
-        <g:HTMLPanel addStyleNames="{style.displayPanel}" ui:field="displayPanel">
-            <maps:MapContainer width="100%" height="100%" editable="false" search="true" ui:field="mapContainer"></maps:MapContainer>
-        </g:HTMLPanel>
-    </views:TemplateView>
+                            <design:MaterialLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></design:MaterialLink>
+                        </design:MaterialPanel>
+                    </design:MaterialPanel>
+                    <design:MaterialPanel height="40px">
+                        <design:MaterialLink text="" fontSize="1em" activates="datasets" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="BLUE_GREY" truncate="true" addStyleNames="{style.selectedDataset}" ui:field="moreDatasets"/>
+                        <design:MaterialDropDown activator="datasets" ui:field="dataAccessList">
+                        </design:MaterialDropDown>
+                    </design:MaterialPanel>
+                </g:HeaderPanel>
+            </g:west>
+            <g:center>
+                <g:HTMLPanel addStyleNames="{style.displayPanel}" ui:field="displayPanel">
+                    <maps:MapContainer width="100%" height="100%" editable="false" search="true" ui:field="mapContainer"></maps:MapContainer>
+                </g:HTMLPanel>
+            </g:center>
+        </g:DockLayoutPanel>
+    </design:MaterialPanel>
 </ui:UiBinder>

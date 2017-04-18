@@ -46,8 +46,7 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
         super.start(panel, eventBus);
         imageryResponseView = clientFactory.getImageryResponseView();
         imageryResponseView.setPresenter(this);
-        panel.setWidget(imageryResponseView.asWidget());
-        setTemplateView(imageryResponseView.getTemplateView());
+        setTemplateView(imageryResponseView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         displayFullLoading("Loading map...");

@@ -7,8 +7,6 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface SettingsView extends IsWidget {
 
-    TemplateView getTemplateView();
-
     void setPresenter(Presenter presenter);
 
     public interface Presenter {

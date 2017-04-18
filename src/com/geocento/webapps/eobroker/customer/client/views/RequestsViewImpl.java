@@ -20,19 +20,15 @@ public class RequestsViewImpl extends Composite implements RequestsView {
 
     private Presenter presenter;
 
-    interface OrdersViewUiBinder extends UiBinder<Widget, RequestsViewImpl> {
+    interface RequestsViewUiBinder extends UiBinder<Widget, RequestsViewImpl> {
     }
 
-    private static OrdersViewUiBinder ourUiBinder = GWT.create(OrdersViewUiBinder.class);
+    private static RequestsViewUiBinder ourUiBinder = GWT.create(RequestsViewUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialRow requestsList;
 
     public RequestsViewImpl(ClientFactoryImpl clientFactory) {
-
-        template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -41,11 +37,6 @@ public class RequestsViewImpl extends Composite implements RequestsView {
     @Override
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override

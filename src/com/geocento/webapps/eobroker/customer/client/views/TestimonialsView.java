@@ -7,8 +7,6 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface TestimonialsView extends IsWidget {
 
-    TemplateView getTemplateView();
-
     void setPresenter(Presenter presenter);
 
     public interface Presenter {

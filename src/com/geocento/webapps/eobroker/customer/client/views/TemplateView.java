@@ -14,6 +14,7 @@ import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -96,8 +97,6 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialBadge notificationsBadge;
     @UiField
     MaterialDropDown notificationsPanel;
-    @UiField
-    MaterialFooter footer;
     @UiField
     MaterialLink signOut;
     @UiField
@@ -195,6 +194,11 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
                 presenter.textSelected(text);
             }
         });
+
+        navigationPanel.addClosedHandler(event -> Scheduler.get().scheduleDeferred(() -> onResize(null)));
+
+        navigationPanel.addOpenedHandler(event -> Scheduler.get().scheduleDeferred(() -> onResize(null)));
+
         onResize(null);
     }
 
@@ -413,11 +417,6 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         panel.setStyleName(styleName, added);
     }
 
-    public void setFooter(boolean display) {
-        // for to false for now
-        footer.setVisible(false); //display);
-    }
-
     public void scrollToTop() {
         Window.scrollTo(0, 0);
     }
@@ -434,6 +433,14 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
     public void hideFullLoading() {
         displayContent(true);
+    }
+
+    public void displayMenu(boolean display) {
+        if(display) {
+            navigationPanel.show();
+        } else {
+            navigationPanel.hide();
+        }
     }
 
     @Override
@@ -463,7 +470,11 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
     @Override
     public void onResize(ResizeEvent event) {
-        setPanelStyleName(style.navOpened(), navigationPanel.isVisible());
+        panel.setStyleName(style.navOpened(), navigationPanel.isOpen());
+        // force the hide or show, seems to be a bug
+        if(!(navigationPanel.isVisible() && navigationPanel.isOpen())) {
+            navigationPanel.setVisible(navigationPanel.isOpen());
+        }
     }
 
 }

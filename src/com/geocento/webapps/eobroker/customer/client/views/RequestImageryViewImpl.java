@@ -34,8 +34,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
 
     private static RequestImageryUiBinder ourUiBinder = GWT.create(RequestImageryUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MapContainer mapContainer;
     @UiField
@@ -55,8 +53,11 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
 
     public MapJSNI map;
 
+    private ClientFactoryImpl clientFactory;
+
     public RequestImageryViewImpl(final ClientFactoryImpl clientFactory) {
-        template = new TemplateView(clientFactory);
+
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -164,24 +165,12 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
     }
 
     @Override
-    public TemplateView getTemplateView() {
-        return template;
-    }
-
-    @Override
     public void displaySubmitLoading(boolean display) {
         if(display) {
-            template.displayLoading();
             submit.showProgress(ProgressType.INDETERMINATE);
         } else {
-            template.hideLoading();
             submit.hideProgress();
         }
-    }
-
-    @Override
-    public void displaySucces(String message) {
-        template.displaySuccess(message);
     }
 
     @Override
@@ -201,7 +190,6 @@ public class RequestImageryViewImpl extends Composite implements RequestImageryV
         information.setText("");
         start.reset();
         stop.reset();
-        template.scrollToTop();
         for(int index = 0; index < suppliers.getWidgetCount(); index++) {
             Widget widget = suppliers.getWidget(index);
             if (widget instanceof MaterialCheckBox) {

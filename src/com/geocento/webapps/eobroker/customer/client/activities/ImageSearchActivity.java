@@ -60,8 +60,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
         super.start(panel, eventBus);
         imageSearchView = clientFactory.getImageSearchView();
         imageSearchView.setPresenter(this);
-        panel.setWidget(imageSearchView.asWidget());
-        setTemplateView(imageSearchView.getTemplateView());
+        setTemplateView(imageSearchView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         imageSearchView.showQuery();
@@ -192,7 +191,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
                             activityEventBus.fireEvent(new RequestCreated(imageOrder));
                             // clean the selections
                             imageSearchView.clearProductsSelection();
-                            imageSearchView.displaySuccess("Quotation request submitted");
+                            displaySuccess("Quotation request submitted");
                         }
                     }).call(ServicesUtil.requestsService).submitImagesRequest(imagesRequestDTO);
                 } catch (RequestException e) {

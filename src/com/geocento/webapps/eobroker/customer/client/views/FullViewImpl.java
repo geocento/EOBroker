@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -59,8 +60,6 @@ public class FullViewImpl extends Composite implements FullView {
 
     @UiField Style style;
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialRow tabsContent;
     @UiField
@@ -84,9 +83,11 @@ public class FullViewImpl extends Composite implements FullView {
     @UiField
     MaterialBreadcrumb recommendationsLabel;
 
+    private ClientFactoryImpl clientFactory;
+
     public FullViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -98,37 +99,12 @@ public class FullViewImpl extends Composite implements FullView {
     }
 
     @Override
-    public void hideLoading() {
-        template.hideLoading();
-    }
-
-    @Override
-    public void displayError(String message) {
-        template.displayError(message);
-    }
-
-    @Override
-    public void displaySuccess(String message) {
-        template.displaySuccess(message);
-    }
-
-    @Override
-    public void displayLoading() {
-        template.displayLoading();
-    }
-
-    @Override
     public void clearDetails() {
         navigation.clear();
         navigation.setVisible(false);
         actions.clear();
         tags.clear();
         tabsContent.clear();
-    }
-
-    @Override
-    public void displayTitle(String title) {
-        template.setTitleText(title);
     }
 
     @Override
@@ -370,29 +346,15 @@ public class FullViewImpl extends Composite implements FullView {
         MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
         // add geoinformation provided
-        MaterialPanel geoinformationPanel = new MaterialPanel();
-        materialColumn.add(geoinformationPanel);
-        {
-            geoinformationPanel.add(createSubsection("Geoinformation provided"));
-            MaterialRow geoinformationRow = new MaterialRow();
-            geoinformationRow.setMarginTop(20);
-            geoinformationPanel.add(geoinformationRow);
-            for(FeatureDescription featureDescription : productServiceDescriptionDTO.getGeoinformation()) {
-                materialColumn = new MaterialColumn(12, 12, 12);
-                geoinformationRow.add(materialColumn);
-                MaterialLink materialLink = new MaterialLink(featureDescription.getName());
-                materialLink.setIconType(IconType.CHECK);
-                materialLink.setIconColor(Color.AMBER);
-                MaterialTooltip materialTooltip = new MaterialTooltip(materialLink, featureDescription.getDescription());
-                materialColumn.add(materialTooltip);
-            }
-        }
+        materialColumn.add(createGeoinformationPanel(productServiceDescriptionDTO.getGeoinformation(), productServiceDescriptionDTO.getGeoinformationComment()));
+        // add perfomances
+        materialColumn.add(createPerformancesPanel(productServiceDescriptionDTO.getPerformances(), productServiceDescriptionDTO.getPerformancesComments()));
         // add map with extent of data
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
         materialColumn.add(createSubsection("Extent of service"));
         final MapContainer mapContainer = new MapContainer();
-        mapContainer.setHeight("200px");
+        mapContainer.setHeight("300px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         mapContainer.setEditable(false);
         mapContainer.setBasemapVisible(false);
@@ -410,23 +372,6 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         materialColumn.add(mapContainer);
-        // add perfomances
-        materialColumn = new MaterialColumn(12, 6, 6);
-        featuresPanel.add(materialColumn);
-        // add geoinformation provided
-        MaterialPanel performancesPanel = new MaterialPanel();
-        materialColumn.add(performancesPanel);
-        {
-            performancesPanel.add(createSubsection("Accuracy"));
-            MaterialRow materialRow = new MaterialRow();
-            materialRow.setMarginTop(20);
-            performancesPanel.add(materialRow);
-            {
-                materialColumn = new MaterialColumn(12, 12, 12);
-                materialRow.add(materialColumn);
-                materialColumn.add(new MaterialLabel("TODO - add list of performance indicators"));
-            }
-        }
         addTab(materialTab, tabsPanel, "Performances", featuresPanel, size);
         // create tab for data access information
         // add access panel
@@ -501,6 +446,63 @@ public class FullViewImpl extends Composite implements FullView {
         }
     }
 
+    private Widget createPerformancesPanel(List<PerformanceValue> performances, String comment) {
+        MaterialPanel performancesPanel = new MaterialPanel();
+        performancesPanel.add(createSubsection("Precision and accuracy"));
+        MaterialRow materialRow = new MaterialRow();
+        materialRow.setMarginTop(20);
+        performancesPanel.add(materialRow);
+        if(performances.size() == 0) {
+            materialRow.add(new MaterialLabel("No information provided..."));
+        } else {
+            for (PerformanceValue performance : performances) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+                materialRow.add(materialColumn);
+                MaterialLink materialLink = new MaterialLink(performance.getPerformanceDescription().getName() +
+                        performance.getMinValue() +
+                        (performance.getMaxValue() != null ? " - " + performance.getMaxValue() : "") +
+                        performance.getPerformanceDescription().getUnit());
+                materialLink.setIconType(IconType.CHECK);
+                materialLink.setIconColor(Color.AMBER);
+                MaterialTooltip materialTooltip = new MaterialTooltip(materialLink, performance.getPerformanceDescription().getDescription());
+                materialColumn.add(materialTooltip);
+            }
+        }
+        if(comment != null && comment.length() > 0) {
+            MaterialLabel commentLabel = new MaterialLabel(comment);
+            commentLabel.getElement().setInnerText("<b>Comment:</b> " + comment);
+            materialRow.add(commentLabel);
+        }
+        return performancesPanel;
+    }
+
+    private MaterialPanel createGeoinformationPanel(List<FeatureDescription> geoinformation, String comment) {
+        MaterialPanel geoinformationPanel = new MaterialPanel();
+        geoinformationPanel.add(createSubsection("Geoinformation provided"));
+        MaterialRow geoinformationRow = new MaterialRow();
+        geoinformationRow.setMarginTop(20);
+        geoinformationPanel.add(geoinformationRow);
+        if(geoinformation.size() == 0) {
+            geoinformationRow.add(new MaterialLabel("No geoinformation provided..."));
+        } else {
+            for (FeatureDescription featureDescription : geoinformation) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+                geoinformationRow.add(materialColumn);
+                MaterialLink materialLink = new MaterialLink(featureDescription.getName());
+                materialLink.setIconType(IconType.CHECK);
+                materialLink.setIconColor(Color.AMBER);
+                MaterialTooltip materialTooltip = new MaterialTooltip(materialLink, featureDescription.getDescription());
+                materialColumn.add(materialTooltip);
+            }
+        }
+        if(comment != null && comment.length() > 0) {
+            MaterialLabel commentLabel = new MaterialLabel(comment);
+            commentLabel.getElement().setInnerText("<b>Comment:</b> " + comment);
+            geoinformationRow.add(commentLabel);
+        }
+        return geoinformationPanel;
+    }
+
     @Override
     public void displayProductDataset(final ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
         clearDetails();
@@ -538,6 +540,11 @@ public class FullViewImpl extends Composite implements FullView {
         // add geoinformation provided
         MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
+        // add geoinformation provided
+        materialColumn.add(createGeoinformationPanel(productDatasetDescriptionDTO.getGeoinformation(), productDatasetDescriptionDTO.getGeoinformationComment()));
+        // add perfomances
+        materialColumn.add(createPerformancesPanel(productDatasetDescriptionDTO.getPerformances(), productDatasetDescriptionDTO.getPerformancesComments()));
+/*
         MaterialPanel geoinformationPanel = new MaterialPanel();
         materialColumn.add(geoinformationPanel);
         {
@@ -555,12 +562,16 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(materialTooltip);
             }
         }
+        // add perfomances
+        materialColumn.add(createSubsection("Precision and accuracy"));
+        materialColumn.add(new MaterialLabel("TODO - add list of performance indicators like spatial resolution, etc..."));
+*/
         // add map with extent of data
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
         materialColumn.add(createSubsection("Extent of data"));
         final MapContainer mapContainer = new MapContainer();
-        mapContainer.setHeight("200px");
+        mapContainer.setHeight("300px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         mapContainer.setEditable(false);
         mapContainer.setBasemapVisible(false);
@@ -578,12 +589,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         materialColumn.add(mapContainer);
-        // add perfomances
-        materialColumn = new MaterialColumn(12, 6, 6);
-        featuresPanel.add(materialColumn);
-        materialColumn.add(createSubsection("Performances"));
-        materialColumn.add(new MaterialLabel("TODO - add list of performance indicators like spatial resolution, etc..."));
-        addTab(materialTab, tabsPanel, "Characteristics", featuresPanel, size);
+        addTab(materialTab, tabsPanel, "Performances", featuresPanel, size);
         // add access panel
         MaterialPanel accessPanel = new MaterialPanel();
         List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
@@ -1171,7 +1177,7 @@ public class FullViewImpl extends Composite implements FullView {
                     Window.open(datasetAccess.getUri(), "_blank", null);
                 } else if(datasetAccess instanceof DatasetAccessOGC) {
                     if(freeAvailable) {
-                        template.getClientFactory().getPlaceController().goTo(new VisualisationPlace(
+                        clientFactory.getPlaceController().goTo(new VisualisationPlace(
                                 Utils.generateTokens(
                                         VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetDescriptionDTO.getId() + "",
                                         VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
@@ -1203,7 +1209,7 @@ public class FullViewImpl extends Composite implements FullView {
                     Window.open(datasetAccess.getUri(), "_blank", null);
                 } else if (datasetAccess instanceof DatasetAccessOGC) {
                     if (freeAvailable) {
-                        template.getClientFactory().getPlaceController().goTo(new VisualisationPlace(
+                        clientFactory.getPlaceController().goTo(new VisualisationPlace(
                                 Utils.generateTokens(
                                         VisualisationPlace.TOKENS.productServiceId.toString(), productServiceDescriptionDTO.getId() + "",
                                         VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
@@ -1255,11 +1261,6 @@ public class FullViewImpl extends Composite implements FullView {
         materialColumn.add(panel);
         materialColumn.setId(tabId);
         panel.addStyleName(style.tabPanel());
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     private MaterialPanel createTabsPanel() {

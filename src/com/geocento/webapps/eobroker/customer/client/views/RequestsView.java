@@ -12,8 +12,6 @@ public interface RequestsView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    TemplateView getTemplateView();
-
     void setRequests(List<RequestDTO> requestDTOs);
 
     public interface Presenter {

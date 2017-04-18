@@ -54,10 +54,6 @@ public interface ImageSearchView extends IsWidget {
 
     void clearProductsSelection();
 
-    void displaySuccess(String message);
-
-    TemplateView getTemplateView();
-
     void showQuery();
 
     void setSearchTextValid(boolean valid);

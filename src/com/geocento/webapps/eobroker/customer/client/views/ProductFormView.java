@@ -40,25 +40,11 @@ public interface ProductFormView extends IsWidget {
 
     HasClickHandlers getInformation();
 
-    void displayLoading(String message);
-
-    void hideLoading();
-
-    void displayError(String message);
-
-    void displaySuccess(String message);
-
-    void displayLoading();
-
     java.util.List<com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue> getFormElementValues() throws Exception;
 
     void displayFormValidationError(String message);
 
     List<ProductServiceDTO> getSelectedServices();
-
-    void displaySubmittedSuccess(String message);
-
-    TemplateView getTemplateView();
 
     void clearRequest();
 

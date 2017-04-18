@@ -51,6 +51,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private TestimonialsView testimonialsView = null;
 
+    private TemplateView templateView = null;
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -202,5 +204,12 @@ public class ClientFactoryImpl implements ClientFactory {
         return testimonialsView;
     }
 
+    @Override
+    public TemplateView getTemplateView() {
+        if(templateView == null) {
+            templateView = new TemplateView(this);
+        }
+        return templateView;
+    }
 }
 

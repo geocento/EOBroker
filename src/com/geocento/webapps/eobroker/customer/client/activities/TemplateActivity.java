@@ -13,12 +13,16 @@ import com.geocento.webapps.eobroker.customer.client.events.ImageOrderCreatedHan
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.events.LogOutHandler;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
-import com.geocento.webapps.eobroker.customer.client.places.*;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.TemplateView;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -43,8 +47,16 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         super(clientFactory);
     }
 
-    public void setTemplateView(final TemplateView templateView) {
-        this.templateView = templateView;
+    @Override
+    public void start(AcceptsOneWidget panel, EventBus eventBus) {
+        super.start(panel, eventBus);
+        templateView = clientFactory.getTemplateView();
+        panel.setWidget(templateView);
+    }
+
+    public void setTemplateView(Widget widget) {
+        templateView.clear();
+        templateView.add(widget);
         // check use is logged in
         if(Customer.isLoggedIn()) {
             templateView.displaySignedIn(true);
@@ -189,6 +201,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         templateView.displayError(message);
     }
 
+    protected void displaySuccess(String message) {
+        templateView.displaySuccess(message);
+    }
+
     public void displayFullLoading(String message) {
         templateView.displayFullLoading(message);
     }
@@ -204,4 +220,20 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     public void displaySearchError(String message) {
         MaterialToast.fireToast(message);
     }
+
+    public void displayMenu(boolean display) {
+        templateView.displayMenu(display);
+    }
+
+    public void setSearchText(String search, boolean forceFocus) {
+        templateView.setSearchText(search);
+        if(forceFocus) {
+            templateView.setSearchTextFocus(true);
+        }
+    }
+
+    public void setTitleText(String title) {
+        templateView.setTitleText(title);
+    }
+
 }

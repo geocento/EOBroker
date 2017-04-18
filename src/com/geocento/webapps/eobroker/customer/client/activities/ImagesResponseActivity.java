@@ -43,8 +43,7 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
         super.start(panel, eventBus);
         imagesResponseView = clientFactory.getImagesResponseView();
         imagesResponseView.setPresenter(this);
-        panel.setWidget(imagesResponseView.asWidget());
-        setTemplateView(imagesResponseView.getTemplateView());
+        setTemplateView(imagesResponseView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         displayFullLoading("Loading map...");

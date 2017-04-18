@@ -67,20 +67,26 @@
             overflow-y: auto;
         }
 
+        .content {
+            width: 100%;
+            height: 100%;
+        }
+
+        .searchPanel {
+
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-    <views:TemplateView titleText="Service Feasibility" footer="false" ui:field="template">
-        <widgets:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
-            <sideprofile:MaterialSideProfile url="http://static1.squarespace.com/static/51609147e4b0715db61d32b6/521b97cee4b05f031fd12dde/5519e33de4b06a1002802805/1431718693701/?format=1500w">
-<!--
-                <m:MaterialImage visible="false" type="CIRCLE" width="40" display="INLINE_BLOCK" addStyleNames="z-depth-1" ui:field="image"></m:MaterialImage>
--->
-                <m:MaterialLink text="Services" activates="service" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="servicesLink"></m:MaterialLink>
-                <m:MaterialDropDown activator="service" ui:field="serviceDropdown">
-                </m:MaterialDropDown>
-            </sideprofile:MaterialSideProfile>
-            <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
-                <m:MaterialColumn grid="s12" padding="0" width="100%" height="100%">
+    <g:DockLayoutPanel addStyleNames="{style.content}">
+        <g:west size="350">
+            <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
+                <m:MaterialPanel>
+                    <sideprofile:MaterialSideProfile backgroundColor="BLUE">
+                        <m:MaterialLink text="Services" activates="service" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="servicesLink"></m:MaterialLink>
+                        <m:MaterialDropDown activator="service" ui:field="serviceDropdown">
+                        </m:MaterialDropDown>
+                    </sideprofile:MaterialSideProfile>
                     <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
                         <m:MaterialTabItem waves="YELLOW" grid="s6">
                             <m:MaterialLink text="Query" href="#query" textColor="WHITE"></m:MaterialLink>
@@ -89,89 +95,93 @@
                             <m:MaterialLink text="Results" href="#results" textColor="WHITE" ui:field="resultsTab"></m:MaterialLink>
                         </m:MaterialTabItem>
                     </m:MaterialTab>
-                </m:MaterialColumn>
-                <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" paddingTop="20" backgroundColor="WHITE">
-                    <m:MaterialRow padding="0" margin="0" addStyleNames="{style.panel}">
-                        <m:MaterialColumn grid="s6">
-                            <m:MaterialDatePicker ui:field="startDate" placeholder="Start Date" />
-<!--
-                            <forms:DateEditor ui:field="startDate"></forms:DateEditor>
--->
-                        </m:MaterialColumn>
-                        <m:MaterialColumn grid="s6">
-                            <m:MaterialDatePicker ui:field="stopDate" placeholder="Stop Date" />
-                        </m:MaterialColumn>
-                    </m:MaterialRow>
-                    <m:MaterialRow padding="0" margin="0" ui:field="parameters">
-                    </m:MaterialRow>
-                    <m:MaterialRow addStyleNames="{style.queryButton}">
-                        <m:MaterialColumn grid="s12">
-                            <m:MaterialButton text="Check" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="false" ui:field="update"/>
-                        </m:MaterialColumn>
-                    </m:MaterialRow>
-                </m:MaterialColumn>
-                <m:MaterialColumn m:id="results" grid="s12" padding="0">
-                    <g:HTMLPanel addStyleNames="{style.result}" ui:field="results">
-                        <m:MaterialCollapsible backgroundColor="WHITE">
-                            <m:MaterialCollapsibleItem ui:field="feasibilityPanel">
-                                <m:MaterialCollapsibleHeader backgroundColor="WHITE">
-                                    <g:HTMLPanel>
-                                        <m:MaterialLink text="PARTIAL" textColor="ORANGE" float="RIGHT" width="auto"></m:MaterialLink>
-                                        <m:MaterialLink iconType="TRAFFIC" text="Feasibility:"></m:MaterialLink>
-                                    </g:HTMLPanel>
-                                </m:MaterialCollapsibleHeader>
-                                <m:MaterialCollapsibleBody>
-                                    <g:HTMLPanel addStyleNames="{style.section}" ui:field="feasibility">
-                                        <p>Some comments on the general feasibility of this study</p>
-                                    </g:HTMLPanel>
-                                </m:MaterialCollapsibleBody>
-                            </m:MaterialCollapsibleItem>
-                            <m:MaterialCollapsibleItem ui:field="coveragePanel">
-                                <m:MaterialCollapsibleHeader backgroundColor="WHITE">
-                                    <g:HTMLPanel>
-                                        <m:MaterialLink text="83%" textColor="ORANGE" float="RIGHT" width="auto"></m:MaterialLink>
-                                        <m:MaterialLink text="Coverage" textColor="BLUE" iconType="LAYERS"/>
-                                    </g:HTMLPanel>
-                                </m:MaterialCollapsibleHeader>
-                                <m:MaterialCollapsibleBody>
-                                    <g:HTMLPanel addStyleNames="{style.section}" ui:field="coverage">
-                                        <p>Sensors: <g:Anchor ui:field="sensors">15</g:Anchor></p>
-                                        <p>Datasets: <g:Anchor>3</g:Anchor></p>
-                                        <p>Spatial coverage: <g:Anchor>83%</g:Anchor></p>
-                                        <p>Revisit rate: <g:Anchor>see chart</g:Anchor></p>
-                                    </g:HTMLPanel>
-                                </m:MaterialCollapsibleBody>
-                            </m:MaterialCollapsibleItem>
-                            <m:MaterialCollapsibleItem ui:field="options">
-                                <m:MaterialCollapsibleHeader backgroundColor="WHITE">
-                                    <m:MaterialLink text="Revisit" textColor="BLUE" iconType="FILTER"/>
-                                </m:MaterialCollapsibleHeader>
-                                <m:MaterialCollapsibleBody>
-                                    <g:HTMLPanel addStyleNames="{style.section}" ui:field="revisit">
-                                    </g:HTMLPanel>
-                                </m:MaterialCollapsibleBody>
-                            </m:MaterialCollapsibleItem>
-                        </m:MaterialCollapsible>
-                    </g:HTMLPanel>
-                    <m:MaterialRow addStyleNames="{style.queryButton}">
-                        <m:MaterialColumn grid="s6">
-                            <m:MaterialButton text="Contact" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="true" ui:field="contact"/>
-                        </m:MaterialColumn>
-                        <m:MaterialColumn grid="s6">
-                            <m:MaterialButton text="Request" textAlign="CENTER" backgroundColor="GREEN" textColor="WHITE" enabled="true" ui:field="request"/>
-                        </m:MaterialColumn>
-                    </m:MaterialRow>
-                </m:MaterialColumn>
-            </m:MaterialRow>
-        </widgets:MaterialSideNav>
-        <cutout:MaterialCutOut circle="true" padding="50" ui:field="cutOut">
-            <m:MaterialTitle title="Sensors" description="List of sensors which will potentially be used to fulfill the service" textColor="WHITE"/>
-            <g:HTMLPanel ui:field="chartsArea"></g:HTMLPanel>
-            <m:MaterialButton text="Close" ui:field="btnCutOutClose" textColor="BLUE" backgroundColor="WHITE"/>
-        </cutout:MaterialCutOut>
-        <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-            <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" ui:field="mapContainer">
-            </cmaps:MapContainer>
-        </g:HTMLPanel>
-    </views:TemplateView>
+                </m:MaterialPanel>
+                <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
+                    <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" paddingTop="20" backgroundColor="WHITE">
+                        <m:MaterialRow padding="0" margin="0" addStyleNames="{style.panel}">
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialDatePicker ui:field="startDate" placeholder="Start Date" />
+                                <!--
+                                                        <forms:DateEditor ui:field="startDate"></forms:DateEditor>
+                                -->
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialDatePicker ui:field="stopDate" placeholder="Stop Date" />
+                            </m:MaterialColumn>
+                        </m:MaterialRow>
+                        <m:MaterialRow padding="0" margin="0" ui:field="parameters">
+                        </m:MaterialRow>
+                        <m:MaterialRow addStyleNames="{style.queryButton}">
+                            <m:MaterialColumn grid="s12">
+                                <m:MaterialButton text="Check" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="false" ui:field="update"/>
+                            </m:MaterialColumn>
+                        </m:MaterialRow>
+                    </m:MaterialColumn>
+                    <m:MaterialColumn m:id="results" grid="s12" padding="0">
+                        <g:HTMLPanel addStyleNames="{style.result}" ui:field="results">
+                            <m:MaterialCollapsible backgroundColor="WHITE">
+                                <m:MaterialCollapsibleItem ui:field="feasibilityPanel">
+                                    <m:MaterialCollapsibleHeader backgroundColor="WHITE">
+                                        <g:HTMLPanel>
+                                            <m:MaterialLink text="PARTIAL" textColor="ORANGE" float="RIGHT" width="auto"></m:MaterialLink>
+                                            <m:MaterialLink iconType="TRAFFIC" text="Feasibility:"></m:MaterialLink>
+                                        </g:HTMLPanel>
+                                    </m:MaterialCollapsibleHeader>
+                                    <m:MaterialCollapsibleBody>
+                                        <g:HTMLPanel addStyleNames="{style.section}" ui:field="feasibility">
+                                            <p>Some comments on the general feasibility of this study</p>
+                                        </g:HTMLPanel>
+                                    </m:MaterialCollapsibleBody>
+                                </m:MaterialCollapsibleItem>
+                                <m:MaterialCollapsibleItem ui:field="coveragePanel">
+                                    <m:MaterialCollapsibleHeader backgroundColor="WHITE">
+                                        <g:HTMLPanel>
+                                            <m:MaterialLink text="83%" textColor="ORANGE" float="RIGHT" width="auto"></m:MaterialLink>
+                                            <m:MaterialLink text="Coverage" textColor="BLUE" iconType="LAYERS"/>
+                                        </g:HTMLPanel>
+                                    </m:MaterialCollapsibleHeader>
+                                    <m:MaterialCollapsibleBody>
+                                        <g:HTMLPanel addStyleNames="{style.section}" ui:field="coverage">
+                                            <p>Sensors: <g:Anchor ui:field="sensors">15</g:Anchor></p>
+                                            <p>Datasets: <g:Anchor>3</g:Anchor></p>
+                                            <p>Spatial coverage: <g:Anchor>83%</g:Anchor></p>
+                                            <p>Revisit rate: <g:Anchor>see chart</g:Anchor></p>
+                                        </g:HTMLPanel>
+                                    </m:MaterialCollapsibleBody>
+                                </m:MaterialCollapsibleItem>
+                                <m:MaterialCollapsibleItem ui:field="options">
+                                    <m:MaterialCollapsibleHeader backgroundColor="WHITE">
+                                        <m:MaterialLink text="Revisit" textColor="BLUE" iconType="FILTER"/>
+                                    </m:MaterialCollapsibleHeader>
+                                    <m:MaterialCollapsibleBody>
+                                        <g:HTMLPanel addStyleNames="{style.section}" ui:field="revisit">
+                                        </g:HTMLPanel>
+                                    </m:MaterialCollapsibleBody>
+                                </m:MaterialCollapsibleItem>
+                            </m:MaterialCollapsible>
+                        </g:HTMLPanel>
+                        <m:MaterialRow addStyleNames="{style.queryButton}">
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialButton text="Contact" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="true" ui:field="contact"/>
+                            </m:MaterialColumn>
+                            <m:MaterialColumn grid="s6">
+                                <m:MaterialButton text="Request" textAlign="CENTER" backgroundColor="GREEN" textColor="WHITE" enabled="true" ui:field="request"/>
+                            </m:MaterialColumn>
+                        </m:MaterialRow>
+                    </m:MaterialColumn>
+                </m:MaterialRow>
+            </g:HeaderPanel>
+        </g:west>
+        <g:center>
+            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" ui:field="mapContainer">
+                </cmaps:MapContainer>
+                <cutout:MaterialCutOut circle="true" padding="50" ui:field="cutOut">
+                    <m:MaterialTitle title="Sensors" description="List of sensors which will potentially be used to fulfill the service" textColor="WHITE"/>
+                    <g:HTMLPanel ui:field="chartsArea"></g:HTMLPanel>
+                    <m:MaterialButton text="Close" ui:field="btnCutOutClose" textColor="BLUE" backgroundColor="WHITE"/>
+                </cutout:MaterialCutOut>
+            </g:HTMLPanel>
+        </g:center>
+    </g:DockLayoutPanel>
 </ui:UiBinder>

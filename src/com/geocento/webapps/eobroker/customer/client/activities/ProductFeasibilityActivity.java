@@ -55,8 +55,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         super.start(panel, eventBus);
         productFeasibilityView = clientFactory.getProductFeasibilityView();
         productFeasibilityView.setPresenter(this);
-        panel.setWidget(productFeasibilityView.asWidget());
-        setTemplateView(productFeasibilityView.getTemplateView());
+        setTemplateView(productFeasibilityView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         productFeasibilityView.showQuery();
@@ -122,18 +121,18 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     }
 
     private void loadProduct(final Long productServiceId) {
-        productFeasibilityView.displayLoading("Loading product...");
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductFeasibilityDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    productFeasibilityView.hideLoading();
-                    productFeasibilityView.displayError(exception.getMessage());
+                    hideLoading();
+                    displayError(exception.getMessage());
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductFeasibilityDTO response) {
-                    productFeasibilityView.hideLoading();
+                    hideLoading();
                     productFeasibilityView.setServices(response.getProductServices());
                     List<FormElement> formElements = new ArrayList<FormElement>();
                     formElements.addAll(response.getApiFormElements());

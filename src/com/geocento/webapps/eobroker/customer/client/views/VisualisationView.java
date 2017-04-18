@@ -14,8 +14,6 @@ public interface VisualisationView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    TemplateView getTemplateView();
-
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
     void displayLayerInfo(LayerInfoDTO layerInfoDTO);

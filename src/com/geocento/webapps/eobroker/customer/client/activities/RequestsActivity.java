@@ -33,8 +33,7 @@ public class RequestsActivity extends TemplateActivity implements RequestsView.P
         super.start(panel, eventBus);
         ordersView = clientFactory.getOrdersView();
         ordersView.setPresenter(this);
-        panel.setWidget(ordersView.asWidget());
-        setTemplateView(ordersView.getTemplateView());
+        setTemplateView(ordersView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

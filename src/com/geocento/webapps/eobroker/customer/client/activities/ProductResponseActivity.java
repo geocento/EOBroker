@@ -44,8 +44,7 @@ public class ProductResponseActivity extends TemplateActivity implements Product
         super.start(panel, eventBus);
         productResponseView = clientFactory.getProductResponseView();
         productResponseView.setPresenter(this);
-        panel.setWidget(productResponseView.asWidget());
-        setTemplateView(productResponseView.getTemplateView());
+        setTemplateView(productResponseView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         displayFullLoading("Loading map...");

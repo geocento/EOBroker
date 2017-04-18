@@ -3,7 +3,6 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -19,21 +18,10 @@ public class SettingsViewImpl extends Composite implements SettingsView {
 
     private static DummyUiBinder ourUiBinder = GWT.create(DummyUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
-
     public SettingsViewImpl(ClientFactoryImpl clientFactory) {
-
-        template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        template.setTitleText("Product form");
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override

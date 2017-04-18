@@ -9,9 +9,7 @@
             margin: 0px auto;
         }
     </ui:style>
-    <views:TemplateView titleText="Settings" menu="settings" ui:field="template">
-        <g:HTMLPanel addStyleNames="{style.formPanel}">
-            <design:MaterialTitle title="TODO"></design:MaterialTitle>
-        </g:HTMLPanel>
-    </views:TemplateView>
+    <g:HTMLPanel addStyleNames="{style.formPanel}">
+        <design:MaterialTitle title="TODO"></design:MaterialTitle>
+    </g:HTMLPanel>
 </ui:UiBinder>

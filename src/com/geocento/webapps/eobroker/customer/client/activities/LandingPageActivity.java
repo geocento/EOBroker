@@ -34,8 +34,7 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         super.start(panel, eventBus);
         landingPageView = clientFactory.getLandingPageView();
         landingPageView.setPresenter(this);
-        panel.setWidget(landingPageView.asWidget());
-        setTemplateView(landingPageView.getTemplateView());
+        setTemplateView(landingPageView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

@@ -48,4 +48,7 @@ public interface ClientFactory {
     SettingsView getSettingsView();
 
     TestimonialsView getTestimonialsView();
+
+    TemplateView getTemplateView();
+
 }

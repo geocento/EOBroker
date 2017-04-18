@@ -33,16 +33,14 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
 
     private static LandingPageUiBinder ourUiBinder = GWT.create(LandingPageUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
     @UiField
     MaterialRow offers;
 
-    public LandingPageViewImpl(final ClientFactoryImpl clientFactory) {
+    private ClientFactoryImpl clientFactory;
 
-        template = new TemplateView(clientFactory);
+    public LandingPageViewImpl(final ClientFactoryImpl clientFactory) {
 
         initWidget(ourUiBinder.createAndBindUi(this));
     }
@@ -70,11 +68,6 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
             slider.add(materialSlideItem);
         }
         slider.initialize();
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override

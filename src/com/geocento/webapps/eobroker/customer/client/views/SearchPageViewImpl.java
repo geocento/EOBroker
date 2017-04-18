@@ -85,8 +85,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @UiField
     Style style;
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialLink resultsTitle;
     @UiField
@@ -134,12 +132,16 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     // for software
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.material.MaterialListValueBox<SoftwareType> softwareCommercialFilter;
+    @UiField
+    MaterialLink filterTitle;
 
     private Presenter presenter;
 
+    private ClientFactoryImpl clientFactory;
+
     public SearchPageViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -249,14 +251,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
-    public void setSearchText(String search, boolean forceFocus) {
-        template.setSearchText(search);
-        if(forceFocus) {
-            template.setSearchTextFocus(true);
-        }
-    }
-
-    @Override
     public void setResultsTitle(String message) {
         resultsTitle.setText(message);
         resultsTitle.setVisible(message != null && message.length() > 0);
@@ -269,14 +263,12 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void displayLoadingResults(String message) {
-        template.displayLoading();
         loading.setVisible(true);
         loading.setText(message);
     }
 
     @Override
     public void hideLoadingResults() {
-        template.hideLoading();
         loading.setVisible(false);
     }
 
@@ -306,11 +298,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         productRow.add(titleMaterialColumn);
         titleMaterialColumn.add(htmlPanel);
 */
-    }
-
-    @Override
-    public void setTitleText(String title) {
-        template.setTitleText(title);
     }
 
     @Override
@@ -418,11 +405,6 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         serviceColumn = new MaterialColumn(12, 6, 4);
         productRow.add(serviceColumn);
         serviceColumn.add(new ImageRequestWidget(text));
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override
@@ -797,6 +779,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void showFilters(boolean display) {
         filtersPanel.setVisible(display);
+    }
+
+    @Override
+    public void setFilterTitle(String filterText) {
+        filterTitle.setText(filterText);
     }
 
     @Override

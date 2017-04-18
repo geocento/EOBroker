@@ -11,8 +11,6 @@ import com.geocento.webapps.eobroker.customer.shared.FeedbackDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -39,8 +37,6 @@ public class FeedbackViewImpl extends Composite implements FeedbackView {
 
     private static FeedbackViewUiBinder ourUiBinder = GWT.create(FeedbackViewUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialTitle title;
     @UiField
@@ -56,9 +52,11 @@ public class FeedbackViewImpl extends Composite implements FeedbackView {
     @UiField
     MaterialRow previousFeedback;
 
+    private ClientFactoryImpl clientFactory;
+
     public FeedbackViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -68,11 +66,6 @@ public class FeedbackViewImpl extends Composite implements FeedbackView {
     @Override
     public Widget asWidget() {
         return this;
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override
@@ -109,12 +102,7 @@ public class FeedbackViewImpl extends Composite implements FeedbackView {
                 MaterialButton materialButton = new MaterialButton(ButtonType.FLOATING);
                 materialButton.setIconType(IconType.OPEN_IN_BROWSER);
                 materialButton.setFloat(Style.Float.RIGHT);
-                materialButton.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        template.getClientFactory().getPlaceController().goTo(new FeedbackPlace(Utils.generateTokens(FeedbackPlace.TOKENS.feedbackid.toString(), feedbackDTO.getId())));
-                    }
-                });
+                materialButton.addClickHandler(event -> clientFactory.getPlaceController().goTo(new FeedbackPlace(Utils.generateTokens(FeedbackPlace.TOKENS.feedbackid.toString(), feedbackDTO.getId()))));
                 materialBubble.add(materialButton);
                 MaterialLabel materialLabel = new MaterialLabel("Feedback '" + feedbackDTO.getTopic() + "'");
                 materialLabel.setFontSize(1.2, Style.Unit.EM);

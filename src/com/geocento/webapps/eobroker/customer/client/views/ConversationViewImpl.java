@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
+import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,8 +40,6 @@ public class ConversationViewImpl extends Composite implements ConversationView 
 
     private static RequestViewUiBinder ourUiBinder = GWT.create(RequestViewUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialTitle title;
     @UiField
@@ -56,9 +55,11 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @UiField
     MaterialRow previousConversations;
 
+    private ClientFactoryImpl clientFactory;
+
     public ConversationViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -68,11 +69,6 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @Override
     public Widget asWidget() {
         return this;
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override
@@ -112,7 +108,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
                 materialButton.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
-                        template.getClientFactory().getPlaceController().goTo(new ConversationPlace(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId())));
+                        clientFactory.getPlaceController().goTo(new ConversationPlace(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId())));
                     }
                 });
                 materialBubble.add(materialButton);

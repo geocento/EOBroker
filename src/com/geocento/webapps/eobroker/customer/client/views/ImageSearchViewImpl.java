@@ -33,10 +33,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.base.MaterialImageCell;
@@ -63,8 +60,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @UiField
     Style style;
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialDropDown providerDropdown;
     @UiField
@@ -86,11 +81,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     @UiField
     MaterialButton update;
     @UiField
-    MaterialSideNav searchBar;
-    @UiField
     HTMLPanel mapPanel;
     @UiField
     MaterialButton submitForQuote;
+    @UiField
+    HeaderPanel searchPanel;
 
     private Presenter presenter;
 
@@ -117,8 +112,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     public ImageSearchViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
-
         initWidget(ourUiBinder.createAndBindUi(this));
 
         tab.setBackgroundColor(Color.TEAL_LIGHTEN_2);
@@ -143,20 +136,14 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
         });
         createResultsTable();
 
-        mapContainer.setPresenter(new MapContainer.Presenter() {
-            @Override
-            public void aoiChanged(AoIDTO aoi) {
-                presenter.aoiChanged(aoi);
-            }
-        });
+        queryPanel.getElement().getParentElement().addClassName("z-depth-1");
+        queryPanel.getElement().getParentElement().getStyle().setZIndex(10);
 
-        Scheduler.get().scheduleDeferred(new Command() {
-            @Override
-            public void execute() {
-                searchBar.show();
-                tab.selectTab("query");
-                onResize(null);
-            }
+        mapContainer.setPresenter(aoi -> presenter.aoiChanged(aoi));
+
+        Scheduler.get().scheduleDeferred(() -> {
+            tab.selectTab("query");
+            onResize(null);
         });
     }
 
@@ -177,15 +164,11 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     @Override
     public void displayLoadingResults(String message) {
-        template.setLoading(message);
-        searchBar.hide();
         onResize(null);
     }
 
     @Override
     public void hideLoadingResults() {
-        template.hideLoading();
-        searchBar.show();
         tab.selectTab("results");
         onResize(null);
     }
@@ -518,16 +501,6 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
     }
 
     @Override
-    public void displaySuccess(String message) {
-        template.displaySuccess(message);
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
-    }
-
-    @Override
     public void showQuery() {
         tab.selectTab("query");
     }
@@ -549,8 +522,7 @@ public class ImageSearchViewImpl extends Composite implements ImageSearchView, R
 
     @Override
     public void onResize(ResizeEvent event) {
-        mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
-        template.setPanelStyleName(style.navOpened(), searchBar.isOpen());
+        mapContainer.map.resize();
     }
 
 }

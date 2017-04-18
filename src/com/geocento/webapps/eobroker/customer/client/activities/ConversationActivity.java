@@ -47,8 +47,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
         super.start(panel, eventBus);
         conversationView = clientFactory.getConversationView();
         conversationView.setPresenter(this);
-        panel.setWidget(conversationView.asWidget());
-        setTemplateView(conversationView.getTemplateView());
+        setTemplateView(conversationView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

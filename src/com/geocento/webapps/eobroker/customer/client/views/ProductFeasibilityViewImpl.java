@@ -33,10 +33,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
 import com.googlecode.gwt.charts.client.ColumnType;
@@ -73,8 +70,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @UiField
     Style style;
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialDropDown serviceDropdown;
     @UiField
@@ -91,8 +86,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialRow queryPanel;
     @UiField
     MaterialButton update;
-    @UiField
-    MaterialSideNav searchBar;
     @UiField
     MaterialRow parameters;
     @UiField
@@ -111,14 +104,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialButton contact;
     @UiField
     MaterialButton request;
+    @UiField
+    HeaderPanel searchPanel;
 
     private Presenter presenter;
 
     private GraphicJSNI coverageGraphics = null;
 
     public ProductFeasibilityViewImpl(ClientFactoryImpl clientFactory) {
-
-        template = new TemplateView(clientFactory);
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -138,20 +131,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             }
         });
 
-        mapContainer.setPresenter(new MapContainer.Presenter() {
-            @Override
-            public void aoiChanged(AoIDTO aoi) {
-                presenter.aoiChanged(aoi);
-            }
-        });
+        searchPanel.getElement().getParentElement().addClassName("z-depth-1");
+        searchPanel.getElement().getParentElement().getStyle().setZIndex(10);
 
-        Scheduler.get().scheduleDeferred(new Command() {
-            @Override
-            public void execute() {
-                searchBar.show();
-                tab.selectTab("query");
-                onResize(null);
-            }
+        mapContainer.setPresenter(aoi -> presenter.aoiChanged(aoi));
+
+        Scheduler.get().scheduleDeferred(() -> {
+            tab.selectTab("query");
+            onResize(null);
         });
     }
 
@@ -177,15 +164,11 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void displayLoadingResults(String message) {
-        template.setLoading(message);
-        searchBar.hide();
         onResize(null);
     }
 
     @Override
     public void hideLoadingResults() {
-        template.hideLoading();
-        searchBar.show();
         tab.selectTab("results");
         onResize(null);
     }
@@ -208,11 +191,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void clearMap() {
         mapContainer.map.getGraphics().clear();
-    }
-
-    @Override
-    public void displayLoading(String message) {
-        template.setLoading(message);
     }
 
     @Override
@@ -246,20 +224,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
-    public void hideLoading() {
-        template.hideLoading();
-    }
-
-    @Override
-    public void displayError(String message) {
-        template.displayError(message);
-    }
-
-    @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
-/*
-        image.setUrl("http://b.vimeocdn.com/ps/339/488/3394886_300.jpg");
-*/
         servicesLink.setText(productServiceFeasibilityDTO.getName());
     }
 
@@ -523,11 +488,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
-    public TemplateView getTemplateView() {
-        return template;
-    }
-
-    @Override
     public Widget asWidget() {
         return this;
     }
@@ -549,8 +509,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void onResize(ResizeEvent event) {
-        mapPanel.setHeight((Window.getClientHeight() - 64) + "px");
-        template.setPanelStyleName(style.navOpened(), searchBar.isOpen());
+        mapContainer.map.resize();
     }
 
 }

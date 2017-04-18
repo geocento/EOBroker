@@ -40,8 +40,6 @@ public class RequestViewImpl extends Composite implements RequestView {
 
     private static RequestViewUiBinder ourUiBinder = GWT.create(RequestViewUiBinder.class);
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MaterialLabel title;
     @UiField
@@ -82,9 +80,11 @@ public class RequestViewImpl extends Composite implements RequestView {
     @UiField
     MaterialLink requestLink;
 
+    private ClientFactoryImpl clientFactory;
+
     public RequestViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -117,11 +117,6 @@ public class RequestViewImpl extends Composite implements RequestView {
     @Override
     public Widget asWidget() {
         return this;
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override
@@ -215,7 +210,7 @@ public class RequestViewImpl extends Composite implements RequestView {
                 materialLink.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
-                        template.getClientFactory().getEventBus().fireEvent(new ChangeStatus(Request.STATUS.cancelled));
+                        clientFactory.getEventBus().fireEvent(new ChangeStatus(Request.STATUS.cancelled));
                     }
                 });
                 statuses.add(materialLink);
@@ -225,7 +220,7 @@ public class RequestViewImpl extends Composite implements RequestView {
                 materialLink.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
-                        template.getClientFactory().getEventBus().fireEvent(new ChangeStatus(Request.STATUS.completed));
+                        clientFactory.getEventBus().fireEvent(new ChangeStatus(Request.STATUS.completed));
                     }
                 });
                 statuses.add(materialLink);

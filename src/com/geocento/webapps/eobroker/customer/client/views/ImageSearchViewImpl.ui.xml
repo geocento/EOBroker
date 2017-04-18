@@ -60,27 +60,36 @@
             padding-left: 450px;
         }
 
+        .searchPanel {
+
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-    <views:TemplateView footer="false" ui:field="template" titleText="Image Search">
-        <views:header>
-            <widgetsc:MaterialSideNav width="450" m:id="sideNav" type="FIXED" closeOnClick="false" allowBodyScroll="true" top="64" ui:field="searchBar">
-                <sideprofile:MaterialSideProfile backgroundColor="BLUE">
-                    <m:MaterialLink text="Supplier" activates="provider" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
-                    <m:MaterialDropDown activator="provider" ui:field="providerDropdown">
-                    </m:MaterialDropDown>
-                </sideprofile:MaterialSideProfile>
+    <g:DockLayoutPanel addStyleNames="{style.content}">
+        <g:west size="350">
+            <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
+                <m:MaterialPanel>
+                    <sideprofile:MaterialSideProfile backgroundColor="BLUE">
+                        <m:MaterialLink text="Supplier" activates="provider" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="providersLink"></m:MaterialLink>
+                        <m:MaterialDropDown activator="provider" ui:field="providerDropdown">
+                        </m:MaterialDropDown>
+                    </sideprofile:MaterialSideProfile>
+                    <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
+                        <m:MaterialTabItem waves="YELLOW" grid="s6">
+                            <m:MaterialLink text="Query" href="#query" textColor="WHITE"></m:MaterialLink>
+                        </m:MaterialTabItem>
+                        <m:MaterialTabItem waves="YELLOW" grid="s6">
+                            <m:MaterialLink text="Results" href="#results" textColor="WHITE"></m:MaterialLink>
+                        </m:MaterialTabItem>
+                    </m:MaterialTab>
+                </m:MaterialPanel>
                 <m:MaterialRow padding="0" margin="0" overflow="HIDDEN" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
-                    <m:MaterialColumn grid="s12" padding="0" width="100%" height="100%">
-                        <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
-                            <m:MaterialTabItem waves="YELLOW" grid="s6">
-                                <m:MaterialLink text="Query" href="#query" textColor="WHITE"></m:MaterialLink>
-                            </m:MaterialTabItem>
-                            <m:MaterialTabItem waves="YELLOW" grid="s6">
-                                <m:MaterialLink text="Results" href="#results" textColor="WHITE"></m:MaterialLink>
-                            </m:MaterialTabItem>
-                        </m:MaterialTab>
-                    </m:MaterialColumn>
                     <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
                         <m:MaterialRow marginTop="20">
                             <m:MaterialColumn grid="s6">
@@ -110,11 +119,13 @@
                         </g:HTMLPanel>
                     </m:MaterialColumn>
                 </m:MaterialRow>
-            </widgetsc:MaterialSideNav>
-        </views:header>
+            </g:HeaderPanel>
+        </g:west>
+    <g:center>
         <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
             <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" ui:field="mapContainer">
             </cmaps:MapContainer>
         </g:HTMLPanel>
-    </views:TemplateView>
+    </g:center>
+    </g:DockLayoutPanel>
 </ui:UiBinder>

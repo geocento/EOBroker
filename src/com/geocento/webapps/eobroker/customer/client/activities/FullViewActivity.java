@@ -36,8 +36,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
         super.start(panel, eventBus);
         fullView = clientFactory.getFullView();
         fullView.setPresenter(this);
-        panel.setWidget(fullView.asWidget());
-        setTemplateView(fullView.getTemplateView());
+        setTemplateView(fullView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -105,19 +104,19 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void loadProductDetails(Long productId) {
         fullView.setTitle("Loading product details...");
         fullView.clearDetails();
-        fullView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    fullView.hideLoading();
-                    fullView.displayError("Could not find company");
+                    hideLoading();
+                    displayError("Could not find company");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductDescriptionDTO productDescriptionDTO) {
-                    fullView.hideLoading();
-                    fullView.displayTitle("Product");
+                    hideLoading();
+                    setTitleText("Product");
                     fullView.displayProduct(productDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductDescription(productId);
@@ -128,19 +127,19 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void loadCompanyDetails(Long companyId) {
         fullView.setTitle("Loading company details...");
         fullView.clearDetails();
-        fullView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<CompanyDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    fullView.hideLoading();
-                    fullView.displayError("Could not find company");
+                    hideLoading();
+                    displayError("Could not find company");
                 }
 
                 @Override
                 public void onSuccess(Method method, CompanyDescriptionDTO companyDescriptionDTO) {
-                    fullView.hideLoading();
-                    fullView.displayTitle("Company");
+                    hideLoading();
+                    setTitleText("Company");
                     fullView.displayCompany(companyDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getCompanyDescription(companyId);
@@ -151,19 +150,19 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void loadProductServiceDetails(Long productServiceId) {
         fullView.setTitle("Loading product service details...");
         fullView.clearDetails();
-        fullView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductServiceDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    fullView.hideLoading();
-                    fullView.displayError("Could not find company");
+                    hideLoading();
+                    displayError("Could not find company");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductServiceDescriptionDTO productServiceDescriptionDTO) {
-                    fullView.hideLoading();
-                    fullView.displayTitle("On-demand service");
+                    hideLoading();
+                    setTitleText("On-demand service");
                     fullView.displayProductService(productServiceDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductServiceDescription(productServiceId);
@@ -174,19 +173,19 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void loadProductDatasetDetails(Long productDatasetId) {
         fullView.setTitle("Loading off the shelf data details...");
         fullView.clearDetails();
-        fullView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductDatasetDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    fullView.hideLoading();
-                    fullView.displayError("Could not find company");
+                    hideLoading();
+                    displayError("Could not find company");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
-                    fullView.hideLoading();
-                    fullView.displayTitle("Off-the-shelf data");
+                    hideLoading();
+                    setTitleText("Off-the-shelf data");
                     fullView.displayProductDataset(productDatasetDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProductDatasetDescription(productDatasetId);
@@ -197,19 +196,19 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void loadSoftwareDetails(Long softwareId) {
         fullView.setTitle("Loading software information...");
         fullView.clearDetails();
-        fullView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<SoftwareDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    fullView.hideLoading();
-                    fullView.displayError("Could not find software");
+                    hideLoading();
+                    displayError("Could not find software");
                 }
 
                 @Override
                 public void onSuccess(Method method, SoftwareDescriptionDTO softwareDescriptionDTO) {
-                    fullView.hideLoading();
-                    fullView.displayTitle("Software");
+                    hideLoading();
+                    setTitleText("Software");
                     fullView.displaySoftware(softwareDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getSoftwareDescription(softwareId);
@@ -220,19 +219,19 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void loadProjectDetails(Long projectId) {
         fullView.setTitle("Loading project information...");
         fullView.clearDetails();
-        fullView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProjectDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    fullView.hideLoading();
-                    fullView.displayError("Could not find project");
+                    hideLoading();
+                    displayError("Could not find project");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProjectDescriptionDTO projectDescriptionDTO) {
-                    fullView.hideLoading();
-                    fullView.displayTitle("Project");
+                    hideLoading();
+                    setTitleText("Project");
                     fullView.displayProject(projectDescriptionDTO);
                 }
             }).call(ServicesUtil.assetsService).getProjectDescription(projectId);

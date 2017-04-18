@@ -50,8 +50,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         super.start(panel, eventBus);
         searchPageView = clientFactory.getSearchPageView();
         searchPageView.setPresenter(this);
-        panel.setWidget(searchPageView.asWidget());
-        setTemplateView(searchPageView.getTemplateView());
+        setTemplateView(searchPageView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -78,7 +77,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        String text = tokens.get(SearchPagePlace.TOKENS.text.toString());
         Long aoiId = null;
         if(tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
             try {
@@ -94,13 +92,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
             }
         }
-        // either text or product is provided
-        if(text == null && category == null) {
-/*
-            clientFactory.getPlaceController().goTo(new LandingPagePlace());
-            return;
-*/
-            text = "";
+        String text = "";
+        if(tokens.containsKey(SearchPagePlace.TOKENS.text.toString())) {
+            text = tokens.get(SearchPagePlace.TOKENS.text.toString());
         }
         this.start = 0;
         this.limit = 24;
@@ -108,6 +102,27 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         setSearchText(text, true);
         selectMenu(category);
         searchPageView.displayFilters(category);
+        String filterText =  text.length() > 0 ? " with text '" + text + "'" : "";
+        switch (category) {
+            case products:
+                searchPageView.setFilterTitle("Products" + filterText);
+                break;
+            case productservices:
+                searchPageView.setFilterTitle("Services" + filterText);
+                break;
+            case productdatasets:
+                searchPageView.setFilterTitle("Off the shelf data" + filterText);
+                break;
+            case software:
+                searchPageView.setFilterTitle("Software solutions" + filterText);
+                break;
+            case project:
+                searchPageView.setFilterTitle("Projects" + filterText);
+                break;
+            case companies:
+                searchPageView.setFilterTitle("Companies" + filterText);
+                break;
+        }
 
         // add current AoI
         searchPageView.setMapLoadedHandler(new Callback<Void, Exception>() {
@@ -134,9 +149,10 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         this.category = category;
     }
 
-    private void setSearchText(String text, boolean forceFocus) {
+    @Override
+    public void setSearchText(String text, boolean forceFocus) {
         this.text = text;
-        searchPageView.setSearchText(text, forceFocus);
+        super.setSearchText(text, forceFocus);
     }
 
     private void updateSearchResults() {
@@ -144,35 +160,36 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         if(category != null) {
             // search using the category
             searchPageView.showFilters(true);
+            searchPageView.setResultsTitle("");
             switch (category) {
                 case products: {
-                    searchPageView.setTitleText("Browse products");
+                    setTitleText("Browse products");
                     loadProducts(text, start, limit);
                 } break;
                 case productservices: {
-                    searchPageView.setTitleText("Browse on-demand services");
+                    setTitleText("Browse on-demand services");
                     loadProductServices(text, start, limit);
                 } break;
                 case productdatasets: {
-                    searchPageView.setTitleText("Browse off-the-shelf data");
+                    setTitleText("Browse off-the-shelf data");
                     loadProductDatasets(text, start, limit);
                 } break;
                 case software: {
-                    searchPageView.setTitleText("Browse software solutions");
+                    setTitleText("Browse software solutions");
                     loadSoftware(text, start, limit);
                 } break;
                 case project: {
-                    searchPageView.setTitleText("Browse projects");
+                    setTitleText("Browse projects");
                     loadProjects(text, start, limit);
                 } break;
                 case companies: {
-                    searchPageView.setTitleText("Browse companies");
+                    setTitleText("Browse companies");
                     searchPageView.displayLoadingResults("Loading companies...");
                     loadCompanies(text, start, limit);
                 } break;
             }
         } else if(text != null) {
-            searchPageView.setTitleText("Search Results");
+            setTitleText("Search Results");
             try {
                 searchPageView.displayLoadingResults("Searching matching results...");
                 boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
@@ -241,7 +258,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             }
         }
         // forces title text to explore instead
-        searchPageView.setTitleText("Explore");
+        setTitleText("Explore");
     }
 
     private void loadProducts(final String text, final int start, final int limit) {
@@ -571,7 +588,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     break;
                 case products:
                 case companies:
-                case datasets:
+                case productservices:
+                case productdatasets:
                 case software:
                     // go to general search results page
                     String token = "";

@@ -18,8 +18,6 @@ public interface RequestView extends IsWidget {
 
     void displayComment(String comment);
 
-    TemplateView getTemplateView();
-
     void displayResponseSupplier(String supplierIconUrl, String supplierName);
 
     void addMessage(String imageUrl, boolean isCustomer, String message, Date date);

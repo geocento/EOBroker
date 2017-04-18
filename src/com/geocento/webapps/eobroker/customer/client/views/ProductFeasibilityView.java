@@ -8,7 +8,6 @@ import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibil
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
-import gwt.material.design.client.base.HasHref;
 
 import java.util.Date;
 import java.util.List;
@@ -38,15 +37,9 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void clearMap();
 
-    void displayLoading(String message);
-
     void setServices(List<ProductServiceFeasibilityDTO> productServices);
 
     void setFormElements(List<FormElement> apiFormElements);
-
-    void hideLoading();
-
-    void displayError(String message);
 
     void selectService(ProductServiceFeasibilityDTO value);
 
@@ -61,8 +54,6 @@ public interface ProductFeasibilityView extends IsWidget {
     void displayResponse(ProductFeasibilityResponse response);
 
     void clearResults();
-
-    TemplateView getTemplateView();
 
     void showQuery();
 

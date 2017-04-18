@@ -31,16 +31,13 @@
                 cursor: pointer;
             }
 
-            .navOpened main, .navOpened footer {
-                padding-left: 300px;
-            }
-
             .navbarElements {
                 display: flex;
             }
 
             .mainPanel {
-                min-height: 80%;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
 
             .textSearch {
@@ -110,7 +107,7 @@
             }
 
             .navOpened main, .navOpened footer {
-                padding-left: 260px;
+                padding-left: 250px;
             }
 
             .menus {
@@ -209,24 +206,15 @@
                     </g:HTMLPanel>
                 </m:MaterialSideNav>
             </header>
-            <m:MaterialContainer ui:field="mainPanel" paddingTop="64" addStyleNames="{style.mainPanel}">
+            <m:MaterialContainer ui:field="mainPanel" layoutPosition="RELATIVE" paddingTop="64" addStyleNames="{style.mainPanel}">
+<!--
+            <m:MaterialContainer layoutPosition="FIXED" top="0" bottom="0" left="0" right="0" paddingTop="64" addStyleNames="{style.mainPanel}" ui:field="mainPanel">
+-->
                 <cwidgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></cwidgets:LoadingWidget>
                 <m:MaterialPanel ui:field="content"></m:MaterialPanel>
+<!--
+                <m:MaterialPanel width="100%" height="100%" ui:field="content"></m:MaterialPanel>
+-->
             </m:MaterialContainer>
-            <m:MaterialFooter backgroundColor="BLUE_GREY" visible="false" ui:field="footer">
-                <m:MaterialRow>
-                    <m:MaterialColumn grid="s12 m6 l6">
-                        <m:MaterialTitle textColor="WHITE" title="Join The Discussion" description="Chat with us to find more about the EO Broker. Participate in our dedicated EO forums. Contact us for more information."/>
-                        <m:MaterialButton ui:field="chat" text="CHAT" backgroundColor="BLUE_LIGHTEN_2" waves="LIGHT"/>
-                    </m:MaterialColumn>
-                    <m:MaterialColumn grid="s12 m6 l6">
-                        <m:MaterialTitle textColor="WHITE" title="The EO Broker group" description="Our mission: raise awareness and facilitate access to EO data for the Oil and Gas industry."/>
-                        <m:MaterialAnchorButton ui:field="aboutus" text="ABOUT US" backgroundColor="BLUE_LIGHTEN_2" waves="LIGHT" href="http://eobroker.com/"/>
-                    </m:MaterialColumn>
-                </m:MaterialRow>
-                <m:MaterialFooterCopyright>
-                    <m:MaterialLabel text="© 2016 Copyright Geocento Ltd and partners" />
-                </m:MaterialFooterCopyright>
-            </m:MaterialFooter>
         </g:HTMLPanel>
     </ui:UiBinder>

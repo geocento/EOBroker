@@ -13,8 +13,6 @@ import java.util.List;
  */
 public interface FeedbackView extends IsWidget {
 
-    TemplateView getTemplateView();
-
     void addMessage(String imageUrl, boolean isCustomer, String message, Date date);
 
     HasClickHandlers getSubmitMessage();

@@ -17,8 +17,6 @@ public interface LandingPageView extends IsWidget {
 
     void setNewsItems(List<NewsItem> newsItems);
 
-    TemplateView getTemplateView();
-
     void setLoadingOffers(boolean loading);
 
     void setOffers(List<Offer> offers);

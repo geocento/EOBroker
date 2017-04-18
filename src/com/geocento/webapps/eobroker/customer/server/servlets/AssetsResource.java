@@ -450,6 +450,9 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
             productServiceDescriptionDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
             productServiceDescriptionDTO.setGeoinformation(productService.getGeoinformation());
+            productServiceDescriptionDTO.setGeoinformationComment(productService.getGeoinformationComment());
+            productServiceDescriptionDTO.setPerformances(productService.getPerformances());
+            productServiceDescriptionDTO.setPerformancesComments(productService.getPerformancesComment());
             productServiceDescriptionDTO.setExtent(productService.getExtent());
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
             productServiceDescriptionDTO.setSelectedAccessTypes(productService.getSelectedAccessTypes());
@@ -492,6 +495,9 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setDescription(productDataset.getDescription());
             productDatasetDescriptionDTO.setFullDescription(productDataset.getFullDescription());
             productDatasetDescriptionDTO.setGeoinformation(productDataset.getGeoinformation());
+            productDatasetDescriptionDTO.setGeoinformationComment(productDataset.getGeoinformationComment());
+            productDatasetDescriptionDTO.setPerformances(productDataset.getPerformances());
+            productDatasetDescriptionDTO.setPerformancesComments(productDataset.getPerformancesComment());
             productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
             productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
             productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));

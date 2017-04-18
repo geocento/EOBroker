@@ -50,8 +50,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         super.start(panel, eventBus);
         productFormView = clientFactory.getProductFormView();
         productFormView.setPresenter(this);
-        panel.setWidget(productFormView.asWidget());
-        setTemplateView(productFormView.getTemplateView());
+        setTemplateView(productFormView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         displayFullLoading("Loading map...");
@@ -93,7 +92,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
             if(productServiceIds.size() == 0) {
                 throw new Exception("Please select at least one service");
             }
-            productFormView.displayLoading("Submitting requests");
+            displayLoading();
             ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
             productServiceRequestDTO.setProductId(productId);
             if(currentAoI == null) {
@@ -106,15 +105,15 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 REST.withCallback(new MethodCallback<RequestDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        productFormView.hideLoading();
-                        productFormView.displayError(exception.getMessage());
+                        hideLoading();
+                        displayError(exception.getMessage());
                     }
 
                     @Override
                     public void onSuccess(Method method, RequestDTO requestDTO) {
                         activityEventBus.fireEvent(new RequestCreated(requestDTO));
-                        productFormView.hideLoading();
-                        productFormView.displaySubmittedSuccess("Your request has been successfully submitted");
+                        hideLoading();
+                        displaySuccess("Your request has been successfully submitted");
                         clearRequest();
                     }
                 }).call(ServicesUtil.requestsService).submitProductRequest(productServiceRequestDTO);
@@ -142,18 +141,18 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         }
 
         clearRequest();
-        productFormView.displayLoading();
+        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductFormDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    productFormView.hideLoading();
-                    productFormView.displayError("Could not retrieve product information");
+                    hideLoading();
+                    displayError("Could not retrieve product information");
                 }
 
                 @Override
                 public void onSuccess(Method method, final ProductFormDTO productFormDTO) {
-                    productFormView.hideLoading();
+                    hideLoading();
                     productFormView.setProductImage(productFormDTO.getImageUrl());
                     productFormView.setProductName(productFormDTO.getName());
                     productFormView.setProductDescription(productFormDTO.getDescription());

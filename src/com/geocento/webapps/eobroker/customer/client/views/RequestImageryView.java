@@ -38,11 +38,7 @@ public interface RequestImageryView extends IsWidget {
 
     List<ImageService> getSelectedServices();
 
-    TemplateView getTemplateView();
-
     void displaySubmitLoading(boolean display);
-
-    void displaySucces(String message);
 
     String getApplication();
 

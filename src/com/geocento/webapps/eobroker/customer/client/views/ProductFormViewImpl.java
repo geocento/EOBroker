@@ -42,8 +42,6 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @UiField
     Style style;
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     HTMLPanel formContainer;
     @UiField
@@ -69,13 +67,13 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
 
     private Presenter presenter;
 
+    private ClientFactoryImpl clientFactory;
+
     public ProductFormViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
-
-        template.setTitleText("Product form");
 
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
@@ -163,31 +161,6 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     }
 
     @Override
-    public void displayLoading(String message) {
-        template.setLoading(message);
-    }
-
-    @Override
-    public void hideLoading() {
-        template.hideLoading();
-    }
-
-    @Override
-    public void displayError(String message) {
-        template.displayError(message);
-    }
-
-    @Override
-    public void displaySuccess(String message) {
-        template.displaySuccess(message);
-    }
-
-    @Override
-    public void displayLoading() {
-        template.displayLoading();
-    }
-
-    @Override
     public List<FormElementValue> getFormElementValues() throws Exception {
         List<FormElementValue> formElementValues = new ArrayList<FormElementValue>();
         for(int index = 0; index < formContainer.getWidgetCount(); index++) {
@@ -217,16 +190,6 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
             }
         }
         return productServiceDTOs;
-    }
-
-    @Override
-    public void displaySubmittedSuccess(String message) {
-        displaySuccess(message);
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override

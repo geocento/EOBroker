@@ -40,8 +40,8 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         super.start(panel, eventBus);
         visualisationView = clientFactory.getVisualisationView();
         visualisationView.setPresenter(this);
-        panel.setWidget(visualisationView.asWidget());
-        setTemplateView(visualisationView.getTemplateView());
+        setTemplateView(visualisationView.asWidget());
+        displayMenu(false);
         Window.setTitle("Earth Observation Broker");
         bind();
         visualisationView.setMapLoadedHandler(new Callback<Void, Exception>() {

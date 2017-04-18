@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.PerformanceValue;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 import java.util.List;
@@ -23,6 +24,9 @@ public class ProductDatasetDescriptionDTO {
     String website;
     boolean commercial;
     List<FeatureDescription> geoinformation;
+    String geoinformationComment;
+    List<PerformanceValue> performances;
+    String performancesComments;
     List<DatasetAccess> datasetAccesses;
     List<DatasetAccess> samples;
     List<ProductDatasetDTO> suggestedDatasets;
@@ -140,6 +144,30 @@ public class ProductDatasetDescriptionDTO {
 
     public List<FeatureDescription> getGeoinformation() {
         return geoinformation;
+    }
+
+    public String getGeoinformationComment() {
+        return geoinformationComment;
+    }
+
+    public void setGeoinformationComment(String geoinformationComment) {
+        this.geoinformationComment = geoinformationComment;
+    }
+
+    public List<PerformanceValue> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(List<PerformanceValue> performances) {
+        this.performances = performances;
+    }
+
+    public String getPerformancesComments() {
+        return performancesComments;
+    }
+
+    public void setPerformancesComments(String performancesComments) {
+        this.performancesComments = performancesComments;
     }
 
     public List<ProductDatasetDTO> getSuggestedDatasets() {

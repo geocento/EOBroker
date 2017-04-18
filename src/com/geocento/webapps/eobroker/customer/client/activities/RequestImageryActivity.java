@@ -42,8 +42,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
         super.start(panel, eventBus);
         requestImageryView = clientFactory.getRequestImageryView();
         requestImageryView.setPresenter(this);
-        panel.setWidget(requestImageryView.asWidget());
-        setTemplateView(requestImageryView.getTemplateView());
+        setTemplateView(requestImageryView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         displayFullLoading("Loading map...");
@@ -148,7 +147,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
                 @Override
                 public void onSuccess(Method method, RequestDTO requestDTO) {
                     requestImageryView.displaySubmitLoading(false);
-                    requestImageryView.displaySucces("Request submitted");
+                    displaySuccess("Request submitted");
                     clientFactory.getEventBus().fireEvent(new RequestCreated(requestDTO));
                     clearRequest();
                 }

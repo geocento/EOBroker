@@ -33,6 +33,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
@@ -51,22 +52,16 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     static public interface Style extends CssResource {
 
-        String navOpened();
-
         String dataAccess();
     }
 
     @UiField
     Style style;
 
-    @UiField(provided = true)
-    TemplateView template;
     @UiField
     MapContainer mapContainer;
     @UiField
     HTMLPanel displayPanel;
-    @UiField
-    MaterialSideNav resourcesBar;
     @UiField
     MaterialDropDown dataAccessList;
     @UiField
@@ -78,7 +73,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @UiField
     MaterialLink addToFavourites;
     @UiField
-    MaterialLink selectedDataset;
+    MaterialLabel selectedDataset;
     @UiField
     MaterialChip supplier;
     @UiField
@@ -95,31 +90,31 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     MaterialLink layerName;
     @UiField
     MaterialLabel errorMessage;
+    @UiField
+    MaterialLink moreDatasets;
+    @UiField
+    HeaderPanel imagePanel;
 
     private Presenter presenter;
 
     private WMSLayerJSNI wmsLayer;
 
+    private final ClientFactoryImpl clientFactory;
+
     public VisualisationViewImpl(ClientFactoryImpl clientFactory) {
 
-        template = new TemplateView(clientFactory);
+        this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        opacity.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                setOpacity(opacity.getValue());
-            }
-        });
+        opacity.addChangeHandler(event -> setOpacity(opacity.getValue()));
         setOpacity(100);
 
-        Scheduler.get().scheduleDeferred(new Command() {
-            @Override
-            public void execute() {
-                resourcesBar.show();
-                onResize(null);
-            }
+        imagePanel.getElement().getParentElement().addClassName("z-depth-1");
+        imagePanel.getElement().getParentElement().getStyle().setZIndex(10);
+
+        Scheduler.get().scheduleDeferred(() -> {
+            onResize(null);
         });
     }
 
@@ -137,11 +132,6 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @Override
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
-    }
-
-    @Override
-    public TemplateView getTemplateView() {
-        return template;
     }
 
     @Override
@@ -193,10 +183,12 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         setCompany(productServiceVisualisationDTO.getCompany());
         setProduct(productServiceVisualisationDTO.getProduct());
         dataAccessList.clear();
+        boolean hasSamples = false;
         // add samples
         {
             List<DatasetAccess> samples = productServiceVisualisationDTO.getSamples();
             if (samples != null && samples.size() > 0) {
+                hasSamples = true;
                 MaterialLabel materialLabel = new MaterialLabel("Samples");
                 materialLabel.addStyleName(style.dataAccess());
                 dataAccessList.add(materialLabel);
@@ -205,6 +197,8 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
                 }
             }
         }
+        moreDatasets.setVisible(hasSamples);
+        moreDatasets.setText("More layers from this service...");
     }
 
     @Override
@@ -220,10 +214,12 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         setCompany(productDatasetVisualisationDTO.getCompany());
         setProduct(productDatasetVisualisationDTO.getProduct());
         dataAccessList.clear();
+        boolean hasSamples = false;
         // add data access
         {
             List<DatasetAccess> dataAccesses = productDatasetVisualisationDTO.getDatasetAccess();
             if (dataAccesses != null && dataAccesses.size() > 0) {
+                hasSamples = true;
                 MaterialLabel materialLabel = new MaterialLabel("Full data access");
                 materialLabel.addStyleName(style.dataAccess());
                 dataAccessList.add(materialLabel);
@@ -236,6 +232,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         {
             List<DatasetAccess> samples = productDatasetVisualisationDTO.getSamples();
             if (samples != null && samples.size() > 0) {
+                hasSamples = true;
                 MaterialLabel materialLabel = new MaterialLabel("Samples");
                 materialLabel.addStyleName(style.dataAccess());
                 dataAccessList.add(materialLabel);
@@ -244,6 +241,8 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
                 }
             }
         }
+        moreDatasets.setVisible(hasSamples);
+        moreDatasets.setText("More layers from this dataset...");
     }
 
     private void addDatasetAccess(final DatasetAccess datasetAccess) {
@@ -252,23 +251,13 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         materialLink.setText(datasetAccess.getTitle());
         materialLink.setTruncate(true);
         dataAccessList.add(materialLink);
-        materialLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                presenter.datasetAccessSelected(datasetAccess);
-            }
-        });
+        materialLink.addClickHandler(event -> presenter.datasetAccessSelected(datasetAccess));
     }
 
     private void setProduct(final ProductDTO product) {
         resource.setText(product.getName());
         resource.setUrl(Utils.getImageMaybe(product.getImageUrl()));
-        resource.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + product.getId()));
-            }
-        });
+        resource.addClickHandler(event -> clientFactory.getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + product.getId())));
     }
 
     private void setCompany(final CompanyDTO company) {
@@ -276,7 +265,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         supplier.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                template.getClientFactory().getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + company.getId()));
+                clientFactory.getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + company.getId()));
             }
         });
         supplier.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
@@ -299,8 +288,6 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     @Override
     public void onResize(ResizeEvent event) {
-        displayPanel.setHeight((Window.getClientHeight() - 64) + "px");
-        template.setPanelStyleName(style.navOpened(), resourcesBar.isOpen());
         if(mapContainer.map != null) {
             mapContainer.map.resize();
         }

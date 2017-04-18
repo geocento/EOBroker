@@ -27,8 +27,7 @@ public class TestimonialsActivity extends TemplateActivity implements Testimonia
         super.start(panel, eventBus);
         testimonialsView = clientFactory.getTestimonialsView();
         testimonialsView.setPresenter(this);
-        panel.setWidget(testimonialsView.asWidget());
-        setTemplateView(testimonialsView.getTemplateView());
+        setTemplateView(testimonialsView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
