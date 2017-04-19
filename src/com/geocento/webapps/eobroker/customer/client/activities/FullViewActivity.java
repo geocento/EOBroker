@@ -57,6 +57,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         if(tokens.containsKey(FullViewPlace.TOKENS.companyid.toString())) {
+            selectMenu("companies");
             try {
                 Long companyId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.companyid.toString()));
                 loadCompanyDetails(companyId);
@@ -64,6 +65,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
 
             }
         } else if(tokens.containsKey(FullViewPlace.TOKENS.productserviceid.toString())) {
+            selectMenu("productservices");
             try {
                 Long productServiceId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productserviceid.toString()));
                 loadProductServiceDetails(productServiceId);
@@ -71,6 +73,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
 
             }
         } else if(tokens.containsKey(FullViewPlace.TOKENS.productid.toString())) {
+            selectMenu("products");
             try {
                 Long productId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productid.toString()));
                 loadProductDetails(productId);
@@ -78,6 +81,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
 
             }
         } else if(tokens.containsKey(FullViewPlace.TOKENS.productdatasetid.toString())) {
+            selectMenu("productdatasets");
             try {
                 Long productDatasetId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productdatasetid.toString()));
                 loadProductDatasetDetails(productDatasetId);
@@ -85,6 +89,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
 
             }
         } else if(tokens.containsKey(FullViewPlace.TOKENS.softwareid.toString())) {
+            selectMenu("software");
             try {
                 Long softwareId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.softwareid.toString()));
                 loadSoftwareDetails(softwareId);
@@ -92,6 +97,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
 
             }
         } else if(tokens.containsKey(FullViewPlace.TOKENS.projectid.toString())) {
+            selectMenu("project");
             try {
                 Long projectId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.projectid.toString()));
                 loadProjectDetails(projectId);

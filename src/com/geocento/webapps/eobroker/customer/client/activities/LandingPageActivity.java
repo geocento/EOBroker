@@ -6,7 +6,7 @@ import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.LandingPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.LandingPageView;
-import com.geocento.webapps.eobroker.customer.shared.Offer;
+import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -35,6 +35,7 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         landingPageView = clientFactory.getLandingPageView();
         landingPageView.setPresenter(this);
         setTemplateView(landingPageView.asWidget());
+        selectMenu("home");
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -50,23 +51,28 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
 
         // load the page's content
         loadNewsItems();
-        loadRecommendations();
+        loadFollowingEvents();
+        //loadRecommendations();
     }
 
-    private void loadRecommendations() {
-        landingPageView.setLoadingOffers(true);
-        REST.withCallback(new MethodCallback<List<Offer>>() {
-            @Override
-            public void onFailure(Method method, Throwable exception) {
-                landingPageView.setLoadingOffers(false);
-            }
+    private void loadFollowingEvents() {
+        landingPageView.setLoadingNewsFeed(true);
+        try {
+            REST.withCallback(new MethodCallback<List<FollowingEventDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    landingPageView.setLoadingNewsFeed(false);
+                }
 
-            @Override
-            public void onSuccess(Method method, List<Offer> offers) {
-                landingPageView.setLoadingOffers(false);
-                landingPageView.setOffers(offers);
-            }
-        }).call(ServicesUtil.assetsService).getRecommendations();
+                @Override
+                public void onSuccess(Method method, List<FollowingEventDTO> followingEventDTOs) {
+                    landingPageView.setLoadingNewsFeed(false);
+                    landingPageView.setNewsFeed(followingEventDTOs);
+                }
+            }).call(ServicesUtil.assetsService).getFollowingEvents(0, 10);
+        } catch (Exception e) {
+
+        }
     }
 
     private void loadNewsItems() {

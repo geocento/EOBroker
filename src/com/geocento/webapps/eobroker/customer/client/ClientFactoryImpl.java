@@ -51,6 +51,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private TestimonialsView testimonialsView = null;
 
+    private TestimonialView testimonialView = null;
+
     private TemplateView templateView = null;
 
     @Override
@@ -210,6 +212,14 @@ public class ClientFactoryImpl implements ClientFactory {
             templateView = new TemplateView(this);
         }
         return templateView;
+    }
+
+    @Override
+    public TestimonialView getTestimonialView() {
+        if(testimonialView == null) {
+            testimonialView = new TestimonialViewImpl(this);
+        }
+        return testimonialView;
     }
 }
 

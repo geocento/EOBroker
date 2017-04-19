@@ -145,12 +145,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        logo.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
-            }
-        });
+        logo.addClickHandler(event -> clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace()));
 
         orders.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
 
@@ -173,7 +168,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         conversationsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new ConversationPlace()));
         requestsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
         //notificationsCategory.setHref(PlaceHistoryHelper.convertPlace(new NotificationPlace()));
-        testimoniesCategory.setHref(PlaceHistoryHelper.convertPlace(new TestimonialsPlace()));
+        testimoniesCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new TestimonialsPlace()));
         settingsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new SettingsPlace()));
         feedbackCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new FeedbackPlace()));
         //helpCategory.setHref(Customer.getApplicationSettings().getHelpUrl());

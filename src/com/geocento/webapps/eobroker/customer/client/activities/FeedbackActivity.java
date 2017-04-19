@@ -47,6 +47,7 @@ public class FeedbackActivity extends TemplateActivity implements FeedbackView.P
         feedbackView = clientFactory.getFeedbackView();
         feedbackView.setPresenter(this);
         setTemplateView(feedbackView.asWidget());
+        selectMenu("feedback");
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

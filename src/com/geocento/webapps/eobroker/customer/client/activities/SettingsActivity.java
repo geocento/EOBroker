@@ -31,6 +31,7 @@ public class SettingsActivity extends TemplateActivity implements SettingsView.P
         settingsView = clientFactory.getSettingsView();
         settingsView.setPresenter(this);
         setTemplateView(settingsView.asWidget());
+        selectMenu("settings");
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

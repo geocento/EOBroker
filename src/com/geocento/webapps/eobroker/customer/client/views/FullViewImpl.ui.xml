@@ -95,11 +95,16 @@
             font-size: 1em;
         }
 
+        .comment {
+            line-height: 2.4em;
+            font-style: italic;
+        }
+
     </ui:style>
     <design:MaterialPanel addStyleNames="{style.panel}">
         <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE" ui:field="navigation">
         </design:MaterialNavBar>
-        <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+        <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
             <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
                 <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
             </design:MaterialColumn>

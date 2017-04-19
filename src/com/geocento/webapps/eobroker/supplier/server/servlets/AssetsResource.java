@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -9,6 +10,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
+import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
@@ -202,12 +204,13 @@ public class AssetsResource implements AssetsService {
         if(productServiceDTO == null ) {
             throw new RequestException("Product service cannot be null");
         }
+        boolean newService = productServiceDTO.getId() == null;
         EntityManager em = EMF.get().createEntityManager();
         try {
             em.getTransaction().begin();
             ProductService productService = null;
             User user = em.find(User.class, userName);
-            if(productServiceDTO.getId() != null) {
+            if(!newService) {
                 productService = em.find(ProductService.class, productServiceDTO.getId());
                 if(productService == null) {
                     throw new RequestException("Unknown product");
@@ -261,8 +264,21 @@ public class AssetsResource implements AssetsService {
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
+            // fail silently
+            try {
+                em.getTransaction().begin();
+                if(newService) {
+                    EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(), Category.productservices, Event.TYPE.OFFER, "New service available for product " + product.getName(), productService.getId() + "");
+                }
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                logger.error(e.getMessage(), e);
+            }
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             logger.error(e.getMessage(), e);

@@ -70,9 +70,12 @@
         }
 
         .product {
+            margin-bottom: 20px;
+            background: white;
+        }
+        .product, .product i {
             height: 60px;
             line-height: 60px;
-            margin-bottom: 20px;
         }
 
         .mapContainer {

@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
+import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Following;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +42,9 @@ public class User {
 
     @OneToOne
     AoI latestAoI;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Following> followings;
 
     public User() {
     }
@@ -114,5 +119,13 @@ public class User {
 
     public void setLatestAoI(AoI latestAoI) {
         this.latestAoI = latestAoI;
+    }
+
+    public List<Following> getFollowings() {
+        return followings;
+    }
+
+    public void setFollowings(List<Following> followings) {
+        this.followings = followings;
     }
 }

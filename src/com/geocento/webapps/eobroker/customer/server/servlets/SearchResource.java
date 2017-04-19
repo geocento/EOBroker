@@ -115,6 +115,9 @@ public class SearchResource implements SearchService {
                 case products:
                     rankedSuggestions.addAll(completeProducts(keywords, aoi));
                     break;
+                case companies:
+                    rankedSuggestions.addAll(completeCompanies(keywords));
+                    break;
             }
         }
         // now sort and filter
@@ -126,6 +129,36 @@ public class SearchResource implements SearchService {
         });
         for(RankedSuggestion rankedSuggestion : rankedSuggestions.subList(0, Math.min(rankedSuggestions.size(), 10))) {
             suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
+        }
+        return suggestions;
+    }
+
+    private List<RankedSuggestion> completeCompanies(String keywords) {
+        return completeCategory(Category.companies, keywords);
+    }
+
+    private List<RankedSuggestion> completeCategory(Category category, String keywords) {
+        // change the last word so that it allows for partial match
+        String categoryTable = null;
+        switch(category) {
+            case products:
+                categoryTable = "product";
+                break;
+            case companies:
+                categoryTable = "company";
+                break;
+        }
+        String sqlStatement = "SELECT \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+                "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
+                "          WHERE tsvname @@ keywords\n" +
+                "          ORDER BY rank DESC\n" +
+                "          LIMIT 10;";
+        EntityManager em = EMF.get().createEntityManager();
+        Query q = em.createNativeQuery(sqlStatement);
+        List<Object[]> results = q.getResultList();
+        List<RankedSuggestion> suggestions = new ArrayList<RankedSuggestion>();
+        for(Object[] result : results) {
+            suggestions.add(new RankedSuggestion((String) result[0], category, category.toString() + "::" + ((Long) result[2]) + "", (double) ((float) result[1])));
         }
         return suggestions;
     }

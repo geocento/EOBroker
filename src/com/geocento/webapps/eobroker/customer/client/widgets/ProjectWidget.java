@@ -54,7 +54,6 @@ public class ProjectWidget extends Composite {
         ((MaterialCard) getWidget()).setBackgroundColor(CategoryUtils.getColor(Category.project));
 
         Image logoImage = new Image(projectDTO.getCompanyDTO().getIconURL());
-        logoImage.setHeight("20px");
         companyLogo.add(logoImage);
 
         imagePanel.setImageUrl(projectDTO.getImageUrl());

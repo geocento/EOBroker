@@ -43,6 +43,7 @@ public class RequestImageryActivity extends TemplateActivity implements RequestI
         requestImageryView = clientFactory.getRequestImageryView();
         requestImageryView.setPresenter(this);
         setTemplateView(requestImageryView.asWidget());
+        selectMenu("requests");
         Window.setTitle("Earth Observation Broker");
         bind();
         displayFullLoading("Loading map...");

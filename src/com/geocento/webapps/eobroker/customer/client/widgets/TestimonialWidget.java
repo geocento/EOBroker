@@ -31,12 +31,23 @@ public class TestimonialWidget extends Composite {
     MaterialLabel creationDate;
     @UiField
     UserWidget user;
+    @UiField
+    HTMLPanel topic;
 
     public TestimonialWidget(TestimonialDTO testimonialDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        user.setUser(testimonialDTO.getFromUser().getName());
-        testimonial.add(new HTML("<b>" + testimonialDTO.getFromUser().getName() + "</b> " +
+        if(testimonialDTO.getFromUser() == null) {
+            user.setVisible(false);
+        } else {
+            user.setUser(testimonialDTO.getFromUser().getName());
+        }
+        // TODO - check for offerings
+        topic.add(new HTML("On company " +
+                "<img style='max-height: 24px; vertical-align: middle;' src='" + testimonialDTO.getCompanyDTO().getIconURL() + "'/> " +
+                testimonialDTO.getCompanyDTO().getName()));
+        testimonial.add(new HTML(
+                (testimonialDTO.getFromUser() == null ? "" : "<b>" + testimonialDTO.getFromUser().getName() + "</b> ") +
                 "<i>" + testimonialDTO.getTestimonial() + "</i>"));
         creationDate.setText(DateUtils.dateFormat.format(testimonialDTO.getCreationDate()));
     }

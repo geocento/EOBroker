@@ -72,7 +72,7 @@ public class DataAccessWidget extends Composite {
         Color color = isFree ? Color.GREEN : Color.BLUE;
         image.setBackgroundColor(color);
         action.setText("");
-        action.setIconType(actionIconType);
+        action.setIconType(IconType.EXIT_TO_APP);
         action.setBackgroundColor(color);
         image.setIconType(iconType);
     }

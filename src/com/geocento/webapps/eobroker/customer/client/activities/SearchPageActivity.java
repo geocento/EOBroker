@@ -101,27 +101,31 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         // now start the search
         setSearchText(text, true);
         selectMenu(category);
-        searchPageView.displayFilters(category);
-        String filterText =  text.length() > 0 ? " with text '" + text + "'" : "";
-        switch (category) {
-            case products:
-                searchPageView.setFilterTitle("Products" + filterText);
-                break;
-            case productservices:
-                searchPageView.setFilterTitle("Services" + filterText);
-                break;
-            case productdatasets:
-                searchPageView.setFilterTitle("Off the shelf data" + filterText);
-                break;
-            case software:
-                searchPageView.setFilterTitle("Software solutions" + filterText);
-                break;
-            case project:
-                searchPageView.setFilterTitle("Projects" + filterText);
-                break;
-            case companies:
-                searchPageView.setFilterTitle("Companies" + filterText);
-                break;
+        if(category == null) {
+            searchPageView.displayFilters(null);
+        } else {
+            searchPageView.displayFilters(category);
+            String filterText =  text.length() > 0 ? " with text '" + text + "'" : "";
+            switch (category) {
+                case products:
+                    searchPageView.setFilterTitle("Products" + filterText);
+                    break;
+                case productservices:
+                    searchPageView.setFilterTitle("Services" + filterText);
+                    break;
+                case productdatasets:
+                    searchPageView.setFilterTitle("Off the shelf data" + filterText);
+                    break;
+                case software:
+                    searchPageView.setFilterTitle("Software solutions" + filterText);
+                    break;
+                case project:
+                    searchPageView.setFilterTitle("Projects" + filterText);
+                    break;
+                case companies:
+                    searchPageView.setFilterTitle("Companies" + filterText);
+                    break;
+            }
         }
 
         // add current AoI

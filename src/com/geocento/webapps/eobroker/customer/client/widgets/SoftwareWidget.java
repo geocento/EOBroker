@@ -58,7 +58,6 @@ public class SoftwareWidget extends Composite {
         imagePanel.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.softwareid.toString() + "=" + softwareDTO.getId())));
 
         Image logoImage = new Image(softwareDTO.getCompanyDTO().getIconURL());
-        logoImage.setHeight("20px");
         companyLogo.add(logoImage);
 
         title.setText(softwareDTO.getName());

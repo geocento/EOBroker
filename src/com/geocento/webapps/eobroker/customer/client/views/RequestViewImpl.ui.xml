@@ -83,26 +83,34 @@
             position: relative;
         }
 
+        .textConversation > textarea {
+            padding: 0px !important;
+        }
+
+        .conversation {
+            padding: 20px;
+        }
+
+        .response {
+            padding-left: 20px;
+        }
+
     </ui:style>
     <design:MaterialPanel addStyleNames="{style.panel}">
-        <design:MaterialRow marginBottom="0" shadow="1" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+        <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
             <design:MaterialColumn grid="s12">
-                <design:MaterialButton activates="statuses" width="150px" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
+                <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
                 <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
                 <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
                 <design:MaterialDropDown activator="statuses" ui:field="statuses"></design:MaterialDropDown>
             </design:MaterialColumn>
         </design:MaterialRow>
         <design:MaterialPanel backgroundColor="GREEN" addStyleNames="{style.tabsPanel}" ui:field="tabs">
-            <design:MaterialRow marginBottom="0">
-                <design:MaterialTab backgroundColor="TRANSPARENT" textColor="WHITE" indicatorColor="WHITE" ui:field="tab">
-                    <design:MaterialTabItem ui:field="request">
-                        <design:MaterialColumn>
-                            <design:MaterialLink text="Your Request" textColor="WHITE" href="#request" ui:field="requestLink"></design:MaterialLink>
-                        </design:MaterialColumn>
-                    </design:MaterialTabItem>
-                </design:MaterialTab>
-            </design:MaterialRow>
+            <design:MaterialTab backgroundColor="TRANSPARENT" textColor="WHITE" indicatorColor="WHITE" ui:field="tab">
+                <design:MaterialTabItem ui:field="request">
+                    <design:MaterialLink text="Your Request" textColor="WHITE" href="#request" ui:field="requestLink"></design:MaterialLink>
+                </design:MaterialTabItem>
+            </design:MaterialTab>
         </design:MaterialPanel>
         <design:MaterialPanel layoutPosition="RELATIVE" ui:field="tabsPanel">
             <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
@@ -120,23 +128,21 @@
                 </design:MaterialRow>
                 <design:MaterialPanel padding="10" ui:field="responsePanel">
                     <g:HTMLPanel addStyleNames="{style.responseTitle}" ui:field="responseTitle"></g:HTMLPanel>
-                    <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
+                    <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.response}">
                     </g:HTMLPanel>
                     <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
-                    <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
+                    <design:MaterialRow marginTop="20" padding="10" ui:field="messages" addStyleNames="{style.formValues}">
                     </design:MaterialRow>
-                    <design:MaterialRow addStyleNames="{style.formValues}">
-                        <design:MaterialColumn grid="s2 m2 l2">
+                    <design:MaterialRow paddingLeft="0" addStyleNames="{style.conversation}">
+                        <design:MaterialColumn textAlign="LEFT" grid="s2 m2 l2">
                             <widgets:UserWidget size="64" ui:field="userImage"></widgets:UserWidget>
                         </design:MaterialColumn>
-                        <design:MaterialColumn grid="s10 m10 l10">
-                            <design:MaterialTextArea ui:field="message"></design:MaterialTextArea>
+                        <design:MaterialColumn grid="s8 m8 l8">
+                            <design:MaterialTextArea addStyleNames="{style.textConversation}" ui:field="message"></design:MaterialTextArea>
                         </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12 m12 l12">
-                            <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                                <widgets:ProgressButton text="SEND MESSAGE" ui:field="submitMessage">
-                                </widgets:ProgressButton>
-                            </g:HTMLPanel>
+                        <design:MaterialColumn textAlign="LEFT" grid="s2 m2 l2">
+                            <widgets:ProgressButton iconType="SEND" type="FLOATING" iconSize="LARGE" ui:field="submitMessage">
+                            </widgets:ProgressButton>
                         </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>

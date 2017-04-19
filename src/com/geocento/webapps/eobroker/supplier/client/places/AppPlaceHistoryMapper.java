@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.places;
 
+import com.geocento.webapps.eobroker.customer.client.places.TestimonialPlace;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 

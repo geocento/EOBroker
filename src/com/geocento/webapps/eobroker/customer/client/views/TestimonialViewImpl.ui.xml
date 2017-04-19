@@ -1,0 +1,56 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
+        >
+    <ui:style>
+        .formPanel {
+            width: 960px;
+            margin: 0px auto;
+        }
+
+        .addTestimomial {
+            line-height: 2em;
+        }
+
+        .addTestimomial > * {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .searchBox {
+            margin-bottom: 20px;
+            background: white;
+        }
+        .searchBox, .searchBox i {
+            height: 54px !important;
+            line-height: 54px !important;
+        }
+
+    </ui:style>
+    <g:HTMLPanel addStyleNames="{style.formPanel}">
+        <design:MaterialTitle title="Add a new testimonial"></design:MaterialTitle>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLabel addStyleNames="{style.section}" text="Type"></design:MaterialLabel>
+                <design:MaterialListValueBox ui:field="category"></design:MaterialListValueBox>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLabel addStyleNames="{style.section}" text="Name"></design:MaterialLabel>
+                <widgets:MaterialSearch placeholder="Type text" addStyleNames="{style.searchBox}" ui:field="searchBox"></widgets:MaterialSearch>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLabel addStyleNames="{style.section}" text="Testimonial"></design:MaterialLabel>
+                <material:MaterialRichEditor ui:field="content"></material:MaterialRichEditor>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialButton text="CREATE" ui:field="create"></design:MaterialButton>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -207,14 +207,8 @@
                 </m:MaterialSideNav>
             </header>
             <m:MaterialContainer ui:field="mainPanel" layoutPosition="RELATIVE" paddingTop="64" addStyleNames="{style.mainPanel}">
-<!--
-            <m:MaterialContainer layoutPosition="FIXED" top="0" bottom="0" left="0" right="0" paddingTop="64" addStyleNames="{style.mainPanel}" ui:field="mainPanel">
--->
                 <cwidgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></cwidgets:LoadingWidget>
                 <m:MaterialPanel ui:field="content"></m:MaterialPanel>
-<!--
-                <m:MaterialPanel width="100%" height="100%" ui:field="content"></m:MaterialPanel>
--->
             </m:MaterialContainer>
         </g:HTMLPanel>
     </ui:UiBinder>

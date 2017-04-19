@@ -1,12 +1,17 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
+import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.Testimonial;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
+import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
+import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Following;
+import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.FollowingEvent;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
@@ -1032,7 +1037,47 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public Boolean followProduct(Long productId, Boolean follow) throws RequestException {
-        return dummyFollow(productId, follow);
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            TypedQuery<Following> query = em.createQuery("select f from Following f where f.user = :user and f.product is not null and f.product.id = :productid", Following.class);
+            List<Following> followings = query.getResultList();
+            em.getTransaction().begin();
+            if(follow) {
+                // check we are not following it already
+                if(followings != null && followings.size() > 0) {
+                    // we are already following
+                } else {
+                    Following following = new Following();
+                    User user = em.find(User.class, userName);
+                    Product product = em.find(Product.class, productId);
+                    if(product == null) {
+                        throw new RequestException("Could not find product");
+                    }
+                    following.setUser(user);
+                    following.setProduct(product);
+                    following.setCreationDate(new Date());
+                    em.persist(following);
+                }
+            } else {
+                // remove following
+                if(followings != null && followings.size() > 0) {
+                    for(Following following : followings) {
+                        em.remove(following);
+                    }
+                }
+            }
+            em.getTransaction().commit();
+            return follow;
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error updating following");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -1053,6 +1098,181 @@ public class AssetsResource implements AssetsService {
     @Override
     public Boolean followProject(Long projectId, Boolean follow) throws RequestException {
         return dummyFollow(projectId, follow);
+    }
+
+    @Override
+    public List<FollowingEventDTO> getFollowingEvents(int start, int limit) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<FollowingEvent> query = em.createQuery("select f from FollowingEvent f where f.user = :user order by f.creationDate", FollowingEvent.class);
+            query.setParameter("user", user);
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<FollowingEvent, FollowingEventDTO>() {
+                @Override
+                public FollowingEventDTO mutate(FollowingEvent followingEvent) {
+                    FollowingEventDTO followingEventDTO = new FollowingEventDTO();
+                    followingEventDTO.setMessage(followingEvent.getEvent().getMessage());
+                    return followingEventDTO;
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<TestimonialDTO> listTestimonials() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Testimonial> query = em.createQuery("select t from Testimonial t where t.fromUser = :user order by t.creationDate", Testimonial.class);
+            query.setParameter("user", user);
+            return ListUtil.mutate(query.getResultList(), testimonial -> {
+                TestimonialDTO testimonialDTO = new TestimonialDTO();
+                testimonialDTO.setCreationDate(testimonial.getCreationDate());
+                testimonialDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(testimonial.getCompany()));
+                // TODO - add the offerings if included
+                testimonialDTO.setTestimonial(testimonial.getTestimonial());
+                return testimonialDTO;
+            });
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading testimonials");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public TestimonialDTO getTestimonial(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Testimonial testimonial = em.find(Testimonial.class, id);
+            if(!testimonial.getFromUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            TestimonialDTO testimonialDTO = new TestimonialDTO();
+            testimonialDTO.setCreationDate(testimonial.getCreationDate());
+            testimonialDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(testimonial.getCompany()));
+            // TODO - add the offerings if included
+            testimonialDTO.setTestimonial(testimonial.getTestimonial());
+            return testimonialDTO;
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Long createTestimonial(TestimonialDTO testimonialDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Company company = em.find(Company.class, testimonialDTO.getCompanyDTO().getId());
+            Testimonial testimonial = new Testimonial();
+            testimonial.setFromUser(user);
+            testimonial.setCompany(company);
+            testimonial.setTestimonial(testimonialDTO.getTestimonial());
+            testimonial.setCreationDate(new Date());
+            em.persist(testimonial);
+            company.getTestimonials().add(testimonial);
+            em.getTransaction().commit();
+            // fail silently
+            try {
+                em.getTransaction().begin();
+                NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.TESTIMONIAL, "User " + userName + " has created a new testimonial on your company", testimonial.getId() + "");
+                // add event
+                EventHelper.createAndPropagateCompanyEvent(em, company, Category.companies, Event.TYPE.TESTIMONIAL, "User " + userName + " has added a new testimonial for company " + company.getName(), testimonial.getId() + "");
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                logger.error(e.getMessage(), e);
+            }            // add notification
+            return testimonial.getId();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error creating testimonial");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void updateTestimonial(TestimonialDTO testimonialDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Testimonial testimonial = em.find(Testimonial.class, testimonialDTO.getId());
+            if(testimonial == null) {
+                throw new RequestException("Testimonial doesn't exist");
+            }
+            if(!testimonial.getFromUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            Company company = em.find(Company.class, testimonialDTO.getCompanyDTO().getId());
+            testimonial.setCompany(company);
+            testimonial.setTestimonial(testimonialDTO.getTestimonial());
+            testimonial.setCreationDate(new Date());
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error updating testimonial");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void deleteTestimonial(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Testimonial testimonial = em.find(Testimonial.class, id);
+            if(testimonial == null) {
+                throw new RequestException("Testimonial doesn't exist");
+            }
+            if(!testimonial.getFromUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            em.remove(testimonial);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error updating testimonial");
+        } finally {
+            em.close();
+        }
     }
 
 }

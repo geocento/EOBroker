@@ -3,11 +3,31 @@
              xmlns:bubble="urn:import:gwt.material.design.addins.client.bubble"
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
-    <bubble:MaterialBubble ui:field="panel">
+    <ui:style>
+
+        .topic {
+            white-space: nowrap;
+        }
+
+        .testimonial {
+            overflow: hidden;
+            margin: 10px 0px;
+            line-height: 1.2em;
+            height: 2.4em;
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+        }
+
+    </ui:style>
+    <design:MaterialRow>
         <widgets:UserWidget float="LEFT" size="50" ui:field="user"></widgets:UserWidget>
-        <design:MaterialPanel marginLeft="70">
-            <g:HTMLPanel ui:field="testimonial"></g:HTMLPanel>
-            <design:MaterialLabel float="RIGHT" fontSize="0.6em" ui:field="creationDate"></design:MaterialLabel>
-        </design:MaterialPanel>
-    </bubble:MaterialBubble>
+        <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="AMBER_LIGHTEN_3" ui:field="panel">
+            <design:MaterialPanel>
+                <g:HTMLPanel addStyleNames="{style.topic}" ui:field="topic"></g:HTMLPanel>
+                <g:HTMLPanel addStyleNames="{style.testimonial}" ui:field="testimonial"></g:HTMLPanel>
+                <design:MaterialLabel float="RIGHT" fontSize="0.6em" ui:field="creationDate"></design:MaterialLabel>
+            </design:MaterialPanel>
+        </bubble:MaterialBubble>
+    </design:MaterialRow>
 </ui:UiBinder>

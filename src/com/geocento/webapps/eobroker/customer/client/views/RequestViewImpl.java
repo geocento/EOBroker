@@ -123,7 +123,8 @@ public class RequestViewImpl extends Composite implements RequestView {
     public void displayResponseSupplier(String supplierIconUrl, String supplierName) {
         responseTitle.clear();
         responseTitle.add(new HTML("Offer provided by " +
-                "<img style='max-height: 24px; vertical-align: middle;' src='" + supplierIconUrl + "'/> <b>" + supplierName + "</b></span>"));
+                //"<img style='max-height: 24px; vertical-align: middle;' src='" + supplierIconUrl + "'/> " +
+                "<b>" + supplierName + "</b>"));
     }
 
     @Override
@@ -245,14 +246,12 @@ public class RequestViewImpl extends Composite implements RequestView {
     protected void addResponseTab(String id, String name, ClickHandler clickHandler) {
         MaterialTabItem materialTabItem = new MaterialTabItem();
         materialTabItem.setTextAlign(TextAlign.CENTER);
-        MaterialColumn materialColumn = new MaterialColumn();
         MaterialLink materialLink = new MaterialLink(name);
         materialLink.setHref("#" + id);
         materialLink.setTextColor(Color.WHITE);
         materialTabItem.add(materialLink);
         materialLink.addClickHandler(clickHandler);
-        materialColumn.add(materialLink);
-        materialTabItem.add(materialColumn);
+        materialTabItem.add(materialLink);
         tab.add(materialTabItem);
         MaterialPanel materialPanel = new MaterialPanel();
         materialPanel.setId(id);

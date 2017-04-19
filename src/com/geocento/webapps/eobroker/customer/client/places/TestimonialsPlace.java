@@ -8,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class TestimonialsPlace extends EOBrokerPlace {
 
-    public static enum TOKENS {feedbackid, topic};
+    public static enum TOKENS {};
 
     public TestimonialsPlace() {
     }

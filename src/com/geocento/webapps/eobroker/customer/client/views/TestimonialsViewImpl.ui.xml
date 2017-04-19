@@ -2,14 +2,31 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
         .formPanel {
             width: 960px;
             margin: 0px auto;
         }
+
+        .addTestimomial {
+            line-height: 2em;
+        }
+
+        .addTestimomial > * {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.formPanel}">
-        <design:MaterialTitle title="TODO"></design:MaterialTitle>
+        <design:MaterialPanel>
+            <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add Testimonial" ui:field="addTestimonial"></design:MaterialButton>
+            <design:MaterialTitle title="Your testimonials"></design:MaterialTitle>
+        </design:MaterialPanel>
+        <design:MaterialPanel ui:field="testimonials">
+        </design:MaterialPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

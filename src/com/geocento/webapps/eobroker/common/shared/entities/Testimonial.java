@@ -9,14 +9,24 @@ import java.util.Date;
 @Entity
 public class Testimonial {
 
+    @GeneratedValue
     @Id
     Long id;
 
     @ManyToOne
     User fromUser;
 
+    // testimonial can only be on company offerings or the company itself
     @ManyToOne
     Company company;
+    @ManyToOne
+    ProductService productService;
+    @ManyToOne
+    ProductDataset productDataset;
+    @ManyToOne
+    Software software;
+    @ManyToOne
+    Project project;
 
     @Column(length = 1000)
     String testimonial;
@@ -49,6 +59,38 @@ public class Testimonial {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public ProductService getProductService() {
+        return productService;
+    }
+
+    public void setProductService(ProductService productService) {
+        this.productService = productService;
+    }
+
+    public ProductDataset getProductDataset() {
+        return productDataset;
+    }
+
+    public void setProductDataset(ProductDataset productDataset) {
+        this.productDataset = productDataset;
+    }
+
+    public Software getSoftware() {
+        return software;
+    }
+
+    public void setSoftware(Software software) {
+        this.software = software;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public String getTestimonial() {

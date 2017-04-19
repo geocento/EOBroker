@@ -162,4 +162,30 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/project/{id}/follow")
     Boolean followProject(@PathParam("id") Long projectId, Boolean follow) throws RequestException;
 
+    @GET
+    @Path("/assets/follow/events")
+    List<FollowingEventDTO> getFollowingEvents(@QueryParam("start") int start, @QueryParam("limit") int limit) throws RequestException;
+
+    @GET
+    @Path("/assets/testimonials")
+    @Produces("application/json")
+    List<TestimonialDTO> listTestimonials() throws RequestException;
+
+    @GET
+    @Path("/assets/testimonials/{id}")
+    @Produces("application/json")
+    TestimonialDTO getTestimonial(@PathParam("id") Long id) throws RequestException;
+
+    @POST
+    @Path("/assets/testimonials")
+    Long createTestimonial(TestimonialDTO testimonialDTO) throws RequestException;
+
+    @PUT
+    @Path("/assets/testimonials")
+    void updateTestimonial(TestimonialDTO testimonialDTO) throws RequestException;
+
+    @DELETE
+    @Path("/assets/testimonials/{id}")
+    void deleteTestimonial(@PathParam("id") Long id) throws RequestException;
+
 }

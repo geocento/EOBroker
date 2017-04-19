@@ -1,15 +1,13 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.widgets.*;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductDatasetWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
-import com.geocento.webapps.eobroker.customer.client.widgets.SoftwareWidget;
-import com.geocento.webapps.eobroker.customer.shared.Offer;
-import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
-import com.geocento.webapps.eobroker.customer.shared.SoftwareDTO;
+import com.geocento.webapps.eobroker.customer.client.places.EOBrokerPlace;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.widgets.FollowingEventWidget;
+import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -26,8 +24,6 @@ import java.util.List;
  */
 public class LandingPageViewImpl extends Composite implements LandingPageView {
 
-    private Presenter presenter;
-
     interface LandingPageUiBinder extends UiBinder<Widget, LandingPageViewImpl> {
     }
 
@@ -36,7 +32,9 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
     @UiField
-    MaterialRow offers;
+    MaterialRow newsFeed;
+
+    private Presenter presenter;
 
     private ClientFactoryImpl clientFactory;
 
@@ -71,26 +69,37 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     }
 
     @Override
-    public void setLoadingOffers(boolean loading) {
-        offers.clear();
+    public void setLoadingNewsFeed(boolean loading) {
+        newsFeed.clear();
         if(loading) {
-            offers.add(new LoadingWidget("Loading..."));
+            newsFeed.add(new LoadingWidget("Loading..."));
         }
     }
 
     @Override
-    public void setOffers(List<Offer> offers) {
-        this.offers.clear();
-        for(Offer offer : offers) {
-            MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
-            this.offers.add(materialColumn);
-            if(offer instanceof ProductServiceDTO) {
-                materialColumn.add(new ProductServiceWidget((ProductServiceDTO) offer));
-            } else if(offer instanceof ProductDatasetDTO) {
-                materialColumn.add(new ProductDatasetWidget((ProductDatasetDTO) offer));
-            } else if(offer instanceof SoftwareDTO) {
-                materialColumn.add(new SoftwareWidget((SoftwareDTO) offer));
-            }
+    public void setNewsFeed(List<FollowingEventDTO> followingEventDTOs) {
+        this.newsFeed.clear();
+        for(FollowingEventDTO followingEventDTO : followingEventDTOs) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
+            this.newsFeed.add(materialColumn);
+            FollowingEventWidget followingEventWidget = new FollowingEventWidget(followingEventDTO);
+            followingEventWidget.getAction().addClickHandler(event -> {
+                EOBrokerPlace place = null;
+                switch (followingEventDTO.getCategory()) {
+                    case companies:
+                        switch (followingEventDTO.getType()) {
+                            case TESTIMONIAL:
+                                // TODO - replace by a full page for testimonies
+                                place = new FullViewPlace(Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId()));
+                                break;
+                        }
+                        break;
+                }
+                if(place != null) {
+                    clientFactory.getPlaceController().goTo(place);
+                }
+            });
+            materialColumn.add(followingEventWidget);
         }
     }
 

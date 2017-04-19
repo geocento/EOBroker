@@ -22,6 +22,7 @@ package com.geocento.webapps.eobroker.customer.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -111,7 +112,10 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
     public MaterialSearch() {
         super(new TextBox());
         setType(InputType.SEARCH);
-        label.add(iconSearch);
+        iconSearch.setLayoutPosition(Style.Position.ABSOLUTE);
+        iconSearch.setLeft(10);
+        insert(iconSearch, 0);
+        //label.add(iconSearch);
         label.getElement().setAttribute("for", "search");
         add(label);
         add(iconClose);

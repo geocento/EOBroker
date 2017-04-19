@@ -49,6 +49,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new SettingsActivity((SettingsPlace) place, clientFactory);
         } else if(place instanceof TestimonialsPlace) {
             return new TestimonialsActivity((TestimonialsPlace) place, clientFactory);
+        } else if(place instanceof TestimonialPlace) {
+            return new TestimonialActivity((TestimonialPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
         }

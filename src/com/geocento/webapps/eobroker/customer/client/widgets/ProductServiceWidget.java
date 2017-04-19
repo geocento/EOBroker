@@ -57,7 +57,6 @@ public class ProductServiceWidget extends Composite {
         imagePanel.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceDTO.getId())));
 
         Image logoImage = new Image(productServiceDTO.getCompanyLogo());
-        logoImage.setHeight("20px");
         companyLogo.add(logoImage);
 
         title.setText(productServiceDTO.getName());

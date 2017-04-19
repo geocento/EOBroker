@@ -146,6 +146,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     @Override
     protected void bind() {
+
         activityEventBus.addHandler(LogOut.TYPE, new LogOutHandler() {
             @Override
             public void onLogOut(LogOut event) {

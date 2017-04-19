@@ -60,7 +60,7 @@ public class ProductDatasetWidget extends Composite {
         title.setText(productDatasetDTO.getName());
         shortDescription.setText(productDatasetDTO.getDescription());
         Image logoImage = new Image(productDatasetDTO.getCompany().getIconURL());
-        logoImage.setHeight("20px");
+        //logoImage.setHeight("20px");
         companyLogo.add(logoImage);
         companyLogo.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + productDatasetDTO.getCompany().getId())));
 

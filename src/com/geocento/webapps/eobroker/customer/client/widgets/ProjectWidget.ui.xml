@@ -27,8 +27,7 @@
             left: 10px !important;
             top: auto !important;
             bottom: -5px !important;
-            max-width: 60px;
-            max-height: 32px;
+            max-width: 50px;
             margin-right: -16px;
             margin-top: -16px;
         }
