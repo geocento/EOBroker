@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.supplier.client.places.ProductServicePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductServiceView;
@@ -17,6 +18,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
@@ -195,7 +197,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                 }
                 displayLoading("Saving product service");
                 try {
-                    REST.withCallback(new MethodCallback<Void>() {
+                    REST.withCallback(new MethodCallback<Long>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             hideLoading();
@@ -203,9 +205,11 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                         }
 
                         @Override
-                        public void onSuccess(Method method, Void response) {
+                        public void onSuccess(Method method, Long productId) {
                             hideLoading();
                             displaySuccess("Product service saved");
+                            productServiceDTO.setId(productId);
+                            History.newItem(PlaceHistoryHelper.convertPlace(new ProductServicePlace(Utils.generateTokens(ProductServicePlace.TOKENS.service.toString(), productId.toString()))));
                         }
 
                     }).call(ServicesUtil.assetsService).updateProductService(productServiceDTO);

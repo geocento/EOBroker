@@ -20,6 +20,7 @@ import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.client.utils.CSWUtils;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
+import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
@@ -43,7 +44,9 @@ import javax.persistence.TypedQuery;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -64,6 +67,9 @@ public class SearchResource implements SearchService {
             }
         });
     }
+
+    @Context
+    HttpServletRequest request;
 
     public SearchResource() {
         logger.info("Starting search service");
@@ -494,6 +500,7 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<ProductDTO> listProducts(String textFilter, Integer start, Integer limit, Long aoiId, Sector sector, Thematic thematic) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         List<Product> products = null;
         EntityManager em = EMF.get().createEntityManager();
         String additionalStatement = null;
@@ -514,6 +521,10 @@ public class SearchResource implements SearchService {
         } else {
             products = new ArrayList<Product>();
         }
+        // TODO - faster way of doing this?
+        TypedQuery<Long> query = em.createQuery("select f.product.id from Following f where f.user.username = :userName and f.product is not null", Long.class);
+        query.setParameter("userName", userName);
+        List<Long> followings = query.getResultList();
         em.close();
         // make sure order has stayed the same
         List<Product> sortedProducts = new ArrayList<Product>();
@@ -528,7 +539,9 @@ public class SearchResource implements SearchService {
         return ListUtil.mutate(sortedProducts, new ListUtil.Mutate<Product, ProductDTO>() {
             @Override
             public ProductDTO mutate(Product product) {
-                return ProductHelper.createProductDTO(product);
+                ProductDTO productDTO = ProductHelper.createProductDTO(product);
+                productDTO.setFollowing(followings.contains(product.getId()));
+                return productDTO;
             }
         });
     }
@@ -860,18 +873,14 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<CompanyDTO> listCompanies(String textFilter, Integer start, Integer limit, Long aoiId, COMPANY_SIZE companySize, int minYears, String countryCode) {
+    public List<CompanyDTO> listCompanies(String textFilter, Integer start, Integer limit, Long aoiId, COMPANY_SIZE companySize, int minYears, String countryCode) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         List<String> additionalStatements = new ArrayList<String>();
         if(companySize != null) {
             additionalStatements.add("companysize = '" + companySize.toString() + "'");
         }
         if(minYears > 0) {
-/*
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            calendar.add(Calendar.YEAR, -1 * minYears);
-*/
             additionalStatements.add("startedin < date 'today' - interval '" + minYears +" year'");
         }
         if(countryCode != null) {
@@ -887,13 +896,23 @@ public class SearchResource implements SearchService {
         } else {
             companies = new ArrayList<Company>();
         }
+        TypedQuery<Long> query = em.createQuery("select f.company.id from Following f where f.user.username = :userName and f.company is not null", Long.class);
+        query.setParameter("userName", userName);
+        List<Long> followings = query.getResultList();
         em.close();
         // make sure order has stayed the same
         List<Company> sortedItems = new ArrayList<Company>();
         for(final Long id : companyIds) {
             sortedItems.add(ListUtil.findValue(companies, value -> value.getId().equals(id)));
         }
-        return ListUtil.mutate(sortedItems, company -> CompanyHelper.createCompanyDTO(company));
+        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<Company, CompanyDTO>() {
+            @Override
+            public CompanyDTO mutate(Company company) {
+                CompanyDTO companyDTO = CompanyHelper.createCompanyDTO(company);
+                companyDTO.setFollowing(followings.contains(company.getId()));
+                return companyDTO;
+            }
+        });
     }
 
     @Override

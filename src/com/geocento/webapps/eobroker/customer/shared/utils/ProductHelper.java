@@ -12,10 +12,11 @@ public class ProductHelper {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setId(product.getId());
         productDTO.setName(product.getName());
-        productDTO.setDescription(product.getShortDescription());
+        productDTO.setShortDescription(product.getShortDescription());
         productDTO.setImageUrl(product.getImageUrl());
         productDTO.setSector(product.getSector());
         productDTO.setThematic(product.getThematic());
+        productDTO.setFollowers(product.getFollowers() == null ? 0 : product.getFollowers().intValue());
         return productDTO;
     }
 

@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.FollowingEventWidge
 import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -29,6 +30,14 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
 
     private static LandingPageUiBinder ourUiBinder = GWT.create(LandingPageUiBinder.class);
 
+    public interface Style extends CssResource {
+
+        String followingEvent();
+    }
+
+    @UiField
+    Style style;
+
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
     @UiField
@@ -40,7 +49,10 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
 
     public LandingPageViewImpl(final ClientFactoryImpl clientFactory) {
 
+        this.clientFactory = clientFactory;
+
         initWidget(ourUiBinder.createAndBindUi(this));
+
     }
 
     @Override
@@ -79,27 +91,69 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     @Override
     public void setNewsFeed(List<FollowingEventDTO> followingEventDTOs) {
         this.newsFeed.clear();
-        for(FollowingEventDTO followingEventDTO : followingEventDTOs) {
+        if(followingEventDTOs.size() == 0) {
             MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
             this.newsFeed.add(materialColumn);
-            FollowingEventWidget followingEventWidget = new FollowingEventWidget(followingEventDTO);
-            followingEventWidget.getAction().addClickHandler(event -> {
-                EOBrokerPlace place = null;
-                switch (followingEventDTO.getCategory()) {
-                    case companies:
-                        switch (followingEventDTO.getType()) {
-                            case TESTIMONIAL:
-                                // TODO - replace by a full page for testimonies
-                                place = new FullViewPlace(Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId()));
-                                break;
-                        }
-                        break;
-                }
-                if(place != null) {
-                    clientFactory.getPlaceController().goTo(place);
-                }
-            });
-            materialColumn.add(followingEventWidget);
+            materialColumn.add(new MaterialLabel("No news in your network, follow more companies and products to be up to date with the EO Broker"));
+        } else {
+            for (FollowingEventDTO followingEventDTO : followingEventDTOs) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
+                this.newsFeed.add(materialColumn);
+                FollowingEventWidget followingEventWidget = new FollowingEventWidget(followingEventDTO);
+                followingEventWidget.getAction().addClickHandler(event -> {
+                    EOBrokerPlace place = null;
+                    switch (followingEventDTO.getCategory()) {
+                        case companies:
+                            switch (followingEventDTO.getType()) {
+                                case TESTIMONIAL:
+                                    // TODO - replace by a full page for testimonies
+                                    place = new FullViewPlace(
+                                            Utils.generateTokens(
+                                                    FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getCompanyDTO().getId() + "",
+                                                    FullViewPlace.TOKENS.tab.toString(), "credentials"));
+                                    break;
+                                case OFFER:
+                                    place = new FullViewPlace(
+                                            Utils.generateTokens(
+                                                    FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId(),
+                                                    FullViewPlace.TOKENS.tab.toString(), "offering"));
+                                    break;
+                            }
+                            break;
+                        case products:
+                            switch (followingEventDTO.getType()) {
+                                case TESTIMONIAL:
+                                    // TODO - replace by a full page for testimonies
+                                    break;
+                                case OFFER:
+                                    place = new FullViewPlace(
+                                            Utils.generateTokens(
+                                                    FullViewPlace.TOKENS.productid.toString(), followingEventDTO.getLinkId(),
+                                                    FullViewPlace.TOKENS.tab.toString(), "offering"));
+                                    break;
+                            }
+                            break;
+                        case productservices:
+                            switch (followingEventDTO.getType()) {
+                                case TESTIMONIAL:
+                                    // TODO - replace by a full page for testimonies
+                                    break;
+                                case OFFER:
+                                    place = new FullViewPlace(
+                                            Utils.generateTokens(
+                                                    FullViewPlace.TOKENS.productserviceid.toString(), followingEventDTO.getLinkId(),
+                                                    FullViewPlace.TOKENS.tab.toString(), "description"));
+                                    break;
+                            }
+                            break;
+                    }
+                    if (place != null) {
+                        clientFactory.getPlaceController().goTo(place);
+                    }
+                });
+                followingEventWidget.addStyleName(style.followingEvent());
+                materialColumn.add(followingEventWidget);
+            }
         }
     }
 

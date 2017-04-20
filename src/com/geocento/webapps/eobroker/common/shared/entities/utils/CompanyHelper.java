@@ -16,6 +16,7 @@ public class CompanyHelper {
         companyDTO.setDescription(company.getDescription());
         companyDTO.setContactEmail(company.getContactEmail());
         companyDTO.setWebsite(company.getWebsite());
+        companyDTO.setFollowers(company.getFollowers() == null ? 0 : company.getFollowers().intValue());
         return companyDTO;
     }
 

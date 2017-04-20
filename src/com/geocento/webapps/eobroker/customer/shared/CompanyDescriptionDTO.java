@@ -20,6 +20,8 @@ public class CompanyDescriptionDTO {
     String address;
     String countryCode;
     COMPANY_SIZE companySize;
+    boolean following;
+    int followers;
     List<String> awards;
     List<ProductServiceDTO> productServices;
     List<ProductDatasetDTO> productDatasets;
@@ -109,6 +111,22 @@ public class CompanyDescriptionDTO {
 
     public void setCompanySize(COMPANY_SIZE companySize) {
         this.companySize = companySize;
+    }
+
+    public boolean isFollowing() {
+        return following;
+    }
+
+    public void setFollowing(boolean following) {
+        this.following = following;
+    }
+
+    public int getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(int followers) {
+        this.followers = followers;
     }
 
     public List<String> getAwards() {

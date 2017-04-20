@@ -19,10 +19,14 @@
             -webkit-box-orient: vertical;
         }
 
+        .panel {
+            max-width: none !important;
+        }
+
     </ui:style>
     <design:MaterialRow>
-        <widgets:UserWidget float="LEFT" size="50" ui:field="user"></widgets:UserWidget>
-        <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="AMBER_LIGHTEN_3" ui:field="panel">
+        <widgets:UserWidget float="LEFT" size="50" margin="10" ui:field="user"></widgets:UserWidget>
+        <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="AMBER_LIGHTEN_3" addStyleNames="{style.panel}" ui:field="panel">
             <design:MaterialPanel>
                 <g:HTMLPanel addStyleNames="{style.topic}" ui:field="topic"></g:HTMLPanel>
                 <g:HTMLPanel addStyleNames="{style.testimonial}" ui:field="testimonial"></g:HTMLPanel>

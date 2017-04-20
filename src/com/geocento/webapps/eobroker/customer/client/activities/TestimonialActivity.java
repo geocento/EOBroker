@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.TestimonialPlace;
@@ -47,9 +48,9 @@ public class TestimonialActivity extends TemplateActivity implements Testimonial
         handleHistory();
     }
 
-    private void handleHistory() {
-
-        HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+    @Override
+    protected void bind() {
+        super.bind();
 
         handlers.add(testimonialView.getCreateButton().addClickHandler(new ClickHandler() {
             @Override
@@ -76,6 +77,43 @@ public class TestimonialActivity extends TemplateActivity implements Testimonial
                 }
             }
         }));
+
+    }
+
+    private void handleHistory() {
+
+        HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        if(tokens.containsKey(TestimonialPlace.TOKENS.category.toString())) {
+            category = Category.valueOf(tokens.get(TestimonialPlace.TOKENS.category.toString()));
+            testimonialView.getCategory().setValue(category);
+        }
+
+        if(category != null && tokens.containsKey(TestimonialPlace.TOKENS.id.toString())) {
+            switch (category) {
+                case companies:
+                    try {
+                        REST.withCallback(new MethodCallback<CompanyDTO>() {
+
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                hideLoading();
+                                displayError("Could not find company");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, CompanyDTO companyDTO) {
+                                hideLoading();
+                                company = companyDTO;
+                                testimonialView.getSearchText().setText(companyDTO.getName());
+                            }
+                        }).call(ServicesUtil.assetsService).getCompany(Long.parseLong(tokens.get(TestimonialPlace.TOKENS.id.toString())));
+                    } catch (RequestException e) {
+                    }
+                    break;
+            }
+        }
+
     }
 
     @Override

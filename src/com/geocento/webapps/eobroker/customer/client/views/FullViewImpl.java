@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -33,12 +34,10 @@ import java.util.List;
  */
 public class FullViewImpl extends Composite implements FullView {
 
-    private Presenter presenter;
-
-    interface DummyUiBinder extends UiBinder<Widget, FullViewImpl> {
+    interface FullViewImplUiBinder extends UiBinder<Widget, FullViewImpl> {
     }
 
-    private static DummyUiBinder ourUiBinder = GWT.create(DummyUiBinder.class);
+    private static FullViewImplUiBinder ourUiBinder = GWT.create(FullViewImplUiBinder.class);
 
     static interface Style extends CssResource {
 
@@ -84,6 +83,10 @@ public class FullViewImpl extends Composite implements FullView {
     @UiField
     MaterialBreadcrumb recommendationsLabel;
 
+    private Presenter presenter;
+
+    private MaterialTab materialTab;
+
     private ClientFactoryImpl clientFactory;
 
     public FullViewImpl(ClientFactoryImpl clientFactory) {
@@ -119,14 +122,20 @@ public class FullViewImpl extends Composite implements FullView {
         {
             addTag(productDescriptionDTO.getThematic().getName(), Color.BLUE, Color.WHITE);
             addTag(productDescriptionDTO.getSector().getName(), Color.GREY, Color.WHITE);
-        }
-        // add actions
-        {
-            addAction("FOLLOW", event -> Window.alert("TODO..."));
+            {
+                ProductDTO productDTO = new ProductDTO();
+                productDTO.setId(productDescriptionDTO.getId());
+                productDTO.setFollowers(productDescriptionDTO.getFollowers());
+                productDTO.setFollowing(productDescriptionDTO.isFollowing());
+                ProductFollowWidget followWidget = new ProductFollowWidget(productDTO);
+                followWidget.setName("product");
+                followWidget.getElement().getStyle().setMarginLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
+                tags.add(followWidget);
+            }
         }
         // add the tabs now
         MaterialPanel tabsPanel = createTabsPanel();
-        MaterialTab materialTab = createTabs(tabsPanel);
+        materialTab = createTabs(tabsPanel);
         int numTabs = 2;
         int size = (int) Math.floor(12 / numTabs);
         // add description
@@ -135,7 +144,7 @@ public class FullViewImpl extends Composite implements FullView {
         fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescription);
         fullDescriptionPanel.setPadding(10);
-        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size, "description");
         // create tab panel for offering
         MaterialPanel offeringPanel = new MaterialPanel();
         setMatchingServices(offeringPanel, productDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
@@ -146,14 +155,14 @@ public class FullViewImpl extends Composite implements FullView {
                 SearchPagePlace.TOKENS.category.toString(), Category.software.toString()))));
         setMatchingProjects(offeringPanel, productDescriptionDTO.getProjects(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
                 SearchPagePlace.TOKENS.category.toString(), Category.project.toString()))));
-        addTab(materialTab, tabsPanel, "Offering", offeringPanel, size);
+        addTab(materialTab, tabsPanel, "Offering", offeringPanel, size, "offering");
         tabsContent.add(tabsPanel);
 
         // TODO - change?
         this.tabsPanel.clear();
         this.tabsPanel.add(materialTab);
 
-        materialTab.selectTab("fullViewTab0");
+        materialTab.selectTab("description");
         // add suggestions
         recommendationsPanel.clear();
         recommendationsLabel.setText("Similar products...");
@@ -199,7 +208,7 @@ public class FullViewImpl extends Composite implements FullView {
 */
         }
         MaterialPanel tabsPanel = createTabsPanel();
-        MaterialTab materialTab = createTabs(tabsPanel);
+        materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
 
@@ -226,7 +235,7 @@ public class FullViewImpl extends Composite implements FullView {
 
         // create full description panel
         MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(productServiceDescriptionDTO.getFullDescription());
-        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size, "description");
 
         // create tab panel for services
         MaterialRow featuresPanel = new MaterialRow();
@@ -270,7 +279,7 @@ public class FullViewImpl extends Composite implements FullView {
             });
             featuresPanel.add(compareButton);
         }
-        addTab(materialTab, tabsPanel, "Performances", featuresPanel, size);
+        addTab(materialTab, tabsPanel, "Performances", featuresPanel, size, "performances");
         // create tab for data access information
         // add access panel
         // add access panel
@@ -314,11 +323,11 @@ public class FullViewImpl extends Composite implements FullView {
                 }
             }
         }
-        addTab(materialTab, tabsPanel, "Access to data", accessPanel, size);
+        addTab(materialTab, tabsPanel, "Data Access", accessPanel, size, "dataaccess");
         // create tab panel for services
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
-        materialTab.selectTab("fullViewTab0");
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size, "termsandconditions");
+        materialTab.selectTab("description");
         tabsContent.add(tabsPanel);
 
         // TODO - change?
@@ -420,7 +429,7 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         MaterialPanel tabsPanel = createTabsPanel();
-        MaterialTab materialTab = createTabs(tabsPanel);
+        materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
 
@@ -432,7 +441,7 @@ public class FullViewImpl extends Composite implements FullView {
                                 ConversationPlace.TOKENS.topic.toString(), "Information on off the shelf product '" + productDatasetDescriptionDTO.getName() + "'"))));
         // add description
         MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(productDatasetDescriptionDTO.getFullDescription());
-        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size, "description");
 
         // create tab panel for services
         MaterialRow featuresPanel = new MaterialRow();
@@ -477,7 +486,7 @@ public class FullViewImpl extends Composite implements FullView {
             });
             featuresPanel.add(compareButton);
         }
-        addTab(materialTab, tabsPanel, "Performances", featuresPanel, size);
+        addTab(materialTab, tabsPanel, "Performances", featuresPanel, size, "performances");
         // add access panel
         MaterialPanel accessPanel = new MaterialPanel();
         List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
@@ -514,11 +523,11 @@ public class FullViewImpl extends Composite implements FullView {
                 }
             }
         }
-        addTab(materialTab, tabsPanel, "Access to data", accessPanel, size);
+        addTab(materialTab, tabsPanel, "Data Access", accessPanel, size, "dataaccess");
         // add terms and conditions tab panel
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
-        materialTab.selectTab("fullViewTab0");
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size, "termsandconditions");
+        materialTab.selectTab("description");
         // now add the tabs panel
         tabsContent.add(tabsPanel);
 
@@ -559,7 +568,7 @@ public class FullViewImpl extends Composite implements FullView {
             addTag(IconType.MONETIZATION_ON, softwareDescriptionDTO.getSoftwareType().getName(), Color.AMBER, Color.WHITE);
         }
         MaterialPanel tabsPanel = createTabsPanel();
-        MaterialTab materialTab = createTabs(tabsPanel);
+        materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
 
@@ -571,7 +580,7 @@ public class FullViewImpl extends Composite implements FullView {
                                     ConversationPlace.TOKENS.topic.toString(), "Information on software solution '" + softwareDescriptionDTO.getName() + "'"))));
         // create full description panel
         MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(softwareDescriptionDTO.getFullDescription());
-        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size, "description");
 
         // add products tab
         {
@@ -595,18 +604,15 @@ public class FullViewImpl extends Composite implements FullView {
                     materialRow.add(materialColumn);
                 }
             }
-            addTab(materialTab, tabsPanel, "Products", productsPanel, size);
+            addTab(materialTab, tabsPanel, "Products", productsPanel, size, "products");
         }
 
         // add terms and conditions tab panel
         HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>");
-        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size);
-
-        // add other tab
-        addTab(materialTab, tabsPanel, "Other", new HTMLPanel("TODO..."), size);
+        addTab(materialTab, tabsPanel, "Terms and Conditions", termsAndConditionsPanel, size, "termsandconditions");
 
         // now add the tabs panel
-        materialTab.selectTab("fullViewTab0");
+        materialTab.selectTab("description");
         tabsContent.add(tabsPanel);
 
         // TODO - change?
@@ -654,7 +660,7 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         MaterialPanel tabsPanel = createTabsPanel();
-        MaterialTab materialTab = createTabs(tabsPanel);
+        materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
 
@@ -668,7 +674,7 @@ public class FullViewImpl extends Composite implements FullView {
         }
         // create full description panel
         MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(projectDescriptionDTO.getFullDescription());
-        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size, "description");
 
         // add products tab
         {
@@ -693,7 +699,7 @@ public class FullViewImpl extends Composite implements FullView {
                     materialRow.add(materialColumn);
                 }
             }
-            addTab(materialTab, tabsPanel, "Products", productsPanel, size);
+            addTab(materialTab, tabsPanel, "Products", productsPanel, size, "products");
         }
 
         // add consortium information
@@ -715,33 +721,9 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(new HTML("<h5>Role in project</h5>" + companyRoleDTO.getRole()));
                 materialRow.add(materialColumn);
             }
-/*
-            // add lead first
-            {
-                MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
-                CompanyWidget companyWidget = new CompanyWidget(projectDescriptionDTO.getCompanyDTO());
-                materialColumn.add(companyWidget);
-                materialRow.add(materialColumn);
-            }
-            // now add all others
-            {
-                List<CompanyDTO> companies = projectDescriptionDTO.getConsortium();
-                if(companies != null && companies.size() > 0) {
-                    for (CompanyDTO companyDTO : companies) {
-                        MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
-                        CompanyWidget companyWidget = new CompanyWidget(companyDTO);
-                        materialColumn.add(companyWidget);
-                        materialRow.add(materialColumn);
-                    }
-                }
-            }
-*/
-            addTab(materialTab, tabsPanel, "Consortium", consortiumPanel, size);
+            addTab(materialTab, tabsPanel, "Consortium", consortiumPanel, size, "consortium");
         }
-        // add terms and conditions tab panel
-        HTMLPanel termsAndConditionsPanel = new HTMLPanel("<p class='" + style.subsection() + "'>No other information provided</p>");
-        addTab(materialTab, tabsPanel, "Others", termsAndConditionsPanel, size);
-        materialTab.selectTab("fullViewTab0");
+        materialTab.selectTab("description");
         // now add the tabs panel
         tabsContent.add(tabsPanel);
 
@@ -767,6 +749,17 @@ public class FullViewImpl extends Composite implements FullView {
                 materialRow.add(materialColumn);
             }
         }
+    }
+
+    @Override
+    public void selectTab(String tabName) {
+        // TODO - change to something "cleaner"
+        if(materialTab != null) {
+            materialTab.selectTab(tabName);
+        }
+/*
+        ((MaterialTab) tabsPanel.getChildren().get(0)).selectTab(tabName);
+*/
     }
 
     private MaterialChip addTag(String text, Color backgroundColor) {
@@ -820,9 +813,19 @@ public class FullViewImpl extends Composite implements FullView {
         if(companyDescriptionDTO.getCountryCode() != null) {
             addTag(IconType.MY_LOCATION, CountryEditor.getDisplayName(companyDescriptionDTO.getCountryCode()), Color.GREY, Color.WHITE);
         }
+        {
+            CompanyDTO companyDTO = new CompanyDTO();
+            companyDTO.setId(companyDescriptionDTO.getId());
+            companyDTO.setFollowers(companyDescriptionDTO.getFollowers());
+            companyDTO.setFollowing(companyDescriptionDTO.isFollowing());
+            CompanyFollowWidget followWidget = new CompanyFollowWidget(companyDTO);
+            followWidget.setName("company");
+            followWidget.getElement().getStyle().setMarginLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
+            tags.add(followWidget);
+        }
 
         MaterialPanel tabsPanel = createTabsPanel();
-        MaterialTab materialTab = createTabs(tabsPanel);
+        materialTab = createTabs(tabsPanel);
         int numTabs = 4;
         int size = (int) Math.floor(12 / numTabs);
 
@@ -834,12 +837,6 @@ public class FullViewImpl extends Composite implements FullView {
                     Window.open(companyDescriptionDTO.getWebsite(), "_blank;", null);
                 }
             });
-            addAction("FOLLOW", new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    Window.alert("TODO...");
-                }
-            });
             addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
                     new ConversationPlace(
                             ConversationPlace.TOKENS.companyid.toString() + "=" + companyDescriptionDTO.getId() +
@@ -848,7 +845,7 @@ public class FullViewImpl extends Composite implements FullView {
         }
         // create full description panel
         MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(companyDescriptionDTO.getFullDescription());
-        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size);
+        addTab(materialTab, tabsPanel, "Description", fullDescriptionPanel, size, "description");
 
         // create tab panel for offers
         MaterialPanel offeringPanel = new MaterialPanel();
@@ -860,73 +857,7 @@ public class FullViewImpl extends Composite implements FullView {
                 SearchPagePlace.TOKENS.category.toString(), Category.software.toString()))));
         setMatchingProjects(offeringPanel, companyDescriptionDTO.getProject(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
                 SearchPagePlace.TOKENS.category.toString(), Category.project.toString()))));
-        addTab(materialTab, tabsPanel, "Offering", offeringPanel, size);
-/*
-        int offerCount = 0;
-        MaterialPanel servicesPanel = new MaterialPanel();
-        MaterialLabel offeringLabel = new MaterialLabel();
-        offeringLabel.setMarginTop(20);
-        offeringLabel.setMarginBottom(20);
-        servicesPanel.add(offeringLabel);
-        MaterialRow materialRow = new MaterialRow();
-        servicesPanel.add(materialRow);
-        if(companyDescriptionDTO.getProductServices().size() == 0) {
-*/
-/*
-            servicesPanel.add(createSubsection("This company does not provide on-demand services"));
-*//*
-
-        } else {
-            offerCount += companyDescriptionDTO.getProductServices().size();
-*/
-/*
-            servicesPanel.add(createSubsection("On-demand services provided"));
-            MaterialRow materialRow = new MaterialRow();
-            servicesPanel.add(materialRow);
-*//*
-
-            for (ProductServiceDTO productServiceDTO : companyDescriptionDTO.getProductServices()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-                materialColumn.add(new ProductServiceWidget(productServiceDTO));
-                materialRow.add(materialColumn);
-            }
-        }
-        if(companyDescriptionDTO.getProductDatasets().size() == 0) {
-*/
-/*
-            servicesPanel.add(createSubsection("This company does not provide off-the-shelf data"));
-*//*
-
-        } else {
-            offerCount += companyDescriptionDTO.getProductDatasets().size();
-            for(ProductDatasetDTO productDatasetDTO : companyDescriptionDTO.getProductDatasets()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-                materialColumn.add(new ProductDatasetWidget(productDatasetDTO));
-                materialRow.add(materialColumn);
-            }
-        }
-        if(companyDescriptionDTO.getSoftware().size() == 0) {
-        } else {
-            offerCount += companyDescriptionDTO.getSoftware().size();
-            for(SoftwareDTO softwareDTO : companyDescriptionDTO.getSoftware()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-                materialColumn.add(new SoftwareWidget(softwareDTO));
-                materialRow.add(materialColumn);
-            }
-        }
-        if(companyDescriptionDTO.getProject().size() == 0) {
-        } else {
-            offerCount += companyDescriptionDTO.getProject().size();
-            for(ProjectDTO projectDTO : companyDescriptionDTO.getProject()) {
-                MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-                materialColumn.add(new ProjectWidget(projectDTO));
-                materialRow.add(materialColumn);
-            }
-        }
-        offeringLabel.setText(offerCount == 0 ? "This company has not registered any offering yet" :
-            "This company has registered the following offering");
-        addTab(materialTab, tabsPanel, "Offer (" + offerCount + ")", servicesPanel, size);
-*/
+        addTab(materialTab, tabsPanel, "Offering", offeringPanel, size, "offering");
         MaterialRow credentialsPanel = new MaterialRow();
         {
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
@@ -982,8 +913,8 @@ public class FullViewImpl extends Composite implements FullView {
             }
             credentialsPanel.add(materialColumn);
         }
-        addTab(materialTab, tabsPanel, "Credentials", credentialsPanel, size);
-        materialTab.selectTab("fullViewTab0");
+        addTab(materialTab, tabsPanel, "Credentials", credentialsPanel, size, "credentials");
+        materialTab.selectTab("description");
         tabsContent.add(tabsPanel);
 
         // TODO - change?
@@ -1147,8 +1078,7 @@ public class FullViewImpl extends Composite implements FullView {
         return label;
     }
 
-    private void addTab(MaterialTab materialTab, MaterialPanel tabPanel, String name, Panel panel, int size) {
-        String tabId = "fullViewTab" + materialTab.getWidgetCount();
+    private void addTab(MaterialTab materialTab, MaterialPanel tabPanel, String name, Panel panel, int size, String tabId) {
         MaterialTabItem materialTabItem = new MaterialTabItem();
         materialTabItem.setWaves(WavesType.GREEN);
         materialTabItem.setGrid("s" + size + " m" + size + " l" + size);

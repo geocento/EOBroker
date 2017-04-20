@@ -26,6 +26,8 @@ public interface FullView extends IsWidget {
 
     void displayProject(ProjectDescriptionDTO projectDescriptionDTO);
 
+    void selectTab(String tabName);
+
     public interface Presenter {
     }
 

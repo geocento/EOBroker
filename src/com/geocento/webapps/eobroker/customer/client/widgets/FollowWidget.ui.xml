@@ -1,0 +1,35 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+    <ui:style>
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+
+        .image {
+            cursor: pointer;
+        }
+
+        .stars > i {
+            margin-right: 5px !important;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
+    <design:MaterialPanel display="INLINE">
+        <design:MaterialTooltip text="" ui:field="followersTooltip">
+            <design:MaterialLink text="0" float="RIGHT" textColor="AMBER" iconColor="LIME" marginRight="0" addStyleNames="{style.stars}" ui:field="followers"></design:MaterialLink>
+        </design:MaterialTooltip>
+        <design:MaterialTooltip text="" ui:field="followTooltip">
+            <widgets:MaterialLoadingLink text="" float="RIGHT" textColor="LIME" iconType="STAR" iconColor="AMBER" marginRight="0" addStyleNames="{style.stars}" ui:field="follow"></widgets:MaterialLoadingLink>
+        </design:MaterialTooltip>
+    </design:MaterialPanel>
+</ui:UiBinder>

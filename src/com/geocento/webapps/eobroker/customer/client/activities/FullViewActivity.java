@@ -56,11 +56,15 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+        String selectedTab = null;
+        if(tokens.containsKey(FullViewPlace.TOKENS.tab.toString())) {
+            selectedTab = tokens.get(FullViewPlace.TOKENS.tab.toString());
+        }
         if(tokens.containsKey(FullViewPlace.TOKENS.companyid.toString())) {
             selectMenu("companies");
             try {
                 Long companyId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.companyid.toString()));
-                loadCompanyDetails(companyId);
+                loadCompanyDetails(companyId, selectedTab);
             } catch (Exception e) {
 
             }
@@ -68,7 +72,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             selectMenu("productservices");
             try {
                 Long productServiceId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productserviceid.toString()));
-                loadProductServiceDetails(productServiceId);
+                loadProductServiceDetails(productServiceId, selectedTab);
             } catch (Exception e) {
 
             }
@@ -76,7 +80,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             selectMenu("products");
             try {
                 Long productId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productid.toString()));
-                loadProductDetails(productId);
+                loadProductDetails(productId, selectedTab);
             } catch (Exception e) {
 
             }
@@ -84,7 +88,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             selectMenu("productdatasets");
             try {
                 Long productDatasetId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.productdatasetid.toString()));
-                loadProductDatasetDetails(productDatasetId);
+                loadProductDatasetDetails(productDatasetId, selectedTab);
             } catch (Exception e) {
 
             }
@@ -92,7 +96,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             selectMenu("software");
             try {
                 Long softwareId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.softwareid.toString()));
-                loadSoftwareDetails(softwareId);
+                loadSoftwareDetails(softwareId, selectedTab);
             } catch (Exception e) {
 
             }
@@ -100,14 +104,14 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             selectMenu("project");
             try {
                 Long projectId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.projectid.toString()));
-                loadProjectDetails(projectId);
+                loadProjectDetails(projectId, selectedTab);
             } catch (Exception e) {
 
             }
         }
     }
 
-    private void loadProductDetails(Long productId) {
+    private void loadProductDetails(Long productId, String selectedTab) {
         fullView.setTitle("Loading product details...");
         fullView.clearDetails();
         displayLoading();
@@ -124,13 +128,16 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     hideLoading();
                     setTitleText("Product");
                     fullView.displayProduct(productDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectTab(selectedTab);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getProductDescription(productId);
         } catch (RequestException e) {
         }
     }
 
-    private void loadCompanyDetails(Long companyId) {
+    private void loadCompanyDetails(Long companyId, String selectedTab) {
         fullView.setTitle("Loading company details...");
         fullView.clearDetails();
         displayLoading();
@@ -147,13 +154,16 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     hideLoading();
                     setTitleText("Company");
                     fullView.displayCompany(companyDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectTab(selectedTab);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getCompanyDescription(companyId);
         } catch (RequestException e) {
         }
     }
 
-    private void loadProductServiceDetails(Long productServiceId) {
+    private void loadProductServiceDetails(Long productServiceId, String selectedTab) {
         fullView.setTitle("Loading product service details...");
         fullView.clearDetails();
         displayLoading();
@@ -170,13 +180,16 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     hideLoading();
                     setTitleText("On-demand service");
                     fullView.displayProductService(productServiceDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectTab(selectedTab);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getProductServiceDescription(productServiceId);
         } catch (RequestException e) {
         }
     }
 
-    private void loadProductDatasetDetails(Long productDatasetId) {
+    private void loadProductDatasetDetails(Long productDatasetId, String selectedTab) {
         fullView.setTitle("Loading off the shelf data details...");
         fullView.clearDetails();
         displayLoading();
@@ -193,13 +206,16 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     hideLoading();
                     setTitleText("Off-the-shelf data");
                     fullView.displayProductDataset(productDatasetDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectTab(selectedTab);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getProductDatasetDescription(productDatasetId);
         } catch (RequestException e) {
         }
     }
 
-    private void loadSoftwareDetails(Long softwareId) {
+    private void loadSoftwareDetails(Long softwareId, String selectedTab) {
         fullView.setTitle("Loading software information...");
         fullView.clearDetails();
         displayLoading();
@@ -216,13 +232,16 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     hideLoading();
                     setTitleText("Software");
                     fullView.displaySoftware(softwareDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectTab(selectedTab);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getSoftwareDescription(softwareId);
         } catch (RequestException e) {
         }
     }
 
-    private void loadProjectDetails(Long projectId) {
+    private void loadProjectDetails(Long projectId, String selectedTab) {
         fullView.setTitle("Loading project information...");
         fullView.clearDetails();
         displayLoading();
@@ -239,6 +258,9 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                     hideLoading();
                     setTitleText("Project");
                     fullView.displayProject(projectDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectTab(selectedTab);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getProjectDescription(projectId);
         } catch (RequestException e) {

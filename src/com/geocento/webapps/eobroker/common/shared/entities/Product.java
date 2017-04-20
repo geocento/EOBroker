@@ -64,6 +64,8 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     List<ProductDataset> productDatasets;
 
+    Long followers;
+
     public Product() {
     }
 
@@ -187,6 +189,14 @@ public class Product {
         this.productDatasets = productDatasets;
     }
 
+    public void setFollowers(Long followers) {
+        this.followers = followers;
+    }
+
+    public Long getFollowers() {
+        return followers;
+    }
+
     @PreRemove
     private void removeProduct() {
         if(productServices == null) {
@@ -196,4 +206,5 @@ public class Product {
             productService.setProduct(null);
         }
     }
+
 }

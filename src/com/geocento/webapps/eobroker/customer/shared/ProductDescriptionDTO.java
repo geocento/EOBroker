@@ -2,7 +2,6 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.Sector;
 import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
-import sun.security.jca.ProviderList;
 
 import java.util.List;
 
@@ -18,12 +17,14 @@ public class ProductDescriptionDTO {
     String description;
     Sector sector;
     Thematic thematic;
+    boolean following;
+    int followers;
     List<ProductServiceDTO> productServices;
     List<ProductDatasetDTO> productDatasets;
     boolean imageRule;
-    private List<SoftwareDTO> softwares;
-    private List<ProjectDTO> projects;
-    private List<ProductDTO> suggestedProducts;
+    List<SoftwareDTO> softwares;
+    List<ProjectDTO> projects;
+    List<ProductDTO> suggestedProducts;
 
     public ProductDescriptionDTO() {
     }
@@ -82,6 +83,26 @@ public class ProductDescriptionDTO {
 
     public void setThematic(Thematic thematic) {
         this.thematic = thematic;
+    }
+
+    public void setFollowing(boolean following) {
+        this.following = following;
+    }
+
+    public boolean getFollowing() {
+        return following;
+    }
+
+    public boolean isFollowing() {
+        return following;
+    }
+
+    public int getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(int followers) {
+        this.followers = followers;
     }
 
     public void setProductServices(List<ProductServiceDTO> productServices) {

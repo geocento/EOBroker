@@ -346,6 +346,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductDescriptionDTO getProductDescription(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -363,6 +364,12 @@ public class AssetsResource implements AssetsService {
             productDescriptionDTO.setImageUrl(product.getImageUrl());
             productDescriptionDTO.setSector(product.getSector());
             productDescriptionDTO.setThematic(product.getThematic());
+            productDescriptionDTO.setFollowers(product.getFollowers() == null ? 0 : product.getFollowers().intValue());
+            // check if following
+            TypedQuery<Long> followingQuery = em.createQuery("select count(f) from Following f where f.user.username = :userName and f.product is not null and f.product.id = :productId", Long.class);
+            followingQuery.setParameter("userName", userName);
+            followingQuery.setParameter("productId", product.getId());
+            productDescriptionDTO.setFollowing(followingQuery.getSingleResult() > 0);
             // add relevant supplier services
             {
                 TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.product = :product", ProductService.class);
@@ -816,6 +823,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public CompanyDescriptionDTO getCompanyDescription(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -825,53 +833,60 @@ public class AssetsResource implements AssetsService {
             if (company == null) {
                 throw new RequestException("Company does not exist");
             }
-            CompanyDescriptionDTO companyDTO = new CompanyDescriptionDTO();
-            companyDTO.setId(company.getId());
-            companyDTO.setName(company.getName());
-            companyDTO.setDescription(company.getDescription());
-            companyDTO.setFullDescription(company.getFullDescription());
-            companyDTO.setIconURL(company.getIconURL());
-            companyDTO.setContactEmail(company.getContactEmail());
-            companyDTO.setWebsite(company.getWebsite());
-            companyDTO.setAddress(company.getAddress());
-            companyDTO.setCountryCode(company.getCountryCode());
-            companyDTO.setAwards(company.getAwards());
-            companyDTO.setTestimonials(ListUtil.mutate(company.getTestimonials(), new ListUtil.Mutate<Testimonial, TestimonialDTO>() {
-                        @Override
-                        public TestimonialDTO mutate(Testimonial testimonial) {
-                            TestimonialDTO testimonialDTO = new TestimonialDTO();
-                            testimonialDTO.setId(testimonial.getId());
-                            testimonialDTO.setFromUser(UserHelper.createUserDTO(testimonial.getFromUser()));
-                            testimonialDTO.setTestimonial(testimonial.getTestimonial());
-                            testimonialDTO.setCreationDate(testimonial.getCreationDate());
-                            return testimonialDTO;
-                        }
-                    }));
-            companyDTO.setProductServices(ListUtil.mutate(company.getServices(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
+            CompanyDescriptionDTO companyDescriptionDTO = new CompanyDescriptionDTO();
+            companyDescriptionDTO.setId(company.getId());
+            companyDescriptionDTO.setName(company.getName());
+            companyDescriptionDTO.setDescription(company.getDescription());
+            companyDescriptionDTO.setFullDescription(company.getFullDescription());
+            companyDescriptionDTO.setIconURL(company.getIconURL());
+            companyDescriptionDTO.setContactEmail(company.getContactEmail());
+            companyDescriptionDTO.setWebsite(company.getWebsite());
+            companyDescriptionDTO.setAddress(company.getAddress());
+            companyDescriptionDTO.setCountryCode(company.getCountryCode());
+            companyDescriptionDTO.setAwards(company.getAwards());
+            companyDescriptionDTO.setFollowers(company.getFollowers() == null ? 0 : company.getFollowers().intValue());
+            // check if following
+            TypedQuery<Long> followingQuery = em.createQuery("select count(f) from Following f where f.user.username = :userName and f.company is not null and f.company.id = :companyId", Long.class);
+            followingQuery.setParameter("userName", userName);
+            followingQuery.setParameter("companyId", company.getId());
+            companyDescriptionDTO.setFollowing(followingQuery.getSingleResult() > 0);
+            companyDescriptionDTO.setTestimonials(ListUtil.mutate(company.getTestimonials(), new ListUtil.Mutate<Testimonial, TestimonialDTO>() {
+                @Override
+                public TestimonialDTO mutate(Testimonial testimonial) {
+                    TestimonialDTO testimonialDTO = new TestimonialDTO();
+                    testimonialDTO.setId(testimonial.getId());
+                    testimonialDTO.setFromUser(UserHelper.createUserDTO(testimonial.getFromUser()));
+                    testimonialDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(testimonial.getCompany()));
+                    testimonialDTO.setTestimonial(testimonial.getTestimonial());
+                    testimonialDTO.setCreationDate(testimonial.getCreationDate());
+                    return testimonialDTO;
+                }
+            }));
+            companyDescriptionDTO.setProductServices(ListUtil.mutate(company.getServices(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
                 @Override
                 public ProductServiceDTO mutate(ProductService productService) {
                     return createProductServiceDTO(productService);
                 }
             }));
-            companyDTO.setProductDatasets(ListUtil.mutate(company.getDatasets(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+            companyDescriptionDTO.setProductDatasets(ListUtil.mutate(company.getDatasets(), new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
                 @Override
                 public ProductDatasetDTO mutate(ProductDataset object) {
                     return createProductDatasetDTO(object);
                 }
             }));
-            companyDTO.setSoftware(ListUtil.mutate(company.getSoftware(), new ListUtil.Mutate<Software, SoftwareDTO>() {
+            companyDescriptionDTO.setSoftware(ListUtil.mutate(company.getSoftware(), new ListUtil.Mutate<Software, SoftwareDTO>() {
                 @Override
                 public SoftwareDTO mutate(Software software) {
                     return createSoftwareDTO(software);
                 }
             }));
-            companyDTO.setProject(ListUtil.mutate(company.getProjects(), new ListUtil.Mutate<Project, ProjectDTO>() {
+            companyDescriptionDTO.setProject(ListUtil.mutate(company.getProjects(), new ListUtil.Mutate<Project, ProjectDTO>() {
                 @Override
                 public ProjectDTO mutate(Project project) {
                     return createProjectDTO(project);
                 }
             }));
-            return companyDTO;
+            return companyDescriptionDTO;
         } catch (Exception e) {
             throw new RequestException("Server error");
         } finally {
@@ -1019,8 +1034,56 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Boolean followCompany(Long companyId, Boolean follow) throws RequestException {
-        return dummyFollow(companyId, follow);
+    public Long followCompany(Long companyId, Boolean follow) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            Company company = em.find(Company.class, companyId);
+            if(company == null) {
+                throw new RequestException("Could not find company");
+            }
+            TypedQuery<Following> query = em.createQuery("select f from Following f where f.user = :user and f.company is not null and f.company.id = :companyid", Following.class);
+            query.setParameter("companyid", companyId);
+            query.setParameter("user", user);
+            List<Following> followings = query.getResultList();
+            em.getTransaction().begin();
+            if(follow) {
+                // check we are not following it already
+                if(followings != null && followings.size() > 0) {
+                    // we are already following
+                } else {
+                    Following following = new Following();
+                    following.setUser(user);
+                    following.setCompany(company);
+                    following.setCreationDate(new Date());
+                    em.persist(following);
+                }
+            } else {
+                // remove following
+                if(followings != null && followings.size() > 0) {
+                    for(Following following : followings) {
+                        em.remove(following);
+                    }
+                }
+            }
+            // TODO - update number of followers
+            // count number of followers
+            TypedQuery<Long> countFollowersQuery = em.createQuery("select count(f) from Following f where f.company is not null and f.company.id = :companyId", Long.class);
+            countFollowersQuery.setParameter("companyId", companyId);
+            Long followers = countFollowersQuery.getSingleResult();
+            company.setFollowers(followers);
+            em.getTransaction().commit();
+            return followers;
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error updating following");
+        } finally {
+            em.close();
+        }
     }
 
     private Boolean dummyFollow(Long companyId, Boolean follow) throws RequestException {
@@ -1036,11 +1099,18 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Boolean followProduct(Long productId, Boolean follow) throws RequestException {
+    public Long followProduct(Long productId, Boolean follow) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
+            User user = em.find(User.class, userName);
+            Product product = em.find(Product.class, productId);
+            if(product == null) {
+                throw new RequestException("Could not find product");
+            }
             TypedQuery<Following> query = em.createQuery("select f from Following f where f.user = :user and f.product is not null and f.product.id = :productid", Following.class);
+            query.setParameter("productid", productId);
+            query.setParameter("user", user);
             List<Following> followings = query.getResultList();
             em.getTransaction().begin();
             if(follow) {
@@ -1049,11 +1119,6 @@ public class AssetsResource implements AssetsService {
                     // we are already following
                 } else {
                     Following following = new Following();
-                    User user = em.find(User.class, userName);
-                    Product product = em.find(Product.class, productId);
-                    if(product == null) {
-                        throw new RequestException("Could not find product");
-                    }
                     following.setUser(user);
                     following.setProduct(product);
                     following.setCreationDate(new Date());
@@ -1067,8 +1132,14 @@ public class AssetsResource implements AssetsService {
                     }
                 }
             }
+            // TODO - update number of followers
+            // count number of followers
+            TypedQuery<Long> countFollowersQuery = em.createQuery("select count(f) from Following f where f.product is not null and f.product.id = :productid", Long.class);
+            countFollowersQuery.setParameter("productid", productId);
+            Long followers = countFollowersQuery.getSingleResult();
+            product.setFollowers(followers);
             em.getTransaction().commit();
-            return follow;
+            return followers;
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -1114,7 +1185,13 @@ public class AssetsResource implements AssetsService {
                 @Override
                 public FollowingEventDTO mutate(FollowingEvent followingEvent) {
                     FollowingEventDTO followingEventDTO = new FollowingEventDTO();
+                    followingEventDTO.setCategory(followingEvent.getEvent().getCategory());
+                    followingEventDTO.setType(followingEvent.getEvent().getType());
+                    followingEventDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(followingEvent.getEvent().getCompany()));
+                    followingEventDTO.setLinkId(followingEvent.getEvent().getLinkId());
                     followingEventDTO.setMessage(followingEvent.getEvent().getMessage());
+                    // use the event creation instead
+                    followingEventDTO.setCreationDate(followingEvent.getEvent().getCreationDate());
                     return followingEventDTO;
                 }
             });

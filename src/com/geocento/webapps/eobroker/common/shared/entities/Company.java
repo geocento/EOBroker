@@ -75,6 +75,8 @@ public class Company {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
     List<Project> projects;
 
+    Long followers;
+
     public Company() {
     }
 
@@ -228,5 +230,13 @@ public class Company {
 
     public void setProjects(List<Project> projects) {
         this.projects = projects;
+    }
+
+    public void setFollowers(Long followers) {
+        this.followers = followers;
+    }
+
+    public Long getFollowers() {
+        return followers;
     }
 }

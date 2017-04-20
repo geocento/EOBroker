@@ -140,11 +140,11 @@ public interface AssetsService extends DirectRestService {
 
     @PUT
     @Path("/assets/company/{id}/follow")
-    Boolean followCompany(@PathParam("id") Long companyId, Boolean follow) throws RequestException;
+    Long followCompany(@PathParam("id") Long companyId, Boolean follow) throws RequestException;
 
     @PUT
     @Path("/assets/product/{id}/follow")
-    Boolean followProduct(@PathParam("id") Long productId, Boolean follow) throws RequestException;
+    Long followProduct(@PathParam("id") Long productId, Boolean follow) throws RequestException;
 
     @PUT
     @Path("/assets/service/{id}/follow")

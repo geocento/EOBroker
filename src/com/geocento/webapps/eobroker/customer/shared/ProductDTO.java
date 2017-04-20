@@ -10,11 +10,12 @@ public class ProductDTO extends Offer {
 
     Long id;
     String name;
+    String shortDescription;
     String description;
     Sector sector;
     Thematic thematic;
-    private String imageUrl;
-    private String shortDescription;
+    String imageUrl;
+    int followers;
 
     public ProductDTO() {
     }
@@ -73,5 +74,13 @@ public class ProductDTO extends Offer {
 
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
+    }
+
+    public int getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(int followers) {
+        this.followers = followers;
     }
 }

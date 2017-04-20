@@ -23,6 +23,7 @@ public class CompanyDTO {
     List<String> awards;
     private Date startedIn;
     private boolean following;
+    private int followers;
 
     public CompanyDTO() {
     }
@@ -129,5 +130,13 @@ public class CompanyDTO {
 
     public boolean getFollowing() {
         return following;
+    }
+
+    public void setFollowers(int followers) {
+        this.followers = followers;
+    }
+
+    public int getFollowers() {
+        return followers;
     }
 }

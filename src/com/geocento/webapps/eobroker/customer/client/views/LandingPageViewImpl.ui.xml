@@ -5,9 +5,7 @@
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
              xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views">
-
-    <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
-    <ui:style>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.LandingPageViewImpl.Style">
 
         @external nav-wrapper;
 
@@ -39,12 +37,23 @@
         .navBar {
         }
 
+        .followingEvent {
+            margin-bottom: 2em;
+        }
+
+        .newsFeedTitle {
+            margin-bottom: 2em;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
     </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.mainPanel}">
         <g:HTMLPanel addStyleNames="{style.content}">
             <cwidgets:MaterialSlider ui:field="slider" fullscreen="false">
             </cwidgets:MaterialSlider>
-            <m:MaterialTitle visible="false" title="News feed" />
+            <m:MaterialLabel addStyleNames="{style.newsFeedTitle}" text="Updates in your network" />
             <m:MaterialRow ui:field="newsFeed">
             </m:MaterialRow>
 <!--

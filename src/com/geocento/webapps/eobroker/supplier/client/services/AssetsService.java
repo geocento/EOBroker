@@ -50,7 +50,7 @@ public interface AssetsService extends DirectRestService {
     @PUT
     @Path("/assets/productservices/")
     @Produces("application/json")
-    public void updateProductService(ProductServiceEditDTO product) throws RequestException;
+    public Long updateProductService(ProductServiceEditDTO product) throws RequestException;
 
     @GET
     @Path("/assets/companies/")

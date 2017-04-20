@@ -35,6 +35,7 @@ public class TestimonialWidget extends Composite {
     HTMLPanel topic;
 
     public TestimonialWidget(TestimonialDTO testimonialDTO) {
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         if(testimonialDTO.getFromUser() == null) {
@@ -46,9 +47,8 @@ public class TestimonialWidget extends Composite {
         topic.add(new HTML("On company " +
                 "<img style='max-height: 24px; vertical-align: middle;' src='" + testimonialDTO.getCompanyDTO().getIconURL() + "'/> " +
                 testimonialDTO.getCompanyDTO().getName()));
-        testimonial.add(new HTML(
-                (testimonialDTO.getFromUser() == null ? "" : "<b>" + testimonialDTO.getFromUser().getName() + "</b> ") +
-                "<i>" + testimonialDTO.getTestimonial() + "</i>"));
-        creationDate.setText(DateUtils.dateFormat.format(testimonialDTO.getCreationDate()));
+        testimonial.add(new HTML("<i>" + testimonialDTO.getTestimonial() + "</i>"));
+        creationDate.setText((testimonialDTO.getFromUser() == null ? "" : "From " + testimonialDTO.getFromUser().getName() + " ") +
+                "on " + DateUtils.dateFormat.format(testimonialDTO.getCreationDate()));
     }
 }

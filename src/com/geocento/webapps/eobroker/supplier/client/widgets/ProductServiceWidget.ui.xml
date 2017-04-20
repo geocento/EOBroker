@@ -32,8 +32,7 @@
         </design:MaterialCardContent>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
             <design:MaterialLink iconType="EDIT" text="EDIT" ui:field="edit"></design:MaterialLink>
-            <design:MaterialLink iconType="REMOVE" text="REMOVE" ui:field="remove"></design:MaterialLink>
-            <design:MaterialButton iconType="PLUS_ONE" iconColor="GREY" backgroundColor="GREY_LIGHTEN_2" shadow="0" type="FLOATING" float="RIGHT"/>
+            <design:MaterialLink iconType="DELETE" text="REMOVE" ui:field="remove"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

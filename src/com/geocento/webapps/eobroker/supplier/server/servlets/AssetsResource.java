@@ -199,7 +199,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public void updateProductService(final ProductServiceEditDTO productServiceDTO) throws RequestException {
+    public Long updateProductService(final ProductServiceEditDTO productServiceDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         if(productServiceDTO == null ) {
             throw new RequestException("Product service cannot be null");
@@ -267,8 +267,10 @@ public class AssetsResource implements AssetsService {
             // fail silently
             try {
                 em.getTransaction().begin();
+                // add event for company and for product
                 if(newService) {
                     EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(), Category.productservices, Event.TYPE.OFFER, "New service available for product " + product.getName(), productService.getId() + "");
+                    EventHelper.createAndPropagateProductEvent(em, product, user.getCompany(), Category.productservices, Event.TYPE.OFFER, "New service available for product " + product.getName(), productService.getId() + "");
                 }
                 em.getTransaction().commit();
             } catch (Exception e) {
@@ -277,6 +279,7 @@ public class AssetsResource implements AssetsService {
                 }
                 logger.error(e.getMessage(), e);
             }
+            return productService.getId();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
