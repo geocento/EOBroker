@@ -9,7 +9,6 @@ import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
-import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,6 +53,10 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     MaterialLabel comment;
     @UiField
     MaterialRow previousConversations;
+    @UiField
+    MaterialPanel conversationStarter;
+    @UiField
+    MaterialLabel previousConversationsTitle;
 
     private ClientFactoryImpl clientFactory;
 
@@ -103,8 +106,11 @@ public class ConversationViewImpl extends Composite implements ConversationView 
                 materialBubble.setWidth("50%");
                 // add content
                 MaterialButton materialButton = new MaterialButton(ButtonType.FLOATING);
-                materialButton.setIconType(IconType.OPEN_IN_BROWSER);
+                materialButton.setIconType(IconType.EXIT_TO_APP);
+                materialButton.setBackgroundColor(Color.WHITE);
+                materialButton.setIconColor(Color.BLUE);
                 materialButton.setFloat(Style.Float.RIGHT);
+                materialButton.setShadow(0);
                 materialButton.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
@@ -115,12 +121,22 @@ public class ConversationViewImpl extends Composite implements ConversationView 
                 MaterialLabel materialLabel = new MaterialLabel("Conversation '" + conversationDTO.getTopic() + "'");
                 materialLabel.setFontSize(1.2, Style.Unit.EM);
                 materialBubble.add(materialLabel);
-                materialLabel = new MaterialLabel("Created on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
+                materialLabel = new MaterialLabel("with company " + conversationDTO.getCompany().getName() + " started on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
                 materialLabel.setFontSize(0.8, Style.Unit.EM);
                 materialBubble.add(materialLabel);
                 previousConversations.add(materialBubble);
             }
         }
+    }
+
+    @Override
+    public void displayConversationStarter(boolean display) {
+        conversationStarter.setVisible(display);
+    }
+
+    @Override
+    public void setPreviousConversationTitle(String title) {
+        previousConversationsTitle.setText(title);
     }
 
     @Override

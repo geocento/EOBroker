@@ -206,11 +206,11 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public SearchResult getMatchingServices(String text, Long aoiId) throws RequestException {
+    public SearchResult getMatchingServices(String text) throws RequestException {
         SearchResult searchResult = new SearchResult();
         // start with products
         {
-            List<ProductDTO> products = listProducts(text, 0, 5, aoiId, Sector.all, Thematic.all);
+            List<ProductDTO> products = listProducts(text, 0, 5, null, Sector.all, Thematic.all);
             boolean more = products.size() > 4;
             if (more) {
                 products = products.subList(0, 4);
@@ -220,7 +220,7 @@ public class SearchResource implements SearchService {
         }
         // now search for services
         {
-            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, aoiId);
+            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null, null, null);
             boolean more = productServiceDTOs.size() > 4;
             if (more) {
                 productServiceDTOs = productServiceDTOs.subList(0, 4);
@@ -230,7 +230,7 @@ public class SearchResource implements SearchService {
         }
         // now search for datasets
         {
-            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, aoiId, null, null, null);
+            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, null, null, null, null, null, null, null);
             boolean more = productDatasetDTOs.size() > 4;
             if (more) {
                 productDatasetDTOs = productDatasetDTOs.subList(0, 4);
@@ -240,7 +240,7 @@ public class SearchResource implements SearchService {
         }
         // now search for software
         {
-            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, aoiId, null);
+            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, null, null);
             boolean more = softwareDTOs.size() > 4;
             if (more) {
                 softwareDTOs = softwareDTOs.subList(0, 4);
@@ -250,7 +250,7 @@ public class SearchResource implements SearchService {
         }
         // now search for projects
         {
-            List<ProjectDTO> projectDTOs = listProjects(text, 0, 5, aoiId);
+            List<ProjectDTO> projectDTOs = listProjects(text, 0, 5, null);
             boolean more = projectDTOs.size() > 4;
             if (more) {
                 projectDTOs = projectDTOs.subList(0, 4);
@@ -547,17 +547,28 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+    public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit,
+                                                       Long aoiId, String aoiWKT,
+                                                       Long companyId, Long productId) throws RequestException {
         List<ProductService> productServices = null;
         EntityManager em = EMF.get().createEntityManager();
-        String additionalStatement = null;
+        List<String> additionalStatements = new ArrayList<String>();
         if(aoiId != null) {
             AoI aoi = em.find(AoI.class, aoiId);
             if(aoi != null) {
-                additionalStatement = "ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'";
+                additionalStatements.add("ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'");
             }
+        } else if(aoiWKT != null) {
+            additionalStatements.add("ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't'");
         }
-        List<Long> productIds = getFilteredIds(em, "productservice", textFilter, start, limit, additionalStatement);
+        if(companyId != null) {
+            additionalStatements.add("company_id = " + companyId);
+        }
+        if(productId != null) {
+            additionalStatements.add("product_id = " + productId);
+        }
+        List<Long> productIds = getFilteredIds(em, "productservice", textFilter, start, limit,
+                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
         if(productIds.size() > 0) {
             TypedQuery<ProductService> productQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
             productQuery.setParameter("productIds", productIds);
@@ -585,8 +596,10 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit, Long aoiId,
-                                                       ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame) throws RequestException {
+    public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit,
+                                                       Long aoiId, String aoiWKT,
+                                                       ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame,
+                                                       Long companyId, Long productId) throws RequestException {
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
         List<String> additionalStatements = new ArrayList<String>();
@@ -610,6 +623,12 @@ public class SearchResource implements SearchService {
             additionalStatements.add("(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
         } else if(stopTimeFrame != null) {
             additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ")");
+        }
+        if(companyId != null) {
+            additionalStatements.add("company_id = " + companyId);
+        }
+        if(productId != null) {
+            additionalStatements.add("product_id = " + productId);
         }
         List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit,
                 additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));

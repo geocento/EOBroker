@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -39,6 +41,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private int limit;
 
     private int lastCall = 0;
+    private String previousSearch = "";
 
     public SearchPageActivity(SearchPagePlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -257,7 +260,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                             searchPageView.setMatchingProjects(projectDTOs, moreUrl);
                         }
                     }
-                }).call(ServicesUtil.searchService).getMatchingServices(text, filterByAoI ? currentAoI.getId() : null);
+                }).call(ServicesUtil.searchService).getMatchingServices(text);
             } catch (RequestException e) {
             }
         }
@@ -289,33 +292,52 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     }
 
     private void loadProductServices(final String text, final int start, final int limit) {
-        try {
+        boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+        ProductDTO product = searchPageView.getProductSelection();
+        CompanyDTO company = searchPageView.getCompanySelection();
+        String searchHash = generateSearchHash("productservices" + text, start, limit,
+                null,
+                filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
+                null,
+                null, null,
+                company != null ? company.getId() : null,
+                product != null ? product.getId() : null);
+        if(!previousSearch.contentEquals(searchHash)) {
             searchPageView.displayLoadingResults("Loading services...");
-            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
-            REST.withCallback(new MethodCallback<List<ProductServiceDTO>>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
-                }
+            try {
+                REST.withCallback(new MethodCallback<List<ProductServiceDTO>>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        Window.alert("Error");
+                    }
 
-                @Override
-                public void onSuccess(Method method, List<ProductServiceDTO> products) {
-                    searchPageView.hideLoadingResults();
-                    // add all results to the interface
-                    searchPageView.addProductServices(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
-                }
-            }).call(ServicesUtil.searchService).listProductServices(text, start, limit, filterByAoI ? currentAoI.getId() : null);
-        } catch (RequestException e) {
+                    @Override
+                    public void onSuccess(Method method, List<ProductServiceDTO> products) {
+                        searchPageView.hideLoadingResults();
+                        // add all results to the interface
+                        searchPageView.addProductServices(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
+                    }
+                }).call(ServicesUtil.searchService).listProductServices(text, start, limit,
+                        null,
+                        filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
+                        company != null ? company.getId() : null,
+                        product != null ? product.getId() : null
+                );
+            } catch (RequestException e) {
+            }
+            previousSearch = searchHash;
         }
     }
 
     private void loadProductDatasets(final String text, final int start, final int limit) {
+        boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+        Date startTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStartTimeFrameFilter().getValue() : null;
+        Date stopTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStopTimeFrameFilter().getValue() : null;
+        ServiceType serviceType = searchPageView.getProductServiceType();
+        ProductDTO product = searchPageView.getProductSelection();
+        CompanyDTO company = searchPageView.getCompanySelection();
+        searchPageView.displayLoadingResults("Loading data...");
         try {
-            searchPageView.displayLoadingResults("Loading data...");
-            boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
-            Date startTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStartTimeFrameFilter().getValue() : null;
-            Date stopTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStopTimeFrameFilter().getValue() : null;
-            ServiceType serviceType = searchPageView.getProductServiceType();
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -328,10 +350,20 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProductDatasets(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit, filterByAoI ? currentAoI.getId() : null,
-                    serviceType, startTimeFrame == null ? null : startTimeFrame.getTime() / 1000, stopTimeFrame == null ? null : stopTimeFrame.getTime() / 1000);
+            }).call(ServicesUtil.searchService).listProductDatasets(text, start, limit,
+                    null,
+                    filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
+                    serviceType,
+                    startTimeFrame == null ? null : startTimeFrame.getTime() / 1000, stopTimeFrame == null ? null : stopTimeFrame.getTime() / 1000,
+                    company != null ? company.getId() : null,
+                    product != null ? product.getId() : null
+            );
         } catch (RequestException e) {
         }
+    }
+
+    private String generateSearchHash(String text, int start, int limit, Long aoiId, String aoiWKT, ServiceType serviceType, Long startTime, Long stopTime, Long companyId, Long productId) {
+        return StringUtils.join(new String[] {text, start + "", limit + "", aoiId + "", aoiWKT, serviceType + "", startTime + "", stopTime + "", companyId + "", productId + ""}, "_");
     }
 
     private void loadSoftware(final String text, final int start, final int limit) {

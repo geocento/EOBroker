@@ -86,6 +86,14 @@ public interface SearchPageView extends IsWidget {
 
     void setFilterTitle(String filterText);
 
+    ProductDTO getProductSelection();
+
+    void setProductSelection(ProductDTO productDTO);
+
+    CompanyDTO getCompanySelection();
+
+    void setCompanySelection(CompanyDTO companyDTO);
+
     public interface Presenter {
 
         void loadMoreProducts();

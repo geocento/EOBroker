@@ -91,7 +91,7 @@ public interface RequestsService extends DirectRestService {
     @GET
     @Path("/assets/conversation/")
     @Produces("application/json")
-    List<ConversationDTO> listConversations(@QueryParam("companyId") Long companyId) throws RequestException;
+    List<ConversationDTO> listConversations(@QueryParam("start") int start, @QueryParam("limit") int limit, @QueryParam("companyId") Long companyId) throws RequestException;
 
     @GET
     @Path("/requests/feedback/{id}")

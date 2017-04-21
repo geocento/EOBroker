@@ -606,22 +606,27 @@ public class RequestsResource implements RequestsService {
     }
 
     @Override
-    public List<ConversationDTO> listConversations(Long companyId) throws RequestException {
+    public List<ConversationDTO> listConversations(int start, int limit, Long companyId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<Conversation> query = em.createQuery("select c from Conversation c where c.company.id = :companyId and c.customer = :user order by c.creationDate desc", Conversation.class);
-            query.setParameter("companyId", companyId);
+            TypedQuery<Conversation> query = em.createQuery("select c from Conversation c where c.customer = :user" +
+                            (companyId != null ? " and c.company.id = :companyId" : "") +
+                    " order by c.creationDate desc", Conversation.class);
             query.setParameter("user", user);
-            query.setFirstResult(0);
-            query.setMaxResults(10);
+            if(companyId != null) {
+                query.setParameter("companyId", companyId);
+            }
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Conversation, ConversationDTO>() {
                 @Override
                 public ConversationDTO mutate(Conversation conversation) {
                     ConversationDTO conversationDTO = new ConversationDTO();
                     conversationDTO.setId(conversation.getId());
                     conversationDTO.setTopic(conversation.getTopic());
+                    conversationDTO.setCompany(CompanyHelper.createCompanyDTO(conversation.getCompany()));
                     conversationDTO.setCreationDate(conversation.getCreationDate());
                     return conversationDTO;
                 }

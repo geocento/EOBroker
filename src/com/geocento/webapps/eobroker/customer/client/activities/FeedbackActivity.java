@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
@@ -69,7 +70,9 @@ public class FeedbackActivity extends TemplateActivity implements FeedbackView.P
                     @Override
                     public void onSuccess(Method method, FeedbackDTO feedbackDTO) {
                         FeedbackActivity.this.feedbackDTO = feedbackDTO;
-                        feedbackView.displayFeedback(feedbackDTO);
+                        feedbackView.setFeedbackTitle(feedbackDTO.getTopic());
+                        feedbackView.setFeedbackDescription("Feedback on EO Broker, started on " + DateUtils.formatDateOnly(feedbackDTO.getCreationDate()));
+                        feedbackView.displayFeedbackMessages(feedbackDTO.getMessages());
                         loadPreviousFeedbacks(feedbackDTO.getId());
                     }
                 }).call(ServicesUtil.requestsService).getFeedback(feedbackid);
@@ -82,7 +85,18 @@ public class FeedbackActivity extends TemplateActivity implements FeedbackView.P
                 feedbackDTO.setTopic(topic);
                 feedbackDTO.setMessages(new ArrayList<MessageDTO>());
                 feedbackDTO.setCreationDate(new Date());
-                feedbackView.displayFeedback(feedbackDTO);
+                feedbackView.setFeedbackTitle(feedbackDTO.getTopic());
+                feedbackView.setFeedbackDescription("We value your feedback, please let us know how we can improve your experience");
+                feedbackView.displayFeedbackMessages(feedbackDTO.getMessages());
+                loadPreviousFeedbacks(null);
+            } else {
+                feedbackDTO = new FeedbackDTO();
+                feedbackDTO.setTopic("General feedback");
+                feedbackDTO.setMessages(new ArrayList<MessageDTO>());
+                feedbackDTO.setCreationDate(new Date());
+                feedbackView.setFeedbackTitle(feedbackDTO.getTopic());
+                feedbackView.setFeedbackDescription("We value your feedback, please let us know how we can improve your experience");
+                feedbackView.displayFeedbackMessages(feedbackDTO.getMessages());
                 loadPreviousFeedbacks(null);
             }
         }

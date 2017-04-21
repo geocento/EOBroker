@@ -3,9 +3,10 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:widgetsc="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
              xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.SearchPageViewImpl.Style">
 
@@ -137,6 +138,15 @@
         .filtersBody {
         }
 
+        .searchBox {
+            margin-bottom: 20px;
+            background: white;
+        }
+        .searchBox, .searchBox i {
+            height: 54px !important;
+            line-height: 54px !important;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -153,9 +163,11 @@
                         <design:MaterialListValueBox placeholder="Thematic" addStyleNames="{style.option}" ui:field="thematicFilter"></design:MaterialListValueBox>
                         <material:MaterialListValueBox placeholder="Company Size" addStyleNames="{style.option}" ui:field="companySizeFilter"></material:MaterialListValueBox>
                         <design:MaterialListValueBox placeholder="Years since incorporation" addStyleNames="{style.option}" ui:field="companyAgeFilter"></design:MaterialListValueBox>
-                        <widgets:CountryEditor placeholder="Country of incorporation" addStyleNames="{style.option}" ui:field="companyCountryFilter"></widgets:CountryEditor>
+                        <widgetsc:CountryEditor placeholder="Country of incorporation" addStyleNames="{style.option}" ui:field="companyCountryFilter"></widgetsc:CountryEditor>
                         <material:MaterialListValueBox placeholder="Data type" addStyleNames="{style.option}" ui:field="productCommercialFilter"></material:MaterialListValueBox>
                         <material:MaterialListValueBox placeholder="Software type" addStyleNames="{style.option}" ui:field="softwareCommercialFilter"></material:MaterialListValueBox>
+                        <widgets:CategorySearchBox category="companies" placeholder="Type in name of company" addStyleNames="{style.searchBox}" ui:field="companyFilter"></widgets:CategorySearchBox>
+                        <widgets:CategorySearchBox category="products" placeholder="Type in name of product category" addStyleNames="{style.searchBox}" ui:field="productFilter"></widgets:CategorySearchBox>
                         <g:HTMLPanel ui:field="timeFrame">
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
                             <design:MaterialRow>
@@ -178,7 +190,7 @@
         <design:MaterialLink addStyleNames="{style.currentSearch}, truncate" textColor="BLUE_GREY" ui:field="resultsTitle"/>
         <g:HTMLPanel addStyleNames="{style.container}" ui:field="container"></g:HTMLPanel>
         <g:HTMLPanel addStyleNames="{style.loadingPanel}">
-            <widgets:LoadingWidget ui:field="loading"></widgets:LoadingWidget>
+            <widgetsc:LoadingWidget ui:field="loading"></widgetsc:LoadingWidget>
         </g:HTMLPanel>
         <g:HTMLPanel visible="false" ui:field="requirementsPanel">
             <p>Can't find what you are looking for? Please <g:Anchor ui:field="sendRequirements">send us</g:Anchor> your requirements!</p>

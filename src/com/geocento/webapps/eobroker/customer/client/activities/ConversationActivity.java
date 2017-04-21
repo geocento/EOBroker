@@ -59,6 +59,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
 
         if(tokens.containsKey(ConversationPlace.TOKENS.conversationid.toString())) {
+            conversationView.displayConversationStarter(true);
             String conversationid = tokens.get(ConversationPlace.TOKENS.conversationid.toString());
             try {
                 REST.withCallback(new MethodCallback<ConversationDTO>() {
@@ -71,12 +72,13 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                     public void onSuccess(Method method, ConversationDTO conversationDTO) {
                         ConversationActivity.this.conversationDTO = conversationDTO;
                         conversationView.displayConversation(conversationDTO);
-                        loadPreviousConversations(conversationDTO.getCompany().getId(), conversationDTO.getId());
+                        loadPreviousConversations(conversationDTO.getCompany(), conversationDTO.getId());
                     }
                 }).call(ServicesUtil.requestsService).getConversation(conversationid);
             } catch (Exception e) {
             }
-        } else {
+        } else if(tokens.containsKey(ConversationPlace.TOKENS.topic.toString())) {
+            conversationView.displayConversationStarter(true);
             final String topic = tokens.get(ConversationPlace.TOKENS.topic.toString());
             String companyId = tokens.get(ConversationPlace.TOKENS.companyid.toString());
             if (topic != null && companyId != null) {
@@ -95,16 +97,39 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                             conversationDTO.setMessages(new ArrayList<MessageDTO>());
                             conversationDTO.setCreationDate(new Date());
                             conversationView.displayConversation(conversationDTO);
-                            loadPreviousConversations(companyDTO.getId(), conversationDTO.getId());
+                            loadPreviousConversations(companyDTO, conversationDTO.getId());
                         }
                     }).call(ServicesUtil.assetsService).getCompany(Long.parseLong(companyId));
                 } catch (Exception e) {
                 }
             }
+        } else {
+            // just load all previous conversations
+            conversationView.displayConversationStarter(false);
+            loadAllConversations();
         }
     }
 
-    private void loadPreviousConversations(Long companyId, final String conversationId) {
+    private void loadAllConversations() {
+        try {
+            REST.withCallback(new MethodCallback<List<ConversationDTO>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    conversationView.displayConversationsError("Conversations could not be loaded...");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<ConversationDTO> conversationDTOs) {
+                    conversationView.setPreviousConversationTitle("Previous conversations");
+                    conversationView.displayConversations(conversationDTOs);
+                }
+            }).call(ServicesUtil.requestsService).listConversations(0, 10, null);
+        } catch (Exception e) {
+        }
+
+    }
+
+    private void loadPreviousConversations(CompanyDTO companyDTO, final String conversationId) {
         // now load previous conversations
         try {
             REST.withCallback(new MethodCallback<List<ConversationDTO>>() {
@@ -115,6 +140,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
 
                 @Override
                 public void onSuccess(Method method, List<ConversationDTO> conversationDTOs) {
+                    conversationView.setPreviousConversationTitle("Previous conversations with company " + companyDTO.getName());
                     conversationView.displayConversations(ListUtil.filterValues(conversationDTOs, new ListUtil.CheckValue<ConversationDTO>() {
                         @Override
                         public boolean isValue(ConversationDTO value) {
@@ -122,7 +148,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                         }
                     }));
                 }
-            }).call(ServicesUtil.requestsService).listConversations(companyId);
+            }).call(ServicesUtil.requestsService).listConversations(0, 10, companyDTO.getId());
         } catch (Exception e) {
         }
     }

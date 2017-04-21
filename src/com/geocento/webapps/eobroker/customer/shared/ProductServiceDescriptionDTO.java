@@ -31,6 +31,7 @@ public class ProductServiceDescriptionDTO {
     private String extent;
     private List<DatasetAccess> samples;
     private List<AccessType> selectedAccessTypes;
+    private String timeToDelivery;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -177,5 +178,13 @@ public class ProductServiceDescriptionDTO {
 
     public String getPerformancesComments() {
         return performancesComments;
+    }
+
+    public void setTimeToDelivery(String timeToDelivery) {
+        this.timeToDelivery = timeToDelivery;
+    }
+
+    public String getTimeToDelivery() {
+        return timeToDelivery;
     }
 }

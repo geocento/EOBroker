@@ -245,6 +245,16 @@ public class FullViewImpl extends Composite implements FullView {
         materialColumn.add(createGeoinformationPanel(productServiceDescriptionDTO.getGeoinformation(), productServiceDescriptionDTO.getGeoinformationComment()));
         // add perfomances
         materialColumn.add(createPerformancesPanel(productServiceDescriptionDTO.getPerformances(), productServiceDescriptionDTO.getPerformancesComments()));
+        // add time delivery information
+        if(productServiceDescriptionDTO.getTimeToDelivery() != null) {
+            MaterialPanel performancesPanel = new MaterialPanel();
+            performancesPanel.add(createSubsection("Time to delivery"));
+            MaterialLabel timeDeliveryLabel = new MaterialLabel();
+            timeDeliveryLabel.setPadding(20);
+            timeDeliveryLabel.setText(productServiceDescriptionDTO.getTimeToDelivery());
+            performancesPanel.add(timeDeliveryLabel);
+            materialColumn.add(performancesPanel);
+        }
         // add map with extent of data
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);

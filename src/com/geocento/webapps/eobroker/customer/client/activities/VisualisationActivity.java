@@ -41,6 +41,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         visualisationView = clientFactory.getVisualisationView();
         visualisationView.setPresenter(this);
         setTemplateView(visualisationView.asWidget());
+        setTitleText("View data");
         displayMenu(false);
         Window.setTitle("Earth Observation Broker");
         bind();

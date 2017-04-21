@@ -28,7 +28,7 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/services")
     @Produces("application/json")
-    public SearchResult getMatchingServices(@QueryParam("text") String text, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    public SearchResult getMatchingServices(@QueryParam("text") String text) throws RequestException;
 
     @GET
     @Path("/search/product/{id}/services")
@@ -60,15 +60,23 @@ public interface SearchService extends DirectRestService {
     @Produces("application/json")
     public List<ProductDTO> listProducts(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("sector") Sector sector, @QueryParam("thematic") Thematic thematic) throws RequestException;
 
-    @GET
+    // use POST to be able to query by AOI WKT
+    @POST
     @Path("/search/productservices")
     @Produces("application/json")
-    public List<ProductServiceDTO> listProductServices(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    public List<ProductServiceDTO> listProductServices(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit,
+                                                       @QueryParam("aoiId") Long aoiId, @QueryParam("aoiIdWKT") String aoiWKT,
+                                                       @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId
+                                                       ) throws RequestException;
 
     @GET
     @Path("/search/productdatasets")
     @Produces("application/json")
-    public List<ProductDatasetDTO> listProductDatasets(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("serviceType") ServiceType serviceType, @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame) throws RequestException;
+    public List<ProductDatasetDTO> listProductDatasets(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit,
+                                                       @QueryParam("aoiId") Long aoiId, @QueryParam("aoiIdWKT") String aoiWKT,
+                                                       @QueryParam("serviceType") ServiceType serviceType, @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame,
+                                                       @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId
+    ) throws RequestException;
 
     @GET
     @Path("/search/software")

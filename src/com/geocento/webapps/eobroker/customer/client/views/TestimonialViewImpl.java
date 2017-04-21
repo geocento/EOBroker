@@ -26,10 +26,10 @@ public class TestimonialViewImpl extends Composite implements TestimonialView {
 
     private Presenter presenter;
 
-    interface DummyUiBinder extends UiBinder<Widget, TestimonialViewImpl> {
+    interface TestimonialViewUiBinder extends UiBinder<Widget, TestimonialViewImpl> {
     }
 
-    private static DummyUiBinder ourUiBinder = GWT.create(DummyUiBinder.class);
+    private static TestimonialViewUiBinder ourUiBinder = GWT.create(TestimonialViewUiBinder.class);
 
     @UiField
     MaterialListValueBox<Category> category;

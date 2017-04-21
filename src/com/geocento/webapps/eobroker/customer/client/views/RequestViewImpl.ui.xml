@@ -126,13 +126,20 @@
                         </g:HTMLPanel>
                     </design:MaterialColumn>
                 </design:MaterialRow>
-                <design:MaterialPanel padding="10" ui:field="responsePanel">
+                <design:MaterialPanel padding="20" ui:field="responsePanel">
                     <g:HTMLPanel addStyleNames="{style.responseTitle}" ui:field="responseTitle"></g:HTMLPanel>
                     <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.response}">
                     </g:HTMLPanel>
                     <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
                     <design:MaterialRow marginTop="20" padding="10" ui:field="messages" addStyleNames="{style.formValues}">
                     </design:MaterialRow>
+                    <design:MaterialPanel>
+                        <widgets:UserWidget float="LEFT" size="64" marginTop="20" ui:field="userImage"/>
+                        <widgets:ProgressButton float="RIGHT" iconType="SEND" type="FLOATING" size="LARGE" marginTop="20" ui:field="submitMessage">
+                        </widgets:ProgressButton>
+                        <design:MaterialTextArea marginLeft="100" marginRight="80" ui:field="message"></design:MaterialTextArea>
+                    </design:MaterialPanel>
+<!--
                     <design:MaterialRow paddingLeft="0" addStyleNames="{style.conversation}">
                         <design:MaterialColumn textAlign="LEFT" grid="s2 m2 l2">
                             <widgets:UserWidget size="64" ui:field="userImage"></widgets:UserWidget>
@@ -145,6 +152,7 @@
                             </widgets:ProgressButton>
                         </design:MaterialColumn>
                     </design:MaterialRow>
+-->
                 </design:MaterialPanel>
             </design:MaterialRow>
         </design:MaterialPanel>

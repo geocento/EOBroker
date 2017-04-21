@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
@@ -28,7 +27,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
-import gwt.material.design.client.base.HasHref;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.MaterialListValueBox;
@@ -134,6 +132,13 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     com.geocento.webapps.eobroker.common.client.widgets.material.MaterialListValueBox<SoftwareType> softwareCommercialFilter;
     @UiField
     MaterialLink filterTitle;
+    @UiField
+    CategorySearchBox companyFilter;
+    @UiField
+    CategorySearchBox productFilter;
+
+    private ProductDTO productDTO;
+    private CompanyDTO companyDTO;
 
     private Presenter presenter;
 
@@ -222,6 +227,41 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         filterByTimeFrame.addValueChangeHandler(event -> presenter.filtersChanged());
         start.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) presenter.filtersChanged();});
         stop.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) presenter.filtersChanged();});
+        productFilter.setPresenter(suggestion -> {
+            boolean changed = false;
+            if(suggestion == null) {
+                changed = productDTO != null;
+                productDTO = null;
+            } else {
+                // create shallow product
+                ProductDTO productDTO = new ProductDTO();
+                productDTO.setName(suggestion.getName());
+                productDTO.setId(Long.parseLong(suggestion.getUri().replace("product::", "")));
+                changed = SearchPageViewImpl.this.productDTO == null || !SearchPageViewImpl.this.productDTO.getId().equals(productDTO.getId());
+                SearchPageViewImpl.this.productDTO = productDTO;
+            }
+            if(changed) {
+                presenter.filtersChanged();
+            }
+        });
+        companyFilter.setPresenter(suggestion -> {
+            // create shallow company
+            boolean changed = false;
+            if(suggestion == null) {
+                changed = companyDTO != null;
+                companyDTO = null;
+            } else {
+                CompanyDTO companyDTO = new CompanyDTO();
+                companyDTO.setName(suggestion.getName());
+                companyDTO.setId(Long.parseLong(suggestion.getUri().replace("companies::", "")));
+                changed = SearchPageViewImpl.this.companyDTO == null || !SearchPageViewImpl.this.companyDTO.getId().equals(companyDTO.getId());
+                SearchPageViewImpl.this.companyDTO = companyDTO;
+            }
+            // make sure values have changed
+            if(changed) {
+                presenter.filtersChanged();
+            }
+        });
 
         onResize(null);
     }
@@ -690,6 +730,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         addFilter(materialPanel, "s12 m12 l6");
         materialPanel.add(timeFrame);
         materialPanel.add(productCommercialFilter);
+        materialPanel.add(productFilter);
+        materialPanel.add(companyFilter);
     }
 
     private void displayProductServicesFilters() {
@@ -697,6 +739,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         MaterialPanel materialPanel = new MaterialPanel();
         addFilter(materialPanel, "s12 m12 l6");
         materialPanel.add(timeFrame);
+        materialPanel.add(productFilter);
+        materialPanel.add(companyFilter);
     }
 
     private void displaySoftwareFilters() {
@@ -784,6 +828,28 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void setFilterTitle(String filterText) {
         filterTitle.setText(filterText);
+    }
+
+    @Override
+    public ProductDTO getProductSelection() {
+        return productDTO;
+    }
+
+    @Override
+    public void setProductSelection(ProductDTO productDTO) {
+        this.productDTO = productDTO;
+        productFilter.setValue(productDTO.getName());
+    }
+
+    @Override
+    public CompanyDTO getCompanySelection() {
+        return companyDTO;
+    }
+
+    @Override
+    public void setCompanySelection(CompanyDTO companyDTO) {
+        this.companyDTO = companyDTO;
+        productFilter.setValue(companyDTO.getName());
     }
 
     @Override

@@ -465,6 +465,7 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setGeoinformationComment(productService.getGeoinformationComment());
             productServiceDescriptionDTO.setPerformances(productService.getPerformances());
             productServiceDescriptionDTO.setPerformancesComments(productService.getPerformancesComment());
+            productServiceDescriptionDTO.setTimeToDelivery(productService.getTimeToDelivery());
             productServiceDescriptionDTO.setExtent(productService.getExtent());
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
             productServiceDescriptionDTO.setSelectedAccessTypes(productService.getSelectedAccessTypes());

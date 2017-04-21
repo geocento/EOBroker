@@ -19,6 +19,8 @@ public interface ConversationView extends IsWidget {
 
     HasText getMessageText();
 
+    void setPreviousConversationTitle(String title);
+
     void displayConversation(ConversationDTO conversationDTO);
 
     void setPresenter(Presenter presenter);
@@ -28,6 +30,8 @@ public interface ConversationView extends IsWidget {
     void displayConversationsError(String message);
 
     void displayConversations(List<ConversationDTO> conversationDTOs);
+
+    void displayConversationStarter(boolean display);
 
     public interface Presenter {
     }

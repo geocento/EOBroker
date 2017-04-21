@@ -116,10 +116,18 @@ public class FeedbackViewImpl extends Composite implements FeedbackView {
     }
 
     @Override
-    public void displayFeedback(FeedbackDTO feedbackDTO) {
-        title.setTitle(feedbackDTO.getTopic());
-        title.setDescription("Feedback on EO Broker, started on " + DateUtils.formatDateOnly(feedbackDTO.getCreationDate()));
-        displayMessages(feedbackDTO.getMessages());
+    public void displayFeedbackMessages(List<MessageDTO> messages) {
+        displayMessages(messages);
+    }
+
+    @Override
+    public void setFeedbackTitle(String title) {
+        this.title.setTitle(title);
+    }
+
+    @Override
+    public void setFeedbackDescription(String description) {
+        this.title.setDescription(description);
     }
 
     private void displayMessages(List<MessageDTO> messages) {
