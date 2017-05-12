@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ExtentJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
@@ -222,7 +223,7 @@ public class FullViewImpl extends Composite implements FullView {
             {
                 addAction("REQUEST QUOTE", "#" + PlaceHistoryHelper.convertPlace(
                         new ProductFormPlace(
-                                ProductFormPlace.TOKENS.id.toString() + "=" + productServiceDescriptionDTO.getProduct().getId())));
+                                ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceDescriptionDTO.getId())));
             }
             {
                 addAction("CONTACT", "#" + PlaceHistoryHelper.convertPlace(
@@ -258,6 +259,7 @@ public class FullViewImpl extends Composite implements FullView {
         // add map with extent of data
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
+        boolean worldWide = productServiceDescriptionDTO.getExtent() == null;
         materialColumn.add(createSubsection("Extent of service"));
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("300px");
@@ -273,11 +275,20 @@ public class FullViewImpl extends Composite implements FullView {
 
             @Override
             public void onSuccess(Void result) {
-                mapContainer.displayAoI(AoIUtil.fromWKT(productServiceDescriptionDTO.getExtent()));
-                mapContainer.centerOnAoI();
+                if(worldWide) {
+                    mapContainer.map.setZoom(1);
+                } else {
+                    mapContainer.displayAoI(AoIUtil.fromWKT(productServiceDescriptionDTO.getExtent()));
+                    mapContainer.centerOnAoI();
+                }
             }
         });
         materialColumn.add(mapContainer);
+        if(worldWide) {
+            MaterialLabel comment = new MaterialLabel("Bespoke service is available worldwide");
+            comment.addStyleName(style.comment());
+            materialColumn.add(comment);
+        }
         // add a compare button
         {
             MaterialButton compareButton = new MaterialButton("Compare");
@@ -287,7 +298,7 @@ public class FullViewImpl extends Composite implements FullView {
                     Window.alert("TODO - show other offering to compare to");
                 }
             });
-            featuresPanel.add(compareButton);
+            //featuresPanel.add(compareButton);
         }
         addTab(materialTab, tabsPanel, "Performances", featuresPanel, size, "performances");
         // create tab for data access information
@@ -370,7 +381,9 @@ public class FullViewImpl extends Composite implements FullView {
         materialRow.setMarginTop(20);
         performancesPanel.add(materialRow);
         if(performances.size() == 0) {
-            materialRow.add(new MaterialLabel("No information provided..."));
+            MaterialColumn materialColumn = new MaterialColumn();
+            materialRow.add(materialColumn);
+            materialColumn.add(new MaterialLabel("No information provided..."));
         } else {
             for (PerformanceValue performance : performances) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
@@ -386,9 +399,12 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         if(comment != null && comment.length() > 0) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+            materialRow.add(materialColumn);
             MaterialLabel commentLabel = new MaterialLabel("Comment: " + comment);
             commentLabel.addStyleName(style.comment());
-            materialRow.add(commentLabel);
+            //commentLabel.getElement().getStyle().setMarginLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
+            materialColumn.add(commentLabel);
         }
         return performancesPanel;
     }
@@ -400,7 +416,9 @@ public class FullViewImpl extends Composite implements FullView {
         geoinformationRow.setMarginTop(20);
         geoinformationPanel.add(geoinformationRow);
         if(geoinformation.size() == 0) {
-            geoinformationRow.add(new MaterialLabel("No geoinformation provided..."));
+            MaterialColumn materialColumn = new MaterialColumn();
+            geoinformationRow.add(materialColumn);
+            materialColumn.add(new MaterialLabel("No geoinformation provided..."));
         } else {
             for (FeatureDescription featureDescription : geoinformation) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
@@ -413,10 +431,13 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         if(comment != null && comment.length() > 0) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+            geoinformationRow.add(materialColumn);
             MaterialLabel commentLabel = new MaterialLabel(comment);
             commentLabel.getElement().setInnerText("Comment: " + comment);
             commentLabel.addStyleName(style.comment());
-            geoinformationRow.add(commentLabel);
+            //commentLabel.getElement().getStyle().setMarginLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
+            materialColumn.add(commentLabel);
         }
         return geoinformationPanel;
     }
@@ -466,6 +487,7 @@ public class FullViewImpl extends Composite implements FullView {
         materialColumn = new MaterialColumn(12, 6, 6);
         featuresPanel.add(materialColumn);
         materialColumn.add(createSubsection("Extent of data"));
+        boolean worldWide = productDatasetDescriptionDTO.getExtent() == null;
         final MapContainer mapContainer = new MapContainer();
         mapContainer.setHeight("300px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
@@ -480,11 +502,20 @@ public class FullViewImpl extends Composite implements FullView {
 
             @Override
             public void onSuccess(Void result) {
-                mapContainer.displayAoI(AoIUtil.fromWKT(productDatasetDescriptionDTO.getExtent()));
-                mapContainer.centerOnAoI();
+                if(worldWide) {
+                    mapContainer.map.setZoom(1);
+                } else {
+                    mapContainer.displayAoI(AoIUtil.fromWKT(productDatasetDescriptionDTO.getExtent()));
+                    mapContainer.centerOnAoI();
+                }
             }
         });
         materialColumn.add(mapContainer);
+        if(worldWide) {
+            MaterialLabel comment = new MaterialLabel("The data is available worldwide");
+            comment.addStyleName(style.comment());
+            materialColumn.add(comment);
+        }
         // add a compare button
         {
             MaterialButton compareButton = new MaterialButton("Compare");
@@ -494,7 +525,7 @@ public class FullViewImpl extends Composite implements FullView {
                     Window.alert("TODO - show other offering to compare to");
                 }
             });
-            featuresPanel.add(compareButton);
+            //featuresPanel.add(compareButton);
         }
         addTab(materialTab, tabsPanel, "Performances", featuresPanel, size, "performances");
         // add access panel
@@ -1145,7 +1176,7 @@ public class FullViewImpl extends Composite implements FullView {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
         boolean hasMore = productServices != null && productServices.size() > 4;
-        addTitle(productRow, "On-demand services", style.offeringSection(), hasMore ? moreUrl : null);
+        addTitle(productRow, "Bespoke services", style.offeringSection(), hasMore ? moreUrl : null);
         if(productServices != null && productServices.size() > 0) {
             if(hasMore) {
                 productServices = productServices.subList(0, 4);

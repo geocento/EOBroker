@@ -49,9 +49,11 @@ public abstract class ElementEditor<T extends FormElement> extends Composite imp
 
     public void setFormElement(T element) {
         this.formElement = element;
-        setLabel(element.getName());
+        setPlaceHolder(element.getName());
         setInformation(element.getDescription());
     }
+
+    protected abstract void setPlaceHolder(String placeHolder);
 
     public void setLabel(String label) {
         this.label.setText(label);

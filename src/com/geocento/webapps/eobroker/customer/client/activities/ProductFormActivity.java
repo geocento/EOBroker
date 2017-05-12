@@ -3,19 +3,17 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
-import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,6 +37,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
     private ProductFormView productFormView;
 
     private Long productId;
+    private Long productServiceId;
 
     public ProductFormActivity(ProductFormPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -134,48 +133,56 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
             }
         }
-        if(productId == null) {
-            Window.alert("Product id is required");
+        productServiceId = null;
+        if(tokens.containsKey(ProductFormPlace.TOKENS.serviceid.toString())) {
+            try {
+                productServiceId = Long.parseLong(tokens.get(ProductFormPlace.TOKENS.serviceid.toString()));
+            } catch (Exception e) {
+
+            }
+        }
+        if(productId == null && productServiceId == null) {
+            Window.alert("At least product or bespoke service is required");
             clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
             return;
         }
 
         clearRequest();
         displayLoading();
-        try {
-            REST.withCallback(new MethodCallback<ProductFormDTO>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
-                    displayError("Could not retrieve product information");
-                }
-
-                @Override
-                public void onSuccess(Method method, final ProductFormDTO productFormDTO) {
-                    hideLoading();
-                    productFormView.setProductImage(productFormDTO.getImageUrl());
-                    productFormView.setProductName(productFormDTO.getName());
-                    productFormView.setProductDescription(productFormDTO.getDescription());
-                    productFormView.clearForm();
-                    for (FormElement formElement : productFormDTO.getFormFields()) {
-                        productFormView.addFormElement(formElement);
+        if(productId != null) {
+            try {
+                REST.withCallback(new MethodCallback<ProductFormDTO>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideLoading();
+                        displayError("Could not retrieve product information");
                     }
-                    productFormView.clearSuppliers();
-                    for(ProductServiceDTO productServiceDTO : productFormDTO.getProductServices()) {
-                        productFormView.addProductService(productServiceDTO);
+
+                    @Override
+                    public void onSuccess(Method method, final ProductFormDTO productFormDTO) {
+                        hideLoading();
+                        productFormView.setProduct(productFormDTO);
                     }
-                    productFormView.setComment(productFormDTO.getProductServices().size() + " services available for this product");
-                    handlers.add(productFormView.getInformation().addClickHandler(new ClickHandler() {
+                }).call(ServicesUtil.assetsService).getProductForm(productId);
+            } catch (RequestException e) {
+            }
+        } else {
+            try {
+                REST.withCallback(new MethodCallback<ProductServiceFormDTO>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideLoading();
+                        displayError("Could not retrieve product information");
+                    }
 
-                        @Override
-                        public void onClick(ClickEvent event) {
-                            Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productFormDTO.getId())), "_blank", null);
-                        }
-                    }));
-
-                }
-            }).call(ServicesUtil.assetsService).getProductForm(productId);
-        } catch (RequestException e) {
+                    @Override
+                    public void onSuccess(Method method, final ProductServiceFormDTO productServiceFormDTO) {
+                        hideLoading();
+                        productFormView.setProductService(productServiceFormDTO);
+                    }
+                }).call(ServicesUtil.assetsService).getProductServiceForm(productServiceId);
+            } catch (RequestException e) {
+            }
         }
 
     }

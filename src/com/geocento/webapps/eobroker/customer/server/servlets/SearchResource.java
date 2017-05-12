@@ -608,6 +608,8 @@ public class SearchResource implements SearchService {
             if(aoi != null) {
                 additionalStatements.add("ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'");
             }
+        } else if(aoiWKT != null) {
+            additionalStatements.add("ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't'");
         }
         if(serviceType != null) {
             additionalStatements.add("servicetype = '" + serviceType.toString() + "'");

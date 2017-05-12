@@ -178,7 +178,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onSuccess(Method method, ProductServiceDescriptionDTO productServiceDescriptionDTO) {
                     hideLoading();
-                    setTitleText("On-demand service");
+                    setTitleText("Bespoke service");
                     fullView.displayProductService(productServiceDescriptionDTO);
                     if(selectedTab != null) {
                         fullView.selectTab(selectedTab);

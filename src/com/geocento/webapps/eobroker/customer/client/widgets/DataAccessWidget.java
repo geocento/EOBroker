@@ -74,10 +74,11 @@ public class DataAccessWidget extends Composite {
         action.setText("");
         action.setIconType(IconType.EXIT_TO_APP);
         action.setBackgroundColor(color);
+        action.setVisible(false);
         image.setIconType(iconType);
     }
 
     public HasClickHandlers getAction() {
-        return action;
+        return image;
     }
 }

@@ -3,6 +3,7 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFormViewImpl.Style">
         .formPanel {
@@ -62,7 +63,25 @@
 
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.formPanel}">
-        <design:MaterialTitle marginBottom="20" title="Request quotation for the following product" addStyleNames="{style.information}" ui:field="title"></design:MaterialTitle>
+        <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE" ui:field="navigation">
+        </design:MaterialNavBar>
+        <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+            <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12 m8 l8">
+                <design:MaterialPanel>
+                    <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
+                    <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                </design:MaterialPanel>
+                <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
+                    <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+        <design:MaterialTitle marginBottom="20" title="Request for quotation" addStyleNames="{style.information}"></design:MaterialTitle>
+<!--
         <design:MaterialRow>
             <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
                 <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
@@ -75,8 +94,8 @@
                 </g:HTMLPanel>
             </design:MaterialColumn>
         </design:MaterialRow>
+-->
         <g:HTMLPanel>
-            <design:MaterialLabel text="Comment" marginTop="20" marginBottom="20" fontSize="1em" ui:field="comment"/>
             <design:MaterialLabel text="Please fill in the form" marginTop="20" marginBottom="20" fontSize="1.4em"/>
             <design:MaterialRow>
                 <design:MaterialColumn grid="s12 m12 l6">
@@ -91,8 +110,9 @@
                 </design:MaterialColumn>
             </design:MaterialRow>
         </g:HTMLPanel>
-        <g:HTMLPanel>
-            <design:MaterialLabel text="Select your suppliers" marginTop="20" marginBottom="20" fontSize="1.4em"/>
+        <g:HTMLPanel ui:field="suppliers">
+            <design:MaterialLabel text="Select suppliers" marginTop="20" marginBottom="20" fontSize="1.4em"/>
+            <design:MaterialLabel text="Comment" marginTop="20" marginBottom="20" fontSize="1em" ui:field="comment"/>
             <g:HTMLPanel addStyleNames="{style.container}" ui:field="productServices">
             </g:HTMLPanel>
         </g:HTMLPanel>

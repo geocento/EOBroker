@@ -29,6 +29,11 @@ public class DateEditor extends ElementEditor<DateFormElement> {
     }
 
     @Override
+    protected void setPlaceHolder(String placeHolder) {
+        datePicker.setPlaceholder(placeHolder);
+    }
+
+    @Override
     public FormElementValue getFormElementValue() throws Exception {
         Date value = datePicker.getValue();
         FormElementValue formElementValue = new FormElementValue();

@@ -95,7 +95,7 @@
             <design:MaterialPanel visible="false" ui:field="servicesPanel">
                 <g:HTMLPanel>
                     <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new service" ui:field="addService"></design:MaterialButton>
-                    <design:MaterialTitle title="On-demand services"></design:MaterialTitle>
+                    <design:MaterialTitle title="Bespoke services"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="services">
                 </design:MaterialRow>
@@ -103,7 +103,7 @@
             <design:MaterialPanel visible="false" ui:field="datasetsPanel">
                 <g:HTMLPanel>
                     <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new data" ui:field="addProductDataset"></design:MaterialButton>
-                    <design:MaterialTitle title="Off the shelf data"></design:MaterialTitle>
+                    <design:MaterialTitle title="Off the shelf products"></design:MaterialTitle>
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="productdatasets">
                 </design:MaterialRow>

@@ -28,6 +28,11 @@ public class TextEditor extends ElementEditor<TextFormElement> {
     }
 
     @Override
+    protected void setPlaceHolder(String placeHolder) {
+        textBox.setPlaceholder(placeHolder);
+    }
+
+    @Override
     public FormElementValue getFormElementValue() throws Exception {
         String value = textBox.getText();
         if(formElement.getMin() != null && value.length() < formElement.getMin()) {

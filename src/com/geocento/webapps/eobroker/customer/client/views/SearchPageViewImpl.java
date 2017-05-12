@@ -362,7 +362,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     public void setMatchingServices(List<ProductServiceDTO> productServices, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "On-demand services", style.productServicesTitle(), moreUrl);
+        addTitle(productRow, "Bespoke services", style.productServicesTitle(), moreUrl);
         if(productServices != null && productServices.size() > 0) {
             for (ProductServiceDTO productServiceDTO : productServices) {
                 MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
@@ -576,7 +576,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         container.add(productRow);
         if(productServiceDTOs == null || productServiceDTOs.size() == 0) {
             if(start == 0) {
-                MaterialLabel label = new MaterialLabel("No on-demand services found for your request...");
+                MaterialLabel label = new MaterialLabel("No bespoke services found for your request...");
                 label.addStyleName(style.subtext());
                 productRow.add(label);
             }

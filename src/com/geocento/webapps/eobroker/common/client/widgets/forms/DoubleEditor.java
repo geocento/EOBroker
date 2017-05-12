@@ -31,6 +31,11 @@ public class DoubleEditor extends ElementEditor<DoubleFormElement> {
     }
 
     @Override
+    protected void setPlaceHolder(String placeHolder) {
+        doubleBox.setPlaceholder(placeHolder);
+    }
+
+    @Override
     public FormElementValue getFormElementValue() throws Exception {
         Double value = doubleBox.getValue();
         if(formElement.getMin() != null && value < formElement.getMin()) {

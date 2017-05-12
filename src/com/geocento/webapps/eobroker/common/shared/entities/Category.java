@@ -2,9 +2,9 @@ package com.geocento.webapps.eobroker.common.shared.entities;
 
 public enum Category {
 
-    products("Products"),
-    productservices("On-demand services"),
-    productdatasets("Off-the-shelf data"),
+    products("Product categories"),
+    productservices("Bespoke services"),
+    productdatasets("Off-the-shelf products"),
     datasets("Datasets"),
     software("Software solutions"),
     project("Projects"),

@@ -179,11 +179,11 @@
                             <g:HTMLPanel>
                                 <m:MaterialLink addStyleNames="{style.category}" text="Home" iconType="HOME" ui:field="homeCategory"></m:MaterialLink>
                                 <m:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></m:MaterialLink>
-                                <m:MaterialLink addStyleNames="{style.category}" text="Products" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></m:MaterialLink>
+                                <m:MaterialLink addStyleNames="{style.category}" text="Product categories" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></m:MaterialLink>
                                 <m:MaterialLink addStyleNames="{style.category}, {style.notlinked}" text="Offering" iconSize="TINY" iconType="ARROW_FORWARD"></m:MaterialLink>
                                 <m:MaterialPanel addStyleNames="{style.offering}" ui:field="offering">
-                                    <m:MaterialLink addStyleNames="{style.category}" text="On-demand services" iconType="MAP" ui:field="productServicesCategory"></m:MaterialLink>
-                                    <m:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf data" iconType="MAP" ui:field="productDatasetsCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Bespoke services" iconType="MAP" ui:field="productServicesCategory"></m:MaterialLink>
+                                    <m:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf products" iconType="MAP" ui:field="productDatasetsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Software solutions" iconType="MAP" ui:field="softwareCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="R&amp;D Projects" iconType="MAP" ui:field="projectsCategory"></m:MaterialLink>
                                 </m:MaterialPanel>

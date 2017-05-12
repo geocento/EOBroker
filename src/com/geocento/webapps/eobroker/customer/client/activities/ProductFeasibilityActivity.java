@@ -56,7 +56,9 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         productFeasibilityView = clientFactory.getProductFeasibilityView();
         productFeasibilityView.setPresenter(this);
         setTemplateView(productFeasibilityView.asWidget());
+        displayMenu(false);
         Window.setTitle("Earth Observation Broker");
+        setTitleText("Feasibility study");
         bind();
         productFeasibilityView.showQuery();
         productFeasibilityView.setMapLoadedHandler(new Callback<Void, Exception>() {

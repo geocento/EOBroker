@@ -111,19 +111,30 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             String filterText =  text.length() > 0 ? " with text '" + text + "'" : "";
             switch (category) {
                 case products:
-                    searchPageView.setFilterTitle("Products" + filterText);
+                    searchPageView.setFilterTitle("Product categories" + filterText);
                     break;
                 case productservices:
-                    searchPageView.setFilterTitle("Services" + filterText);
+                    searchPageView.setFilterTitle("Bespoke services" + filterText);
+                    // TODO - check if we have product or company set
+                    // generally the filters need to be passed into the URL and the view updated accordingly
+/*
+                    if(tokens.containsKey(SearchPagePlace.TOKENS.productid.toString())) {
+                        try {
+                            category = Category.valueOf(tokens.get(SearchPagePlace.TOKENS.category.toString()));
+                        } catch (Exception e) {
+
+                        }
+                    }
+*/
                     break;
                 case productdatasets:
-                    searchPageView.setFilterTitle("Off the shelf data" + filterText);
+                    searchPageView.setFilterTitle("Off the shelf products" + filterText);
                     break;
                 case software:
                     searchPageView.setFilterTitle("Software solutions" + filterText);
                     break;
                 case project:
-                    searchPageView.setFilterTitle("Projects" + filterText);
+                    searchPageView.setFilterTitle("R&D Projects" + filterText);
                     break;
                 case companies:
                     searchPageView.setFilterTitle("Companies" + filterText);
@@ -170,15 +181,15 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             searchPageView.setResultsTitle("");
             switch (category) {
                 case products: {
-                    setTitleText("Browse products");
+                    setTitleText("Browse product categories");
                     loadProducts(text, start, limit);
                 } break;
                 case productservices: {
-                    setTitleText("Browse on-demand services");
+                    setTitleText("Browse bespoke services");
                     loadProductServices(text, start, limit);
                 } break;
                 case productdatasets: {
-                    setTitleText("Browse off-the-shelf data");
+                    setTitleText("Browse off-the-shelf products");
                     loadProductDatasets(text, start, limit);
                 } break;
                 case software: {

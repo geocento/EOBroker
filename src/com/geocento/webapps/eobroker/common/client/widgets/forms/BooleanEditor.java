@@ -24,6 +24,11 @@ public class BooleanEditor extends ElementEditor<BooleanFormElement> {
     }
 
     @Override
+    protected void setPlaceHolder(String placeHolder) {
+        materialSwitch.setHelperText(placeHolder);
+    }
+
+    @Override
     public FormElementValue getFormElementValue() throws Exception {
         Boolean value = materialSwitch.getValue();
         FormElementValue formElementValue = new FormElementValue();

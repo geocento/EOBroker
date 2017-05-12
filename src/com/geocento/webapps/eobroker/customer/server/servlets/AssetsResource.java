@@ -1353,4 +1353,29 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+    @Override
+    public ProductServiceFormDTO getProductServiceForm(Long id) throws RequestException {
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductService productService = em.find(ProductService.class, id);
+            if(productService == null) {
+                throw new RequestException("Product does not exist");
+            }
+            ProductServiceFormDTO productServiceFormDTO = new ProductServiceFormDTO();
+            productServiceFormDTO.setId(productService.getId());
+            productServiceFormDTO.setName(productService.getName());
+            productServiceFormDTO.setDescription(productService.getDescription());
+            productServiceFormDTO.setServiceImage(productService.getImageUrl());
+            productServiceFormDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(productService.getCompany()));
+            productServiceFormDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+            productServiceFormDTO.setFormFields(productService.getProduct().getFormFields());
+            return productServiceFormDTO;
+        } finally {
+            em.close();
+        }
+    }
+
 }

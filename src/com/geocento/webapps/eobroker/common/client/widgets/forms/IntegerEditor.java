@@ -31,6 +31,11 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
     }
 
     @Override
+    protected void setPlaceHolder(String placeHolder) {
+        integerBox.setPlaceholder(placeHolder);
+    }
+
+    @Override
     public FormElementValue getFormElementValue() throws Exception {
         Integer value = integerBox.getValue();
         if(formElement.getMin() != null && value < formElement.getMin()) {

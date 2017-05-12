@@ -1,8 +1,9 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -20,25 +21,11 @@ public interface ProductFormView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    void clearForm();
+    void setProduct(ProductFormDTO productFormDTO);
 
-    void addFormElement(FormElement formElement);
-
-    void clearSuppliers();
-
-    void addProductService(ProductServiceDTO productServiceDTO);
-
-    void setComment(String comment);
-
-    void setProductImage(String imageUrl);
-
-    void setProductName(String name);
-
-    void setProductDescription(String description);
+    void setProductService(ProductServiceFormDTO productServiceFormDTO);
 
     HasClickHandlers getSubmit();
-
-    HasClickHandlers getInformation();
 
     java.util.List<com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue> getFormElementValues() throws Exception;
 

@@ -35,6 +35,11 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
     }
 
     @Override
+    protected void setPlaceHolder(String placeHolder) {
+        listBox.setPlaceholder(placeHolder);
+    }
+
+    @Override
     public FormElementValue getFormElementValue() throws Exception {
         String[] values = listBox.getItemsSelected();
         if(values.length == 0) {

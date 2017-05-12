@@ -1,16 +1,26 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -19,6 +29,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 
 import java.util.ArrayList;
@@ -47,11 +59,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @UiField
     HTMLPanel productServices;
     @UiField
-    MaterialImage image;
-    @UiField
-    MaterialTitle title;
-    @UiField
-    MaterialLabel name;
+    MaterialImageLoading image;
     @UiField
     MaterialLabel description;
     @UiField
@@ -61,9 +69,15 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @UiField
     MapContainer mapContainer;
     @UiField
-    MaterialChip information;
-    @UiField
     MaterialLabel comment;
+    @UiField
+    MaterialLabel title;
+    @UiField
+    MaterialNavBar navigation;
+    @UiField
+    MaterialPanel actions;
+    @UiField
+    HTMLPanel suppliers;
 
     private Presenter presenter;
 
@@ -81,8 +95,6 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
                 displayAoI(aoi);
             }
         });
-
-        information.getElement().getStyle().setCursor(com.google.gwt.dom.client.Style.Cursor.POINTER);
     }
 
     @Override
@@ -100,13 +112,11 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         this.presenter = presenter;
     }
 
-    @Override
-    public void clearForm() {
+    private void clearForm() {
         formContainer.clear();
     }
 
-    @Override
-    public void addFormElement(FormElement formElement) {
+    private void addFormElement(FormElement formElement) {
         ElementEditor editor = createEditor(formElement);
         editor.addStyleName(style.editor());
         formContainer.add(editor);
@@ -116,48 +126,81 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         return FormHelper.createEditor(formElement);
     }
 
-    @Override
-    public void clearSuppliers() {
+    private void clearSuppliers() {
         productServices.clear();
     }
 
-    @Override
-    public void addProductService(ProductServiceDTO productServiceDTO) {
-        MaterialCheckBox materialCheckBox =
-                new MaterialCheckBox("<span style='display: inline;'><b>" + productServiceDTO.getName() + "</b> " +
-                        "by <img style='max-height: 24px; vertical-align: middle;' src='" + productServiceDTO.getCompanyLogo() + "'/> <b>" + productServiceDTO.getCompanyName() + "</b></span>", true);
-        materialCheckBox.setObject(productServiceDTO);
-        productServices.add(materialCheckBox);
-    }
-
-    @Override
-    public void setComment(String comment) {
+    private void setComment(String comment) {
         this.comment.setText(comment);
     }
 
     @Override
-    public void setProductImage(String imageUrl) {
-        image.setUrl(imageUrl);
+    public void setProduct(ProductFormDTO productFormDTO) {
+        navigation.setVisible(false);
+        image.setImageUrl(productFormDTO.getImageUrl());
+        title.setText(productFormDTO.getName());
+        description.setText(productFormDTO.getDescription());
+        clearForm();
+        for (FormElement formElement : productFormDTO.getFormFields()) {
+            addFormElement(formElement);
+        }
+        // add choice of suppliers
+        suppliers.setVisible(true);
+        clearSuppliers();
+        for (ProductServiceDTO productServiceDTO : productFormDTO.getProductServices()) {
+            MaterialCheckBox materialCheckBox =
+                    new MaterialCheckBox("<span style='display: inline;'><b>" + productServiceDTO.getName() + "</b> " +
+                            "by <img style='max-height: 24px; vertical-align: middle;' src='" + productServiceDTO.getCompanyLogo() + "'/> <b>" + productServiceDTO.getCompanyName() + "</b></span>", true);
+            materialCheckBox.setObject(productServiceDTO);
+            materialCheckBox.setValue(true);
+            productServices.add(materialCheckBox);
+        }
+        setComment(productFormDTO.getProductServices().size() + " services available for this product");
+        // add actions
+        actions.clear();
+        MaterialAnchorButton information = new MaterialAnchorButton("Information");
+        actions.add(information);
+        information.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productFormDTO.getId())), "_blank", null);
+            }
+        });
     }
 
     @Override
-    public void setProductName(String name) {
-        this.name.setText(name);
-    }
+    public void setProductService(ProductServiceFormDTO productServiceFormDTO) {
+        navigation.setVisible(true);
+        navigation.clear();
+        addBreadcrumb(productServiceFormDTO.getCompanyDTO());
+        addBreadcrumb(productServiceFormDTO.getProduct());
+        image.setImageUrl(productServiceFormDTO.getServiceImage());
+        title.setText(productServiceFormDTO.getName());
+        description.setText(productServiceFormDTO.getDescription());
+        clearForm();
+        for (FormElement formElement : productServiceFormDTO.getFormFields()) {
+            addFormElement(formElement);
+        }
+        // add choice of suppliers
+        suppliers.setVisible(false);
+        clearSuppliers();
+        // add actions
+        actions.clear();
+        MaterialAnchorButton information = new MaterialAnchorButton("Information");
+        actions.add(information);
+        information.addClickHandler(new ClickHandler() {
 
-    @Override
-    public void setProductDescription(String description) {
-        this.description.setText(description);
+            @Override
+            public void onClick(ClickEvent event) {
+                Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceFormDTO.getId())), "_blank", null);
+            }
+        });
     }
 
     @Override
     public HasClickHandlers getSubmit() {
         return submit;
-    }
-
-    @Override
-    public HasClickHandlers getInformation() {
-        return information;
     }
 
     @Override
@@ -208,6 +251,33 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
                 ((MaterialCheckBox) widget).setValue(false);
             }
         }
+    }
+
+    private void addBreadcrumb(Object dto) {
+        navigation.setVisible(true);
+        MaterialBreadcrumb materialBreadcrumb = new MaterialBreadcrumb();
+        Color color = Color.WHITE; //CategoryUtils.getColor(category);
+        materialBreadcrumb.setTextColor(color);
+        materialBreadcrumb.setIconColor(color);
+        String token = "";
+        IconType iconType = IconType.ERROR;
+        String text = "Unknown";
+        String id = null;
+        if(dto instanceof CompanyDTO) {
+            token = FullViewPlace.TOKENS.companyid.toString();
+            iconType = CategoryUtils.getIconType(Category.companies);
+            text = ((CompanyDTO) dto).getName();
+            id = ((CompanyDTO) dto).getId() + "";
+        } else if(dto instanceof ProductDTO) {
+            token = FullViewPlace.TOKENS.productid.toString();
+            iconType = CategoryUtils.getIconType(Category.products);
+            text = ((ProductDTO) dto).getName();
+            id = ((ProductDTO) dto).getId() + "";
+        }
+        materialBreadcrumb.setIconType(iconType);
+        materialBreadcrumb.setText(text);
+        materialBreadcrumb.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(token + "=" + id)));
+        navigation.add(materialBreadcrumb);
     }
 
     @Override

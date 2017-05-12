@@ -509,7 +509,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void onResize(ResizeEvent event) {
-        mapContainer.map.resize();
+        if(mapContainer.map != null) {
+            mapContainer.map.resize();
+        }
     }
 
 }

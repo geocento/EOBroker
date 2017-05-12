@@ -188,4 +188,8 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/testimonials/{id}")
     void deleteTestimonial(@PathParam("id") Long id) throws RequestException;
 
+    @GET
+    @Path("/assets/service/{id}/form")
+    @Produces("application/json")
+    ProductServiceFormDTO getProductServiceForm(@PathParam("id") Long productServiceId) throws RequestException;
 }
