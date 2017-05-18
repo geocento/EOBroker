@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.PerformanceValue;
@@ -30,6 +31,7 @@ public class ProductDatasetDescriptionDTO {
     List<DatasetAccess> datasetAccesses;
     List<DatasetAccess> samples;
     List<ProductDatasetDTO> suggestedDatasets;
+    DatasetStandard catalogueStandard;
 
     public ProductDatasetDescriptionDTO() {
     }
@@ -178,4 +180,11 @@ public class ProductDatasetDescriptionDTO {
         this.suggestedDatasets = suggestedDatasets;
     }
 
+    public DatasetStandard getCatalogueStandard() {
+        return catalogueStandard;
+    }
+
+    public void setCatalogueStandard(DatasetStandard catalogueStandard) {
+        this.catalogueStandard = catalogueStandard;
+    }
 }

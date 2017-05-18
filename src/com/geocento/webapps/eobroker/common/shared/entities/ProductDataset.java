@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
 import com.geocento.webapps.eobroker.common.server.Utils.GeometryConverter;
+import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 
 import javax.persistence.*;
 import java.util.List;
@@ -68,6 +69,12 @@ public class ProductDataset {
 
     @Column(length = 1000)
     String temporalCoverageComment;
+
+    @Enumerated(EnumType.STRING)
+    DatasetStandard datasetStandard;
+
+    @Column(length = 1000)
+    String datasetURL;
 
     @ManyToMany(fetch = FetchType.LAZY)
     List<Standard> applicableStandards;
@@ -247,5 +254,21 @@ public class ProductDataset {
 
     public void setTemporalCoverageComment(String temporalCoverageComment) {
         this.temporalCoverageComment = temporalCoverageComment;
+    }
+
+    public DatasetStandard getDatasetStandard() {
+        return datasetStandard;
+    }
+
+    public void setDatasetStandard(DatasetStandard datasetStandard) {
+        this.datasetStandard = datasetStandard;
+    }
+
+    public String getDatasetURL() {
+        return datasetURL;
+    }
+
+    public void setDatasetURL(String datasetURL) {
+        this.datasetURL = datasetURL;
     }
 }

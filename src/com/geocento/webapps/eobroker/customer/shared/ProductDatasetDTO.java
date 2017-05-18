@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
+import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 /**
@@ -19,6 +20,7 @@ public class ProductDatasetDTO extends Offer {
     String website;
     String apiUrl;
     String sampleWmsUrl;
+    DatasetStandard supportedCatalogueInterface;
 
     public ProductDatasetDTO() {
     }
@@ -117,5 +119,13 @@ public class ProductDatasetDTO extends Offer {
 
     public void setSampleWmsUrl(String sampleWmsUrl) {
         this.sampleWmsUrl = sampleWmsUrl;
+    }
+
+    public DatasetStandard getSupportedCatalogueInterface() {
+        return supportedCatalogueInterface;
+    }
+
+    public void setSupportedCatalogueInterface(DatasetStandard supportedCatalogueInterface) {
+        this.supportedCatalogueInterface = supportedCatalogueInterface;
     }
 }

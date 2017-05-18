@@ -130,6 +130,10 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full data access" textColor="BLACK" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLabel addStyleNames="{style.message}">
+                    Please describe the methods used to access your data.
+                    If a commercial service this describes how the user will get their data delivered.
+                    If non commercial you can provide the actual link to the datasets so the user can view and/or download the data directly from within the broker.</design:MaterialLabel>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="dataAccessMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="dataAccess"></design:MaterialRow>
@@ -167,6 +171,20 @@
                             </material:MaterialFileUploader>
                         </design:MaterialColumn>
                     </design:MaterialRow>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Sub products browsing" textColor="BLACK" iconType="DATA_USAGE" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLabel addStyleNames="{style.message}">
+                    If your product contains sub products which can be browsed using our supported interfaces (OpenSearch, CSW or WFS) please provide the URL to such service and specify the standard used.
+                </design:MaterialLabel>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialColumn grid="s6 m4 l3">
+                        <design:MaterialListValueBox width="100%" ui:field="datasetsStandard"></design:MaterialListValueBox>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s6 m8 l9">
+                        <design:MaterialTextBox width="100%" placeholder="The service URL, leave blank if not supported" ui:field="datasetsURL"></design:MaterialTextBox>
+                    </design:MaterialColumn>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">

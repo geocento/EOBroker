@@ -525,7 +525,43 @@ public class AssetsResource implements AssetsService {
                     return createProductDatasetDTO(productDataset);
                 }
             }));
+            productDatasetDescriptionDTO.setCatalogueStandard(productDataset.getDatasetStandard());
             return productDatasetDescriptionDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProductDatasetCatalogueDTO getProductDatasetCatalogueDTO(Long productDatasetId) throws RequestException {
+        if(productDatasetId == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductDataset productDataset = em.find(ProductDataset.class, productDatasetId);
+            if(productDataset == null) {
+                throw new RequestException("Product does not exist");
+            }
+            // add suggestions
+            // for now make it simple and just add the same product services
+            ProductDatasetCatalogueDTO productDatasetCatalogueDTO = new ProductDatasetCatalogueDTO();
+            productDatasetCatalogueDTO.setId(productDataset.getId());
+            productDatasetCatalogueDTO.setName(productDataset.getName());
+            productDatasetCatalogueDTO.setImageUrl(productDataset.getImageUrl());
+            productDatasetCatalogueDTO.setDescription(productDataset.getDescription());
+            productDatasetCatalogueDTO.setExtent(productDataset.getExtent());
+            productDatasetCatalogueDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+            productDatasetCatalogueDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
+            productDatasetCatalogueDTO.setDatasetStandard(productDataset.getDatasetStandard());
+            productDatasetCatalogueDTO.setDatasetURL(productDataset.getDatasetURL());
+            // query the catalogue to get the catalogue information
+            // TODO - do in a separate call?
+            switch (productDataset.getDatasetStandard()) {
+                case OpenSearch:
+                    break;
+            }
+            return productDatasetCatalogueDTO;
         } finally {
             em.close();
         }
@@ -1008,6 +1044,14 @@ public class AssetsResource implements AssetsService {
             // make WMS query
             WMSCapabilities wmsCapabilities = new WMSCapabilities();
             wmsCapabilities.extractWMSXMLResources(serverUrl + "&service=WMS&request=getCapabilities");
+            String uri = datasetAccessOGC.getUri() + ",";
+            List<WMSCapabilities.WMSLayer> layers = new ArrayList<WMSCapabilities.WMSLayer>();
+            for(WMSCapabilities.WMSLayer wmsLayer : wmsCapabilities.getLayersList()) {
+                if(uri.contains(wmsLayer.getLayerName() + ",")) {
+                    layers.add(wmsLayer);
+                }
+            }
+/*
             WMSCapabilities.WMSLayer wmsLayer = ListUtil.findValue(wmsCapabilities.getLayersList(), new ListUtil.CheckValue<WMSCapabilities.WMSLayer>() {
                 @Override
                 public boolean isValue(WMSCapabilities.WMSLayer value) {
@@ -1025,6 +1069,27 @@ public class AssetsResource implements AssetsService {
             layerInfoDTO.setExtent(wmsLayer.getBounds());
             layerInfoDTO.setDescription(wmsLayer.getDescription());
             layerInfoDTO.setStyleName(datasetAccessOGC.getStyleName());
+*/
+            if(layers.size() == 0) {
+                throw new RequestException("Layer does not exist");
+            }
+            LayerInfoDTO layerInfoDTO = new LayerInfoDTO();
+            layerInfoDTO.setName(datasetAccessOGC.getTitle());
+            layerInfoDTO.setLayerName(datasetAccessOGC.getUri());
+            layerInfoDTO.setServerUrl(serverUrl);
+            layerInfoDTO.setDescription(datasetAccessOGC.getPitch());
+            layerInfoDTO.setStyleName(datasetAccessOGC.getStyleName());
+            layerInfoDTO.setCrs(layers.get(0).getSupportedSRS());
+            Extent bounds = layers.get(0).getBounds();
+            for(WMSCapabilities.WMSLayer layer : layers) {
+                Extent layerBounds = layer.getBounds();
+                bounds.setEast(Math.max(bounds.getEast(), layerBounds.getEast()));
+                bounds.setNorth(Math.max(bounds.getNorth(), layerBounds.getNorth()));
+                bounds.setWest(Math.min(bounds.getWest(), layerBounds.getWest()));
+                bounds.setSouth(Math.min(bounds.getSouth(), layerBounds.getSouth()));
+            }
+            layerInfoDTO.setExtent(bounds);
+            layerInfoDTO.setQueryable(layers.get(0).isQueryable());
             return layerInfoDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

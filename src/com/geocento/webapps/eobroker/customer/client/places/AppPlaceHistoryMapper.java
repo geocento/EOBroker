@@ -6,6 +6,7 @@ import com.google.gwt.place.shared.WithTokenizers;
 @WithTokenizers({LandingPagePlace.Tokenizer.class,
         SearchPagePlace.Tokenizer.class,
         ImageSearchPlace.Tokenizer.class,
+        CatalogueSearchPlace.Tokenizer.class,
         RequestImageryPlace.Tokenizer.class,
         ProductFormPlace.Tokenizer.class,
         FullViewPlace.Tokenizer.class,

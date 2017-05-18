@@ -52,4 +52,6 @@ public interface ClientFactory {
     TemplateView getTemplateView();
 
     TestimonialView getTestimonialView();
+
+    CatalogueSearchView getCatalogueSearchView();
 }

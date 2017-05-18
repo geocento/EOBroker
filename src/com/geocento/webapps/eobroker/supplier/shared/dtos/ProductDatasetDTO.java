@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
@@ -28,8 +29,10 @@ public class ProductDatasetDTO {
     List<PerformanceValue> providedPerformances;
     String performancesComment;
     String geoinformationComment;
-    private TemporalCoverage temporalCoverage;
-    private String temporalCoverageComment;
+    TemporalCoverage temporalCoverage;
+    String temporalCoverageComment;
+    DatasetStandard datasetStandard;
+    String datasetURL;
 
     public ProductDatasetDTO() {
     }
@@ -192,5 +195,21 @@ public class ProductDatasetDTO {
 
     public String getTemporalCoverageComment() {
         return temporalCoverageComment;
+    }
+
+    public DatasetStandard getDatasetStandard() {
+        return datasetStandard;
+    }
+
+    public void setDatasetStandard(DatasetStandard datasetStandard) {
+        this.datasetStandard = datasetStandard;
+    }
+
+    public String getDatasetURL() {
+        return datasetURL;
+    }
+
+    public void setDatasetURL(String datasetURL) {
+        this.datasetURL = datasetURL;
     }
 }

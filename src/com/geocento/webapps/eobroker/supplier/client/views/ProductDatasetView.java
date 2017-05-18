@@ -1,11 +1,13 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.List;
@@ -82,6 +84,10 @@ public interface ProductDatasetView extends IsWidget {
     HasText getTemporalCoverageComment();
 
     HasClickHandlers getViewClient();
+
+    HasText getDatasetURL();
+
+    HasValue<DatasetStandard> getDatasetStandard();
 
     public interface Presenter {
         void productChanged();

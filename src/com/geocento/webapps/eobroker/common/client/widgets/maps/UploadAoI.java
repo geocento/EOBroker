@@ -11,7 +11,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import gwt.material.design.addins.client.fileuploader.MaterialFileUploader;
 import gwt.material.design.addins.client.fileuploader.base.UploadFile;
-import gwt.material.design.addins.client.fileuploader.base.UploadResponse;
 import gwt.material.design.addins.client.fileuploader.events.AddedFileEvent;
 import gwt.material.design.addins.client.fileuploader.events.ErrorEvent;
 import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
@@ -63,10 +62,12 @@ public class UploadAoI {
             @Override
             public void onAddedFile(AddedFileEvent<UploadFile> event) {
                 String fileName = event.getTarget().getName();
+/*
                 if(!fileName.endsWith(".kml")) {
                     Window.alert("Sorry on KML files allowed for now");
                     ErrorEvent.fire(uploadAoI, event.getTarget(), new UploadResponse("500", "Only KML files are allowed", "Only KML files are allowed"));
                 }
+*/
             }
         });
         // Added the progress to card uploader

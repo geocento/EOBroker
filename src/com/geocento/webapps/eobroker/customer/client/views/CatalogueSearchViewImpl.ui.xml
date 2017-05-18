@@ -1,0 +1,134 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+             xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
+             xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
+             xmlns:widgetsc="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.CatalogueSearchViewImpl.Style">
+
+        @external nav-wrapper;
+
+        .providers {
+            padding-left: 20px;
+            font-size: 1.2em !important;
+            height: 2em !important;
+            line-height: 2em !important;
+        }
+
+        .providers > i {
+            height: inherit !important;
+            line-height: inherit !important;
+        }
+
+        .queryPanel {
+            line-height: normal !important;
+        }
+
+        .result {
+            min-height: 200px;
+            overflow: hidden;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .queryButton {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .mapPanel {
+            position: relative;
+        }
+
+        .buttonPanel {
+            height: 80px;
+            line-height: 80px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .sensorSettings {
+            float: right;
+            line-height: 100%;
+        }
+
+        .navOpened main, .navOpened footer {
+            padding-left: 450px;
+        }
+
+        .searchPanel {
+
+        }
+
+        .content {
+            position: fixed;
+            top: 64px;
+            left: 0px;
+            bottom: 0px;
+            right: 0px;
+        }
+
+        .contentPanel {
+            width: 100%;
+            height: 100%;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+    <m:MaterialPanel addStyleNames="{style.content}">
+        <g:DockLayoutPanel addStyleNames="{style.contentPanel}">
+            <g:west size="350">
+                <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
+                    <m:MaterialPanel>
+                        <sideprofile:MaterialSideProfile backgroundColor="BLUE">
+                            <widgetsc:MaterialLabelIcon imageHeight="30px" ui:field="productDatasetTitle"></widgetsc:MaterialLabelIcon>
+                        </sideprofile:MaterialSideProfile>
+                        <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
+                            <m:MaterialTabItem waves="YELLOW" grid="s6">
+                                <m:MaterialLink text="Query" href="#query" textColor="WHITE"></m:MaterialLink>
+                            </m:MaterialTabItem>
+                            <m:MaterialTabItem waves="YELLOW" grid="s6">
+                                <m:MaterialLink text="Results" href="#results" textColor="WHITE"></m:MaterialLink>
+                            </m:MaterialTabItem>
+                        </m:MaterialTab>
+                    </m:MaterialPanel>
+                    <m:MaterialRow padding="0" margin="0" overflow="HIDDEN" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
+                        <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
+                            <m:MaterialRow marginTop="20">
+                                <m:MaterialColumn grid="s6">
+                                    <m:MaterialDatePicker textColor="BLACK" ui:field="startDate" placeholder="Start Date" />
+                                </m:MaterialColumn>
+                                <m:MaterialColumn grid="s6">
+                                    <m:MaterialDatePicker textColor="BLACK" ui:field="stopDate" placeholder="Stop Date" />
+                                </m:MaterialColumn>
+                                <m:MaterialColumn grid="s12">
+                                    <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>
+                                </m:MaterialColumn>
+                            </m:MaterialRow>
+                            <m:MaterialRow addStyleNames="{style.queryButton}">
+                                <m:MaterialColumn grid="s12">
+                                    <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" ui:field="update"/>
+                                </m:MaterialColumn>
+                            </m:MaterialRow>
+                        </m:MaterialColumn>
+                        <m:MaterialColumn m:id="results" grid="s12" padding="0">
+                            <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
+                            </g:SimplePanel>
+                            <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                                <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="GREEN" enabled="false" ui:field="submitForQuote"/>
+                            </g:HTMLPanel>
+                        </m:MaterialColumn>
+                    </m:MaterialRow>
+                </g:HeaderPanel>
+            </g:west>
+        <g:center>
+            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" ui:field="mapContainer">
+                </cmaps:MapContainer>
+            </g:HTMLPanel>
+        </g:center>
+        </g:DockLayoutPanel>
+    </m:MaterialPanel>
+</ui:UiBinder>

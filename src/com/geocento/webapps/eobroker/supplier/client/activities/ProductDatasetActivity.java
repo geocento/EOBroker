@@ -129,6 +129,8 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         productDatasetView.setExtent(AoIUtil.fromWKT(productDatasetDTO.getExtent()));
         productDatasetView.setDataAccess(productDatasetDTO.getDatasetAccesses());
         productDatasetView.setSampleDataAccess(productDatasetDTO.getSamples());
+        productDatasetView.getDatasetStandard().setValue(productDatasetDTO.getDatasetStandard());
+        productDatasetView.getDatasetURL().setText(productDatasetDTO.getDatasetURL());
 /*
         productDatasetView.setProductGeoinformation(productDatasetDTO.getProductFeatures());
         productDatasetView.setSelectedGeoinformation(ListUtil.filterValues(productDatasetDTO.getProductFeatures(), new ListUtil.CheckValue<FeatureDescription>() {
@@ -168,6 +170,14 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setPerformancesComment(productDatasetView.getPerformancesComment().getText());
                 productDatasetDTO.setTemporalCoverage(productDatasetView.getTemporalCoverage());
                 productDatasetDTO.setTemporalCoverageComment(productDatasetView.getTemporalCoverageComment().getText());
+                String datasetURL = productDatasetView.getDatasetURL().getText();
+                if(datasetURL != null && datasetURL.length() > 0) {
+                    productDatasetDTO.setDatasetStandard(productDatasetView.getDatasetStandard().getValue());
+                    productDatasetDTO.setDatasetURL(datasetURL);
+                } else {
+                    productDatasetDTO.setDatasetStandard(null);
+                    productDatasetDTO.setDatasetURL(null);
+                }
                 // do some checks
                 try {
                     if (productDatasetDTO.getName() == null || productDatasetDTO.getName().length() < 3) {

@@ -25,6 +25,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ImageSearchView imageSearchView = null;
 
+    private CatalogueSearchView catalogueSearchView = null;
+
     private RequestImageryView requestImageryView = null;
 
     private ProductFormView productFormView = null;
@@ -220,6 +222,14 @@ public class ClientFactoryImpl implements ClientFactory {
             testimonialView = new TestimonialViewImpl(this);
         }
         return testimonialView;
+    }
+
+    @Override
+    public CatalogueSearchView getCatalogueSearchView() {
+        if(catalogueSearchView == null) {
+            catalogueSearchView = new CatalogueSearchViewImpl(this);
+        }
+        return catalogueSearchView;
     }
 }
 

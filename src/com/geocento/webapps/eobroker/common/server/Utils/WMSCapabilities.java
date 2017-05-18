@@ -28,6 +28,7 @@ public class WMSCapabilities {
         ArrayList<LayerStyle> styles;
         // SRS to use for the call
         List<String> supportedSRS;
+        private boolean queryable;
 
         public WMSLayer() {
         }
@@ -102,6 +103,14 @@ public class WMSCapabilities {
 
         public void setSupportedSRS(List<String> supportedSRS) {
             this.supportedSRS = supportedSRS;
+        }
+
+        public void setQueryable(boolean queryable) {
+            this.queryable = queryable;
+        }
+
+        public boolean isQueryable() {
+            return queryable;
         }
     }
 
@@ -229,105 +238,107 @@ public class WMSCapabilities {
 		throw new Exception("Unsupported protocol");
 	}
 
-	private void parseXMLLayer(Node layerNode, WMSLayer parentLayer) throws Exception {
-		WMSLayer layer = new WMSLayer();
+    private void parseXMLLayer(Node layerNode, WMSLayer parentLayer) throws Exception {
+        WMSLayer layer = new WMSLayer();
         layer.setBaseUrl(baseAddress);
         layer.setVersion(version);
+        String queryable = ((Element) layerNode).getAttribute("queryable");
+        layer.setQueryable(queryable != null && queryable.contentEquals("1"));
         layer.setName(XMLUtil.getUniqueValue(layerNode, "Title"));
         layer.setLayerName(XMLUtil.getUniqueValue(layerNode, "Name"));
         layer.setDescription(XMLUtil.getUniqueValue(layerNode, "Abstract"));
         Node attributionNode = XMLUtil.getUniqueNode((Element) layerNode, "Attribution");
-        if(attributionNode != null) {
+        if (attributionNode != null) {
             layer.setCredits(XMLUtil.getUniqueValue(attributionNode, "Title"));
         }
-		// go for EX_GeographicBoundingBox values first
-		if(XMLUtil.getUniqueNode((Element) layerNode, "EX_GeographicBoundingBox") != null) {
-			try {
-				Node boundBox = XMLUtil.getUniqueNode((Element) layerNode, "EX_GeographicBoundingBox");
+        // go for EX_GeographicBoundingBox values first
+        if (XMLUtil.getUniqueNode((Element) layerNode, "EX_GeographicBoundingBox") != null) {
+            try {
+                Node boundBox = XMLUtil.getUniqueNode((Element) layerNode, "EX_GeographicBoundingBox");
                 Extent extent = new Extent();
                 extent.setWest(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "westBoundLongitude")));
                 extent.setSouth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "southBoundLatitude")));
                 extent.setEast(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "eastBoundLongitude")));
                 extent.setNorth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "northBoundLatitude")));
-				layer.setBounds(extent);
-			} catch(Exception e) {
-			}
-		} else if(XMLUtil.getUniqueNode((Element) layerNode, "LatLonBoundingBox") != null) {
-				try {
-					Element boundBox = (Element) XMLUtil.getUniqueNode((Element) layerNode, "LatLonBoundingBox");
-                    Extent extent = new Extent();
-                    extent.setWest(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "minx")));
-                    extent.setSouth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "miny")));
-                    extent.setEast(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxx")));
-                    extent.setNorth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxy")));
-                    layer.setBounds(extent);
-				} catch(Exception e) {
-				}
-		} else if(XMLUtil.getUniqueNode((Element) layerNode, "BoundingBox") != null) {
-			try {
-				// TODO - check the CRS/SRS
-				Element boundBox = (Element) XMLUtil.getUniqueNode((Element) layerNode, "BoundingBox");
+                layer.setBounds(extent);
+            } catch (Exception e) {
+            }
+        } else if (XMLUtil.getUniqueNode((Element) layerNode, "LatLonBoundingBox") != null) {
+            try {
+                Element boundBox = (Element) XMLUtil.getUniqueNode((Element) layerNode, "LatLonBoundingBox");
                 Extent extent = new Extent();
                 extent.setWest(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "minx")));
                 extent.setSouth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "miny")));
                 extent.setEast(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxx")));
                 extent.setNorth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxy")));
                 layer.setBounds(extent);
-			} catch(Exception e) {
-			}
-		}
-		
-		// assign an SRS
-		List<String> listSRSs = XMLUtil.getNodesValue(layerNode, version.startsWith("1.3") ? "CRS" : "SRS");
-        layer.setSupportedSRS(listSRSs);
-		// check for styles
-		List<Node> styleNodes = XMLUtil.getNodes(layerNode, "Style");
-		ArrayList<LayerStyle> styles = new ArrayList<LayerStyle>();
-		if(styleNodes != null) {
-			for(Node styleNode : styleNodes) {
-				final String name = XMLUtil.getUniqueValue(styleNode, "Name");
-				if(ListUtil.findIndex(styles, new ListUtil.CheckValue<LayerStyle>() {
+            } catch (Exception e) {
+            }
+        } else if (XMLUtil.getUniqueNode((Element) layerNode, "BoundingBox") != null) {
+            try {
+                // TODO - check the CRS/SRS
+                Element boundBox = (Element) XMLUtil.getUniqueNode((Element) layerNode, "BoundingBox");
+                Extent extent = new Extent();
+                extent.setWest(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "minx")));
+                extent.setSouth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "miny")));
+                extent.setEast(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxx")));
+                extent.setNorth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxy")));
+                layer.setBounds(extent);
+            } catch (Exception e) {
+            }
+        }
 
-					@Override
-					public boolean isValue(LayerStyle value) {
-						return name.contentEquals(value.getName());
-					}
-				}) == -1) {
-					styles.add(new LayerStyle(name));
-				}
-			}
-		}
+        // assign an SRS
+        List<String> listSRSs = XMLUtil.getNodesValue(layerNode, version.startsWith("1.3") ? "CRS" : "SRS");
+        layer.setSupportedSRS(listSRSs);
+        // check for styles
+        List<Node> styleNodes = XMLUtil.getNodes(layerNode, "Style");
+        ArrayList<LayerStyle> styles = new ArrayList<LayerStyle>();
+        if (styleNodes != null) {
+            for (Node styleNode : styleNodes) {
+                final String name = XMLUtil.getUniqueValue(styleNode, "Name");
+                if (ListUtil.findIndex(styles, new ListUtil.CheckValue<LayerStyle>() {
+
+                    @Override
+                    public boolean isValue(LayerStyle value) {
+                        return name.contentEquals(value.getName());
+                    }
+                }) == -1) {
+                    styles.add(new LayerStyle(name));
+                }
+            }
+        }
         layer.setStyles(styles);
         // sometimes attributes need to be fetched from the parent layer
-        if(parentLayer != null) {
-            if(layer.getBounds() == null) {
+        if (parentLayer != null) {
+            if (layer.getBounds() == null) {
                 layer.setBounds(parentLayer.getBounds());
             }
-            if(layer.getDescription() == null) {
+            if (layer.getDescription() == null) {
                 layer.setDescription(parentLayer.getDescription());
             }
-            if(parentLayer.getStyles() != null) {
+            if (parentLayer.getStyles() != null) {
                 // it is OK to do shallow copy as styles are immutable
                 for (LayerStyle style : parentLayer.getStyles()) {
                     layer.getStyles().add(style);
                 }
             }
-            if(layer.getSupportedSRS() == null) {
+            if (layer.getSupportedSRS() == null) {
                 layer.setSupportedSRS(parentLayer.getSupportedSRS());
             }
         }
 
-		// parse layers
-		List<Node> childrenNodes = XMLUtil.getNodes(layerNode, "Layer");
-		if(childrenNodes != null && childrenNodes.size() > 0) {
-			for(Node childNode : childrenNodes) {
-				parseXMLLayer(childNode, layer);
-			}
-		} else {
-			// no more children layer so we can add it to the list
-			layersList.add(layer);
-		}
-	}
+        // parse layers
+        List<Node> childrenNodes = XMLUtil.getNodes(layerNode, "Layer");
+        if (childrenNodes != null && childrenNodes.size() > 0) {
+            for (Node childNode : childrenNodes) {
+                parseXMLLayer(childNode, layer);
+            }
+        } else {
+            // no more children layer so we can add it to the list
+            layersList.add(layer);
+        }
+    }
 
     public static String stripInvalidXmlCharacters(String input) {
         StringBuilder sb = new StringBuilder();

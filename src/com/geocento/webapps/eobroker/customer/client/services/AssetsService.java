@@ -89,6 +89,11 @@ public interface AssetsService extends DirectRestService {
     ProductDatasetDescriptionDTO getProductDatasetDescription(@PathParam("id") Long productDatasetId) throws RequestException;
 
     @GET
+    @Path("/assets/productdatasets/{id}/catalogue")
+    @Produces("application/json")
+    ProductDatasetCatalogueDTO getProductDatasetCatalogueDTO(@PathParam("id") Long productId) throws RequestException;
+
+    @GET
     @Path("/assets/software/description/{id}")
     @Produces("application/json")
     SoftwareDescriptionDTO getSoftwareDescription(@PathParam("id") Long softwareId) throws RequestException;
@@ -192,4 +197,5 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/service/{id}/form")
     @Produces("application/json")
     ProductServiceFormDTO getProductServiceForm(@PathParam("id") Long productServiceId) throws RequestException;
+
 }

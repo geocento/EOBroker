@@ -9,7 +9,9 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
@@ -33,11 +35,12 @@ public class XMLUtil {
 	public static Document getDocument(String xmlResponse) throws ParserConfigurationException, SAXException, IOException {
 		
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		
 		Document doc = db.parse(new StringBufferInputStream(xmlResponse));
 		doc.getDocumentElement().normalize();
-		System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+        System.out.println("Root element " + doc.getDocumentElement().getNodeName());
 		
 		return doc;
 	}

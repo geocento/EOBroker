@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -26,6 +27,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.ui.*;
@@ -115,6 +117,10 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialTextBox temporalCoverageComment;
     @UiField
     MaterialLink viewClient;
+    @UiField
+    MaterialTextBox datasetsURL;
+    @UiField
+    MaterialListValueBox<DatasetStandard> datasetsStandard;
 
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -189,6 +195,10 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         });
 
         sampleUploader.addDragOverHandler(event -> MaterialAnimator.animate(Transition.RUBBERBAND, sampleUploader, 0));
+
+        for(DatasetStandard datasetStandard : DatasetStandard.values()) {
+            datasetsStandard.addItem(datasetStandard, datasetStandard.getName());
+        }
 
         template.setPlace("productdatasets");
     }
@@ -581,6 +591,16 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @Override
     public HasClickHandlers getViewClient() {
         return viewClient;
+    }
+
+    @Override
+    public HasText getDatasetURL() {
+        return datasetsURL;
+    }
+
+    @Override
+    public HasValue<DatasetStandard> getDatasetStandard() {
+        return datasetsStandard;
     }
 
 }

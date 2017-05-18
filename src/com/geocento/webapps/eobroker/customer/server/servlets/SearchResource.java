@@ -5,10 +5,7 @@ import com.geocento.webapps.eobroker.common.server.Utils.XMLUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
-import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
-import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWRecordType;
-import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.recommendation.SelectionRule;
@@ -27,6 +24,7 @@ import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -995,6 +993,40 @@ public class SearchResource implements SearchService {
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
         } finally {
 
+        }
+    }
+
+    @Override
+    public OSQueryResponse getOSQueryResponse(OSQueryRequest requestDTO) throws RequestException {
+        return null;
+    }
+
+    // TODO - replace by product dataset id?
+    @Override
+    public OSDescriptionResponse getOSDescriptionResponse(String requestUrl) throws Exception {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(requestUrl);
+        StringEntity params = null;
+        String encoding = "UTF-8";
+        try {
+            HttpResponse response = httpClient.execute(httpGet);
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode == 200 || responseCode == 204) {
+                String responseValue = EntityUtils.toString(response.getEntity(), encoding);
+                OSDescriptionResponse osDescriptionResponse = new OSDescriptionResponse();
+                Document doc = XMLUtil.getDocument(responseValue);
+                Node rootNode = doc.getDocumentElement();
+                Node searchResultsNode = XMLUtil.getUniqueNode((Element) rootNode, "OpenSearchDescription");
+                List<CSWBriefRecord> briefRecords = new ArrayList<CSWBriefRecord>();
+                for(Node node : XMLUtil.getNodes(searchResultsNode, "csw:BriefRecord")) {
+
+                }
+                return osDescriptionResponse;
+            } else {
+                throw new RequestException("Failed to query open search service description");
+            }
+        } catch (Exception e) {
+            throw e instanceof RequestException ? e : new RequestException("Failed to query open search service description");
         }
     }
 

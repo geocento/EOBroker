@@ -918,10 +918,12 @@ public class AssetsResource implements AssetsService {
             productDatasetDTO.setExtent(productDataset.getExtent());
             productDatasetDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             productDatasetDTO.setSamples(productDataset.getSamples());
+            productDatasetDTO.setDatasetStandard(productDataset.getDatasetStandard());
+            productDatasetDTO.setDatasetURL(productDataset.getDatasetURL());
             return productDatasetDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notifications");
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading dataset");
         } finally {
             em.close();
         }
@@ -1038,34 +1040,8 @@ public class AssetsResource implements AssetsService {
             // update the sample access
             List<DatasetAccess> dbSamples = updateSamples(em, productDataset.getSamples(), productDatasetDTO.getSamples());
             productDataset.setSamples(dbSamples);
-/*
-            {
-                List<DatasetAccess> samples = productDatasetDTO.getSamples();
-                List<DatasetAccess> dbSamples = new ArrayList<DatasetAccess>();
-                if (samples != null && samples.size() > 0) {
-                    for (final DatasetAccess datasetAccess : samples) {
-                        DatasetAccess dbDatasetAccess = null;
-                        if (datasetAccess.getId() != null) {
-                            dbDatasetAccess = ListUtil.findValue(productDataset.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
-                                @Override
-                                public boolean isValue(DatasetAccess value) {
-                                    return value.getId().equals(datasetAccess.getId());
-                                }
-                            });
-                        }
-                        if (dbDatasetAccess == null) {
-                            em.persist(datasetAccess);
-                            dbDatasetAccess = datasetAccess;
-                        }
-                        dbDatasetAccess.setTitle(datasetAccess.getTitle());
-                        dbDatasetAccess.setPitch(datasetAccess.getPitch());
-                        dbDatasetAccess.setUri(datasetAccess.getUri());
-                        dbSamples.add(dbDatasetAccess);
-                    }
-                }
-                productDataset.setSamples(dbSamples);
-            }
-*/
+            productDataset.setDatasetStandard(productDatasetDTO.getDatasetStandard());
+            productDataset.setDatasetURL(productDatasetDTO.getDatasetURL());
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + getProductDatasetTSV(productDataset) +
                     ", tsvname = " + getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +

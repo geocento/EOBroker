@@ -3,6 +3,9 @@ package com.geocento.webapps.eobroker.customer.client.services;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWGetRecordsResponse;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSDescriptionResponse;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryRequest;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.shared.*;
@@ -93,4 +96,13 @@ public interface SearchService extends DirectRestService {
     @Produces("application/json")
     List<CompanyDTO> listCompanies(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("size") COMPANY_SIZE companySize, @QueryParam("years") int minYears, @QueryParam("country") String countryCode) throws RequestException;
 
+    @POST
+    @Path("/search/opensearch/query")
+    @Produces("application/json")
+    OSQueryResponse getOSQueryResponse(OSQueryRequest requestDTO) throws RequestException;
+
+    @GET
+    @Path("/search/opensearch/description")
+    @Produces("application/json")
+    OSDescriptionResponse getOSDescriptionResponse(String requestUrl) throws Exception;
 }

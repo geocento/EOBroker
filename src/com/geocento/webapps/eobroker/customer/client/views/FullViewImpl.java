@@ -533,7 +533,7 @@ public class FullViewImpl extends Composite implements FullView {
         List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
         List<DatasetAccess> dataAccesses = productDatasetDescriptionDTO.getDatasetAccesses();
         if(dataAccesses != null && dataAccesses.size() > 0) {
-            accessPanel.add(createSubsection("Methods to access the data"));
+            accessPanel.add(createSubsection("The data for this off the shelf product can be accessed using the following methods:"));
             MaterialRow materialRow = new MaterialRow();
             materialRow.setMargin(10);
             materialRow.setMarginBottom(30);
@@ -549,15 +549,37 @@ public class FullViewImpl extends Composite implements FullView {
                 }
             }
         }
+        // check for catalogue browsing
+        if(productDatasetDescriptionDTO.getCatalogueStandard() != null) {
+            MaterialRow materialRow = new MaterialRow();
+            materialRow.setMargin(10);
+            materialRow.setMarginBottom(30);
+            accessPanel.add(materialRow);
+            MaterialLabel label = new MaterialLabel("This off the shelf data contains sub products which can be browsed ");
+            MaterialLink materialLink = new MaterialLink();
+/*
+            materialLink.setIconPosition(IconPosition.RIGHT);
+*/
+            materialLink.setText("here");
+            materialLink.setMarginLeft(0);
+            materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(new CatalogueSearchPlace(
+                    Utils.generateTokens(CatalogueSearchPlace.TOKENS.productId.toString(), productDatasetDescriptionDTO.getId() + ""))));
+            label.add(materialLink);
+            label.setFontSize(1.2, com.google.gwt.dom.client.Style.Unit.EM);
+            MaterialColumn materialColumnAccess = new MaterialColumn(12, 12, 12);
+            materialRow.add(materialColumnAccess);
+            materialColumnAccess.add(label);
+        }
         List<DatasetAccess> samples = productDatasetDescriptionDTO.getSamples();
         if(samples != null && samples.size() > 0) {
-            accessPanel.add(createSubsection("Sample data"));
+            accessPanel.add(createSubsection("Some sample data is available for this off the shelf product"));
             MaterialRow materialRow = new MaterialRow();
             materialRow.setMargin(10);
             materialRow.setMarginBottom(30);
             accessPanel.add(materialRow);
             for(DatasetAccess datasetAccess : samples) {
                 MaterialColumn materialColumnSample = new MaterialColumn(12, 12, 6);
+                materialRow.add(materialColumnSample);
                 materialColumnSample.add(createDataAccessWidgetProductDataset(productDatasetDescriptionDTO, datasetAccess, true));
                 if(datasetAccess instanceof DatasetAccessOGC) {
                     availableMapData.add(datasetAccess);
