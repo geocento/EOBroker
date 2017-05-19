@@ -74,4 +74,8 @@ public class MapJSNI extends JavaScriptObject {
         }
         this.on(eventName, complete);
     }-*/;
+
+    public final native PointJSNI toMap(double[] screenCoords) /*-{
+        return this.toMap(new $wnd['esri'].geometry.ScreenPoint(screenCoords));
+    }-*/;
 }

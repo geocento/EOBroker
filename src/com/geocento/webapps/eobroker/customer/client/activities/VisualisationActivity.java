@@ -1,9 +1,12 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.WMSUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfo;
+import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfoHandler;
 import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.VisualisationView;
@@ -15,6 +18,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -27,6 +31,8 @@ import java.util.HashMap;
  * Created by thomas on 09/05/2016.
  */
 public class VisualisationActivity extends TemplateActivity implements VisualisationView.Presenter {
+
+    public LayerInfoDTO currentLayer;
 
     private VisualisationView visualisationView;
 
@@ -182,6 +188,49 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
     @Override
     protected void bind() {
         super.bind();
+
+        activityEventBus.addHandler(GetFeatureInfo.TYPE, new GetFeatureInfoHandler() {
+
+            int latest = 0;
+
+            @Override
+            public void onGetFeatureInfo(GetFeatureInfo event) {
+                latest++;
+                final int current = latest;
+                // TODO - add version as part of the dataAccess?
+                try {
+                    WMSUtils.getFeatureInfo(currentLayer.getServerUrl(),
+                            currentLayer.getLayerName(),
+                            "1.1.0",
+                            "",
+                            event.getExtent(),
+                            event.getWidth(),
+                            event.getHeight(),
+                            (int) event.getPoint()[0],
+                            (int) event.getPoint()[1],
+                            new AsyncCallback<String>() {
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    if(current == latest) {
+                                        visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", "Error querying layer...");
+                                    }
+                                }
+
+                                @Override
+                                public void onSuccess(String result) {
+                                    // only display the latest one
+                                    if(current == latest) {
+                                        visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", result);
+                                    }
+                                }
+                            }
+                            );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
     @Override
@@ -199,6 +248,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         // TODO - load layer information
         try {
             REST.withCallback(new MethodCallback<LayerInfoDTO>() {
+
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     visualisationView.hideLoadingInformation();
@@ -207,10 +257,12 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
 
                 @Override
                 public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
+                    VisualisationActivity.this.currentLayer = layerInfoDTO;
                     visualisationView.hideLoadingInformation();
                     // add layer to map
                     visualisationView.addWMSLayer(layerInfoDTO);
                     visualisationView.displayLayerInfo(layerInfoDTO);
+                    visualisationView.enableGetFeatureInfo(layerInfoDTO.isQueryable());
                 }
             }).call(ServicesUtil.assetsService).getLayerInfo(datasetAccess.getId());
         } catch (RequestException e) {

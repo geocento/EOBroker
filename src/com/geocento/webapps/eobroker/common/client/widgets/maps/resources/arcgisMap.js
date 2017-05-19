@@ -12,8 +12,7 @@ var arcgisMap = function(callback) {
         "esri/map",
         "esri/toolbars/draw", "esri/toolbars/edit",
         "esri/graphic",
-        "esri/geometry/Polygon",
-        "esri/geometry/Extent",
+        "esri/geometry/Polygon", "esri/geometry/Point", "esri/geometry/Extent",
         "esri/layers/WMSLayer",
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol",
@@ -23,11 +22,17 @@ var arcgisMap = function(callback) {
         'esri/geometry/geodesicUtils',
         "esri/dijit/Search",
         "esri/dijit/BasemapGallery",
-        "esri/dijit/BasemapToggle"
+        "esri/dijit/BasemapToggle",
+        "esri/dijit/InfoWindow",
+        // additional ones which need locading but no referencing
+        "esri/geometry/ScreenPoint"
     ], function(esriConfig, urlUtils, Map, Draw, Edit, Graphic,
-                Polygon, Extent, WMSLayer,
+                Polygon, Point, Extent,
+                WMSLayer,
                 SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Color, WMSLayerInfo, geodesicUtils,
-                Search, BasemapGallery, BasemapToggle) {
+                Search, BasemapGallery, BasemapToggle,
+                InfoWindow
+        ) {
 
 /*
         urlUtils.addProxyRule({
@@ -35,6 +40,8 @@ var arcgisMap = function(callback) {
             proxyUrl: "/proxy.jsp"
         });
 */
+
+        var infoWindow;
 
         self.createMap = function(baseMap, lat, lng, zoom, mapContainer, onload) {
             var map = new Map(
@@ -123,6 +130,26 @@ var arcgisMap = function(callback) {
                 var polygon = new Polygon(wkt.coordinates);
                 return polygon;
             }
+        }
+
+        self.displayInfoWindow = function(map, title, content, location) {
+            if(!infoWindow) {
+                var domNode = document.createElement('div');
+                map.root.appendChild(domNode);
+                infoWindow = new InfoWindow({}, domNode);
+                infoWindow.setMap(map);
+                infoWindow.startup();
+            }
+            infoWindow.setTitle(title);
+            infoWindow.setContent(content);
+            infoWindow.show(
+                location,
+                //new Point({"x": location[0], "y": location[1], "spatialReference": {"wkid": 4326 } }),
+                InfoWindow.ANCHOR_UPPERRIGHT);
+        }
+
+        self.hideInfoWindow = function(map) {
+            infoWindow.hide();
         }
 
         function addToMap(evt) {

@@ -80,4 +80,11 @@ public class ArcgisMapJSNI extends JavaScriptObject {
         this.createBaseMapToggle(map, element);
     }-*/;
 
+    public final native void displayInfoWindow(MapJSNI map, String content, PointJSNI position) /*-{
+        this.displayInfoWindow(map, content, position);
+    }-*/;
+
+    public final native void hideInfoWindow(MapJSNI map) /*-{
+        this.hideInfoWindow(map);
+    }-*/;
 }

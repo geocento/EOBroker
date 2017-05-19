@@ -1,17 +1,16 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialSideNav;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ExtentJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerInfoJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfo;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
@@ -19,9 +18,8 @@ import com.geocento.webapps.eobroker.customer.shared.ProductDatasetVisualisation
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceVisualisationDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -29,8 +27,6 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HeaderPanel;
@@ -99,6 +95,8 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     private WMSLayerJSNI wmsLayer;
 
+    private boolean queryable;
+
     private final ClientFactoryImpl clientFactory;
 
     public VisualisationViewImpl(ClientFactoryImpl clientFactory) {
@@ -136,7 +134,50 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
-        mapContainer.setMapLoadedHandler(mapLoadedHandler);
+        mapContainer.setMapLoadedHandler(new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(Exception reason) {
+                mapLoadedHandler.onFailure(reason);
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                // add click handler to map
+                mapContainer.map.onEvent("click", new com.geocento.webapps.eobroker.common.client.widgets.maps.resources.Callback<JavaScriptObject>() {
+
+                    int latest = 0;
+
+                    @Override
+                    public void callback(JavaScriptObject result) {
+                        if(queryable) {
+                            GetFeatureInfo getFeatureInfo = new GetFeatureInfo();
+                            PointJSNI point = ((MapMouseEventJSNI) result).getMapPoint();
+                            PointJSNI screenPoint = ((MapMouseEventJSNI) result).getScreenPoint();
+                            int size = 1;
+                            int width = 2 * size;
+                            int height = 2 * size;
+                            getFeatureInfo.setWidth(width);
+                            getFeatureInfo.setHeight(height);
+                            getFeatureInfo.setPoint(new int[] {size, size});
+                            getFeatureInfo.setMapPoint(point);
+                            // calculate extent based on point on map and width and height
+                            PointJSNI firstPoint = mapContainer.map.toMap(new double[]{screenPoint.getX() - width / 2, screenPoint.getY() - height / 2});
+                            PointJSNI secondPoint = mapContainer.map.toMap(new double[]{screenPoint.getX() + width / 2, screenPoint.getY() + height / 2});
+                            firstPoint = (PointJSNI) mapContainer.getArcgisMap().convertsToGeographic(firstPoint);
+                            secondPoint = (PointJSNI) mapContainer.getArcgisMap().convertsToGeographic(secondPoint);
+                            Extent extent = new Extent();
+                            extent.setSouth(Math.min(firstPoint.getY(), secondPoint.getY()));
+                            extent.setWest(Math.min(firstPoint.getX(), secondPoint.getX()));
+                            extent.setNorth(Math.max(firstPoint.getY(), secondPoint.getY()));
+                            extent.setEast(Math.max(firstPoint.getX(), secondPoint.getX()));
+                            getFeatureInfo.setExtent(extent);
+                            clientFactory.getEventBus().fireEvent(getFeatureInfo);
+                        }
+                    }
+                });
+                mapLoadedHandler.onSuccess(result);
+            }
+        });
     }
 
     @Override
@@ -199,6 +240,11 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         }
         moreDatasets.setVisible(hasSamples);
         moreDatasets.setText("More layers from this service...");
+    }
+
+    @Override
+    public void enableGetFeatureInfo(boolean queryable) {
+        this.queryable = true;
     }
 
     @Override
@@ -279,6 +325,22 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @Override
     public void setDataAccessDescription(String pitch) {
         description.setText(pitch);
+    }
+
+    @Override
+    public void displayMapInfoLoading(PointJSNI location, String message) {
+        MaterialLabelIcon loadingWidget = new MaterialLabelIcon(StyleResources.INSTANCE.loadingSmall(), "querying...");
+        mapContainer.displayInfoWindow(loadingWidget.getElement().getString(), location);
+    }
+
+    @Override
+    public void hideMapInfoLoading(PointJSNI location, String message) {
+        mapContainer.hideInfoWindow();
+    }
+
+    @Override
+    public void displayMapInfoContent(PointJSNI location, String title, String content) {
+        mapContainer.displayInfoWindow(content, location);
     }
 
     @Override

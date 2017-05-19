@@ -357,4 +357,12 @@ public class MapContainer extends Composite {
         MaterialLoader.showLoading(false, panel);
     }
 
+    public void displayInfoWindow(String content, PointJSNI position) {
+        getArcgisMap().displayInfoWindow(map, content, position);
+    }
+
+    public void hideInfoWindow() {
+        getArcgisMap().hideInfoWindow(map);
+    }
+
 }

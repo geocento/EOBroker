@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.client.widgets;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -37,14 +38,29 @@ public class MaterialLabelIcon extends HTMLPanel {
         setText(name);
     }
 
+    public MaterialLabelIcon(ImageResource imageResource, String name) {
+        this();
+        setImageResource(imageResource);
+        setText(name);
+    }
+
     public void setImageUrl(String imageUrl) {
+        createImageMaybe();
+        image.setUrl(imageUrl);
+    }
+
+    public void setImageResource(ImageResource resource) {
+        createImageMaybe();
+        image.setResource(resource);
+    }
+
+    private void createImageMaybe() {
         if(image == null) {
             image = new Image();
             image.getElement().getStyle().setVerticalAlign(Style.VerticalAlign.MIDDLE);
             updateImage();
             DOM.insertChild(getElement(), image.getElement(), 0);
         }
-        image.setUrl(imageUrl);
     }
 
     public void setImageWidth(String width) {
