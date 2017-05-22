@@ -80,6 +80,16 @@
         <servlet-name>DatasetUploadServlet</servlet-name>
         <servlet-class>com.geocento.webapps.eobroker.supplier.server.servlets.DatasetUploadServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>proxy</servlet-name>
+        <servlet-class>com.geocento.webapps.eobroker.customer.server.servlets.ProxyServlet</servlet-class>
+<!--
+        <init-param>
+            <param-name>host_list</param-name>
+            <param-value>127.0.0.1,localhost,eobroker.com</param-value>
+        </init-param>
+-->
+    </servlet>
     <servlet-mapping>
         <servlet-name>NoCacheServlet</servlet-name>
         <url-pattern>*.nocache.js</url-pattern>
@@ -111,6 +121,10 @@
     <servlet-mapping>
         <servlet-name>DatasetUploadServlet</servlet-name>
         <url-pattern>/upload/datasets/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>proxy</servlet-name>
+        <url-pattern>/proxy</url-pattern>
     </servlet-mapping>
 
     <!-- Default page to serve -->

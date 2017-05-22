@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetVisualisationDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceVisualisationDTO;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -17,6 +18,10 @@ public interface VisualisationView extends IsWidget {
 
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
+    void setQueryable(boolean queryable);
+
+    HasValue<Boolean> getFeatureInfoSwitch();
+
     void displayLayerInfo(LayerInfoDTO layerInfoDTO);
 
     void setProductDataset(ProductDatasetVisualisationDTO productDatasetVisualisationDTO);
@@ -25,7 +30,7 @@ public interface VisualisationView extends IsWidget {
 
     void setDataAccessDescription(String pitch);
 
-    void addWMSLayer(LayerInfoDTO layerInfoDTO);
+    void setWMSLayer(LayerInfoDTO layerInfoDTO);
 
     void setLoadingInformation(String message);
 
@@ -37,11 +42,15 @@ public interface VisualisationView extends IsWidget {
 
     void enableGetFeatureInfo(boolean queryable);
 
-    void displayMapInfoLoading(PointJSNI location, String message);
+    void displayMapInfoLoading(PointJSNI location, String title, String message);
 
     void hideMapInfoLoading(PointJSNI location, String message);
 
     void displayMapInfoContent(PointJSNI location, String title, String content);
+
+    void displayGetFeatureInfoContent(String content);
+
+    void displayGetFeatureInfoLoading(String message);
 
     public interface Presenter {
         void datasetAccessSelected(DatasetAccess datasetAccess);

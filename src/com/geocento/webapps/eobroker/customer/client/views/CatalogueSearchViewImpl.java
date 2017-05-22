@@ -4,9 +4,9 @@ import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
-import com.geocento.webapps.eobroker.common.shared.Suggestion;
-import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
@@ -18,8 +18,6 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -84,6 +82,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     MaterialLabelIcon productDatasetTitle;
     @UiField
     MaterialTextBox query;
+    @UiField
+    MaterialLabelIcon protocol;
 
     private Presenter presenter;
 
@@ -134,8 +134,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         });
         createResultsTable();
 
-        queryPanel.getElement().getParentElement().addClassName("z-depth-1");
-        queryPanel.getElement().getParentElement().getStyle().setZIndex(10);
+        searchPanel.getElement().getParentElement().addClassName("z-depth-1");
+        searchPanel.getElement().getParentElement().getStyle().setZIndex(10);
 
         mapContainer.setPresenter(aoi -> presenter.aoiChanged(aoi));
 
@@ -334,10 +334,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
-    public void displayImageProducts(List<Product> imageProductDTOs) {
+    public void displayQueryResponse(OSQueryResponse imageProductDTOs) {
         resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
         imagesList.getList().clear();
+/*
         imagesList.getList().addAll(imageProductDTOs == null ? new ArrayList<Product>() : imageProductDTOs);
+*/
         imagesList.refresh();
         // refresh map
         refreshMap();
@@ -474,6 +476,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     public void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
         productDatasetTitle.setImageUrl(productDatasetCatalogueDTO.getImageUrl());
         productDatasetTitle.setText(productDatasetCatalogueDTO.getName());
+        protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
+    }
+
+    @Override
+    public void setParameters(List<FormElement> formElements) {
+
     }
 
     @Override

@@ -197,6 +197,9 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
             public void onGetFeatureInfo(GetFeatureInfo event) {
                 latest++;
                 final int current = latest;
+                String title = "Layer feature information";
+                //visualisationView.displayMapInfoLoading(event.getMapPoint(), title, "Querying...");
+                visualisationView.displayGetFeatureInfoLoading("Querying...");
                 // TODO - add version as part of the dataAccess?
                 try {
                     WMSUtils.getFeatureInfo(currentLayer.getServerUrl(),
@@ -212,7 +215,8 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                                 @Override
                                 public void onFailure(Throwable caught) {
                                     if(current == latest) {
-                                        visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", "Error querying layer...");
+                                        //visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", "Error querying layer...");
+                                        visualisationView.displayGetFeatureInfoContent("Error querying layer...");
                                     }
                                 }
 
@@ -220,7 +224,8 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                                 public void onSuccess(String result) {
                                     // only display the latest one
                                     if(current == latest) {
-                                        visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", result);
+                                        //visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", result);
+                                        visualisationView.displayGetFeatureInfoContent(result);
                                     }
                                 }
                             }
@@ -231,6 +236,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
 
             }
         });
+
     }
 
     @Override
@@ -260,7 +266,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                     VisualisationActivity.this.currentLayer = layerInfoDTO;
                     visualisationView.hideLoadingInformation();
                     // add layer to map
-                    visualisationView.addWMSLayer(layerInfoDTO);
+                    visualisationView.setWMSLayer(layerInfoDTO);
                     visualisationView.displayLayerInfo(layerInfoDTO);
                     visualisationView.enableGetFeatureInfo(layerInfoDTO.isQueryable());
                 }

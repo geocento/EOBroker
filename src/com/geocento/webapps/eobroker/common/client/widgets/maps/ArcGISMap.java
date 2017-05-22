@@ -44,11 +44,11 @@ public class ArcGISMap extends Composite implements RequiresResize {
         if(!arcgisLoaded()) {
             LinkElement link = Document.get().createLinkElement();
             link.setRel("stylesheet");
-            link.setHref("https://js.arcgis.com/3.18/esri/css/esri.css");
+            link.setHref("https://js.arcgis.com/3.20/esri/css/esri.css");
             nativeAttachToHead(link);
 
             ScriptInjector
-                    .fromUrl("https://js.arcgis.com/3.18/")
+                    .fromUrl("https://js.arcgis.com/3.20/")
                     .setWindow(ScriptInjector.TOP_WINDOW)
                     .setCallback(new Callback<Void, Exception>() {
                         @Override

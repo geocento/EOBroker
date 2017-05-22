@@ -1,7 +1,9 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
+import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
 import com.google.gwt.core.client.Callback;
@@ -29,7 +31,7 @@ public interface CatalogueSearchView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayImageProducts(List<Product> imageProductDTOs);
+    void displayQueryResponse(OSQueryResponse imageProductDTOs);
 
     void displayStartDate(Date date);
 
@@ -52,6 +54,8 @@ public interface CatalogueSearchView extends IsWidget {
     void centerOnAoI();
 
     void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO);
+
+    void setParameters(List<FormElement> formElements);
 
     public interface Presenter {
 

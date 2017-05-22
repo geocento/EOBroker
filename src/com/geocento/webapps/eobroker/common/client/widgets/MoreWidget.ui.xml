@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style field="style" type="com.geocento.webapps.eobroker.common.client.widgets.forms.MoreWidget.Style">
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+    </ui:style>
+    <design:MaterialPanel>
+        <design:MaterialPanel layoutPosition="RELATIVE" ui:field="content">
+            <design:MaterialLabel ui:field="description"></design:MaterialLabel>
+            <design:MaterialLink layoutPosition="ABSOLUTE" bottom="2" right="2" fontSize="0.8em" ui:field="more">More</design:MaterialLink>
+            <design:MaterialLink fontSize="0.8em" ui:field="less">Less</design:MaterialLink>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+</ui:UiBinder>
