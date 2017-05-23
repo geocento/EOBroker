@@ -1,12 +1,9 @@
 package com.geocento.webapps.eobroker.common.client.utils.geojson.object;
 
 import com.geocento.webapps.eobroker.common.client.utils.geojson.geometry.Geometry;
-import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsType;
 
 import java.util.Map;
 
-@JsType(isNative=true, namespace= JsPackage.GLOBAL, name="Object")
 public class Feature {
 
 	public String type;
@@ -16,4 +13,27 @@ public class Feature {
 	public Feature() {
 	}
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
+    }
 }

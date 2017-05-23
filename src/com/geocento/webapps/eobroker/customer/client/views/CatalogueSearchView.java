@@ -1,10 +1,8 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
-import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -31,7 +29,7 @@ public interface CatalogueSearchView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayQueryResponse(OSQueryResponse imageProductDTOs);
+    void displayQueryResponse(List<Record> records);
 
     void displayStartDate(Date date);
 
@@ -45,9 +43,9 @@ public interface CatalogueSearchView extends IsWidget {
 
     HasClickHandlers getQuoteButton();
 
-    List<Product> getSelectedProducts();
+    List<Record> getSelectedRecord();
 
-    void clearProductsSelection();
+    void clearRecordsSelection();
 
     void showQuery();
 

@@ -12,6 +12,7 @@ public class TextFormElement extends FormElement {
 
     Integer min;
     Integer max;
+    private String pattern;
 
     public TextFormElement() {
     }
@@ -30,5 +31,13 @@ public class TextFormElement extends FormElement {
 
     public void setMax(Integer max) {
         this.max = max;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public String getPattern() {
+        return pattern;
     }
 }

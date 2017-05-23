@@ -22,6 +22,9 @@
         }
 
         .queryPanel {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
             line-height: normal !important;
         }
 
@@ -78,17 +81,34 @@
         .protocol {
             padding: 10px;
             font-size: 0.8em;
+            float: right;
+        }
+
+        .editor {
+
+        }
+
+        .name {
+
         }
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+    <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <m:MaterialPanel addStyleNames="{style.content}">
         <g:DockLayoutPanel addStyleNames="{style.contentPanel}">
             <g:west size="350">
                 <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
                     <m:MaterialPanel>
                         <sideprofile:MaterialSideProfile backgroundColor="BLUE" textColor="WHITE">
-                            <widgetsc:MaterialLabelIcon spacing="10" ui:field="productDatasetTitle"></widgetsc:MaterialLabelIcon>
+                            <m:MaterialImage float="LEFT" ui:field="image"></m:MaterialImage>
+                            <m:MaterialPanel marginLeft="70" marginTop="0">
+                                <m:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></m:MaterialLabel>
+                                <m:MaterialPanel marginTop="5">
+                                    <m:MaterialChip fontSize="0.8em" ui:field="supplier"></m:MaterialChip>
+                                    <widgetsc:MaterialLabelIcon addStyleNames="{style.protocol}" ui:field="protocol"></widgetsc:MaterialLabelIcon>
+                                </m:MaterialPanel>
+                            </m:MaterialPanel>
                         </sideprofile:MaterialSideProfile>
                         <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
                             <m:MaterialTabItem waves="YELLOW" grid="s6">
@@ -99,7 +119,7 @@
                             </m:MaterialTabItem>
                         </m:MaterialTab>
                     </m:MaterialPanel>
-                    <m:MaterialRow padding="0" margin="0" overflow="HIDDEN" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
+                    <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}, {resCommon.style.slimScrollbar}" ui:field="queryPanel">
                         <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
                             <m:MaterialRow marginTop="20">
                                 <m:MaterialColumn grid="s6">
@@ -112,9 +132,9 @@
                                     <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>
                                 </m:MaterialColumn>
                             </m:MaterialRow>
-                            <m:MaterialColumn>
-                                <widgetsc:MaterialLabelIcon addStyleNames="{style.protocol}" ui:field="protocol"></widgetsc:MaterialLabelIcon>
-                            </m:MaterialColumn>
+                            <m:MaterialLabel text="Additional fields"></m:MaterialLabel>
+                            <m:MaterialRow ui:field="additionalFields">
+                            </m:MaterialRow>
                             <m:MaterialRow addStyleNames="{style.queryButton}">
                                 <m:MaterialColumn grid="s12">
                                     <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" ui:field="update"/>

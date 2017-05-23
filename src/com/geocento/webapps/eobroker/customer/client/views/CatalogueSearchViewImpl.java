@@ -1,13 +1,14 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
+import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
+import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
-import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
@@ -23,7 +24,6 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -34,9 +34,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
-import gwt.material.design.client.base.MaterialImageCell;
 import gwt.material.design.client.constants.Color;
-import gwt.material.design.client.constants.ImageType;
 import gwt.material.design.client.ui.*;
 
 import java.util.*;
@@ -53,6 +51,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
     static public interface Style extends CssResource {
         String navOpened();
+
+        String editor();
     }
 
     @UiField
@@ -79,32 +79,38 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     @UiField
     HeaderPanel searchPanel;
     @UiField
-    MaterialLabelIcon productDatasetTitle;
-    @UiField
     MaterialTextBox query;
     @UiField
     MaterialLabelIcon protocol;
+    @UiField
+    MaterialRow additionalFields;
+    @UiField
+    MaterialLabel name;
+    @UiField
+    MaterialChip supplier;
+    @UiField
+    MaterialImage image;
 
     private Presenter presenter;
 
-    private Product outlinedProduct;
+    private Record outlinedRecord;
 
-    private GraphicJSNI outlinedProductGraphicJSNI;
+    private GraphicJSNI outlinedRecordGraphicJSNI;
 
-    private DataGrid<Product> resultsTable;
+    private DataGrid<Record> resultsTable;
 
-    private ListDataProvider<Product> imagesList;
+    private ListDataProvider<Record> recordsList;
 
-    private ColumnSortEvent.ListHandler<Product> sortDataHandler;
+    private ColumnSortEvent.ListHandler<Record> sortDataHandler;
 
-    private HashSet<Product> selectedProducts = new HashSet<Product>();
+    private HashSet<Record> selectedRecord = new HashSet<Record>();
 
-    private class ProductRendering {
+    private class RecordRendering {
         GraphicJSNI footprint;
         WMSLayerJSNI overlay;
     }
 
-    private HashMap<Product, ProductRendering> renderedProducts = new HashMap<Product, ProductRendering>();
+    private HashMap<Record, RecordRendering> renderedRecords = new HashMap<Record, RecordRendering>();
 
     private static NumberFormat format = NumberFormat.getFormat("#.##");
 
@@ -143,6 +149,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
             tab.selectTab("query");
             onResize(null);
         });
+
+        Window.addResizeHandler(this);
     }
 
     @Override
@@ -173,50 +181,35 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
     private void createResultsTable() {
         // create table
-        resultsTable = new DataGrid<Product>(1000, MyDataGridResources.INSTANCE);
+        resultsTable = new DataGrid<Record>(1000, MyDataGridResources.INSTANCE);
         resultsTable.setSize("100%", "100%");
         // create the list data provider
-        imagesList = new ListDataProvider<Product>();
-        imagesList.setList(new ArrayList<Product>());
-        imagesList.addDataDisplay(resultsTable);
+        recordsList = new ListDataProvider<Record>();
+        recordsList.setList(new ArrayList<Record>());
+        recordsList.addDataDisplay(resultsTable);
 
-        resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<Product>() {
+        resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<Record>() {
             @Override
-            public void onCellPreview(CellPreviewEvent<Product> event) {
+            public void onCellPreview(CellPreviewEvent<Record> event) {
                 if (BrowserEvents.MOUSEOVER.equals(event.getNativeEvent().getType())) {
-                    outlineProduct(event.getValue());
+                    outlineRecord(event.getValue());
                 } else if (BrowserEvents.MOUSEOUT.equals(event.getNativeEvent().getType())) {
-                    outlineProduct(null);
+                    outlineRecord(null);
                 }
             }
         });
-        sortDataHandler = new ColumnSortEvent.ListHandler<>(imagesList.getList());
+        sortDataHandler = new ColumnSortEvent.ListHandler<>(recordsList.getList());
         resultsTable.addColumnSortHandler(sortDataHandler);
         // now add table to the results panel
         resultsPanel.setWidget(resultsTable);
 
-        SubrowTableBuilder tableBuilder = new SubrowTableBuilder<Product>(resultsTable) {
+        SubrowTableBuilder tableBuilder = new SubrowTableBuilder<Record>(resultsTable) {
             @Override
-            protected String getInformation(Product product) {
+            protected String getInformation(Record record) {
                 String htmlContent = "";
-                htmlContent += addProperty("Resolution", formatNumber(product.getSensorResolution(), "m"));
-                htmlContent += addProperty("AoI Coverage", formatNumber(product.getAoiCoveragePercent() * 100, "%"));
-                if(product.getOrbit() != null) {
-                    htmlContent += addProperty("Orbit", product.getOrbit());
-                }
-                if(product.getSensorType().startsWith("O")) {
-                    htmlContent += addProperty("Cloud cover", formatNumber(product.getCloudCoveragePercent() == -1 ? null : product.getCloudCoveragePercent() * 100, "%"));
-                    htmlContent += addProperty("Off-Nadir Angle", formatNumber(product.getOna(), "deg"));
-                    htmlContent += addProperty("Illum. Angle", formatNumber(product.getSza(), "deg"));
-                    if(product.getStereoStackName() != null) {
-                        htmlContent += addProperty("Stereo", "Stack" + product.getStereoStackName());
-                    }
-                } else {
-                    if(product.getOrbitDirection() != null) {
-                        htmlContent += addProperty("Orbit Dir.", formatString(product.getOrbitDirection() == Product.ORBITDIRECTION.ASCENDING ? "Ascending" : "Descending"));
-                    }
-                    htmlContent += addProperty("Polarisation Mode", formatString(product.getPolarisation()));
-                    htmlContent += addProperty("Incidence Angle", formatNumber(product.getOza(), "deg"));
+                HashMap<String, String> properties = record.getProperties();
+                for(String propertyName : properties.keySet()) {
+                    htmlContent += addProperty(propertyName, properties.get(propertyName));
                 }
                 return htmlContent;
             }
@@ -230,27 +223,27 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
             }
 
             private String addProperty(String name, Object value) {
-                return "<span style='padding: 5px;'><b>" + name + ": </b>" + (value == null ? "NA" : value.toString()) + "</span>";
+                return "<div style='padding: 5px; white-space: nowrap; text-overflow: ellipsis;'><b>" + name + ": </b>" + (value == null ? "NA" : value.toString()) + "</div>";
             }
 
         };
         resultsTable.setTableBuilder(tableBuilder);
 
         // define columns
-        Column<Product, Boolean> checkColumn = new Column<Product, Boolean>(new MaterialCheckBoxCell()) {
+        Column<Record, Boolean> checkColumn = new Column<Record, Boolean>(new MaterialCheckBoxCell()) {
             @Override
-            public Boolean getValue(Product product) {
-                return selectedProducts.contains(product);
+            public Boolean getValue(Record record) {
+                return selectedRecord.contains(record);
             }
         };
-        checkColumn.setFieldUpdater(new FieldUpdater<Product, Boolean>() {
+        checkColumn.setFieldUpdater(new FieldUpdater<Record, Boolean>() {
             @Override
-            public void update(int index, Product product, Boolean value) {
-                if(selectedProducts.contains(product) != value) {
+            public void update(int index, Record record, Boolean value) {
+                if(selectedRecord.contains(record) != value) {
                     if(value) {
-                        selectedProducts.add(product);
+                        selectedRecord.add(record);
                     } else {
-                        selectedProducts.remove(product);
+                        selectedRecord.remove(record);
                     }
                     resultsTable.redraw();
                     refreshMap();
@@ -259,14 +252,15 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
             }
         });
 
+/*
         // IMAGE
-        Column<Product, MaterialImage> thumbnailColumn = new Column<Product, MaterialImage>(new MaterialImageCell()) {
+        Column<Record, MaterialImage> thumbnailColumn = new Column<Record, MaterialImage>(new MaterialImageCell()) {
             @Override
-            public MaterialImage getValue(Product object) {
+            public MaterialImage getValue(Record object) {
                 MaterialImage img = new MaterialImage();
                 img.setUrl(object.getThumbnail() == null ?
-                                (object.getType() == Product.TYPE.ARCHIVE ? "./images/imageryNotAvailable.png" :
-                                        object.getType() == Product.TYPE.PLANNEDACQ ? "./images/imageryPlannedAcq.png" :
+                                (object.getType() == Record.TYPE.ARCHIVE ? "./images/imageryNotAvailable.png" :
+                                        object.getType() == Record.TYPE.PLANNEDACQ ? "./images/imageryPlannedAcq.png" :
                                         "./images/imageryFutureAcq.png") :
                         object.getThumbnail());
                 img.setWidth("40px");
@@ -276,56 +270,61 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 return img;
             }
         };
-        TextColumn<Product> sensorColumn = new TextColumn<Product>() {
+*/
+        TextColumn<Record> titleColumn = new TextColumn<Record>() {
             @Override
-            public String getValue(Product object) {
-                return object.getSatelliteName();
+            public String getValue(Record object) {
+                return object.getTitle();
             }
         };
-        sensorColumn.setSortable(true);
-        sortDataHandler.setComparator(sensorColumn, new Comparator<Product>() {
+        titleColumn.setSortable(true);
+        sortDataHandler.setComparator(titleColumn, new Comparator<Record>() {
             @Override
-            public int compare(Product o1, Product o2) {
-                return o1.getSatelliteName().compareTo(o2.getSatelliteName());
+            public int compare(Record o1, Record o2) {
+                return o1.getTitle().compareTo(o2.getTitle());
             }
         });
 
+/*
         // ITEM NAME
-        TextColumn<Product> dateColumn = new TextColumn<Product>() {
+        TextColumn<Record> dateColumn = new TextColumn<Record>() {
 
             private DateTimeFormat fmt = DateTimeFormat.getShortDateFormat();
 
             @Override
-            public String getValue(Product imageProductDTO) {
+            public String getValue(Record imageProductDTO) {
                 return fmt.format(imageProductDTO.getStart());
             }
         };
         dateColumn.setSortable(true);
-        sortDataHandler.setComparator(dateColumn, new Comparator<Product>() {
+        sortDataHandler.setComparator(dateColumn, new Comparator<Record>() {
             @Override
-            public int compare(Product o1, Product o2) {
+            public int compare(Record o1, Record o2) {
                 return o1.getStart().compareTo(o2.getStart());
             }
         });
 
-        // set the row styles based on type of product
-        resultsTable.setRowStyles(new RowStyles<Product>() {
+        // set the row styles based on type of record
+        resultsTable.setRowStyles(new RowStyles<Record>() {
             @Override
-            public String getStyleNames(Product product, int rowIndex) {
-                return product.getType() == Product.TYPE.ARCHIVE ? "eobroker-archiveProduct" :
-                        product.getType() == Product.TYPE.PLANNEDACQ ? "eobroker-plannedAcqProduct" :
+            public String getStyleNames(Record record, int rowIndex) {
+                return record.getType() == Record.TYPE.ARCHIVE ? "eobroker-archiveProduct" :
+                        record.getType() == Record.TYPE.PLANNEDACQ ? "eobroker-plannedAcqProduct" :
                         "eobroker-futureOpportunityProduct";
             }
         });
+*/
 
         resultsTable.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         resultsTable.setColumnWidth(checkColumn, "30px");
-        resultsTable.addColumn(thumbnailColumn, "");
-        resultsTable.setColumnWidth(thumbnailColumn, "40px");
+        resultsTable.addColumn(titleColumn, "title");
+        resultsTable.setColumnWidth(titleColumn, "100px");
+/*
         resultsTable.addColumn(sensorColumn, "Sensor");
         resultsTable.setColumnWidth(sensorColumn, "100px");
         resultsTable.addColumn(dateColumn, "Acq date");
         resultsTable.setColumnWidth(dateColumn, "100px");
+*/
         tableBuilder.addDeployableColumn(StyleResources.INSTANCE.info(), StyleResources.INSTANCE.info());
 
         // enable quote button
@@ -334,13 +333,11 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
-    public void displayQueryResponse(OSQueryResponse imageProductDTOs) {
+    public void displayQueryResponse(List<Record> records) {
         resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
-        imagesList.getList().clear();
-/*
-        imagesList.getList().addAll(imageProductDTOs == null ? new ArrayList<Product>() : imageProductDTOs);
-*/
-        imagesList.refresh();
+        recordsList.getList().clear();
+        recordsList.getList().addAll(records == null ? new ArrayList<Record>() : records);
+        recordsList.refresh();
         // refresh map
         refreshMap();
     }
@@ -349,43 +346,56 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
         MapJSNI map = mapContainer.map;
         // refresh products display on map
-        for(Product product : imagesList.getList()) {
-            boolean toRender = selectedProducts.contains(product);
-            boolean rendered = renderedProducts.containsKey(product);
+        for(Record record : recordsList.getList()) {
+            boolean toRender = selectedRecord.contains(record);
+            boolean rendered = renderedRecords.containsKey(record);
             if(toRender && !rendered) {
-                ProductRendering productRendering = new ProductRendering();
-                PolygonJSNI polygon = arcgisMap.createPolygon(product.getCoordinatesWKT().replace("POLYGON((", "").replace("))", ""));
-                productRendering.footprint = map.getGraphics().addGraphic(polygon,
-                        arcgisMap.createFillSymbol(product.getType() == Product.TYPE.ARCHIVE ? "#ff0000" : "#00ffff", 2, "rgba(0,0,0,0.0)"));
+                RecordRendering recordRendering = new RecordRendering();
+                String geometryWKT = record.getGeometryWKT();
+                GeometryJSNI geometryJSNI = createGeometry(arcgisMap, geometryWKT);
+                recordRendering.footprint = map.getGraphics().addGraphic(geometryJSNI,
+                        arcgisMap.createFillSymbol("#00ffff", 2, "rgba(0,0,0,0.0)"));
                 // add wms layer
-                if (product.getType() == Product.TYPE.ARCHIVE && product.getQl() != null) {
-                    productRendering.overlay = map.addWMSLayer(product.getQl(), WMSLayerInfoJSNI.createInfo(product.getSatelliteName(), product.getSatelliteName()), polygon.getExtent());
+/*
+                if (record.getType() == Record.TYPE.ARCHIVE && record.getQl() != null) {
+                    recordRendering.overlay = map.addWMSLayer(record.getQl(), WMSLayerInfoJSNI.createInfo(record.getSatelliteName(), record.getSatelliteName()), polygon.getExtent());
                 }
-                renderedProducts.put(product, productRendering);
+*/
+                renderedRecords.put(record, recordRendering);
             } else if(!toRender && rendered) {
-                ProductRendering productRendering = renderedProducts.get(product);
-                if(productRendering.footprint != null) {
-                    map.getGraphics().remove(productRendering.footprint);
+                RecordRendering recordRendering = renderedRecords.get(record);
+                if(recordRendering.footprint != null) {
+                    map.getGraphics().remove(recordRendering.footprint);
                 }
-                if(productRendering.overlay != null) {
-                    map.removeWMSLayer(productRendering.overlay);
+                if(recordRendering.overlay != null) {
+                    map.removeWMSLayer(recordRendering.overlay);
                 }
-                renderedProducts.remove(product);
+                renderedRecords.remove(record);
             }
         }
-        // remove previous outline product
-        if(outlinedProductGraphicJSNI != null) {
-            map.getGraphics().remove(outlinedProductGraphicJSNI);
+        // remove previous outline record
+        if(outlinedRecordGraphicJSNI != null) {
+            map.getGraphics().remove(outlinedRecordGraphicJSNI);
         }
-        // add outlined product on top
-        if(outlinedProduct != null) {
-            outlinedProductGraphicJSNI = map.getGraphics().addGraphic(arcgisMap.createPolygon(outlinedProduct.getCoordinatesWKT().replace("POLYGON((", "").replace("))", "")),
+        // add outlined record on top
+        if(outlinedRecord != null) {
+            GeometryJSNI geometryJSNI = createGeometry(arcgisMap, outlinedRecord.getGeometryWKT());
+            outlinedRecordGraphicJSNI = map.getGraphics().addGraphic(geometryJSNI,
                     arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
         }
     }
 
-    private void outlineProduct(Product product) {
-        outlinedProduct = product;
+    private GeometryJSNI createGeometry(ArcgisMapJSNI arcgisMap, String geometryWKT) {
+        switch (geometryWKT.substring(0, geometryWKT.indexOf("("))) {
+            case "POLYGON":
+                return arcgisMap.createPolygon(geometryWKT.replace("POLYGON((", "").replace("))", ""));
+        }
+
+        return null;
+    }
+
+    private void outlineRecord(Record record) {
+        outlinedRecord = record;
         refreshMap();
     }
 
@@ -428,7 +438,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     public void clearMap() {
         if(mapContainer != null) {
             mapContainer.clearAoI();
-            clearProductsSelection();
+            clearRecordsSelection();
         }
     }
 
@@ -438,28 +448,28 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
-    public List<Product> getSelectedProducts() {
-        return new ArrayList<Product>(selectedProducts);
+    public List<Record> getSelectedRecord() {
+        return new ArrayList<Record>(selectedRecord);
     }
 
     @Override
-    public void clearProductsSelection() {
+    public void clearRecordsSelection() {
         MapJSNI map = mapContainer.map;
-        if(renderedProducts.size() > 0) {
-            for(ProductRendering productRendering : renderedProducts.values()) {
-                map.getGraphics().remove(productRendering.footprint);
-                map.removeWMSLayer(productRendering.overlay);
+        if(renderedRecords.size() > 0) {
+            for(RecordRendering recordRendering : renderedRecords.values()) {
+                map.getGraphics().remove(recordRendering.footprint);
+                map.removeWMSLayer(recordRendering.overlay);
             }
-            renderedProducts.clear();
-            selectedProducts.clear();
+            renderedRecords.clear();
+            selectedRecord.clear();
         }
-        if(outlinedProduct != null) {
-            if(outlinedProductGraphicJSNI != null) {
-                map.getGraphics().remove(outlinedProductGraphicJSNI);
+        if(outlinedRecord != null) {
+            if(outlinedRecordGraphicJSNI != null) {
+                map.getGraphics().remove(outlinedRecordGraphicJSNI);
             }
-            outlinedProduct = null;
+            outlinedRecord = null;
         }
-        imagesList.refresh();
+        recordsList.refresh();
     }
 
     @Override
@@ -474,14 +484,22 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
     @Override
     public void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
-        productDatasetTitle.setImageUrl(productDatasetCatalogueDTO.getImageUrl());
-        productDatasetTitle.setText(productDatasetCatalogueDTO.getName());
+        image.setUrl(productDatasetCatalogueDTO.getImageUrl());
+        name.setText(productDatasetCatalogueDTO.getName());
+        supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
     }
 
     @Override
     public void setParameters(List<FormElement> formElements) {
-
+        additionalFields.clear();
+        for(FormElement formElement : formElements) {
+            ElementEditor editor = FormHelper.createEditor(formElement);
+            editor.addStyleName(style.editor());
+            MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+            materialColumn.add(editor);
+            additionalFields.add(materialColumn);
+        }
     }
 
     @Override
@@ -491,7 +509,10 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
     @Override
     public void onResize(ResizeEvent event) {
-        mapContainer.map.resize();
+        searchPanel.onResize();
+        if(mapContainer.map != null) {
+            mapContainer.map.resize();
+        }
     }
 
 }

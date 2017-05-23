@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.client.utils.opensearch;
 
+import java.util.List;
+
 /**
  * Created by thomas on 22/05/2017.
  */
@@ -10,6 +12,7 @@ public class Url {
     protected String rel;
     protected Integer indexOffset;
     protected Integer pageOffset;
+    private List<Parameter> parameters;
 
     public Url() {
     }
@@ -52,5 +55,13 @@ public class Url {
 
     public void setPageOffset(Integer pageOffset) {
         this.pageOffset = pageOffset;
+    }
+
+    public void setParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    public List<Parameter> getParameters() {
+        return parameters;
     }
 }

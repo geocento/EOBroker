@@ -1,12 +1,15 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.client.utils.geojson.object.Feature;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.OpenSearchDescription;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.OpenSearchUtils;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.Parameter;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFormElement;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.CatalogueSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -62,14 +65,17 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         Window.setTitle("Earth Observation Broker");
         bind();
         catalogueSearchView.showQuery();
+        displayFullLoading("Loading resources...");
         catalogueSearchView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
+                hideFullLoading();
                 Window.alert("Error " + reason.getMessage());
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -97,45 +103,91 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         setStartDate(new Date(now.getTime() - 10 * 24 * 3600 * 1000));
         setStopDate(now);
         if(productId != null) {
+            displayFullLoading("Loading product dataset...");
             try {
                 REST.withCallback(new MethodCallback<ProductDatasetCatalogueDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        hideFullLoading();
+                        Window.alert("Could not find product dataset catalogue");
                     }
 
                     @Override
                     public void onSuccess(Method method, ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
+                        hideLoading();
                         CatalogueSearchActivity.this.productDatasetCatalogueDTO = productDatasetCatalogueDTO;
                         catalogueSearchView.setProductDatasetCatalogDTO(productDatasetCatalogueDTO);
                         // now load the description
                         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
                             case OpenSearch:
+                                displayFullLoading("Loading catalogue service...");
                                 OpenSearchUtils.getDescription(productDatasetCatalogueDTO.getDatasetURL(), new AsyncCallback<OpenSearchDescription>() {
                                     @Override
                                     public void onFailure(Throwable caught) {
+                                        hideFullLoading();
                                         Window.alert("Could not reach open search service");
                                     }
 
                                     @Override
                                     public void onSuccess(OpenSearchDescription result) {
+                                        hideFullLoading();
                                         CatalogueSearchActivity.this.openSearchDescription = result;
                                         // TODO - configure view to reflect the open search interface
-                                        HashMap<String, String> parameters = OpenSearchUtils.getSupportedParameters(openSearchDescription.getUrl().get(0).getTemplate());
+                                        List<Parameter> parameters = openSearchDescription.getUrl().get(0).getParameters();
+                                        parameters = ListUtil.filterValues(parameters, new ListUtil.CheckValue<Parameter>() {
+                                            @Override
+                                            public boolean isValue(Parameter value) {
+                                                return !value.isReserved();
+                                            }
+                                        });
                                         List<FormElement> formElements = new ArrayList<FormElement>();
-                                        for(String parameterName : parameters.keySet()) {
-                                            String parameterType = parameters.get(parameterName);
-                                            boolean optional = parameterType.endsWith("?");
-                                            if(optional) {
-                                                parameterType = parameterType.substring(0, parameterType.length() - 1);
+                                        for(Parameter parameter : parameters) {
+                                            FormElement formElement = null;
+                                            switch (parameter.getFieldType()) {
+                                                case "integer": {
+                                                    IntegerFormElement integerFormElement = new IntegerFormElement();
+                                                    formElement = integerFormElement;
+                                                } break;
+                                                case "string": {
+                                                    TextFormElement textFormElement = new TextFormElement();
+                                                    textFormElement.setPattern(parameter.getPattern());
+                                                    formElement = textFormElement;
+                                                } break;
+                                                default:
+                                                    break;
                                             }
-                                            if(parameterType.contains(":")) {
-                                                parameterType = parameterType.split(":")[1];
+                                            if(formElement != null) {
+                                                formElement.setName(parameter.getName());
+                                                formElement.setDescription(parameter.getTitle());
+                                                formElements.add(formElement);
                                             }
-                                            switch (parameterType) {
+                                        }
+                                        catalogueSearchView.setParameters(formElements);
+                                    }
+                                });
+                                break;
+                            case CSW:
+                                displayLoading();
+/*
+                                CSWUtils.getDescription(productDatasetCatalogueDTO.getDatasetURL(), new AsyncCallback<OpenSearchDescription>() {
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        hideLoading();
+                                        Window.alert("Could not reach open search service");
+                                    }
+
+                                    @Override
+                                    public void onSuccess(OpenSearchDescription result) {
+                                        hideLoading();
+                                        CatalogueSearchActivity.this.openSearchDescription = result;
+                                        // TODO - configure view to reflect the open search interface
+                                        List<Parameter> parameters = OpenSearchUtils.getSupportedParameters(openSearchDescription.getUrl().get(0).getTemplate());
+                                        List<FormElement> formElements = new ArrayList<FormElement>();
+                                        for (Parameter parameter : parameters) {
+                                            switch (parameter.getType()) {
                                                 case "integer":
                                                     IntegerFormElement integerFormElement = new IntegerFormElement();
-                                                    integerFormElement.setName(parameterName);
+                                                    integerFormElement.setName(parameter.getName());
                                                     formElements.add(integerFormElement);
                                                     break;
                                                 default:
@@ -145,6 +197,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                                         catalogueSearchView.setParameters(formElements);
                                     }
                                 });
+*/
                                 break;
                         }
 
@@ -203,7 +256,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
             case OpenSearch:
                 try {
-                    OpenSearchUtils.getRecords(openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<List<Feature>>() {
+                    OpenSearchUtils.getRecords(openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<List<Record>>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -212,9 +265,9 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                         }
 
                         @Override
-                        public void onSuccess(List<Feature> result) {
+                        public void onSuccess(List<Record> result) {
                             catalogueSearchView.hideLoadingResults();
-                            Window.alert(result.size() + " results found");
+                            catalogueSearchView.displayQueryResponse(result);
                         }
                     });
                 } catch (Exception e) {

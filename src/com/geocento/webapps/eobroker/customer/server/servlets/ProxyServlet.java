@@ -30,9 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
@@ -75,6 +77,8 @@ public class ProxyServlet extends HttpServlet {
 			return;
 		}
 
+        url_param = URLDecoder.decode(url_param, "UTF-8");
+
 		try {
 			URL url = new URL(url_param);
 
@@ -84,9 +88,14 @@ public class ProxyServlet extends HttpServlet {
                 List<String> host_list = Arrays.asList(getServletConfig()
                         .getInitParameter("host_list").split(","));
 
-                if(!host_list.contains(url.getHost())) {
+                // check source calling
+                String host = request.getHeader("X-FORWARDED-FOR");
+                if(host == null) {
+                    host = request.getRemoteHost();
+                }
+                if(!host_list.contains(host)) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                            "URL Parameter Bad - the Host " + url.getHost()
+                            "URL Parameter Bad - the Host " + host
                                     + " is not in my list of valid Hosts!");
                     return;
                 }
@@ -112,7 +121,8 @@ public class ProxyServlet extends HttpServlet {
 			if (client_accepts_gzip) {
 				response.setHeader("Content-Encoding", "gzip");
 				ByteArrayOutputStream output_to_tmp = new ByteArrayOutputStream();
-				IOUtils.copy(url.openStream(), output_to_tmp);
+                InputStream conStream = con.getInputStream();
+				IOUtils.copy(conStream, output_to_tmp);
 		
 				OutputStream output_to_response = new GZIPOutputStream(response
 						.getOutputStream());
@@ -120,9 +130,8 @@ public class ProxyServlet extends HttpServlet {
 				output_to_response.close();
 
 			} else { // client will not accept gzip -> dont compress
-				IOUtils.copy(url.openStream(), response.getOutputStream());
+				IOUtils.copy(con.getInputStream(), response.getOutputStream());
 			}
-			
 		} catch (IOException e) {
 			System.out.println("Err" + e);
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Err:" + e);
