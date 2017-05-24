@@ -32,9 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
@@ -81,6 +79,11 @@ public class ProxyServlet extends HttpServlet {
 
 		try {
 			URL url = new URL(url_param);
+            // make sure the query string is escaped
+            if(url.getQuery() != null) {
+                URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+                url = new URL(uri.toASCIIString());
+            }
 
             boolean hostFiltering = getServletConfig().getInitParameter("host_list") != null;
 			/* Check if the host is in the list of allowed hosts */
@@ -132,10 +135,10 @@ public class ProxyServlet extends HttpServlet {
 			} else { // client will not accept gzip -> dont compress
 				IOUtils.copy(con.getInputStream(), response.getOutputStream());
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println("Err" + e);
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Err:" + e);
-		}
+        }
 
-	}
+    }
 }

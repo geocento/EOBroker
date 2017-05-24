@@ -92,16 +92,20 @@
 
         }
 
+        .resultMessage {
+            padding: 5px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <m:MaterialPanel addStyleNames="{style.content}">
-        <g:DockLayoutPanel addStyleNames="{style.contentPanel}">
+        <g:DockLayoutPanel addStyleNames="{style.contentPanel}" ui:field="panel">
             <g:west size="350">
                 <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
                     <m:MaterialPanel>
                         <sideprofile:MaterialSideProfile backgroundColor="BLUE" textColor="WHITE">
-                            <m:MaterialImage float="LEFT" ui:field="image"></m:MaterialImage>
+                            <m:MaterialImage float="LEFT" margin="0" ui:field="image"></m:MaterialImage>
                             <m:MaterialPanel marginLeft="70" marginTop="0">
                                 <m:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></m:MaterialLabel>
                                 <m:MaterialPanel marginTop="5">
@@ -132,9 +136,13 @@
                                     <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>
                                 </m:MaterialColumn>
                             </m:MaterialRow>
-                            <m:MaterialLabel text="Additional fields"></m:MaterialLabel>
-                            <m:MaterialRow ui:field="additionalFields">
-                            </m:MaterialRow>
+                            <g:DisclosurePanel open="false" ui:field="additionalFieldsPanel">
+                                <g:customHeader>
+                                    <m:MaterialLink iconSize="TINY" text="" ui:field="additionalFieldsLabel"></m:MaterialLink>
+                                </g:customHeader>
+                                <m:MaterialRow ui:field="additionalFields">
+                                </m:MaterialRow>
+                            </g:DisclosurePanel>
                             <m:MaterialRow addStyleNames="{style.queryButton}">
                                 <m:MaterialColumn grid="s12">
                                     <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" ui:field="update"/>
@@ -142,11 +150,15 @@
                             </m:MaterialRow>
                         </m:MaterialColumn>
                         <m:MaterialColumn m:id="results" grid="s12" padding="0">
-                            <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
-                            </g:SimplePanel>
-                            <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                                <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="GREEN" enabled="false" ui:field="submitForQuote"/>
-                            </g:HTMLPanel>
+                            <widgetsc:LoadingWidget ui:field="loadingResults"></widgetsc:LoadingWidget>
+                            <m:MaterialPanel ui:field="resultsContainer">
+                                <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
+                                </g:SimplePanel>
+                                <widgetsc:MaterialLabelIcon addStyleNames="{style.resultMessage}" ui:field="resultsMessage"></widgetsc:MaterialLabelIcon>
+                                <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                                    <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="GREEN" enabled="false" ui:field="submitForQuote"/>
+                                </g:HTMLPanel>
+                            </m:MaterialPanel>
                         </m:MaterialColumn>
                     </m:MaterialRow>
                 </g:HeaderPanel>

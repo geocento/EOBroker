@@ -2,6 +2,10 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.SearchResponse;
+import com.geocento.webapps.eobroker.common.client.widgets.ClickableImageCell;
+import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
@@ -14,27 +18,29 @@ import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 
 import java.util.*;
@@ -90,6 +96,18 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     MaterialChip supplier;
     @UiField
     MaterialImage image;
+    @UiField
+    MaterialLink additionalFieldsLabel;
+    @UiField
+    DisclosurePanel additionalFieldsPanel;
+    @UiField
+    MaterialLabelIcon resultsMessage;
+    @UiField
+    DockLayoutPanel panel;
+    @UiField
+    LoadingWidget loadingResults;
+    @UiField
+    MaterialPanel resultsContainer;
 
     private Presenter presenter;
 
@@ -106,7 +124,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     private HashSet<Record> selectedRecord = new HashSet<Record>();
 
     private class RecordRendering {
-        GraphicJSNI footprint;
+        GraphicJSNI geometry;
         WMSLayerJSNI overlay;
     }
 
@@ -145,12 +163,23 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
         mapContainer.setPresenter(aoi -> presenter.aoiChanged(aoi));
 
+        additionalFieldsPanel.setOpen(false);
+        additionalFieldsPanel.addOpenHandler(event -> updateAdditionalFieldsMessage());
+        additionalFieldsPanel.addCloseHandler(event -> updateAdditionalFieldsMessage());
+        updateAdditionalFieldsMessage();
+
         Scheduler.get().scheduleDeferred(() -> {
             tab.selectTab("query");
             onResize(null);
         });
 
         Window.addResizeHandler(this);
+    }
+
+    private void updateAdditionalFieldsMessage() {
+        boolean isOpen = additionalFieldsPanel.isOpen();
+        additionalFieldsLabel.setText(isOpen ? "Hide additional fields" : "See additional fields");
+        additionalFieldsLabel.setIconType(isOpen ? IconType.ARROW_DOWNWARD : IconType.ARROW_FORWARD);
     }
 
     @Override
@@ -170,12 +199,21 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
     @Override
     public void displayLoadingResults(String message) {
+        tab.selectTab("results");
+        loadingResults.setText(message);
+        showLoadingResults(true);
         onResize(null);
+    }
+
+    private void showLoadingResults(boolean display) {
+        loadingResults.setVisible(display);
+        resultsContainer.setVisible(!display);
     }
 
     @Override
     public void hideLoadingResults() {
         tab.selectTab("results");
+        showLoadingResults(false);
         onResize(null);
     }
 
@@ -251,6 +289,14 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 }
             }
         });
+        Column<Record, String> geometryColumn = new Column<Record, String>(new ImageCell(16, 16) {
+        }) {
+            @Override
+            public String getValue(Record record) {
+                return record.getGeometryWKT() == null ? StyleResources.INSTANCE.info().getSafeUri().asString() :
+                        StyleResources.INSTANCE.logoEOBroker().getSafeUri().asString();
+            }
+        };
 
 /*
         // IMAGE
@@ -317,6 +363,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
         resultsTable.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         resultsTable.setColumnWidth(checkColumn, "30px");
+        //resultsTable.addColumn(geometryColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         resultsTable.addColumn(titleColumn, "title");
         resultsTable.setColumnWidth(titleColumn, "100px");
 /*
@@ -333,11 +380,16 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
-    public void displayQueryResponse(List<Record> records) {
+    public void displayQueryResponse(SearchResponse searchResponse) {
         resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
         recordsList.getList().clear();
+        List<Record> records = searchResponse.getRecords();
         recordsList.getList().addAll(records == null ? new ArrayList<Record>() : records);
         recordsList.refresh();
+        boolean hasResults = searchResponse.getTotalRecords() > 0;
+        resultsPanel.setVisible(hasResults);
+        resultsMessage.setText(hasResults ? "Found " + searchResponse.getTotalRecords() + " results" : "No results found...");
+        submitForQuote.setVisible(hasResults);
         // refresh map
         refreshMap();
     }
@@ -347,13 +399,15 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         MapJSNI map = mapContainer.map;
         // refresh products display on map
         for(Record record : recordsList.getList()) {
+            // skip if no geometry
+            if(record.getGeometryWKT() == null) continue;
             boolean toRender = selectedRecord.contains(record);
             boolean rendered = renderedRecords.containsKey(record);
             if(toRender && !rendered) {
                 RecordRendering recordRendering = new RecordRendering();
                 String geometryWKT = record.getGeometryWKT();
                 GeometryJSNI geometryJSNI = createGeometry(arcgisMap, geometryWKT);
-                recordRendering.footprint = map.getGraphics().addGraphic(geometryJSNI,
+                recordRendering.geometry = map.getGraphics().addGraphic(geometryJSNI,
                         arcgisMap.createFillSymbol("#00ffff", 2, "rgba(0,0,0,0.0)"));
                 // add wms layer
 /*
@@ -364,8 +418,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 renderedRecords.put(record, recordRendering);
             } else if(!toRender && rendered) {
                 RecordRendering recordRendering = renderedRecords.get(record);
-                if(recordRendering.footprint != null) {
-                    map.getGraphics().remove(recordRendering.footprint);
+                if(recordRendering.geometry != null) {
+                    map.getGraphics().remove(recordRendering.geometry);
                 }
                 if(recordRendering.overlay != null) {
                     map.removeWMSLayer(recordRendering.overlay);
@@ -379,9 +433,11 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         }
         // add outlined record on top
         if(outlinedRecord != null) {
-            GeometryJSNI geometryJSNI = createGeometry(arcgisMap, outlinedRecord.getGeometryWKT());
-            outlinedRecordGraphicJSNI = map.getGraphics().addGraphic(geometryJSNI,
-                    arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
+            if(outlinedRecord.getGeometryWKT() != null) {
+                GeometryJSNI geometryJSNI = createGeometry(arcgisMap, outlinedRecord.getGeometryWKT());
+                outlinedRecordGraphicJSNI = map.getGraphics().addGraphic(geometryJSNI,
+                        arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
+            }
         }
     }
 
@@ -389,9 +445,9 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         switch (geometryWKT.substring(0, geometryWKT.indexOf("("))) {
             case "POLYGON":
                 return arcgisMap.createPolygon(geometryWKT.replace("POLYGON((", "").replace("))", ""));
+            default:
+                return arcgisMap.createGeometry(geometryWKT);
         }
-
-        return null;
     }
 
     private void outlineRecord(Record record) {
@@ -457,7 +513,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         MapJSNI map = mapContainer.map;
         if(renderedRecords.size() > 0) {
             for(RecordRendering recordRendering : renderedRecords.values()) {
-                map.getGraphics().remove(recordRendering.footprint);
+                map.getGraphics().remove(recordRendering.geometry);
                 map.removeWMSLayer(recordRendering.overlay);
             }
             renderedRecords.clear();
@@ -488,6 +544,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         name.setText(productDatasetCatalogueDTO.getName());
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                onResize(null);
+            }
+        });
     }
 
     @Override

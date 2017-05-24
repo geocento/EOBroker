@@ -1,10 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.client.utils.opensearch.OpenSearchDescription;
-import com.geocento.webapps.eobroker.common.client.utils.opensearch.OpenSearchUtils;
-import com.geocento.webapps.eobroker.common.client.utils.opensearch.Parameter;
-import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement;
@@ -250,13 +247,13 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         }
         catalogueSearchView.clearMap();
         catalogueSearchView.displayAoI(currentAoI);
-        catalogueSearchView.displayLoadingResults("Searching products...");
+        catalogueSearchView.displayLoadingResults("Searching...");
         enableUpdate(false);
         // check standard used
         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
             case OpenSearch:
                 try {
-                    OpenSearchUtils.getRecords(openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<List<Record>>() {
+                    OpenSearchUtils.getRecords(openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -265,7 +262,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                         }
 
                         @Override
-                        public void onSuccess(List<Record> result) {
+                        public void onSuccess(SearchResponse result) {
                             catalogueSearchView.hideLoadingResults();
                             catalogueSearchView.displayQueryResponse(result);
                         }

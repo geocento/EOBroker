@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
+import com.geocento.webapps.eobroker.common.client.utils.opensearch.SearchResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
@@ -29,7 +30,7 @@ public interface CatalogueSearchView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayQueryResponse(List<Record> records);
+    void displayQueryResponse(SearchResponse records);
 
     void displayStartDate(Date date);
 

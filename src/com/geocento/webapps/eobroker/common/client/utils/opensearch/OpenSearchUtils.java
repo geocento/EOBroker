@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.common.client.utils.opensearch;
 
+import com.geocento.webapps.eobroker.common.client.utils.XMLUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONArray;
@@ -28,9 +30,9 @@ public class OpenSearchUtils {
     static List<String> supportedFormats = ListUtil.toListArg("application/json", "application/rss+xml", "application/atom+xml");
 
     static private List<String> reservedParameters = ListUtil.toList(
-            new String[] {"searchTerms", "count", "startIndex", "startPage", "language"});
+            new String[] {"start", "end", "searchTerms", "count", "startIndex", "startPage", "language"});
 
-    public static void getRecords(OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<List<Record>> callback) throws Exception {
+    public static void getRecords(OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
         // find the suitable URL
         Url url = selectSuitableUrl(openSearchDescription.getUrl());
         if(url == null) {
@@ -118,11 +120,14 @@ public class OpenSearchUtils {
         return url;
     }
 
-    private static List<Record> parseSearchResponse(String response, String selectedFormat) {
+    private static SearchResponse parseSearchResponse(String response, String selectedFormat) {
         switch (selectedFormat) {
-            case "application/json":
-                List<Record> records = parseResults(response);
-                return records;
+            case "application/json": {
+                return parseGeojsonResults(response);
+            }
+            case "application/atom+xml": {
+                return parseAtomXMLResults(response);
+            }
         }
         return null;
     }
@@ -220,7 +225,8 @@ public class OpenSearchUtils {
 
     public static List<Parameter> getSupportedParameters(String urlTemplate) {
         List<Parameter> parameters = new ArrayList<Parameter>();
-        for(String parameterDescription : URL.decodeQueryString(urlTemplate).split("&")) {
+        String queryString = urlTemplate.substring(urlTemplate.indexOf("?") + 1);
+        for(String parameterDescription : URL.decodeQueryString(queryString).split("&")) {
             String parameterName = parameterDescription.split("=")[0];
             String parameterType = parameterDescription.split("=")[1];
             // remove brackets
@@ -247,7 +253,7 @@ public class OpenSearchUtils {
         String hostPageUrl = Window.Location.getHostName();
         boolean sameDomain = requestURL.startsWith(hostPageUrl) || requestURL.contains("//" + hostPageUrl);
         // call the getCapabilities via a proxy if the domain is different
-        if (false) {//!sameDomain) {
+        if (!sameDomain) {
             return "/proxy?url=" + URL.encode(requestURL);
         }
         return requestURL;
@@ -261,24 +267,18 @@ public class OpenSearchUtils {
         if(elements == null || elements.getLength() == 0) {
             return null;
         }
-        return getNodeValue(elements.item(0));
+        return XMLUtil.getNodeValue(elements.item(0));
     }
 
-    public static String getNodeValue(Node node) {
-        if(node == null) {
-            return null;
-        }
-        if(node.getFirstChild() instanceof Text) {
-            return ((Text) node.getFirstChild()).getData();
-        } else {
-            return "Unknown";
-        }
-    }
-
-    static public List<Record> parseResults(String geojson) {
-        List<Record> records = new ArrayList<Record>();
+    static public SearchResponse parseGeojsonResults(String geojson) {
+        SearchResponse searchResponse = new SearchResponse();
         JSONObject jsonObject = JSONParser.parseLenient(geojson).isObject();
         if(jsonObject.get("type").isString().stringValue().equalsIgnoreCase("FeatureCollection")) {
+            JSONObject responsepropertiesJSON = jsonObject.get("properties").isObject();
+            searchResponse.setTotalRecords((int) responsepropertiesJSON.get("totalResults").isNumber().doubleValue());
+            searchResponse.setStart((int) responsepropertiesJSON.get("startIndex").isNumber().doubleValue());
+            searchResponse.setLimit((int) responsepropertiesJSON.get("itemsPerPage").isNumber().doubleValue());
+            List<Record> records = new ArrayList<Record>();
             JSONArray featuresJSON = jsonObject.get("features").isArray();
             for(int index = 0; index < featuresJSON.size(); index++) {
                 try {
@@ -298,10 +298,15 @@ public class OpenSearchUtils {
                             case "Polygon":
                                 record.setGeometryWKT("POLYGON((" + convertCoordinates(coordinates.get(0).isArray()) + "))");
                                 break;
+                            case "MultiPolygon":
+                                record.setGeometryWKT("MULTIPOLYGON(" + convertMultipleCoordinates(coordinates.isArray()) + ")");
+                                break;
+                            case "LineString":
+                                record.setGeometryWKT("LINESTRING(" + convertCoordinates(coordinates.get(0).isArray()) + ")");
+                                break;
                             // TODO - implement the rest
                             // skip record if no geometry available?
                             default:
-                                continue;
                         }
                         JSONObject propertiesJSON = featureJSON.get("properties").isObject();
                         HashMap<String, String> properties = new HashMap<String, String>();
@@ -318,8 +323,70 @@ public class OpenSearchUtils {
                     e.printStackTrace();
                 }
             }
+            searchResponse.setRecords(records);
         }
-        return records;
+        return searchResponse;
+    }
+
+    private static SearchResponse parseAtomXMLResults(String response) {
+        SearchResponse searchResponse = new SearchResponse();
+        Document document = XMLParser.parse(response);
+        Element element = document.getDocumentElement();
+        String totalResults = XMLUtil.getUniqueNodeValue(element, "totalResults");
+        if(totalResults != null) {
+            searchResponse.setTotalRecords(Integer.parseInt(totalResults));
+        }
+        String start = XMLUtil.getUniqueNodeValue(element, "startIndex");
+        if(start != null) {
+            searchResponse.setStart(Integer.parseInt(start));
+        }
+        String limit = XMLUtil.getUniqueNodeValue(element, "itemsPerPage");
+        if(limit != null) {
+            searchResponse.setLimit(Integer.parseInt(limit));
+        }
+        List<Record> records = new ArrayList<Record>();
+        NodeList entryNodes = element.getElementsByTagName("entry");
+        for(int index = 0; index < entryNodes.getLength(); index++) {
+            Node entryNode = entryNodes.item(index);
+            Record record = new Record();
+            record.setTitle(XMLUtil.getUniqueNodeValue(entryNode, "title"));
+            record.setId(XMLUtil.getUniqueNodeValue(entryNode, "id"));
+            // look for geometry
+            String geometry = XMLUtil.getUniqueNodeValue(entryNode, "polygon");
+            if(geometry != null) {
+                record.setGeometryWKT("POLYGON((" + parseGeorssCoordinates(geometry) + "))");
+            } else {
+                geometry = XMLUtil.getUniqueNodeValue(entryNode, "point");
+                if(geometry != null) {
+                    record.setGeometryWKT("POINT(" + parseGeorssCoordinates(geometry) + ")");
+                } else {
+                    geometry = XMLUtil.getUniqueNodeValue(entryNode, "line");
+                    if(geometry != null) {
+                        record.setGeometryWKT("LINESTRING((" + parseGeorssCoordinates(geometry) + "))");
+                    }
+                }
+            }
+        }
+        searchResponse.setRecords(records);
+        return searchResponse;
+    }
+
+    private static String parseGeorssCoordinates(String coordinates) {
+        List<String> wktCoordinates = new ArrayList<String>();
+        String[] coordinateValues = coordinates.split("\\s+");
+        for(int index = 0; index < coordinateValues.length; index += 2) {
+            wktCoordinates.add(coordinateValues[index] + " " + coordinateValues[index + 1]);
+        }
+        return StringUtils.join(wktCoordinates, ",");
+    }
+
+    private static String convertMultipleCoordinates(JSONArray coordinates) {
+        String wktCoordinates = "";
+        for(int index = 0; index < coordinates.size(); index++) {
+            JSONArray polygon = coordinates.get(index).isArray();
+            wktCoordinates += "((" + convertCoordinates(polygon.get(0).isArray()) + ")),";
+        }
+        return wktCoordinates.substring(0, wktCoordinates.length() - 1);
     }
 
     private static String convertCoordinates(JSONArray coordinates) {
