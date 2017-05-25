@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -30,9 +31,11 @@ public class OpenSearchUtils {
     static List<String> supportedFormats = ListUtil.toListArg("application/json", "application/rss+xml", "application/atom+xml");
 
     static private List<String> reservedParameters = ListUtil.toList(
-            new String[] {"start", "end", "searchTerms", "count", "startIndex", "startPage", "language"});
+            new String[]{"start", "end", "searchTerms", "count", "startIndex", "startPage", "language"});
 
-    public static void getRecords(OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
+    private static NumberFormat format = NumberFormat.getFormat("#.##");
+
+    public static void getRecords(int start, int limit, OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
         // find the suitable URL
         Url url = selectSuitableUrl(openSearchDescription.getUrl());
         if(url == null) {
@@ -70,7 +73,17 @@ public class OpenSearchUtils {
                 requestedParameters.put(geometryParameter.getName(), extent.getWest() + "," + extent.getSouth() + "," + extent.getEast() + "," + extent.getNorth());
             }
         }
-        // finally add the format
+        // finally add the start and limit
+        Parameter startIndexParameter = getSupportedParameterType(supportedParameters, "", "startIndex");
+        if(startIndexParameter == null) {
+            throw new Exception("Missing start index parameter in URL");
+        }
+        requestedParameters.put(startIndexParameter.getName(), (start == 0 ? 1 : start) + "");
+        Parameter countParameter = getSupportedParameterType(supportedParameters, "", "count");
+        if(countParameter == null) {
+            throw new Exception("Missing count parameter in URL");
+        }
+        requestedParameters.put(countParameter.getName(), limit + "");
 
         List<String> requestedValues = new ArrayList<String>();
         for(String parameterName : requestedParameters.keySet()) {
@@ -120,7 +133,7 @@ public class OpenSearchUtils {
         return url;
     }
 
-    private static SearchResponse parseSearchResponse(String response, String selectedFormat) {
+    private static SearchResponse parseSearchResponse(String response, String selectedFormat) throws Exception {
         switch (selectedFormat) {
             case "application/json": {
                 return parseGeojsonResults(response);
@@ -281,10 +294,10 @@ public class OpenSearchUtils {
             List<Record> records = new ArrayList<Record>();
             JSONArray featuresJSON = jsonObject.get("features").isArray();
             for(int index = 0; index < featuresJSON.size(); index++) {
+                JSONObject featureJSON = featuresJSON.get(index).isObject();
+                Record record = new Record();
                 try {
-                    JSONObject featureJSON = featuresJSON.get(index).isObject();
                     if (featureJSON.get("type").isString().stringValue().equalsIgnoreCase("Feature")) {
-                        Record record = new Record();
                         if(featureJSON.containsKey("id")) {
                             record.setId(featureJSON.get("id").toString());
                         }
@@ -317,55 +330,80 @@ public class OpenSearchUtils {
                             }
                         }
                         record.setProperties(properties);
-                        records.add(record);
+                        String htmlContent = "";
+                        for(String propertyName : properties.keySet()) {
+                            htmlContent += addProperty(propertyName, properties.get(propertyName));
+                        }
+                        record.setContent(htmlContent);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                records.add(record);
             }
             searchResponse.setRecords(records);
         }
         return searchResponse;
     }
 
-    private static SearchResponse parseAtomXMLResults(String response) {
+    private static SearchResponse parseAtomXMLResults(String response) throws Exception {
         SearchResponse searchResponse = new SearchResponse();
         Document document = XMLParser.parse(response);
-        Element element = document.getDocumentElement();
-        String totalResults = XMLUtil.getUniqueNodeValue(element, "totalResults");
+        Element feedNode = document.getDocumentElement();
+        String totalResults = XMLUtil.getUniqueNodeValue(feedNode, "totalResults");
         if(totalResults != null) {
             searchResponse.setTotalRecords(Integer.parseInt(totalResults));
         }
-        String start = XMLUtil.getUniqueNodeValue(element, "startIndex");
+        String start = XMLUtil.getUniqueNodeValue(feedNode, "startIndex");
         if(start != null) {
             searchResponse.setStart(Integer.parseInt(start));
         }
-        String limit = XMLUtil.getUniqueNodeValue(element, "itemsPerPage");
+        String limit = XMLUtil.getUniqueNodeValue(feedNode, "itemsPerPage");
         if(limit != null) {
             searchResponse.setLimit(Integer.parseInt(limit));
         }
         List<Record> records = new ArrayList<Record>();
-        NodeList entryNodes = element.getElementsByTagName("entry");
-        for(int index = 0; index < entryNodes.getLength(); index++) {
-            Node entryNode = entryNodes.item(index);
+        List<Node> entryNodes = XMLUtil.getNodes(feedNode, "entry");
+        for(Node entryNode : entryNodes) {
             Record record = new Record();
             record.setTitle(XMLUtil.getUniqueNodeValue(entryNode, "title"));
             record.setId(XMLUtil.getUniqueNodeValue(entryNode, "id"));
             // look for geometry
-            String geometry = XMLUtil.getUniqueNodeValue(entryNode, "polygon");
-            if(geometry != null) {
-                record.setGeometryWKT("POLYGON((" + parseGeorssCoordinates(geometry) + "))");
-            } else {
-                geometry = XMLUtil.getUniqueNodeValue(entryNode, "point");
-                if(geometry != null) {
-                    record.setGeometryWKT("POINT(" + parseGeorssCoordinates(geometry) + ")");
+            Node whereNode = XMLUtil.getUniqueNode(entryNode, "where");
+            boolean gmlStyle = whereNode != null;
+            if(gmlStyle) {
+                Node geometry = XMLUtil.getUniqueNode(whereNode, "Polygon");
+                if (geometry != null) {
+                    NodeList posNodes = ((Element) geometry).getElementsByTagName("posList");
+                    record.setGeometryWKT("POLYGON((" + parseGeorssCoordinates(XMLUtil.getNodeValue(posNodes.item(0))) + "))");
                 } else {
-                    geometry = XMLUtil.getUniqueNodeValue(entryNode, "line");
-                    if(geometry != null) {
-                        record.setGeometryWKT("LINESTRING((" + parseGeorssCoordinates(geometry) + "))");
+                    geometry = XMLUtil.getUniqueNode(whereNode, "LineString");
+                    if (geometry != null) {
+                        record.setGeometryWKT("LINESTRING(" + parseGeorssCoordinates(XMLUtil.getNodeValue(((Element) geometry).getElementsByTagName("postList").item(0))) + ")");
+                    } else {
+                        geometry = XMLUtil.getUniqueNode(whereNode, "Point");
+                        if (geometry != null) {
+                            record.setGeometryWKT("POINT(" + parseGeorssCoordinates(XMLUtil.getNodeValue(((Element) geometry).getElementsByTagName("pos").item(0))) + ")");
+                        }
+                    }
+                }
+            } else {
+                String geometry = XMLUtil.getUniqueNodeValue(entryNode, "polygon");
+                if (geometry != null) {
+                    record.setGeometryWKT("POLYGON((" + parseGeorssCoordinates(geometry) + "))");
+                } else {
+                    geometry = XMLUtil.getUniqueNodeValue(entryNode, "point");
+                    if (geometry != null) {
+                        record.setGeometryWKT("POINT(" + parseGeorssCoordinates(geometry) + ")");
+                    } else {
+                        geometry = XMLUtil.getUniqueNodeValue(entryNode, "line");
+                        if (geometry != null) {
+                            record.setGeometryWKT("LINESTRING(" + parseGeorssCoordinates(geometry) + ")");
+                        }
                     }
                 }
             }
+            records.add(record);
         }
         searchResponse.setRecords(records);
         return searchResponse;
@@ -375,7 +413,7 @@ public class OpenSearchUtils {
         List<String> wktCoordinates = new ArrayList<String>();
         String[] coordinateValues = coordinates.split("\\s+");
         for(int index = 0; index < coordinateValues.length; index += 2) {
-            wktCoordinates.add(coordinateValues[index] + " " + coordinateValues[index + 1]);
+            wktCoordinates.add(coordinateValues[index + 1] + " " + coordinateValues[index]);
         }
         return StringUtils.join(wktCoordinates, ",");
     }
@@ -399,6 +437,18 @@ public class OpenSearchUtils {
 
     private static String convertCoordinate(JSONArray coordinates) {
         return coordinates.get(0).isNumber() + " " + coordinates.get(1).isNumber();
+    }
+
+    private static String formatString(String value) {
+        return value == null ?  "NA" : value;
+    }
+
+    private static String formatNumber(Double value, String unitValue) {
+        return value == null || value == -1 ?  "NA" : (format.format(value) + " " + unitValue);
+    }
+
+    private static String addProperty(String name, Object value) {
+        return "<div style='padding: 5px; white-space: nowrap; text-overflow: ellipsis;'><b>" + name + ": </b>" + (value == null ? "NA" : value.toString()) + "</div>";
     }
 
 }

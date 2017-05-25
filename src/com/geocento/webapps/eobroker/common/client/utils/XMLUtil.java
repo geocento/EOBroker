@@ -21,10 +21,12 @@ public class XMLUtil {
         if(nodeList == null) {
             return null;
         }
-        for(int index = 0; index < nodeList.getLength(); index++) {
-            Node uniqueNode = nodeList.item(index);
-            if(uniqueNode != null && uniqueNode.getNodeName() != null && uniqueNode.getNodeName().equalsIgnoreCase(name)) {
-                return uniqueNode;
+        boolean withPrefix = name.contains(":");
+        for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child.getNodeType() == Node.ELEMENT_NODE &&
+                    (withPrefix ? child.getNodeName().contentEquals(name) :
+                            (":" + child.getNodeName()).endsWith(":" + name))) {
+                return child;
             }
         }
 
@@ -32,19 +34,20 @@ public class XMLUtil {
     }
 
     public static List<Node> getNodes(Node node, String name) {
-        List<Node> nodes = new ArrayList<Node>();
-
         if(node == null) {
             return null;
         }
-        NodeList nodeList = node.getChildNodes();
-        for(int index = 0; index < nodeList.getLength(); index++) {
-            Node uniqueNode = nodeList.item(index);
-            if(uniqueNode.getNodeName().equalsIgnoreCase(name)) {
-                nodes.add(uniqueNode);
+
+        List<Node> nodes = new ArrayList<Node>();
+
+        boolean withPrefix = name.contains(":");
+        for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child.getNodeType() == Node.ELEMENT_NODE &&
+                    (withPrefix ? child.getNodeName().contentEquals(name) :
+                            (":" + child.getNodeName()).endsWith(":" + name))) {
+                nodes.add(child);
             }
         }
-
         return nodes;
     }
 

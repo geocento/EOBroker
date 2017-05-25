@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFor
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.CatalogueSearchPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.CatalogueSearchView;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
@@ -80,7 +81,6 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        final String text = tokens.get(CatalogueSearchPlace.TOKENS.text.toString());
         Long productId = null;
         if (tokens.containsKey(CatalogueSearchPlace.TOKENS.productId.toString())) {
             try {
@@ -93,12 +93,35 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
             Window.alert("Missing off the shelf product id!");
             History.back();
         }
+        final String text = tokens.get(CatalogueSearchPlace.TOKENS.text.toString());
+        setQueryText(text);
+        Date startDate = null;
+        if(tokens.containsKey(CatalogueSearchPlace.TOKENS.start.toString())) {
+            try {
+                startDate = new Date(Long.parseLong(tokens.get(CatalogueSearchPlace.TOKENS.start.toString())));
+            } catch (Exception e) {
+
+            }
+        }
+        Date stopDate = null;
+        if(tokens.containsKey(CatalogueSearchPlace.TOKENS.stop.toString())) {
+            try {
+                stopDate = new Date(Long.parseLong(tokens.get(CatalogueSearchPlace.TOKENS.stop.toString())));
+            } catch (Exception e) {
+
+            }
+        }
+        if(startDate == null && stopDate == null) {
+            Date now = new Date();
+            setStartDate(new Date(now.getTime() - 10 * 24 * 3600 * 1000));
+            setStopDate(now);
+        } else {
+            setStartDate(startDate);
+            setStopDate(stopDate);
+        }
         catalogueSearchView.clearMap();
         setAoi(currentAoI);
         catalogueSearchView.centerOnAoI();
-        Date now = new Date();
-        setStartDate(new Date(now.getTime() - 10 * 24 * 3600 * 1000));
-        setStopDate(now);
         if(productId != null) {
             displayFullLoading("Loading product dataset...");
             try {
@@ -206,6 +229,11 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         }
     }
 
+    private void setQueryText(String text) {
+        query = text;
+        catalogueSearchView.getQuery().setText(text);
+    }
+
     private void setStartDate(Date startDate) {
         this.startDate = startDate;
         catalogueSearchView.displayStartDate(startDate);
@@ -241,19 +269,35 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
             MaterialToast.fireToast("Please select an area of interest");
             return;
         }
+/*
         if(query == null || query.length() == 0) {
             MaterialToast.fireToast("Please provide a query");
             return;
+        }
+*/
+        if(query == null) {
+            query = "";
         }
         catalogueSearchView.clearMap();
         catalogueSearchView.displayAoI(currentAoI);
         catalogueSearchView.displayLoadingResults("Searching...");
         enableUpdate(false);
+        // TODO - save search parameters in URL or on the server
+        History.newItem(PlaceHistoryHelper.convertPlace(new CatalogueSearchPlace(Utils.generateTokens(
+                CatalogueSearchPlace.TOKENS.productId.toString(), productDatasetCatalogueDTO.getId() + "",
+                CatalogueSearchPlace.TOKENS.text.toString(), query,
+                CatalogueSearchPlace.TOKENS.start.toString(), startDate.getTime() + "",
+                CatalogueSearchPlace.TOKENS.stop.toString(), stopDate.getTime() + ""
+        ))), false);
+        search(1, 20);
+    }
+
+    private void search(int start, int limit) {
         // check standard used
         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
             case OpenSearch:
                 try {
-                    OpenSearchUtils.getRecords(openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
+                    OpenSearchUtils.getRecords(start, limit, openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -301,6 +345,11 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
     @Override
     public void onQueryChanged(String value) {
         query = value;
+    }
+
+    @Override
+    public void onRecordRangeChanged(int start, int limit) {
+        search(start, limit);
     }
 
     public void setAoi(AoIDTO aoi) {

@@ -28,6 +28,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.events.ClearActiveEvent;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.jquery.client.api.Functions;
@@ -86,7 +88,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @UiField
     MaterialLink resultsTitle;
     @UiField
-    MaterialCollapsible filtersPanel;
+    MaterialCollapsible filtersContainer;
     @UiField
     HTMLPanel container;
     @UiField
@@ -136,6 +138,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     CategorySearchBox companyFilter;
     @UiField
     CategorySearchBox productFilter;
+    @UiField
+    MaterialLink showFilters;
+    @UiField
+    MaterialCollapsibleItem filtersPanel;
 
     private ProductDTO productDTO;
     private CompanyDTO companyDTO;
@@ -263,7 +269,17 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             }
         });
 
+        // TODO - not the right method to detect a change in active maybe replace by another widget
+        filtersContainer.addClearActiveHandler(event -> updateShowFilter());
+        updateShowFilter();
+
         onResize(null);
+    }
+
+    private void updateShowFilter() {
+        boolean isActive = filtersPanel.isActive();
+        showFilters.setText(isActive ? "Hide filters" : "Show filters");
+        showFilters.setIconType(isActive ? IconType.ARROW_DROP_UP : IconType.ARROW_DROP_DOWN);
     }
 
     private void addCategoryTooltip(MaterialLink materialLink, String message) {
@@ -822,7 +838,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void showFilters(boolean display) {
-        filtersPanel.setVisible(display);
+        filtersContainer.setVisible(display);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class CatalogueSearchPlace extends EOBrokerPlace {
         super(token);
     }
 
-    public enum TOKENS {text, aoiId, uri, productId};
+    public enum TOKENS {text, aoiId, start, stop, aoiWKT, uri, productId};
 
     @Prefix("cataloguesearch")
     public static class Tokenizer implements PlaceTokenizer<CatalogueSearchPlace> {

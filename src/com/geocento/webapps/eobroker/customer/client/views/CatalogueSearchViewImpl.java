@@ -37,7 +37,9 @@ import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
@@ -108,6 +110,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     LoadingWidget loadingResults;
     @UiField
     MaterialPanel resultsContainer;
+    @UiField
+    SimplePanel pagerPanel;
 
     private Presenter presenter;
 
@@ -117,7 +121,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
     private DataGrid<Record> resultsTable;
 
-    private ListDataProvider<Record> recordsList;
+    private AsyncDataProvider<Record> recordsList;
 
     private ColumnSortEvent.ListHandler<Record> sortDataHandler;
 
@@ -129,8 +133,6 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     private HashMap<Record, RecordRendering> renderedRecords = new HashMap<Record, RecordRendering>();
-
-    private static NumberFormat format = NumberFormat.getFormat("#.##");
 
     public CatalogueSearchViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -221,9 +223,25 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         // create table
         resultsTable = new DataGrid<Record>(1000, MyDataGridResources.INSTANCE);
         resultsTable.setSize("100%", "100%");
+        resultsTable.setPageSize(20);
+
+        resultsTable.setEmptyTableWidget(new Label("No results found..."));
+
+        // add a pager
+        SimplePager pager = new SimplePager();
+        pager.setDisplay(resultsTable);
+
         // create the list data provider
-        recordsList = new ListDataProvider<Record>();
-        recordsList.setList(new ArrayList<Record>());
+        recordsList = new AsyncDataProvider<Record>() {
+            @Override
+            protected void onRangeChanged(HasData<Record> display) {
+                final int start = display.getVisibleRange().getStart();
+                int length = display.getVisibleRange().getLength();
+                if(presenter != null) {
+                    presenter.onRecordRangeChanged(start, length);
+                }
+            }
+        };
         recordsList.addDataDisplay(resultsTable);
 
         resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<Record>() {
@@ -236,32 +254,19 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 }
             }
         });
+/*
         sortDataHandler = new ColumnSortEvent.ListHandler<>(recordsList.getList());
         resultsTable.addColumnSortHandler(sortDataHandler);
+*/
         // now add table to the results panel
         resultsPanel.setWidget(resultsTable);
+        pagerPanel.setWidget(pager);
 
         SubrowTableBuilder tableBuilder = new SubrowTableBuilder<Record>(resultsTable) {
+
             @Override
             protected String getInformation(Record record) {
-                String htmlContent = "";
-                HashMap<String, String> properties = record.getProperties();
-                for(String propertyName : properties.keySet()) {
-                    htmlContent += addProperty(propertyName, properties.get(propertyName));
-                }
-                return htmlContent;
-            }
-
-            private String formatString(String value) {
-                return value == null ?  "NA" : value;
-            }
-
-            private String formatNumber(Double value, String unitValue) {
-                return value == null || value == -1 ?  "NA" : (format.format(value) + " " + unitValue);
-            }
-
-            private String addProperty(String name, Object value) {
-                return "<div style='padding: 5px; white-space: nowrap; text-overflow: ellipsis;'><b>" + name + ": </b>" + (value == null ? "NA" : value.toString()) + "</div>";
+                return record.getContent();
             }
 
         };
@@ -323,6 +328,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 return object.getTitle();
             }
         };
+/*
         titleColumn.setSortable(true);
         sortDataHandler.setComparator(titleColumn, new Comparator<Record>() {
             @Override
@@ -330,6 +336,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 return o1.getTitle().compareTo(o2.getTitle());
             }
         });
+*/
 
 /*
         // ITEM NAME
@@ -382,12 +389,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     @Override
     public void displayQueryResponse(SearchResponse searchResponse) {
         resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
-        recordsList.getList().clear();
+        recordsList.updateRowCount(searchResponse.getTotalRecords(), true);
         List<Record> records = searchResponse.getRecords();
-        recordsList.getList().addAll(records == null ? new ArrayList<Record>() : records);
-        recordsList.refresh();
+        recordsList.updateRowData(searchResponse.getStart(), records);
         boolean hasResults = searchResponse.getTotalRecords() > 0;
         resultsPanel.setVisible(hasResults);
+        resultsMessage.setVisible(!hasResults);
         resultsMessage.setText(hasResults ? "Found " + searchResponse.getTotalRecords() + " results" : "No results found...");
         submitForQuote.setVisible(hasResults);
         // refresh map
@@ -398,7 +405,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
         MapJSNI map = mapContainer.map;
         // refresh products display on map
-        for(Record record : recordsList.getList()) {
+        for(Record record : resultsTable.getVisibleItems()) {
             // skip if no geometry
             if(record.getGeometryWKT() == null) continue;
             boolean toRender = selectedRecord.contains(record);
@@ -525,7 +532,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
             }
             outlinedRecord = null;
         }
-        recordsList.refresh();
+        resultsTable.redraw();
+        //recordsList.refresh();
     }
 
     @Override
@@ -544,17 +552,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         name.setText(productDatasetCatalogueDTO.getName());
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
-        Scheduler.get().scheduleDeferred(new Command() {
-            @Override
-            public void execute() {
-                onResize(null);
-            }
-        });
     }
 
     @Override
     public void setParameters(List<FormElement> formElements) {
         additionalFields.clear();
+        additionalFieldsPanel.setVisible(formElements.size() > 0);
         for(FormElement formElement : formElements) {
             ElementEditor editor = FormHelper.createEditor(formElement);
             editor.addStyleName(style.editor());
@@ -562,6 +565,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
             materialColumn.add(editor);
             additionalFields.add(materialColumn);
         }
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                onResize(null);
+            }
+        });
     }
 
     @Override

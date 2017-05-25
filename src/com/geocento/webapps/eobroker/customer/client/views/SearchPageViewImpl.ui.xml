@@ -151,11 +151,11 @@
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <g:HTMLPanel addStyleNames="{style.resultsPanel}">
-        <design:MaterialCollapsible shadow="0" addStyleNames="{style.filtersPanel}" ui:field="filtersPanel">
-            <design:MaterialCollapsibleItem>
+        <design:MaterialCollapsible shadow="0" addStyleNames="{style.filtersPanel}" ui:field="filtersContainer">
+            <design:MaterialCollapsibleItem ui:field="filtersPanel">
                 <design:MaterialCollapsibleHeader addStyleNames="{style.filtersPanel}" backgroundColor="TRANSPARENT">
                     <design:MaterialLink text="Filter title" fontSize="1.2em" textColor="BLACK" ui:field="filterTitle"/>
-                    <design:MaterialLink float="RIGHT" circle="true" waves="DEFAULT" iconType="ARROW_DROP_DOWN" iconColor="BLUE_GREY" iconPosition="RIGHT" textColor="BLUE_GREY" text="Show filters" ui:field="clearFilters"></design:MaterialLink>
+                    <design:MaterialLink float="RIGHT" circle="true" waves="DEFAULT" iconType="ARROW_DROP_DOWN" iconColor="BLUE_GREY" iconPosition="RIGHT" textColor="BLUE_GREY" text="Show filters" ui:field="showFilters"></design:MaterialLink>
                 </design:MaterialCollapsibleHeader>
                 <design:MaterialCollapsibleBody padding="5" backgroundColor="WHITE">
                     <design:MaterialRow marginTop="10" marginBottom="10" addStyleNames="{style.filtersBody}" ui:field="filters">

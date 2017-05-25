@@ -65,6 +65,8 @@ public interface CatalogueSearchView extends IsWidget {
         void onStopDateChanged(Date value);
 
         void onQueryChanged(String value);
+
+        void onRecordRangeChanged(int start, int length);
     }
 
 }

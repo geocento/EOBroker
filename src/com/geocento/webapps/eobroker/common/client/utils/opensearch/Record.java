@@ -8,6 +8,7 @@ public class Record {
     String geometryWKT;
     HashMap<String, String> properties;
     private String title;
+    private String content;
 
     public Record() {
     }
@@ -42,5 +43,13 @@ public class Record {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

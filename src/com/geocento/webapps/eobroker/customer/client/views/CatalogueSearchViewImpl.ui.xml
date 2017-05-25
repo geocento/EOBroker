@@ -96,6 +96,14 @@
             padding: 5px;
         }
 
+        .pager {
+            text-align: center;
+        }
+
+        .loadingMessage {
+            margin: 10px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -127,10 +135,10 @@
                         <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
                             <m:MaterialRow marginTop="20">
                                 <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker textColor="BLACK" ui:field="startDate" placeholder="Start Date" />
+                                    <m:MaterialDatePicker textColor="BLACK" selectionType="YEAR_MONTH_DAY" ui:field="startDate" placeholder="Start Date" />
                                 </m:MaterialColumn>
                                 <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker textColor="BLACK" ui:field="stopDate" placeholder="Stop Date" />
+                                    <m:MaterialDatePicker textColor="BLACK" selectionType="YEAR_MONTH_DAY" ui:field="stopDate" placeholder="Stop Date" />
                                 </m:MaterialColumn>
                                 <m:MaterialColumn grid="s12">
                                     <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>
@@ -150,10 +158,11 @@
                             </m:MaterialRow>
                         </m:MaterialColumn>
                         <m:MaterialColumn m:id="results" grid="s12" padding="0">
-                            <widgetsc:LoadingWidget ui:field="loadingResults"></widgetsc:LoadingWidget>
+                            <widgetsc:LoadingWidget addStyleNames="{style.loadingMessage}" ui:field="loadingResults"></widgetsc:LoadingWidget>
                             <m:MaterialPanel ui:field="resultsContainer">
                                 <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
                                 </g:SimplePanel>
+                                <g:SimplePanel addStyleNames="{style.pager}" ui:field="pagerPanel"></g:SimplePanel>
                                 <widgetsc:MaterialLabelIcon addStyleNames="{style.resultMessage}" ui:field="resultsMessage"></widgetsc:MaterialLabelIcon>
                                 <g:HTMLPanel addStyleNames="{style.buttonPanel}">
                                     <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="GREEN" enabled="false" ui:field="submitForQuote"/>
