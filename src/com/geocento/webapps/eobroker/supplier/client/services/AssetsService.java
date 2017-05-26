@@ -52,6 +52,10 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     public Long updateProductService(ProductServiceEditDTO product) throws RequestException;
 
+    @DELETE
+    @Path("/assets/productservices/{id}")
+    void removeProductServices(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/companies/")
     @Produces("application/json")
@@ -102,6 +106,10 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     Long saveProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException;
 
+    @DELETE
+    @Path("/assets/productdataset/{id}")
+    void removeProductDataset(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/software/")
     @Produces("application/json")
@@ -117,6 +125,10 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     Long saveSoftware(SoftwareDTO softwareDTO) throws RequestException;
 
+    @DELETE
+    @Path("/assets/software/{id}")
+    void removeSoftware(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/project/")
     @Produces("application/json")
@@ -131,6 +143,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/project/")
     @Produces("application/json")
     Long saveProject(ProjectDTO projectDTO) throws RequestException;
+
+    @DELETE
+    @Path("/assets/project/{id}")
+    void removeProject(@PathParam("id") Long id) throws RequestException;
 
     @GET
     @Path("/assets/offer/{category}")
@@ -184,4 +200,5 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/testimonials/")
     @Produces("application/json")
     List<TestimonialDTO> getTestimonials() throws RequestException;
+
 }

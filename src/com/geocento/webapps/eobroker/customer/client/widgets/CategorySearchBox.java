@@ -65,10 +65,6 @@ public class CategorySearchBox extends MaterialSearch {
         });
     }
 
-    public Presenter getPresenter() {
-        return presenter;
-    }
-
     public void setPresenter(Presenter presenter) {
         this.presenter = presenter;
     }

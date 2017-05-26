@@ -291,6 +291,11 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+    @Override
+    public void removeProductServices(Long id) throws RequestException {
+
+    }
+
     private List<PerformanceValue> updatePerformances(EntityManager em, List<PerformanceValue> dbPerformanceValues, List<PerformanceValue> performanceValues) {
         List<PerformanceValue> changedDbPerformances = new ArrayList<PerformanceValue>();
         if (performanceValues != null && performanceValues.size() > 0) {
@@ -714,6 +719,27 @@ public class AssetsResource implements AssetsService {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving success story");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeProductDataset(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            ProductDataset productDataset = em.find(ProductDataset.class, id);
+            if(productDataset == null || user.getCompany() != productDataset.getCompany()) {
+                throw new RequestException("Not authorised");
+            }
+            em.remove(productDataset);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing dataset");
         } finally {
             em.close();
         }
@@ -1203,6 +1229,11 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+    @Override
+    public void removeSoftware(Long id) throws RequestException {
+
+    }
+
     private static String getSoftwareNameTSV(Software software) {
         return "setweight(to_tsvector('english','software'), 'A') || setweight(to_tsvector('english','" + software.getName() + "'), 'B')";
     }
@@ -1390,6 +1421,11 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public void removeProject(Long id) throws RequestException {
+
     }
 
     @Override

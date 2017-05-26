@@ -289,15 +289,15 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                 CatalogueSearchPlace.TOKENS.start.toString(), startDate.getTime() + "",
                 CatalogueSearchPlace.TOKENS.stop.toString(), stopDate.getTime() + ""
         ))), false);
-        search(1, 20);
+        search(0, 0);
     }
 
-    private void search(int start, int limit) {
+    private void search(int start, int startPage) {
         // check standard used
         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
             case OpenSearch:
                 try {
-                    OpenSearchUtils.getRecords(start, limit, openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
+                    OpenSearchUtils.getRecords(start, startPage, openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -348,8 +348,8 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
     }
 
     @Override
-    public void onRecordRangeChanged(int start, int limit) {
-        search(start, limit);
+    public void onRecordRangeChanged(int start, int pageStart) {
+        search(start, pageStart);
     }
 
     public void setAoi(AoIDTO aoi) {

@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMappe
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
+import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.activity.shared.FilteredActivityMapper;
@@ -84,6 +85,11 @@ public class Customer implements EntryPoint {
             @Override
             public void onSuccess(Method method, LoginInfo loginInfo) {
                 setLoginInfo(loginInfo);
+
+                // start the notification websocket
+                String baseUrl = GWT.getHostPageBaseURL();
+                new NotificationSocketHelper("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "notifications");
+
                 historyHandler.handleCurrentHistory();
             }
         }).call(ServicesUtil.loginService).getSession();

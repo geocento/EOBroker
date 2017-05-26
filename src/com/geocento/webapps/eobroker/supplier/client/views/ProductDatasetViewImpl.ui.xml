@@ -91,7 +91,12 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Product implemented" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Product category implemented" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLabel addStyleNames="{style.message}">
+                    Please select a product category for your off the shelf product. A product category is mandatory.
+                    Once a product category is selected the relevant geoinformation and performances will be loaded and displayed.
+                    Please select and fill in in the relevant information.
+                </design:MaterialLabel>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="product"></widgets:ProductTextBox>
                     <design:MaterialPanel ui:field="productPanel">

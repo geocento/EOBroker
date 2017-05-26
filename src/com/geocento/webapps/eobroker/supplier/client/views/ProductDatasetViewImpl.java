@@ -132,7 +132,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             this.serviceType.addItem(serviceType, serviceType.getName());
         }
 
-        product.addSearchFinishHandler(event -> presenter.productChanged());
+        product.setPresenter(productDTO -> presenter.productChanged());
 
         for(AccessType accessType : AccessType.values()) {
             Option optionWidget = new Option();
@@ -265,7 +265,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
 
     @Override
     public ProductDTO getSelectedProduct() {
-        return (ProductDTO) product.getSelectedObject().getO();
+        return product.getSelectedObject() == null ? null : (ProductDTO) product.getSelectedObject().getO();
     }
 
     @Override

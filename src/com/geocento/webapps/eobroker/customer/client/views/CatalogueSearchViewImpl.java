@@ -3,7 +3,6 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.SearchResponse;
-import com.geocento.webapps.eobroker.common.client.widgets.ClickableImageCell;
 import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
@@ -18,18 +17,17 @@ import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.*;
-import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,7 +38,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
@@ -238,7 +235,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 final int start = display.getVisibleRange().getStart();
                 int length = display.getVisibleRange().getLength();
                 if(presenter != null) {
-                    presenter.onRecordRangeChanged(start, length);
+                    presenter.onRecordRangeChanged(start, (int) (start / length));
                 }
             }
         };
@@ -266,7 +263,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
 
             @Override
             protected String getInformation(Record record) {
-                return record.getContent();
+                return record.getContent() == null ? "No information" : record.getContent();
             }
 
         };
@@ -325,7 +322,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         TextColumn<Record> titleColumn = new TextColumn<Record>() {
             @Override
             public String getValue(Record object) {
-                return object.getTitle();
+                return object == null || object.getTitle() == null ? "Unknown" : object.getTitle();
             }
         };
 /*

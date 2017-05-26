@@ -438,6 +438,11 @@ public class OrdersResource implements OrdersService {
             message.setCreationDate(new Date());
             em.persist(message);
             conversation.getMessages().add(message);
+            try {
+                NotificationHelper.notifyCustomer(em, conversation.getCustomer(), Notification.TYPE.MESSAGE, "New reply from supplier " + user.getCompany().getName(), conversation.getId());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
             em.getTransaction().commit();
             return MessageHelper.convertToDTO(message);
         } catch (Exception e) {

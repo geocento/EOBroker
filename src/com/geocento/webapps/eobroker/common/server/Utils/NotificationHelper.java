@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.server.Utils;
 
+import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -22,6 +23,7 @@ public class NotificationHelper {
         notification.setLinkId(linkId);
         notification.setCreationDate(new Date());
         em.persist(notification);
+        NotificationSocket.sendMessage(user.getUsername(), "New notification");
     }
 
     public static void notifySupplier(EntityManager em, Company company, SupplierNotification.TYPE type, String message, String linkId) {

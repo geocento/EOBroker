@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -28,14 +29,14 @@ public class OpenSearchUtils {
 
     static private DateTimeFormat fmt = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    static List<String> supportedFormats = ListUtil.toListArg("application/json", "application/rss+xml", "application/atom+xml");
+    static List<String> supportedFormats = ListUtil.toListArg("application/atom+xml", "application/json");
 
     static private List<String> reservedParameters = ListUtil.toList(
             new String[]{"start", "end", "searchTerms", "count", "startIndex", "startPage", "language"});
 
     private static NumberFormat format = NumberFormat.getFormat("#.##");
 
-    public static void getRecords(int start, int limit, OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
+    public static void getRecords(int start, int startPage, OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
         // find the suitable URL
         Url url = selectSuitableUrl(openSearchDescription.getUrl());
         if(url == null) {
@@ -78,12 +79,12 @@ public class OpenSearchUtils {
         if(startIndexParameter == null) {
             throw new Exception("Missing start index parameter in URL");
         }
-        requestedParameters.put(startIndexParameter.getName(), (start == 0 ? 1 : start) + "");
-        Parameter countParameter = getSupportedParameterType(supportedParameters, "", "count");
-        if(countParameter == null) {
+        requestedParameters.put(startIndexParameter.getName(), (url.getIndexOffset() + start) + "");
+        Parameter startPageParameter = getSupportedParameterType(supportedParameters, "", "startPage");
+        if(startPageParameter == null) {
             throw new Exception("Missing count parameter in URL");
         }
-        requestedParameters.put(countParameter.getName(), limit + "");
+        requestedParameters.put(startPageParameter.getName(), (url.getPageOffset() + startPage) + "");
 
         List<String> requestedValues = new ArrayList<String>();
         for(String parameterName : requestedParameters.keySet()) {
@@ -102,7 +103,10 @@ public class OpenSearchUtils {
                     try {
                         if (200 == response.getStatusCode()) {
                             // parse response
-                            callback.onSuccess(parseSearchResponse(response.getText(), selectedFormat));
+                            SearchResponse searchResponse = parseSearchResponse(response.getText(), selectedFormat);
+                            // do not forget to subtract the offsets
+                            searchResponse.setStart(searchResponse.getStart() - url.getIndexOffset());
+                            callback.onSuccess(searchResponse);
                         } else {
                             throw new Exception("Error querying the requested server: " + response.getStatusText());
                         }
@@ -203,6 +207,10 @@ public class OpenSearchUtils {
         Url url = new Url();
         url.setTemplate(((Element) urlNode).getAttribute("template"));
         url.setType(((Element) urlNode).getAttribute("type"));
+        String pageOffset = ((Element) urlNode).getAttribute("pageOffset");
+        url.setPageOffset(pageOffset == null ? 1 : Integer.parseInt(pageOffset));
+        String indexOffset = ((Element) urlNode).getAttribute("indexOffset");
+        url.setIndexOffset(indexOffset == null ? 1 : Integer.parseInt(indexOffset));
         url.setParameters(getSupportedParameters(url.getTemplate()));
         // look for extra information on parameters
         NodeList parameterNodes = ((Element) urlNode).getElementsByTagName("Parameter");
@@ -267,7 +275,7 @@ public class OpenSearchUtils {
         boolean sameDomain = requestURL.startsWith(hostPageUrl) || requestURL.contains("//" + hostPageUrl);
         // call the getCapabilities via a proxy if the domain is different
         if (!sameDomain) {
-            return "/proxy?url=" + URL.encode(requestURL);
+            return GWT.getHostPageBaseURL() + "proxy?url=" + URL.encode(requestURL);
         }
         return requestURL;
     }
@@ -403,6 +411,7 @@ public class OpenSearchUtils {
                     }
                 }
             }
+            record.setContent(XMLUtil.getUniqueNodeValue(entryNode, "content"));
             records.add(record);
         }
         searchResponse.setRecords(records);

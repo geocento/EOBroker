@@ -28,10 +28,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.events.DragOverEvent;
-import gwt.material.design.client.events.SearchFinishEvent;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimator;
 import gwt.material.design.client.ui.animate.Transition;
@@ -117,12 +115,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        product.addSearchFinishHandler(new SearchFinishEvent.SearchFinishHandler() {
-            @Override
-            public void onSearchFinish(SearchFinishEvent event) {
-                presenter.productChanged();
-            }
-        });
+        product.setPresenter(productDTO -> presenter.productChanged());
 
         for(AccessType accessType : new AccessType[] {AccessType.file, AccessType.ogc}) {
             Option optionWidget = new Option();

@@ -3,8 +3,10 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
-import com.geocento.webapps.eobroker.supplier.client.events.*;
-import com.geocento.webapps.eobroker.supplier.client.places.*;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveProductDataset;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveProductDatasetHandler;
+import com.geocento.webapps.eobroker.supplier.client.places.ProductDatasetPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.ProductDatasetsPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.OfferDTO;
@@ -14,7 +16,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -47,8 +48,12 @@ public class ProductDatasetsActivity extends TemplateActivity implements Dashboa
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+        loadProductDatasets();
+    }
+
+    private void loadProductDatasets() {
         try {
-            displayFullLoading("Loading off the shelf data...");
+            displayFullLoading("Loading off the shelf products...");
             REST.withCallback(new MethodCallback<OfferDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -75,8 +80,24 @@ public class ProductDatasetsActivity extends TemplateActivity implements Dashboa
         activityEventBus.addHandler(RemoveProductDataset.TYPE, new RemoveProductDatasetHandler() {
             @Override
             public void onRemoveProductDataset(RemoveProductDataset event) {
-                if (Window.confirm("Are you sure you want to remove this product dataset?")) {
-                    MaterialToast.fireToast("Not implemented yet");
+                if (Window.confirm("Are you sure you want to remove this off the shelf product?")) {
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                displayError("Could not remove this off the shelf product");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                displaySuccess("Off the shelf product has been removed");
+                                // reload datasets
+                                loadProductDatasets();
+                            }
+                        }).call(ServicesUtil.assetsService).removeProductDataset(event.getId());
+                    } catch (Exception e) {
+
+                    }
                 }
             }
         });

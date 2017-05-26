@@ -193,7 +193,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                         throw new Exception("Please provide a valid full description");
                     }
                     if (productDatasetDTO.getProduct() == null) {
-                        throw new Exception("Please select a product");
+                        throw new Exception("Please select a product category");
                     }
                     if (productDatasetDTO.getServiceType() == null) {
                         throw new Exception("Please provide a service type");
@@ -235,8 +235,11 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
 
     @Override
     public void productChanged() {
-        displayLoading("Loading product geoinformation");
         final ProductDTO selectedProduct = productDatasetView.getSelectedProduct();
+        if(selectedProduct == null) {
+            return;
+        }
+        displayLoading("Loading product geoinformation");
         try {
             REST.withCallback(new MethodCallback<ProductGeoinformation>() {
                 @Override
