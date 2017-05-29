@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.utils;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
@@ -9,12 +10,28 @@ import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
  */
 public class NotificationSocketHelper {
 
-    public NotificationSocketHelper(String webSocketURL) {
-        final WebSocket webSocket = WebSocket.newWebSocketIfSupported();
-        if ( null != webSocket )
-        {
-            webSocket.setListener( new WebSocketListenerAdapter()
-            {
+    static private NotificationSocketHelper instance;
+
+    private WebSocket webSocket;
+
+    protected NotificationSocketHelper() {
+    }
+
+    static public NotificationSocketHelper getInstance() {
+        if(instance == null) {
+            instance = new NotificationSocketHelper();
+        }
+        return instance;
+    }
+
+    public void startMaybeNotifications() {
+        if(webSocket != null) {
+            return;
+        }
+        String baseUrl = GWT.getHostPageBaseURL();
+        webSocket = WebSocket.newWebSocketIfSupported();
+        if (null != webSocket) {
+            webSocket.setListener( new WebSocketListenerAdapter() {
                 @Override
                 public void onOpen( final WebSocket webSocket ) {
                     //Window.alert("Websocket opened");
@@ -27,8 +44,7 @@ public class NotificationSocketHelper {
                     Window.alert("New message " + data);
                 }
             } );
-            webSocket.connect(webSocketURL);
+            webSocket.connect("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "notifications");
         }
     }
-
 }

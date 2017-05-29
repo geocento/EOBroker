@@ -3,7 +3,14 @@
              xmlns:bubble="urn:import:gwt.material.design.addins.client.bubble"
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
-    <bubble:MaterialBubble ui:field="panel">
+    <ui:style>
+
+        .bubble {
+            max-width: 100% !important;
+        }
+
+    </ui:style>
+    <bubble:MaterialBubble addStyleNames="{style.bubble}" ui:field="panel">
         <widgets:UserWidget float="LEFT" size="50" ui:field="user"></widgets:UserWidget>
         <design:MaterialPanel marginLeft="70">
             <g:HTMLPanel ui:field="testimonial"></g:HTMLPanel>

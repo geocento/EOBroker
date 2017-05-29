@@ -1,18 +1,15 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
+import com.geocento.webapps.eobroker.customer.client.widgets.ConversationWidget;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,9 +17,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
-import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.Color;
-import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 
@@ -97,34 +92,13 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         if(conversationDTOs == null || conversationDTOs.size() == 0) {
             previousConversations.add(new MaterialLabel("No previous conversations with this company..."));
         } else {
+            MaterialRow materialRow = new MaterialRow();
+            this.previousConversations.add(materialRow);
             for (final ConversationDTO conversationDTO : conversationDTOs) {
-                MaterialBubble materialBubble = new MaterialBubble();
-                materialBubble.setBackgroundColor(Color.WHITE);
-                materialBubble.setFloat(Style.Float.LEFT);
-                materialBubble.setPosition(Position.LEFT);
-                materialBubble.setMarginLeft(12);
-                materialBubble.setWidth("50%");
-                // add content
-                MaterialButton materialButton = new MaterialButton(ButtonType.FLOATING);
-                materialButton.setIconType(IconType.EXIT_TO_APP);
-                materialButton.setBackgroundColor(Color.WHITE);
-                materialButton.setIconColor(Color.BLUE);
-                materialButton.setFloat(Style.Float.RIGHT);
-                materialButton.setShadow(0);
-                materialButton.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        clientFactory.getPlaceController().goTo(new ConversationPlace(Utils.generateTokens(ConversationPlace.TOKENS.conversationid.toString(), conversationDTO.getId())));
-                    }
-                });
-                materialBubble.add(materialButton);
-                MaterialLabel materialLabel = new MaterialLabel("Conversation '" + conversationDTO.getTopic() + "'");
-                materialLabel.setFontSize(1.2, Style.Unit.EM);
-                materialBubble.add(materialLabel);
-                materialLabel = new MaterialLabel("with company " + conversationDTO.getCompany().getName() + " started on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
-                materialLabel.setFontSize(0.8, Style.Unit.EM);
-                materialBubble.add(materialLabel);
-                previousConversations.add(materialBubble);
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+                ConversationWidget conversationWidget = new ConversationWidget(conversationDTO);
+                materialColumn.add(conversationWidget);
+                materialRow.add(materialColumn);
             }
         }
     }

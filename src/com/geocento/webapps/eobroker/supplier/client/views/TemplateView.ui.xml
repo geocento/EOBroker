@@ -152,8 +152,11 @@
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="R&amp;D Projects" addStyleNames="{style.category}" ui:field="projects"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Testimonials" addStyleNames="{style.category}, {style.settings}" ui:field="testimonials"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Success stories" addStyleNames="{style.category}" ui:field="successStories"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Conversations" addStyleNames="{style.category}" ui:field="conversations"></m:MaterialLink>
+                        <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Notifications" addStyleNames="{style.category}" ui:field="notificationsLink"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}, {style.settings}" ui:field="settings"></m:MaterialLink>
                     </g:HTMLPanel>
+                    <m:MaterialLabel fontSize="0.8em" text="© 2017 Copyright Geocento Ltd and partners" />
                 </g:HTMLPanel>
             </g:HTMLPanel>
         </widgets:MaterialSideNav>

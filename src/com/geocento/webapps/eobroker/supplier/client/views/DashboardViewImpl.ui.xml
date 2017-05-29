@@ -140,6 +140,20 @@
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="testimonials">
                 </design:MaterialRow>
             </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="conversationsPanel">
+                <g:HTMLPanel>
+                    <design:MaterialTitle title="Your conversations"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="conversations">
+                </design:MaterialRow>
+            </design:MaterialPanel>
+            <design:MaterialPanel visible="false" ui:field="notificationsPanel">
+                <g:HTMLPanel>
+                    <design:MaterialTitle title="Your notifications"></design:MaterialTitle>
+                </g:HTMLPanel>
+                <design:MaterialRow addStyleNames="{style.services}" ui:field="notifications">
+                </design:MaterialRow>
+            </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="successStoriesPanel">
                 <g:HTMLPanel>
                     <design:MaterialButton backgroundColor="BLUE" float="RIGHT" text="Add new success story" ui:field="addSuccessStory"></design:MaterialButton>

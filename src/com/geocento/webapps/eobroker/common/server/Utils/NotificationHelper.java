@@ -42,4 +42,5 @@ public class NotificationHelper {
         adminNotification.setLinkId(linkId);
         em.persist(adminNotification);
     }
+
 }

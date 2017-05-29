@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.supplier.client.places;
 
-import com.geocento.webapps.eobroker.customer.client.places.TestimonialPlace;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
@@ -22,6 +21,8 @@ import com.google.gwt.place.shared.WithTokenizers;
         TestimonialsPlace.Tokenizer.class,
         SuccessStoriesPlace.Tokenizer.class,
         SuccessStoryPlace.Tokenizer.class,
+        ConversationsPlace.Tokenizer.class,
+        NotificationsPlace.Tokenizer.class,
         SettingsPlace.Tokenizer.class})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

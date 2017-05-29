@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:bubble="urn:import:gwt.material.design.addins.client.bubble"
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .panel {
+            max-width: none !important;
+        }
+
+    </ui:style>
+    <bubble:MaterialBubble backgroundColor="WHITE" position="LEFT" addStyleNames="{style.panel}">
+        <design:MaterialLink fontSize="1.2em" iconType="CHAT_BUBBLE" truncate="true" ui:field="title"></design:MaterialLink>
+        <design:MaterialLabel fontSize="0.8em" ui:field="comment"></design:MaterialLabel>
+    </bubble:MaterialBubble>
+</ui:UiBinder>

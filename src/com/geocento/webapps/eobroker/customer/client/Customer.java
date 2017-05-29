@@ -86,10 +86,6 @@ public class Customer implements EntryPoint {
             public void onSuccess(Method method, LoginInfo loginInfo) {
                 setLoginInfo(loginInfo);
 
-                // start the notification websocket
-                String baseUrl = GWT.getHostPageBaseURL();
-                new NotificationSocketHelper("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "notifications");
-
                 historyHandler.handleCurrentHistory();
             }
         }).call(ServicesUtil.loginService).getSession();
@@ -117,6 +113,10 @@ public class Customer implements EntryPoint {
     public static void setLoginInfo(LoginInfo loginInfo) {
         Customer.loginInfo = loginInfo;
         initialAoI = loginInfo == null ? null : loginInfo.getAoIDTO();
+        // start the notification websocket if user is signed in
+        if(loginInfo != null) {
+            NotificationSocketHelper.getInstance().startMaybeNotifications();
+        }
     }
 
     public static boolean isLoggedIn() {

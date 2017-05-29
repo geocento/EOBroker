@@ -56,6 +56,10 @@ public interface DashboardView extends IsWidget {
 
     HasClickHandlers getAddSuccessStory();
 
+    void displayNotifications(List<SupplierNotificationDTO> supplierNotificationDTOs);
+
+    void displayConversations(List<ConversationDTO> response);
+
     public interface Presenter {
     }
 

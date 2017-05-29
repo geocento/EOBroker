@@ -36,6 +36,13 @@
             <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
             <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
             </design:MaterialRow>
+            <design:MaterialPanel>
+                <widgets:UserWidget float="LEFT" size="64" marginTop="20" ui:field="userImage"/>
+                <widgets:ProgressButton float="RIGHT" iconType="SEND" type="FLOATING" size="LARGE" marginTop="20" ui:field="submitMessage">
+                </widgets:ProgressButton>
+                <design:MaterialTextArea marginLeft="100" marginRight="80" ui:field="message"></design:MaterialTextArea>
+            </design:MaterialPanel>
+<!--
             <design:MaterialRow addStyleNames="{style.formValues}">
                 <design:MaterialColumn grid="s2 m2 l2">
                     <widgets:UserWidget size="64" ui:field="userImage"/>
@@ -50,6 +57,7 @@
                     </g:HTMLPanel>
                 </design:MaterialColumn>
             </design:MaterialRow>
+-->
         </g:HTMLPanel>
     </views:TemplateView>
 </ui:UiBinder>

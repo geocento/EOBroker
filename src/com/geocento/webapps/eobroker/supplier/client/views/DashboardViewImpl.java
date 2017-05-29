@@ -89,6 +89,14 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialRow testimonials;
     @UiField
     MaterialPanel successStoriesPanel;
+    @UiField
+    MaterialRow conversations;
+    @UiField
+    MaterialPanel conversationsPanel;
+    @UiField
+    MaterialPanel notificationsPanel;
+    @UiField
+    MaterialRow notifications;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -164,6 +172,8 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         datasetsPanel.setVisible(false);
         softwarePanel.setVisible(false);
         projectsPanel.setVisible(false);
+        conversationsPanel.setVisible(false);
+        notificationsPanel.setVisible(false);
         testimonialsPanel.setVisible(false);
         successStoriesPanel.setVisible(false);
         settingsPanel.setVisible(false);
@@ -264,6 +274,44 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     @Override
     public HasClickHandlers getAddSuccessStory() {
         return addSuccessStory;
+    }
+
+    @Override
+    public void displayNotifications(List<SupplierNotificationDTO> supplierNotificationDTOs) {
+        hideAll();
+        template.setPlace("notifications");
+        notificationsPanel.setVisible(true);
+        this.notifications.clear();
+        if(supplierNotificationDTOs == null || supplierNotificationDTOs.size() == 0) {
+            this.conversations.add(new MaterialLabel("No notifications..."));
+            return;
+        }
+        MaterialRow materialRow = new MaterialRow();
+        this.notificationsPanel.add(materialRow);
+        for(SupplierNotificationDTO supplierNotificationDTO : supplierNotificationDTOs) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+            materialColumn.add(new NotificationWidget(supplierNotificationDTO));
+            materialRow.add(materialColumn);
+        }
+    }
+
+    @Override
+    public void displayConversations(List<ConversationDTO> conversationDTOs) {
+        hideAll();
+        template.setPlace("conversations");
+        conversationsPanel.setVisible(true);
+        this.conversations.clear();
+        if(conversationDTOs == null || conversationDTOs.size() == 0) {
+            this.conversations.add(new MaterialLabel("No conversations started..."));
+            return;
+        }
+        MaterialRow materialRow = new MaterialRow();
+        this.conversations.add(materialRow);
+        for(ConversationDTO conversationDTO : conversationDTOs) {
+            MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+            materialColumn.add(new ConversationWidget(conversationDTO));
+            materialRow.add(materialColumn);
+        }
     }
 
     @Override

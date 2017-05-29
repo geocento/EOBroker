@@ -400,7 +400,9 @@ public class OrdersResource implements OrdersService {
             if(conversation.getCompany() != user.getCompany()) {
                 throw new RequestException("Not allowed");
             }
-            return createConversationDTO(conversation);
+            ConversationDTO conversationDTO = createConversationDTO(conversation);
+            conversationDTO.setMessages(MessageHelper.convertToDTO(conversation.getMessages()));
+            return conversationDTO;
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -456,12 +458,37 @@ public class OrdersResource implements OrdersService {
         }
     }
 
+    @Override
+    public List<ConversationDTO> getConversations() throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            TypedQuery<Conversation> query = em.createQuery("select c from Conversation c where c.company = :company", Conversation.class);
+            query.setParameter("company", user.getCompany());
+            List<Conversation> conversations = query.getResultList();
+            return ListUtil.mutate(conversations, new ListUtil.Mutate<Conversation, ConversationDTO>() {
+                @Override
+                public ConversationDTO mutate(Conversation conversation) {
+                    return createConversationDTO(conversation);
+                }
+            });
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
     private ConversationDTO createConversationDTO(Conversation conversation) {
         ConversationDTO conversationDTO = new ConversationDTO();
         conversationDTO.setId(conversation.getId());
         conversationDTO.setUser(UserHelper.createUserDTO(conversation.getCustomer()));
         conversationDTO.setTopic(conversation.getTopic());
-        conversationDTO.setMessages(MessageHelper.convertToDTO(conversation.getMessages()));
         conversationDTO.setCreationDate(conversation.getCreationDate());
         return conversationDTO;
     }

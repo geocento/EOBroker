@@ -2,8 +2,10 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
-import com.geocento.webapps.eobroker.common.client.widgets.*;
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialSideNav;
+import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
@@ -12,10 +14,7 @@ import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.places.*;
-import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.DashboardPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.EOBrokerPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.supplier.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -105,6 +104,10 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLink successStories;
     @UiField
     MaterialLink testimonials;
+    @UiField
+    MaterialLink conversations;
+    @UiField
+    MaterialLink notificationsLink;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -134,6 +137,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         projects.setIconType(CategoryUtils.getIconType(Category.project));
         testimonials.setIconType(IconType.VERIFIED_USER);
         successStories.setIconType(IconType.SENTIMENT_VERY_SATISFIED);
+        conversations.setIconType(IconType.CHAT_BUBBLE);
+        notificationsLink.setIconType(IconType.NOTIFICATIONS);
         settings.setIconType(IconType.SETTINGS);
 
         setLink(company, new CompanyPlace());
@@ -143,6 +148,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         setLink(projects, new ProjectsPlace());
         setLink(testimonials, new TestimonialsPlace());
         setLink(successStories, new SuccessStoriesPlace());
+        setLink(conversations, new ConversationsPlace());
+        setLink(notificationsLink, new NotificationsPlace());
         setLink(settings, new SettingsPlace());
 
         onResize(null);
@@ -248,7 +255,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
                         );
                         break;
                 }
-                message.setHref("#" + PlaceHistoryHelper.convertPlace(place));
+                message.setHref("#" + PlaceHistoryHelper.convertPlace(NotificationHelper.convertToPlace(supplierNotificationDTO)));
                 notificationsPanel.add(message);
             }
         } else {

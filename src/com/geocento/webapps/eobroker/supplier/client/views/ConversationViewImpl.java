@@ -77,7 +77,7 @@ public class ConversationViewImpl extends Composite implements ConversationView 
 
     @Override
     public void displayConversation(ConversationDTO conversationDTO) {
-        title.setTitle("'" + conversationDTO.getTopic() + "'");
+        title.setTitle(conversationDTO.getTopic());
         title.setDescription("Conversation with '" + conversationDTO.getUser().getName() + "'" +
                 ", started on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
         displayMessages(conversationDTO.getMessages());
