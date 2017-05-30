@@ -9,10 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.events.ImageOrderCreatedHandler;
-import com.geocento.webapps.eobroker.customer.client.events.LogOut;
-import com.geocento.webapps.eobroker.customer.client.events.LogOutHandler;
-import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
+import com.geocento.webapps.eobroker.customer.client.events.*;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -139,7 +136,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                     userNotifications = notificationDTOs;
                     templateView.setNotifications(notificationDTOs);
                 }
-            }).call(ServicesUtil.assetsService).getNotifications();
+            }).call(ServicesUtil.assetsService).listNotifications(0, 10);
         } catch (RequestException e) {
         }
     }
@@ -168,6 +165,19 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             @Override
             public void onImageOrderCreated(RequestCreated event) {
                 loadUserOrders();
+            }
+        });
+
+        activityEventBus.addHandler(NotificationEvent.TYPE, new NotificationEventHandler() {
+            @Override
+            public void onNotification(NotificationEvent event) {
+                // update notifications
+                NotificationDTO notificationDTO = event.getNotification();
+                // make sure it is not already included
+                if(!userNotifications.contains(notificationDTO)) {
+                    userNotifications.add(notificationDTO);
+                    templateView.setNotifications(userNotifications);
+                }
             }
         });
     }

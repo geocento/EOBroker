@@ -9,6 +9,7 @@
     <inherits name="com.google.gwt.place.Place"/>
     <inherits name="com.google.gwt.activity.Activity"/>
     <inherits name="org.fusesource.restygwt.RestyGWT"/>
+    <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
 
     <source path='client'/>
     <source path='shared'/>

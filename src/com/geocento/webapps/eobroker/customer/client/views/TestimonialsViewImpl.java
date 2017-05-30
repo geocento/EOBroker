@@ -52,7 +52,9 @@ public class TestimonialsViewImpl extends Composite implements TestimonialsView 
         this.testimonials.add(materialRow);
         for(TestimonialDTO testimonialDTO : testimonialDTOs) {
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
-            materialColumn.add(new TestimonialWidget(testimonialDTO));
+            TestimonialWidget testimonialWidget = new TestimonialWidget(testimonialDTO);
+            testimonialWidget.displayUser(false);
+            materialColumn.add(testimonialWidget);
             materialRow.add(materialColumn);
         }
     }

@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities.formelements;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -12,7 +13,8 @@ public class TextFormElement extends FormElement {
 
     Integer min;
     Integer max;
-    private String pattern;
+    @Column(length = 1000)
+    String pattern;
 
     public TextFormElement() {
     }

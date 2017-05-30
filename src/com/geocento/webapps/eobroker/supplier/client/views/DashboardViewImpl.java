@@ -328,7 +328,9 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         this.testimonials.add(materialRow);
         for(TestimonialDTO testimonialDTO : testimonials) {
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
-            materialColumn.add(new TestimonialWidget(testimonialDTO));
+            TestimonialWidget testimonialWidget = new TestimonialWidget(testimonialDTO);
+            testimonialWidget.displayTopic(false);
+            materialColumn.add(testimonialWidget);
             materialRow.add(materialColumn);
         }
     }

@@ -459,13 +459,20 @@ public class OrdersResource implements OrdersService {
     }
 
     @Override
-    public List<ConversationDTO> getConversations() throws RequestException {
-        String userName = UserUtils.verifyUserSupplier(request);
+    public List<ConversationDTO> listConversations(int start, int limit, String userName) throws RequestException {
+        String supplierUserName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
-            User user = em.find(User.class, userName);
-            TypedQuery<Conversation> query = em.createQuery("select c from Conversation c where c.company = :company", Conversation.class);
+            User user = em.find(User.class, supplierUserName);
+            TypedQuery<Conversation> query = em.createQuery("select c from Conversation c where c.company = :company" +
+                    (userName != null ? " and c.customer.username = :userName" : "") +
+                    " order by c.creationDate desc", Conversation.class);
             query.setParameter("company", user.getCompany());
+            if(userName != null) {
+                query.setParameter("userName", userName);
+            }
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
             List<Conversation> conversations = query.getResultList();
             return ListUtil.mutate(conversations, new ListUtil.Mutate<Conversation, ConversationDTO>() {
                 @Override

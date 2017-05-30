@@ -5,6 +5,11 @@
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
     <ui:style>
 
+        .panel {
+            max-width: none !important;
+            width: 100%;
+        }
+
         .topic {
             white-space: nowrap;
         }
@@ -19,19 +24,14 @@
             -webkit-box-orient: vertical;
         }
 
-        .panel {
-            max-width: none !important;
-        }
-
     </ui:style>
-    <design:MaterialRow>
-        <widgets:UserWidget float="LEFT" size="50" margin="10" ui:field="user"></widgets:UserWidget>
-        <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="AMBER_LIGHTEN_3" addStyleNames="{style.panel}" ui:field="panel">
-            <design:MaterialPanel>
-                <g:HTMLPanel addStyleNames="{style.topic}" ui:field="topic"></g:HTMLPanel>
-                <g:HTMLPanel addStyleNames="{style.testimonial}" ui:field="testimonial"></g:HTMLPanel>
-                <design:MaterialLabel float="RIGHT" fontSize="0.6em" ui:field="creationDate"></design:MaterialLabel>
-            </design:MaterialPanel>
-        </bubble:MaterialBubble>
-    </design:MaterialRow>
+    <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="AMBER_LIGHTEN_3" addStyleNames="{style.panel}" ui:field="panel">
+        <design:MaterialPanel ui:field="userPanel">
+            <widgets:UserWidget float="LEFT" size="50" margin="10" ui:field="user"></widgets:UserWidget>
+            <design:MaterialLabel marginLeft="60" lineHeight="50" fontSize="1.2em" ui:field="userName"></design:MaterialLabel>
+        </design:MaterialPanel>
+        <widgets:MaterialLabelIcon imageWidth="35px" addStyleNames="{style.topic}" ui:field="topic"></widgets:MaterialLabelIcon>
+        <g:HTMLPanel addStyleNames="{style.testimonial}" ui:field="testimonial"></g:HTMLPanel>
+        <design:MaterialLabel float="RIGHT" fontSize="0.6em" ui:field="creationDate"></design:MaterialLabel>
+    </bubble:MaterialBubble>
 </ui:UiBinder>

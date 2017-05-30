@@ -1,7 +1,9 @@
 package com.geocento.webapps.eobroker.customer.client.utils;
 
+import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.NotificationEvent;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
 
@@ -34,14 +36,25 @@ public class NotificationSocketHelper {
             webSocket.setListener( new WebSocketListenerAdapter() {
                 @Override
                 public void onOpen( final WebSocket webSocket ) {
-                    //Window.alert("Websocket opened");
-                    // After we have connected we can send
-                    //webSocket.send("Hello!");
                 }
 
                 @Override
                 public void onMessage( final WebSocket webSocket, final String data ) {
-                    Window.alert("New message " + data);
+                    // check the type of message
+                    WebSocketMessage.WebSocketMessageMapper mapper = GWT.create(WebSocketMessage.WebSocketMessageMapper.class);
+                    WebSocketMessage webSocketMessage = mapper.read(data);
+                    switch (webSocketMessage.getType()) {
+                        case notification:
+                            NotificationEvent notificationEvent = new NotificationEvent();
+                            notificationEvent.setNotification(webSocketMessage.getNotificationDTO());
+                            Customer.clientFactory.getEventBus().fireEvent(notificationEvent);
+                    }
+                }
+
+                @Override
+                public void onClose(WebSocket webSocket, boolean wasClean, int code, String reason) {
+                    super.onClose(webSocket, wasClean, code, reason);
+                    // TODO - needs a strategy to restart the socket
                 }
             } );
             webSocket.connect("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "notifications");

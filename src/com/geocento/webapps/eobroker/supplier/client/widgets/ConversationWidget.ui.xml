@@ -3,12 +3,13 @@
              xmlns:design="urn:import:gwt.material.design.client.ui">
     <ui:style>
 
-        .bubble {
-            max-width: 100% !important;
+        .panel {
+            max-width: none !important;
+            width: 100%;
         }
 
     </ui:style>
-    <bubble:MaterialBubble backgroundColor="WHITE" position="LEFT" addStyleNames="{style.bubble}">
+    <bubble:MaterialBubble backgroundColor="WHITE" position="LEFT" addStyleNames="{style.panel}">
         <design:MaterialLink fontSize="1.2em" iconType="CHAT_BUBBLE" truncate="true" ui:field="title"></design:MaterialLink>
         <design:MaterialLabel fontSize="0.8em" ui:field="comment"></design:MaterialLabel>
     </bubble:MaterialBubble>

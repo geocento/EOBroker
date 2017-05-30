@@ -751,7 +751,7 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<SupplierNotification> query = em.createQuery("select s from SupplierNotification s where s.company = :company", SupplierNotification.class);
+            TypedQuery<SupplierNotification> query = em.createQuery("select s from SupplierNotification s where s.company = :company order by s.creationDate DESC", SupplierNotification.class);
             query.setParameter("company", user.getCompany());
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<SupplierNotification, SupplierNotificationDTO>() {
                 @Override

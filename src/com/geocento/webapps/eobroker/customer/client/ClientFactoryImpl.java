@@ -55,6 +55,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private TestimonialView testimonialView = null;
 
+    private NotificationsView notificationsView = null;
+
     private TemplateView templateView = null;
 
     @Override
@@ -230,6 +232,14 @@ public class ClientFactoryImpl implements ClientFactory {
             catalogueSearchView = new CatalogueSearchViewImpl(this);
         }
         return catalogueSearchView;
+    }
+
+    @Override
+    public NotificationsView getNotificationsView() {
+        if(notificationsView == null) {
+            notificationsView = new NotificationsViewImpl(this);
+        }
+        return notificationsView;
     }
 }
 

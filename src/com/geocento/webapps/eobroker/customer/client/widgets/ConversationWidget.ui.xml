@@ -1,11 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:bubble="urn:import:gwt.material.design.addins.client.bubble"
              xmlns:design="urn:import:gwt.material.design.client.ui">
     <ui:style>
 
         .panel {
             max-width: none !important;
+            width: 100% !important;
         }
 
     </ui:style>

@@ -1,6 +1,9 @@
 package com.geocento.webapps.eobroker.common.server.websockets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.UserSession;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
@@ -23,6 +26,8 @@ public class NotificationSocket {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
+        // set maximum time out to 30 minutes
+        session.setMaxIdleTimeout(30 * 60 * 1000L);
         UserSession userSession = getUserSession();
         if(userSession == null) {
             throw new IOException("Not signed in");
@@ -79,11 +84,13 @@ public class NotificationSocket {
         return (UserSession) httpSession.getAttribute("userSession");
     }
 
-    static public void sendMessage(String userName, String message) {
+    static public void sendMessage(String userName, WebSocketMessage webSocketMessage) throws JsonProcessingException {
         List<Session> sessions = userSessions.get(userName);
         if(sessions == null) {
             return;
         }
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(webSocketMessage);
         for(Session session : sessions) {
             try {
                 session.getBasicRemote().sendText(message);

@@ -58,7 +58,7 @@ public class ConversationsActivity extends TemplateActivity implements Dashboard
                     dashboardView.displayConversations(response);
                 }
 
-            }).call(ServicesUtil.ordersService).getConversations();
+            }).call(ServicesUtil.ordersService).listConversations(0, 100, null);
         } catch (RequestException e) {
             e.printStackTrace();
         }

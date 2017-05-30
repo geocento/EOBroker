@@ -997,22 +997,19 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<NotificationDTO> getNotifications() throws RequestException {
+    public List<NotificationDTO> listNotifications(int start, int limit) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
             TypedQuery<Notification> query = em.createQuery("select s from Notification s where s.user = :user order by s.creationDate", Notification.class);
             query.setParameter("user", user);
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Notification, NotificationDTO>() {
                 @Override
                 public NotificationDTO mutate(Notification notification) {
-                    NotificationDTO notificationDTO = new NotificationDTO();
-                    notificationDTO.setType(notification.getType());
-                    notificationDTO.setMessage(notification.getMessage());
-                    notificationDTO.setLinkId(notification.getLinkId());
-                    notificationDTO.setCreationDate(notification.getCreationDate());
-                    return notificationDTO;
+                    return NotificationHelper.createNotificationDTO(notification);
                 }
             });
         } catch (Exception e) {

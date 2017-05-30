@@ -123,7 +123,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                     conversationView.setPreviousConversationTitle("Previous conversations");
                     conversationView.displayConversations(conversationDTOs);
                 }
-            }).call(ServicesUtil.requestsService).listConversations(0, 10, null);
+            }).call(ServicesUtil.requestsService).listConversations(0, 100, null);
         } catch (Exception e) {
         }
 

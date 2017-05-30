@@ -929,8 +929,14 @@ public class FullViewImpl extends Composite implements FullView {
             boolean hasTestimonials = testimonials != null && testimonials.size() > 0;
             if (hasTestimonials) {
                 materialColumn.add(new MaterialLabel("This company has received " + testimonials.size() + " testimonials"));
+                MaterialRow materialRow = new MaterialRow();
+                materialColumn.add(materialRow);
                 for (TestimonialDTO testimonialDTO : testimonials) {
-                    materialColumn.add(new TestimonialWidget(testimonialDTO));
+                    MaterialColumn testimonialColumn = new MaterialColumn(12, 12, 12);
+                    TestimonialWidget testimonialWidget = new TestimonialWidget(testimonialDTO);
+                    testimonialWidget.displayTopic(false);
+                    testimonialColumn.add(testimonialWidget);
+                    materialRow.add(testimonialColumn);
                 }
             } else {
                 materialColumn.add(new MaterialLabel("This company has not received any testimonials yet"));

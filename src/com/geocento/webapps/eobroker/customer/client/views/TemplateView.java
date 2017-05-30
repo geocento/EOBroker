@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.places.*;
+import com.geocento.webapps.eobroker.customer.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
@@ -33,6 +34,8 @@ import gwt.material.design.client.ui.*;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -136,6 +139,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     @UiField
     MaterialLink helpCategory;
 
+    private int maxNotifications = 5;
+
     private final ClientFactoryImpl clientFactory;
 
     private Presenter presenter;
@@ -167,7 +172,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         homeCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new LandingPagePlace()));
         conversationsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new ConversationPlace()));
         requestsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
-        //notificationsCategory.setHref(PlaceHistoryHelper.convertPlace(new NotificationPlace()));
+        notificationsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new NotificationsPlace()));
         testimoniesCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new TestimonialsPlace()));
         settingsCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new SettingsPlace()));
         feedbackCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new FeedbackPlace()));
@@ -259,7 +264,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
             case "requests":
                 widget = requestsCategory;
                 break;
-            case "testimonies":
+            case "testimonials":
                 widget = testimoniesCategory;
                 break;
             case "settings":
@@ -348,36 +353,46 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     public void setNotifications(List<NotificationDTO> notifications) {
         notificationsBadge.setText(notifications.size() + "");
         notificationsPanel.clear();
+        // make sure notifications are ordered by creation date descending
+        Collections.sort(notifications, new Comparator<NotificationDTO>() {
+            @Override
+            public int compare(NotificationDTO o1, NotificationDTO o2) {
+                return o2.getCreationDate().compareTo(o1.getCreationDate());
+            }
+        });
         boolean hasNotifications = notifications != null && notifications.size() > 0;
         notificationsBadge.setVisible(hasNotifications);
+        boolean hasMore = notifications.size() > maxNotifications;
+        if(hasMore) {
+            notifications = notifications.subList(0, maxNotifications);
+        }
         if(hasNotifications) {
             for(NotificationDTO notificationDTO : notifications) {
-                MaterialLink message = new MaterialLink(notificationDTO.getMessage());
-                message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
-                HTML timePanel = new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(notificationDTO.getCreationDate()) + "</span>");
-                timePanel.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.RIGHT);
-                message.add(timePanel);
-                EOBrokerPlace place = null;
-                switch(notificationDTO.getType()) {
-                    case MESSAGE:
-                        place = new ConversationPlace(ConversationPlace.TOKENS.conversationid.toString() + "=" + notificationDTO.getLinkId());
-                        break;
-                    case PRODUCTREQUEST:
-                        place = new ProductResponsePlace(ProductResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
-                        break;
-                    case IMAGESERVICEREQUEST:
-                        place = new ImageryResponsePlace(ImageryResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
-                        break;
-                    case IMAGEREQUEST:
-                        place = new ImagesResponsePlace(ImageryResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
-                        break;
-                }
-                message.setHref("#" + PlaceHistoryHelper.convertPlace(place));
-                notificationsPanel.add(message);
+                addNotification(notificationDTO);
             }
         } else {
             notificationsPanel.add(new MaterialLabel("No new notification"));
         }
+        // add a link to more notifications
+        if(hasMore) {
+            MaterialLink materialLink = new MaterialLink("See all notifications");
+            materialLink.setFontSize("0.8em");
+            materialLink.setPadding(10);
+            materialLink.getElement().getStyle().setProperty("borderTop", "1px solid grey");
+            materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(new NotificationsPlace()));
+            notificationsPanel.add(materialLink);
+        }
+    }
+
+    private void addNotification(NotificationDTO notificationDTO) {
+        MaterialLink message = new MaterialLink(notificationDTO.getMessage());
+        message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
+        HTML timePanel = new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(notificationDTO.getCreationDate()) + "</span>");
+        timePanel.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.RIGHT);
+        message.add(timePanel);
+        EOBrokerPlace place = NotificationHelper.createNotificationPlace(notificationDTO);
+        message.setHref("#" + PlaceHistoryHelper.convertPlace(place));
+        notificationsPanel.add(message);
     }
 
     public void displaySignedIn(boolean signedIn) {

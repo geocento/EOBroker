@@ -53,5 +53,7 @@ public interface OrdersService extends DirectRestService {
     @GET
     @Path("/requests/conversation/")
     @Produces("application/json")
-    List<ConversationDTO> getConversations() throws RequestException;
+    List<ConversationDTO> listConversations(@QueryParam("start") int start,
+                                            @QueryParam("limit") int limit,
+                                            @QueryParam("userName") String userName) throws RequestException;
 }
