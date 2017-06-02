@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.common.shared.feasibility;
 
-import org.geojson.object.FeatureCollection;
-
 import java.util.List;
 
 /**
@@ -9,55 +7,55 @@ import java.util.List;
  */
 public class FeasibilityResponse {
 
-    boolean feasible;
+    STATUS feasible;
     String message;
 
-    List<Feature> features;
+    List<CoverageFeature> features;
 
-    FeatureCollection coverages;
+    List<Statistics> statistics;
 
-    String timeToDelivery;
+    String additionalComments;
 
     public FeasibilityResponse() {
     }
 
-    public boolean isFeasible() {
+    public STATUS getFeasible() {
         return feasible;
     }
 
-    public void setFeasible(boolean feasible) {
+    public void setFeasible(STATUS feasible) {
         this.feasible = feasible;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public List<Feature> getFeatures() {
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public List<CoverageFeature> getFeatures() {
         return features;
     }
 
-    public void setFeatures(List<Feature> features) {
+    public void setFeatures(List<CoverageFeature> features) {
         this.features = features;
     }
 
-    public FeatureCollection getCoverages() {
-        return coverages;
+    public List<Statistics> getStatistics() {
+        return statistics;
     }
 
-    public void setCoverages(FeatureCollection coverages) {
-        this.coverages = coverages;
+    public void setStatistics(List<Statistics> statistics) {
+        this.statistics = statistics;
     }
 
-    public String getTimeToDelivery() {
-        return timeToDelivery;
+    public String getAdditionalComments() {
+        return additionalComments;
     }
 
-    public void setTimeToDelivery(String timeToDelivery) {
-        this.timeToDelivery = timeToDelivery;
+    public void setAdditionalComments(String additionalComments) {
+        this.additionalComments = additionalComments;
     }
 }

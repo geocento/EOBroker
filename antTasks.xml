@@ -6,9 +6,7 @@
 
     <property name="prodfilesdir" value="C:/Users/thomas/IdeaProjects/EOBroker/data/" />
 
-    <property name="gwtdir" value="C:/Users/thomas/gwt/gwt-2.7.0" />
-
-    <target name="default" depends="prepare, buildwar, deploy">
+    <target name="default" depends="prepare, apiDocs, buildwar, deploy">
 
     </target>
 

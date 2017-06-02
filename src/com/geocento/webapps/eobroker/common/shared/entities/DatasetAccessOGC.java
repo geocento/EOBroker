@@ -1,8 +1,8 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
-import gwt.material.design.client.constants.IconType;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 /**
  * Created by thomas on 10/11/2016.
@@ -13,7 +13,9 @@ public class DatasetAccessOGC extends DatasetAccess {
 
     @Column(length = 1000)
     String serverUrl;
-    private String styleName;
+    String styleName;
+
+    // TODO - add support for WCS
 
     public DatasetAccessOGC() {
     }

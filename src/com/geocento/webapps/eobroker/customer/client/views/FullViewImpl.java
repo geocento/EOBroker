@@ -3,9 +3,10 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
+import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
+import com.geocento.webapps.eobroker.common.client.widgets.MorePanel;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ExtentJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
@@ -45,6 +46,8 @@ public class FullViewImpl extends Composite implements FullView {
         String section();
 
         String subsection();
+
+        String sectionLabel();
 
         String tabPanel();
 
@@ -134,6 +137,7 @@ public class FullViewImpl extends Composite implements FullView {
                 tags.add(followWidget);
             }
         }
+        tabsContent.add(createSection("Description", new HTML(productDescriptionDTO.getDescription())));
         // add the tabs now
         MaterialPanel tabsPanel = createTabsPanel();
         materialTab = createTabs(tabsPanel);
@@ -184,6 +188,19 @@ public class FullViewImpl extends Composite implements FullView {
         }
     }
 
+    private ExpandPanel createSection(String label, Widget widget) {
+        ExpandPanel expandPanel = new ExpandPanel();
+        expandPanel.setLabel(label);
+        expandPanel.setLabelStyle(style.sectionLabel());
+        expandPanel.setLabelColor(Color.WHITE);
+        MorePanel morePanel = new MorePanel(50);
+        widget.getElement().getStyle().setMarginLeft(20, com.google.gwt.dom.client.Style.Unit.PX);
+        morePanel.setContent(widget);
+        expandPanel.setContent(morePanel);
+        expandPanel.setOpen(true);
+        return expandPanel;
+    }
+
     private void setTabPanelColor(Color color) {
         tabsPanel.setBackgroundColor(color);
         colorPanel.setBackgroundColor(color);
@@ -200,6 +217,7 @@ public class FullViewImpl extends Composite implements FullView {
         image.setUrl(Utils.getImageMaybe(productServiceDescriptionDTO.getServiceImage()));
         title.setText(productServiceDescriptionDTO.getName());
         description.setText(productServiceDescriptionDTO.getDescription());
+        tabsContent.add(createSection("Description", new HTML(productServiceDescriptionDTO.getFullDescription())));
         setTabPanelColor(CategoryUtils.getColor(Category.productservices));
         // add tags
         {

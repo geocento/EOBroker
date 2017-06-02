@@ -4,8 +4,8 @@ public class CoverageFeature {
 
     String wktValue;
 
-    String name;
-    String description;
+    String title;
+    String content;
 
     public CoverageFeature() {
     }
@@ -18,19 +18,19 @@ public class CoverageFeature {
         this.wktValue = wktValue;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getContent() {
+        return content;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
     }
 }

@@ -20,6 +20,15 @@
             font-size: 1.2em;
         }
 
+        .sectionLabel {
+            padding: 10px;
+            background: linear-gradient(to right, orange, rgba(0,0,0,0));
+            text-transform: capitalize;
+        }
+        .sectionLabel span {
+            text-transform: capitalize;
+        }
+
         .image {
             width: 100%;
         }
