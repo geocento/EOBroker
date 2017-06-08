@@ -369,6 +369,8 @@ public class AssetsResource implements AssetsService {
             if(hasFilter) {
                 query.setParameter("filter", "%" + filter + "%");
             }
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Company, CompanyDTO>() {
                 @Override
                 public CompanyDTO mutate(Company company) {
@@ -711,7 +713,7 @@ public class AssetsResource implements AssetsService {
             }
             TypedQuery<User> query = em.createQuery("select u from users u" +
                     (hasFilter ?  "  where UPPER(u.username) LIKE UPPER(:filter)" : "") +
-                    " order by " + orderby, User.class);
+                    " order by " + orderby + " DESC", User.class);
             if(hasFilter) {
                 query.setParameter("filter", "%" + filter + "%");
             }
@@ -872,11 +874,13 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public String getLogs() throws RequestException {
+    public LogsDTO getLogs() throws RequestException {
         FileAppender appender = (FileAppender) Logger.getRootLogger().getAppender("file");
         File file = new File(appender.getFile());
         try {
-            return FileUtils.readFileToString(file);
+            LogsDTO logsDTO = new LogsDTO();
+            logsDTO.setLogValue(FileUtils.readFileToString(file));
+            return logsDTO;
         } catch (IOException e) {
             throw new RequestException("Server error");
         }

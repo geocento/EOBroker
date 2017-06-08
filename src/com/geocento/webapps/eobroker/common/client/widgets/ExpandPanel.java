@@ -5,11 +5,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialLink;
+import gwt.material.design.client.ui.MaterialPanel;
 
 /**
  * Created by thomas on 02/06/2017.
@@ -22,26 +22,33 @@ public class ExpandPanel extends Composite {
     private static ExpandPanelUiBinder ourUiBinder = GWT.create(ExpandPanelUiBinder.class);
 
     @UiField
-    DisclosurePanel panel;
-    @UiField
     MaterialLink label;
+    @UiField
+    MaterialPanel content;
+    @UiField
+    MaterialPanel header;
 
     public ExpandPanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
 
         setOpen(false);
-        panel.addOpenHandler(event -> updateDisplay());
-        panel.addCloseHandler(event -> updateDisplay());
+
+        header.addClickHandler(event -> {
+            setOpen(!isOpen());
+        });
     }
 
     public void setOpen(boolean open) {
-        panel.setOpen(open);
+        content.setVisible(open);
         updateDisplay();
     }
 
     private void updateDisplay() {
-        boolean isOpen = panel.isOpen();
-        label.setIconType(isOpen ? IconType.ARROW_DOWNWARD : IconType.ARROW_FORWARD);
+        label.setIconType(isOpen() ? IconType.ARROW_DOWNWARD : IconType.ARROW_FORWARD);
+    }
+
+    private boolean isOpen() {
+        return content.isVisible();
     }
 
     public void setLabel(String label) {
@@ -49,7 +56,7 @@ public class ExpandPanel extends Composite {
     }
 
     public void setLabelStyle(String styleName) {
-        this.label.getParent().setStyleName(styleName);
+        header.setStyleName(styleName);
     }
 
     public void setLabelColor(Color color) {
@@ -57,9 +64,14 @@ public class ExpandPanel extends Composite {
         label.setTextColor(color);
     }
 
+    public void setContentMargin(int margin) {
+        content.setPaddingLeft(margin);
+    }
+
     @UiChild(tagname = "content")
     public void setContent(Widget widget) {
-        panel.setContent(widget);
+        content.clear();
+        content.add(widget);
     }
 
 }

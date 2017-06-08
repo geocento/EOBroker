@@ -12,7 +12,7 @@
         }
 
         .moreBackground {
-            opacity: 0.5;
+            opacity: 0.7;
             background: white;
         }
 
@@ -28,10 +28,10 @@
     </ui:style>
     <design:MaterialPanel>
         <design:MaterialPanel layoutPosition="RELATIVE">
-            <g:HTMLPanel ui:field="content"></g:HTMLPanel>
+            <design:MaterialPanel overflow="HIDDEN" paddingBottom="40" ui:field="content"></design:MaterialPanel>
             <g:HTMLPanel addStyleNames="{style.morePanel}, {style.moreBackground}" ui:field="moreBackground">
             </g:HTMLPanel>
-            <g:HTMLPanel addStyleNames="{style.morePanel}, {style.moreLabel}" ui:field="moreLabel">Show more...</g:HTMLPanel>
+            <design:MaterialLabel addStyleNames="{style.morePanel}, {style.moreLabel}" ui:field="moreLabel">Show more...</design:MaterialLabel>
         </design:MaterialPanel>
     </design:MaterialPanel>
 </ui:UiBinder>

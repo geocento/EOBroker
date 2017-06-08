@@ -57,7 +57,7 @@ public class UsersList extends AsyncPagingCellTable<UserDescriptionDTO> {
 
             @Override
             public String getValue(UserDescriptionDTO object) {
-                return object.getCompanyDTO().getIconURL();
+                return object.getCompanyDTO() == null ? null : object.getCompanyDTO().getIconURL();
             }
         };
         addColumn(thumbnailColumn, "Company", "100px");

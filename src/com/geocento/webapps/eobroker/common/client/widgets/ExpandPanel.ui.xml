@@ -1,8 +1,18 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
-    <g:DisclosurePanel ui:field="panel">
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:design="urn:import:gwt.material.design.client.ui">
+    <design:MaterialPanel>
+        <design:MaterialPanel ui:field="header">
+            <design:MaterialLink ui:field="label"></design:MaterialLink>
+        </design:MaterialPanel>
+        <design:MaterialPanel ui:field="content">
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+<!--
+    <g:DisclosurePanel addStyleNames="{style.panel}" ui:field="panel">
         <g:customHeader>
             <design:MaterialLink ui:field="label"></design:MaterialLink>
         </g:customHeader>
     </g:DisclosurePanel>
+-->
 </ui:UiBinder>

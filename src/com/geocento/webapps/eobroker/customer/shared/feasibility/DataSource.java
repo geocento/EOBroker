@@ -3,9 +3,9 @@ package com.geocento.webapps.eobroker.customer.shared.feasibility;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
-public class Sensor {
+public class DataSource {
 
-    public enum SENSORTYPE {mannedaircraft, drone, satellite};
+    public enum SENSORTYPE {mannedaircraft, drone, satellite, ground};
     public enum IMAGETYPE {optical, radar, signal};
 
     SENSORTYPE sensortype;
@@ -13,10 +13,10 @@ public class Sensor {
     String name;
     String description;
 
-    public Sensor() {
+    public DataSource() {
     }
 
-    public Sensor(SENSORTYPE sensortype, IMAGETYPE imagetype, String name, String description) {
+    public DataSource(SENSORTYPE sensortype, IMAGETYPE imagetype, String name, String description) {
         this.sensortype = sensortype;
         this.imagetype = imagetype;
         this.name = name;

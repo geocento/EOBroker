@@ -61,14 +61,17 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         setTitleText("Feasibility study");
         bind();
         productFeasibilityView.showQuery();
+        displayFullLoading("Loading map library...");
         productFeasibilityView.setMapLoadedHandler(new Callback<Void, Exception>() {
             @Override
             public void onFailure(Exception reason) {
+                hideFullLoading();
                 Window.alert("Error " + reason.getMessage());
             }
 
             @Override
             public void onSuccess(Void result) {
+                hideFullLoading();
                 handleHistory();
             }
         });
@@ -123,18 +126,18 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     }
 
     private void loadProduct(final Long productServiceId) {
-        displayLoading();
+        displayFullLoading("Loading bespoke service information...");
         try {
             REST.withCallback(new MethodCallback<ProductFeasibilityDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
+                    hideFullLoading();
                     displayError(exception.getMessage());
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductFeasibilityDTO response) {
-                    hideLoading();
+                    hideFullLoading();
                     productFeasibilityView.setServices(response.getProductServices());
                     List<FormElement> formElements = new ArrayList<FormElement>();
                     formElements.addAll(response.getApiFormElements());

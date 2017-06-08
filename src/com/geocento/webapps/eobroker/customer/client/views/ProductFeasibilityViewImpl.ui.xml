@@ -32,8 +32,9 @@
         }
 
         .queryButton {
-            text-align: center;
+            margin-top: 20px;
             padding: 10px;
+            text-align: center;
         }
 
         .mapPanel {
@@ -73,7 +74,7 @@
         }
 
         .searchPanel {
-
+            background: white;
         }
 
         .content {
@@ -84,6 +85,10 @@
             right: 0px;
         }
 
+        .loadingResults {
+            margin: 10px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <m:MaterialPanel addStyleNames="{style.content}">
@@ -91,7 +96,7 @@
             <g:west size="350">
                 <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
                     <m:MaterialPanel>
-                        <sideprofile:MaterialSideProfile backgroundColor="BLUE">
+                        <sideprofile:MaterialSideProfile ui:field="sideProfile">
                             <m:MaterialLink text="Services" activates="service" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="servicesLink"></m:MaterialLink>
                             <m:MaterialDropDown activator="service" ui:field="serviceDropdown">
                             </m:MaterialDropDown>
@@ -117,69 +122,63 @@
                                 <m:MaterialColumn grid="s6">
                                     <m:MaterialDatePicker ui:field="stopDate" placeholder="Stop Date" />
                                 </m:MaterialColumn>
-                                <m:MaterialColumn grid="s6">
-                                    <m:MaterialIntegerBox ui:field="test" placeholder="Test field" />
-                                </m:MaterialColumn>
                             </m:MaterialRow>
                             <m:MaterialRow padding="0" margin="0" ui:field="parameters">
                             </m:MaterialRow>
                             <m:MaterialRow addStyleNames="{style.queryButton}">
                                 <m:MaterialColumn grid="s12">
-                                    <m:MaterialButton text="Check" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="false" ui:field="update"/>
+                                    <m:MaterialButton text="Check Feasibility" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="false" ui:field="update"/>
                                 </m:MaterialColumn>
                             </m:MaterialRow>
                         </m:MaterialColumn>
                         <m:MaterialColumn m:id="results" grid="s12" padding="0">
+                            <widgets:LoadingWidget addStyleNames="{style.loadingResults}" ui:field="loadingResults"></widgets:LoadingWidget>
+                            <m:MaterialLabel padding="10" ui:field="message"></m:MaterialLabel>
                             <g:HTMLPanel addStyleNames="{style.result}" ui:field="results">
-                                <m:MaterialCollapsible backgroundColor="WHITE">
+                                <m:MaterialCollapsible margin="0" backgroundColor="WHITE">
                                     <m:MaterialCollapsibleItem ui:field="feasibilityPanel">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
                                             <g:HTMLPanel>
-                                                <m:MaterialLink text="PARTIAL" textColor="ORANGE" float="RIGHT" width="auto"></m:MaterialLink>
+                                                <m:MaterialLink text="PARTIAL" textColor="ORANGE" float="RIGHT" width="auto" ui:field="feasibilityValue"></m:MaterialLink>
                                                 <m:MaterialLink iconType="TRAFFIC" text="Feasibility:"></m:MaterialLink>
                                             </g:HTMLPanel>
                                         </m:MaterialCollapsibleHeader>
                                         <m:MaterialCollapsibleBody>
-                                            <g:HTMLPanel addStyleNames="{style.section}" ui:field="feasibility">
-                                                <p>Some comments on the general feasibility of this study</p>
-                                            </g:HTMLPanel>
+                                            <m:MaterialLabel padding="20" ui:field="feasibilityComment">
+                                            </m:MaterialLabel>
                                         </m:MaterialCollapsibleBody>
                                     </m:MaterialCollapsibleItem>
                                     <m:MaterialCollapsibleItem ui:field="coveragePanel">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
                                             <g:HTMLPanel>
-                                                <m:MaterialLink text="83%" textColor="ORANGE" float="RIGHT" width="auto"></m:MaterialLink>
-                                                <m:MaterialLink text="Coverage" textColor="BLUE" iconType="LAYERS"/>
+                                                <m:MaterialLink text="83%" textColor="BLUE" float="RIGHT" width="auto" ui:field="coverageFeaturesValue"></m:MaterialLink>
+                                                <m:MaterialLink text="Products" textColor="BLUE" iconType="LAYERS"/>
                                             </g:HTMLPanel>
                                         </m:MaterialCollapsibleHeader>
                                         <m:MaterialCollapsibleBody>
-                                            <g:HTMLPanel addStyleNames="{style.section}" ui:field="coverage">
-                                                <p>Sensors: <g:Anchor ui:field="sensors">15</g:Anchor></p>
-                                                <p>Datasets: <g:Anchor>3</g:Anchor></p>
-                                                <p>Spatial coverage: <g:Anchor>83%</g:Anchor></p>
-                                                <p>Revisit rate: <g:Anchor>see chart</g:Anchor></p>
-                                            </g:HTMLPanel>
+                                            <g:SimplePanel addStyleNames="{style.result}" ui:field="features">
+                                            </g:SimplePanel>
                                         </m:MaterialCollapsibleBody>
                                     </m:MaterialCollapsibleItem>
                                     <m:MaterialCollapsibleItem ui:field="options">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
-                                            <m:MaterialLink text="Revisit" textColor="BLUE" iconType="FILTER"/>
+                                            <m:MaterialLink text="Performances" textColor="BLUE" iconType="PIE_CHART"/>
                                         </m:MaterialCollapsibleHeader>
                                         <m:MaterialCollapsibleBody>
-                                            <g:HTMLPanel addStyleNames="{style.section}" ui:field="revisit">
+                                            <g:HTMLPanel addStyleNames="{style.section}" ui:field="statistics">
                                             </g:HTMLPanel>
                                         </m:MaterialCollapsibleBody>
                                     </m:MaterialCollapsibleItem>
                                 </m:MaterialCollapsible>
+                                <m:MaterialRow addStyleNames="{style.queryButton}">
+                                    <m:MaterialColumn grid="s6">
+                                        <m:MaterialButton text="Contact" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="true" ui:field="contact"/>
+                                    </m:MaterialColumn>
+                                    <m:MaterialColumn grid="s6">
+                                        <m:MaterialButton text="Request" textAlign="CENTER" backgroundColor="GREEN" textColor="WHITE" enabled="true" ui:field="request"/>
+                                    </m:MaterialColumn>
+                                </m:MaterialRow>
                             </g:HTMLPanel>
-                            <m:MaterialRow addStyleNames="{style.queryButton}">
-                                <m:MaterialColumn grid="s6">
-                                    <m:MaterialButton text="Contact" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" enabled="true" ui:field="contact"/>
-                                </m:MaterialColumn>
-                                <m:MaterialColumn grid="s6">
-                                    <m:MaterialButton text="Request" textAlign="CENTER" backgroundColor="GREEN" textColor="WHITE" enabled="true" ui:field="request"/>
-                                </m:MaterialColumn>
-                            </m:MaterialRow>
                         </m:MaterialColumn>
                     </m:MaterialRow>
                 </g:HeaderPanel>

@@ -112,24 +112,23 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     }
 
     private void loadProductDetails(Long productId, String selectedTab) {
-        fullView.setTitle("Loading product details...");
+        displayFullLoading("Loading product category information...");
         fullView.clearDetails();
-        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
+                    hideFullLoading();
                     displayError("Could not find company");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductDescriptionDTO productDescriptionDTO) {
-                    hideLoading();
+                    hideFullLoading();
                     setTitleText("Product");
                     fullView.displayProduct(productDescriptionDTO);
                     if(selectedTab != null) {
-                        fullView.selectTab(selectedTab);
+                        fullView.selectSection(selectedTab);
                     }
                 }
             }).call(ServicesUtil.assetsService).getProductDescription(productId);
@@ -138,24 +137,23 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     }
 
     private void loadCompanyDetails(Long companyId, String selectedTab) {
-        fullView.setTitle("Loading company details...");
+        displayFullLoading("Loading company information...");
         fullView.clearDetails();
-        displayLoading();
         try {
             REST.withCallback(new MethodCallback<CompanyDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
+                    hideFullLoading();
                     displayError("Could not find company");
                 }
 
                 @Override
                 public void onSuccess(Method method, CompanyDescriptionDTO companyDescriptionDTO) {
-                    hideLoading();
+                    hideFullLoading();
                     setTitleText("Company");
                     fullView.displayCompany(companyDescriptionDTO);
                     if(selectedTab != null) {
-                        fullView.selectTab(selectedTab);
+                        fullView.selectSection(selectedTab);
                     }
                 }
             }).call(ServicesUtil.assetsService).getCompanyDescription(companyId);
@@ -164,24 +162,23 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     }
 
     private void loadProductServiceDetails(Long productServiceId, String selectedTab) {
-        fullView.setTitle("Loading product service details...");
+        displayFullLoading("Loading bespoke service information...");
         fullView.clearDetails();
-        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProductServiceDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
-                    displayError("Could not find company");
+                    hideFullLoading();
+                    displayError("Could not find bespoke service");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductServiceDescriptionDTO productServiceDescriptionDTO) {
-                    hideLoading();
+                    hideFullLoading();
                     setTitleText("Bespoke service");
                     fullView.displayProductService(productServiceDescriptionDTO);
                     if(selectedTab != null) {
-                        fullView.selectTab(selectedTab);
+                        fullView.selectSection(selectedTab);
                     }
                 }
             }).call(ServicesUtil.assetsService).getProductServiceDescription(productServiceId);
@@ -190,24 +187,23 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     }
 
     private void loadProductDatasetDetails(Long productDatasetId, String selectedTab) {
-        fullView.setTitle("Loading off the shelf data details...");
         fullView.clearDetails();
-        displayLoading();
+        displayFullLoading("Loading off the shelf product information...");
         try {
             REST.withCallback(new MethodCallback<ProductDatasetDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
-                    displayError("Could not find company");
+                    hideFullLoading();
+                    displayError("Could not find off the shelf product");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProductDatasetDescriptionDTO productDatasetDescriptionDTO) {
-                    hideLoading();
-                    setTitleText("Off-the-shelf data");
+                    hideFullLoading();
+                    setTitleText("Off-the-shelf product");
                     fullView.displayProductDataset(productDatasetDescriptionDTO);
                     if(selectedTab != null) {
-                        fullView.selectTab(selectedTab);
+                        fullView.selectSection(selectedTab);
                     }
                 }
             }).call(ServicesUtil.assetsService).getProductDatasetDescription(productDatasetId);
@@ -216,24 +212,23 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     }
 
     private void loadSoftwareDetails(Long softwareId, String selectedTab) {
-        fullView.setTitle("Loading software information...");
+        displayFullLoading("Loading software information...");
         fullView.clearDetails();
-        displayLoading();
         try {
             REST.withCallback(new MethodCallback<SoftwareDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
+                    hideFullLoading();
                     displayError("Could not find software");
                 }
 
                 @Override
                 public void onSuccess(Method method, SoftwareDescriptionDTO softwareDescriptionDTO) {
-                    hideLoading();
+                    hideFullLoading();
                     setTitleText("Software");
                     fullView.displaySoftware(softwareDescriptionDTO);
                     if(selectedTab != null) {
-                        fullView.selectTab(selectedTab);
+                        fullView.selectSection(selectedTab);
                     }
                 }
             }).call(ServicesUtil.assetsService).getSoftwareDescription(softwareId);
@@ -242,24 +237,23 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
     }
 
     private void loadProjectDetails(Long projectId, String selectedTab) {
-        fullView.setTitle("Loading project information...");
+        displayFullLoading("Loading project information...");
         fullView.clearDetails();
-        displayLoading();
         try {
             REST.withCallback(new MethodCallback<ProjectDescriptionDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
+                    hideFullLoading();
                     displayError("Could not find project");
                 }
 
                 @Override
                 public void onSuccess(Method method, ProjectDescriptionDTO projectDescriptionDTO) {
-                    hideLoading();
+                    hideFullLoading();
                     setTitleText("Project");
                     fullView.displayProject(projectDescriptionDTO);
                     if(selectedTab != null) {
-                        fullView.selectTab(selectedTab);
+                        fullView.selectSection(selectedTab);
                     }
                 }
             }).call(ServicesUtil.assetsService).getProjectDescription(projectId);

@@ -9,6 +9,9 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 public class CompanyHelper {
 
     public static CompanyDTO createCompanyDTO(Company company) {
+        if(company == null) {
+            return null;
+        }
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setId(company.getId());
         companyDTO.setIconURL(company.getIconURL());

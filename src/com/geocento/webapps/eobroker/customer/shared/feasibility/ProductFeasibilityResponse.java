@@ -12,33 +12,20 @@ public class ProductFeasibilityResponse {
 
     String id;
 
-    // the feasibility part
-    public enum FEASIBILITY {NONE, PARTIAL, GOOD};
     // whether the request is feasible
     FEASIBILITY feasible;
     // comment on feasibility
     String message;
 
-    // the coverage part
-    List<Sensor> sensors;
-    // coverage geometries
+    // coverage information, ie the products that can be delivered
     List<CoverageFeature> coverages;
-    // the coverage dynamics
-    List<TimeValue> coverageTime;
-    // average coverage
-    double bestCoverageValue;
 
-    // TODO - add optional footprints?
-
-    // the revisit part
-    Integer bestRevisitRate;
-    boolean siteMonitoringAvailable;
-
+    // the information and stats
+    List<DataSource> dataSources;
     // features detected
     List<Feature> features;
-
-    // sample outputs
-    Samples samples;
+    // stats, a generic array for any useful stats
+    List<Statistics> statistics;
 
     public ProductFeasibilityResponse() {
     }
@@ -83,51 +70,19 @@ public class ProductFeasibilityResponse {
         this.feasible = feasible;
     }
 
-    public List<Sensor> getSensors() {
-        return sensors;
+    public List<DataSource> getDataSources() {
+        return dataSources;
     }
 
-    public void setSensors(List<Sensor> sensors) {
-        this.sensors = sensors;
+    public void setDataSources(List<DataSource> dataSources) {
+        this.dataSources = dataSources;
     }
 
-    public List<TimeValue> getCoverageTime() {
-        return coverageTime;
+    public List<Statistics> getStatistics() {
+        return statistics;
     }
 
-    public void setCoverageTime(List<TimeValue> coverageTime) {
-        this.coverageTime = coverageTime;
-    }
-
-    public Integer getBestRevisitRate() {
-        return bestRevisitRate;
-    }
-
-    public void setBestRevisitRate(Integer bestRevisitRate) {
-        this.bestRevisitRate = bestRevisitRate;
-    }
-
-    public boolean isSiteMonitoringAvailable() {
-        return siteMonitoringAvailable;
-    }
-
-    public void setSiteMonitoringAvailable(boolean siteMonitoringAvailable) {
-        this.siteMonitoringAvailable = siteMonitoringAvailable;
-    }
-
-    public void setBestCoverageValue(double bestCoverageValue) {
-        this.bestCoverageValue = bestCoverageValue;
-    }
-
-    public double getBestCoverageValue() {
-        return bestCoverageValue;
-    }
-
-    public Samples getSamples() {
-        return samples;
-    }
-
-    public void setSamples(Samples samples) {
-        this.samples = samples;
+    public void setStatistics(List<Statistics> statistics) {
+        this.statistics = statistics;
     }
 }

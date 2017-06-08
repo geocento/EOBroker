@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialPanel;
 
 /**
  * Created by thomas on 02/06/2017.
@@ -24,13 +26,15 @@ public class MorePanel extends Composite {
     private static MorePanelUiBinder ourUiBinder = GWT.create(MorePanelUiBinder.class);
 
     @UiField
-    HTMLPanel content;
+    MaterialPanel content;
     @UiField
-    HTMLPanel moreLabel;
+    MaterialLabel moreLabel;
     @UiField
     HTMLPanel moreBackground;
 
     private int maxHeight;
+
+    private boolean fullContentDisplayed;
 
     public MorePanel() {
         this(50);
@@ -42,30 +46,37 @@ public class MorePanel extends Composite {
 
         this.maxHeight = maxHeight;
 
+        displayMoreLabel(false);
+        displayMoreContent(true);
+
         moreLabel.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                displayMoreLabel(false);
+                displayMoreContent(!isFullContentDisplayed());
             }
         }, ClickEvent.getType());
     }
 
     private void updateMoreDisplay() {
-        Scheduler.get().scheduleDeferred(new Command() {
-            @Override
-            public void execute() {
-                displayMoreLabel(content.getOffsetHeight() > maxHeight);
-            }
-        });
+        displayMoreLabel(content.getOffsetHeight() > maxHeight);
     }
 
     private void displayMoreLabel(boolean display) {
         moreBackground.setVisible(display);
         moreLabel.setVisible(display);
-        if(display) {
-            content.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
-        } else {
+    }
+
+    public boolean isFullContentDisplayed() {
+        return fullContentDisplayed;
+    }
+
+    private void displayMoreContent(boolean display) {
+        fullContentDisplayed = display;
+        moreLabel.setText(fullContentDisplayed ? "Show less..." : "Show more...");
+        if(fullContentDisplayed) {
             content.getElement().getStyle().clearProperty("maxHeight");
+        } else {
+            content.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
         }
     }
 
@@ -73,7 +84,13 @@ public class MorePanel extends Composite {
     public void setContent(IsWidget w) {
         content.clear();
         content.add(w);
-        updateMoreDisplay();
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                updateMoreDisplay();
+                displayMoreContent(false);
+            }
+        });
     }
 
 }

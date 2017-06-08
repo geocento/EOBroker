@@ -1,24 +1,32 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ArcgisMapJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.GraphicJSNI;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
+import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
+import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.PieOpt;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.Feature;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.CoverageFeature;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.DataSource;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.FEASIBILITY;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.Sensor;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -26,28 +34,30 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.view.client.CellPreviewEvent;
+import com.google.gwt.view.client.ListDataProvider;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
+import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
 import gwt.material.design.client.constants.Color;
-import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -60,6 +70,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     private static ProductFeasibilityViewUiBinder ourUiBinder = GWT.create(ProductFeasibilityViewUiBinder.class);
 
     public static interface Style extends CssResource {
+
         String section();
 
         String subsection();
@@ -95,8 +106,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @UiField
     MaterialCutOut cutOut;
     @UiField
-    Anchor sensors;
-    @UiField
     HTMLPanel chartsArea;
     @UiField
     MaterialLink resultsTab;
@@ -106,17 +115,52 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialButton request;
     @UiField
     HeaderPanel searchPanel;
+    @UiField
+    SimplePanel features;
+    @UiField
+    MaterialSideProfile sideProfile;
+    @UiField
+    MaterialLink feasibilityValue;
+    @UiField
+    MaterialLink coverageFeaturesValue;
+    @UiField
+    MaterialCollapsibleItem feasibilityPanel;
+    @UiField
+    LoadingWidget loadingResults;
+    @UiField
+    HTMLPanel statistics;
+    @UiField
+    MaterialLabel message;
+    @UiField
+    MaterialLabel feasibilityComment;
 
     private Presenter presenter;
 
-    private GraphicJSNI coverageGraphics = null;
+    private DataGrid<CoverageFeature> resultsTable;
+
+    private ListDataProvider<CoverageFeature> coverageFeaturesList;
+
+    private HashSet<CoverageFeature> selectedFeatures = new HashSet<CoverageFeature>();
+
+    private class FeatureRendering {
+        GraphicJSNI geometry;
+        WMSLayerJSNI overlay;
+    }
+
+    private HashMap<CoverageFeature, FeatureRendering> renderedFeatures = new HashMap<CoverageFeature, FeatureRendering>();
+
+    private CoverageFeature outlinedRecord;
+
+    private GraphicJSNI outlinedRecordGraphicJSNI;
 
     public ProductFeasibilityViewImpl(ClientFactoryImpl clientFactory) {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        sideProfile.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
+
         tab.setBackgroundColor(Color.TEAL_LIGHTEN_2);
-        resultsTab.setVisible(false);
+        resultsTab.setEnabled(false);
 
         startDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
@@ -131,6 +175,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             }
         });
 
+        createResultsTable();
+
         searchPanel.getElement().getParentElement().addClassName("z-depth-1");
         searchPanel.getElement().getParentElement().getStyle().setZIndex(10);
 
@@ -140,6 +186,127 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             tab.selectTab("query");
             onResize(null);
         });
+    }
+
+    private void createResultsTable() {
+
+        // create table
+        resultsTable = new DataGrid<CoverageFeature>(20, MyDataGridResources.INSTANCE);
+        resultsTable.setSize("100%", "100%");
+        resultsTable.setPageSize(20);
+
+        resultsTable.setEmptyTableWidget(new Label("No coverage features provided..."));
+
+        // add a pager
+        SimplePager pager = new SimplePager();
+        pager.setDisplay(resultsTable);
+
+        resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<CoverageFeature>() {
+            @Override
+            public void onCellPreview(CellPreviewEvent<CoverageFeature> event) {
+                if (BrowserEvents.MOUSEOVER.equals(event.getNativeEvent().getType())) {
+                    outlineRecord(event.getValue());
+                } else if (BrowserEvents.MOUSEOUT.equals(event.getNativeEvent().getType())) {
+                    outlineRecord(null);
+                }
+            }
+        });
+
+        features.setWidget(resultsTable);
+
+        SubrowTableBuilder tableBuilder = new SubrowTableBuilder<CoverageFeature>(resultsTable) {
+
+            @Override
+            protected String getInformation(CoverageFeature coverageFeature) {
+                return coverageFeature.getDescription() == null ? "No information" : coverageFeature.getDescription();
+            }
+
+        };
+        resultsTable.setTableBuilder(tableBuilder);
+
+        // define columns
+        Column<CoverageFeature, Boolean> checkColumn = new Column<CoverageFeature, Boolean>(new MaterialCheckBoxCell()) {
+            @Override
+            public Boolean getValue(CoverageFeature record) {
+                return selectedFeatures.contains(record);
+            }
+        };
+        checkColumn.setFieldUpdater(new FieldUpdater<CoverageFeature, Boolean>() {
+            @Override
+            public void update(int index, CoverageFeature record, Boolean value) {
+                if (selectedFeatures.contains(record) != value) {
+                    if (value) {
+                        selectedFeatures.add(record);
+                    } else {
+                        selectedFeatures.remove(record);
+                    }
+                    resultsTable.redraw();
+                    refreshMap();
+                }
+            }
+        });
+        TextColumn<CoverageFeature> titleColumn = new TextColumn<CoverageFeature>() {
+            @Override
+            public String getValue(CoverageFeature object) {
+                return object == null || object.getName() == null ? "Unknown" : object.getName();
+            }
+        };
+        resultsTable.addColumn(checkColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
+        resultsTable.setColumnWidth(checkColumn, "30px");
+        //resultsTable.addColumn(geometryColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
+        resultsTable.addColumn(titleColumn, "title");
+        resultsTable.setColumnWidth(titleColumn, "100px");
+        tableBuilder.addDeployableColumn(StyleResources.INSTANCE.info(), StyleResources.INSTANCE.info());
+
+        coverageFeaturesList = new ListDataProvider<CoverageFeature>();
+        coverageFeaturesList.addDataDisplay(resultsTable);
+
+    }
+
+    private void refreshMap() {
+        ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
+        MapJSNI map = mapContainer.map;
+        // refresh products display on map
+        for(CoverageFeature coverageFeature : resultsTable.getVisibleItems()) {
+            // skip if no geometry
+            if(coverageFeature.getGeometryWKT() == null) continue;
+            boolean toRender = selectedFeatures.contains(coverageFeature);
+            boolean rendered = renderedFeatures.containsKey(coverageFeature);
+            if(toRender && !rendered) {
+                FeatureRendering featureRendering = new FeatureRendering();
+                String geometryWKT = coverageFeature.getGeometryWKT();
+                GeometryJSNI geometryJSNI = arcgisMap.createGeometry(geometryWKT);
+                featureRendering.geometry = map.getGraphics().addGraphic(geometryJSNI,
+                        arcgisMap.createFillSymbol("#00ffff", 2, "rgba(0,0,0,0.0)"));
+                renderedFeatures.put(coverageFeature, featureRendering);
+            } else if(!toRender && rendered) {
+                FeatureRendering featureRendering = renderedFeatures.get(coverageFeature);
+                if(featureRendering.geometry != null) {
+                    map.getGraphics().remove(featureRendering.geometry);
+                }
+                if(featureRendering.overlay != null) {
+                    map.removeWMSLayer(featureRendering.overlay);
+                }
+                renderedFeatures.remove(coverageFeature);
+            }
+        }
+        // remove previous outline record
+        if(outlinedRecordGraphicJSNI != null) {
+            map.getGraphics().remove(outlinedRecordGraphicJSNI);
+        }
+        // add outlined record on top
+        if(outlinedRecord != null) {
+            if(outlinedRecord.getGeometryWKT() != null) {
+                GeometryJSNI geometryJSNI = arcgisMap.createGeometry(outlinedRecord.getGeometryWKT());
+                outlinedRecordGraphicJSNI = map.getGraphics().addGraphic(geometryJSNI,
+                        arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
+            }
+        }
+    }
+
+    private void outlineRecord(CoverageFeature coverageFeature) {
+        outlinedRecord = coverageFeature;
+        refreshMap();
     }
 
     @Override
@@ -164,12 +331,20 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void displayLoadingResults(String message) {
+        resultsTab.setEnabled(true);
+        tab.selectTab("results");
+        this.message.setVisible(false);
+        loadingResults.setVisible(true);
+        loadingResults.setText(message);
+        results.setVisible(false);
         onResize(null);
     }
 
     @Override
     public void hideLoadingResults() {
-        tab.selectTab("results");
+        this.message.setVisible(false);
+        loadingResults.setVisible(false);
+        results.setVisible(true);
         onResize(null);
     }
 
@@ -209,6 +384,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             });
             serviceDropdown.add(materialLink);
         }
+        // TODO - add somewhere else
+        onResize(null);
     }
 
     @Override
@@ -256,11 +433,39 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void displayResultsError(String message) {
-        results.add(new MaterialLabel(message));
+        results.setVisible(false);
+        this.message.setVisible(true);
+        this.message.setText(message);
     }
 
     @Override
     public void displayResponse(final ProductFeasibilityResponse response) {
+        Color color = Color.RED;
+        String text = "Unknown";
+        if (response.getFeasible() == FEASIBILITY.NONE) {
+            text = "NOT FEASIBLE";
+            color = Color.RED;
+        } else if (response.getFeasible() == FEASIBILITY.PARTIAL) {
+            text = "PARTIAL";
+            color = Color.ORANGE;
+        } else if (response.getFeasible() == FEASIBILITY.GOOD) {
+            text = "LIKELY";
+            color = Color.AMBER;
+        }
+        feasibilityValue.setText(text);
+        feasibilityValue.setTextColor(color);
+        feasibilityComment.setText(response.getMessage());
+
+        // set the coverage features values
+        coverageFeaturesList.setList(response.getCoverages() == null ? new ArrayList<CoverageFeature>() : response.getCoverages());
+        coverageFeaturesValue.setText(response.getCoverages() == null ? "" : response.getCoverages().size() + "");
+        refreshMap();
+
+        feasibilityPanel.expand();
+
+        resultsTab.setEnabled(true);
+
+/*
         resultsTab.setVisible(true);
         results.clear();
         // add main collapsible panel
@@ -340,7 +545,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             if(coverageGraphics != null) {
                 map.getGraphics().remove(coverageGraphics);
             }
-            coverageGraphics = map.getGraphics().addGraphic(arcgisMap.createGeometry(response.getCoverages().get(0).getWktValue()),
+            coverageGraphics = map.getGraphics().addGraphic(arcgisMap.createGeometry(response.getCoverages().get(0).getGeometryWKT()),
                     arcgisMap.createFillSymbol("#ffff00", 2, "rgba(0,255,0,0.5)"));
         }
         {
@@ -419,6 +624,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             MaterialCollapsibleBody materialCollapsibleBody = new MaterialCollapsibleBody(valuesPanel);
             materialCollapsibleItem.add(materialCollapsibleBody);
         }
+*/
     }
 
     private FeasibilityHeader addFeasibilityHeader(MaterialCollapsibleItem materialCollapsibleItem, String text, IconType iconType) {
@@ -431,7 +637,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         return feasibilityHeader;
     }
 
-    private void displaySensors(Widget target, final List<Sensor> sensors) {
+    private void displaySensors(Widget target, final List<DataSource> dataSources) {
         cutOut.setTarget(target);
         chartsArea.clear();
         MaterialRow materialRow = new MaterialRow();
@@ -457,14 +663,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                 DataTable dataTable = DataTable.create();
                 dataTable.addColumn(ColumnType.STRING, "Sensor type");
                 dataTable.addColumn(ColumnType.NUMBER, "Number of sensors");
-                HashMap<Sensor.IMAGETYPE, Integer> sensorType = new HashMap<Sensor.IMAGETYPE, Integer>();
-                for(Sensor sensor : sensors) {
-                    Sensor.IMAGETYPE imageType = sensor.getImagetype();
+                HashMap<DataSource.IMAGETYPE, Integer> sensorType = new HashMap<DataSource.IMAGETYPE, Integer>();
+                for(DataSource dataSource : dataSources) {
+                    DataSource.IMAGETYPE imageType = dataSource.getImagetype();
                     sensorType.put(imageType, sensorType.get(imageType) == null ? new Integer(1) : (sensorType.get(imageType) + 1));
                 }
                 dataTable.addRows(sensorType.size());
                 int index = 0;
-                for(Sensor.IMAGETYPE imageType : sensorType.keySet()) {
+                for(DataSource.IMAGETYPE imageType : sensorType.keySet()) {
                     dataTable.setValue(index, 0, imageType.toString());
                     dataTable.setValue(index, 1, sensorType.get(imageType));
                 }
@@ -484,7 +690,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void clearResults() {
-        results.clear();
+
     }
 
     @Override
@@ -512,6 +718,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         if(mapContainer.map != null) {
             mapContainer.map.resize();
         }
+        searchPanel.onResize();
     }
 
 }

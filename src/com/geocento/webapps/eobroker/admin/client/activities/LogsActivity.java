@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.admin.client.ClientFactory;
 import com.geocento.webapps.eobroker.admin.client.places.LogsPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.LogsView;
+import com.geocento.webapps.eobroker.admin.shared.dtos.LogsDTO;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -50,7 +51,7 @@ public class LogsActivity extends TemplateActivity implements LogsView.Presenter
     private void loadLogs() {
         try {
             displayLoading("Loading logs...");
-            REST.withCallback(new MethodCallback<String>() {
+            REST.withCallback(new MethodCallback<LogsDTO>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideLoading();
@@ -58,9 +59,9 @@ public class LogsActivity extends TemplateActivity implements LogsView.Presenter
                 }
 
                 @Override
-                public void onSuccess(Method method, String response) {
+                public void onSuccess(Method method, LogsDTO response) {
                     hideLoading();
-                    logsView.setLogs(response);
+                    logsView.setLogs(response.getLogValue());
                 }
             }).call(ServicesUtil.assetsService).getLogs();
         } catch (RequestException e) {

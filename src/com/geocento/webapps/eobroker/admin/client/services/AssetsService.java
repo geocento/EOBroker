@@ -169,5 +169,6 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/logs/")
     @Consumes("application/json")
-    String getLogs() throws RequestException;
+    @Produces("application/json")
+    LogsDTO getLogs() throws RequestException;
 }

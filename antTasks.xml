@@ -11,6 +11,7 @@
     </target>
 
     <target name="prepare">
+        <copy file="${prodfilesdir}/log4j.properties" todir="${artifactsdir}/WEB-INF/classes" overwrite="true"/>
         <delete>
             <fileset dir="${artifactsdir}/WEB-INF/lib" includes="**/junit*.jar"/>
         </delete>
