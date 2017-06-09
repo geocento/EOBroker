@@ -754,7 +754,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         addFilter(areaOfInterest, "s12 m12 l6");
         MaterialPanel materialPanel = new MaterialPanel();
         addFilter(materialPanel, "s12 m12 l6");
-        materialPanel.add(timeFrame);
+        //materialPanel.add(timeFrame);
         materialPanel.add(productFilter);
         materialPanel.add(companyFilter);
     }

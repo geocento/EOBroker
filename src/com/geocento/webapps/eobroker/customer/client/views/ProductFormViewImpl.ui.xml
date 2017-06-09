@@ -12,6 +12,7 @@
         }
 
         .buttonsPanel {
+            position: relative;
             padding: 20px 0px;
         }
 
@@ -61,6 +62,19 @@
             cursor: pointer;
         }
 
+        .colorPanel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .comment {
+            position: relative;
+            padding: 10px;
+            font-style: italic;
+        }
+
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.formPanel}">
         <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE" ui:field="navigation">
@@ -80,44 +94,51 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
         </design:MaterialRow>
-        <design:MaterialTitle marginBottom="20" title="Request for quotation" addStyleNames="{style.information}"></design:MaterialTitle>
-<!--
-        <design:MaterialRow>
-            <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
-                <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12 m8 l8">
-                <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="name"></design:MaterialLabel>
-                <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags">
-                    <design:MaterialChip textColor="WHITE" backgroundColor="GREY" text="Information" letter="i" letterColor="WHITE" letterBackgroundColor="RED" ui:field="information"></design:MaterialChip>
+        <design:MaterialPanel layoutPosition="RELATIVE">
+            <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
+            <design:MaterialPanel padding="20">
+                <design:MaterialLabel marginTop="20" fontSize="1.4em">Request for quotation</design:MaterialLabel>
+                <!--
+                        <design:MaterialRow>
+                            <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                                <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
+                            </design:MaterialColumn>
+                            <design:MaterialColumn grid="s12 m8 l8">
+                                <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="name"></design:MaterialLabel>
+                                <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                                <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags">
+                                    <design:MaterialChip textColor="WHITE" backgroundColor="GREY" text="Information" letter="i" letterColor="WHITE" letterBackgroundColor="RED" ui:field="information"></design:MaterialChip>
+                                </g:HTMLPanel>
+                            </design:MaterialColumn>
+                        </design:MaterialRow>
+                -->
+                <g:HTMLPanel>
+                    <design:MaterialLabel text="Please fill in the form" marginTop="20" marginBottom="20" fontSize="1.2em"/>
+                    <design:MaterialRow>
+                        <design:MaterialColumn grid="s12 m12 l6">
+                            <g:HTMLPanel addStyleNames="{style.container}" ui:field="formContainer"></g:HTMLPanel>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn grid="s12 m12 l6">
+                            <design:MaterialLabel text="Draw or upload AoI" addStyleNames="{style.section}"></design:MaterialLabel>
+                            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                                <maps:MapContainer width="100%" height="300px" ui:field="mapContainer">
+                                </maps:MapContainer>
+                            </g:HTMLPanel>
+                        </design:MaterialColumn>
+                    </design:MaterialRow>
                 </g:HTMLPanel>
-            </design:MaterialColumn>
-        </design:MaterialRow>
--->
-        <g:HTMLPanel>
-            <design:MaterialLabel text="Please fill in the form" marginTop="20" marginBottom="20" fontSize="1.4em"/>
-            <design:MaterialRow>
-                <design:MaterialColumn grid="s12 m12 l6">
-                    <g:HTMLPanel addStyleNames="{style.container}" ui:field="formContainer"></g:HTMLPanel>
-                </design:MaterialColumn>
-                <design:MaterialColumn grid="s12 m12 l6">
-                    <design:MaterialLabel text="Draw or upload AoI" addStyleNames="{style.section}"></design:MaterialLabel>
-                    <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                        <maps:MapContainer width="100%" height="300px" ui:field="mapContainer">
-                        </maps:MapContainer>
+                <g:HTMLPanel ui:field="suppliers">
+                    <design:MaterialLabel text="Select suppliers" marginTop="20" marginBottom="20" fontSize="1.4em"/>
+                    <design:MaterialLabel text="Comment" marginTop="20" marginBottom="20" fontSize="1em" ui:field="comment"/>
+                    <g:HTMLPanel addStyleNames="{style.container}" ui:field="productServices">
                     </g:HTMLPanel>
-                </design:MaterialColumn>
-            </design:MaterialRow>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="suppliers">
-            <design:MaterialLabel text="Select suppliers" marginTop="20" marginBottom="20" fontSize="1.4em"/>
-            <design:MaterialLabel text="Comment" marginTop="20" marginBottom="20" fontSize="1em" ui:field="comment"/>
-            <g:HTMLPanel addStyleNames="{style.container}" ui:field="productServices">
-            </g:HTMLPanel>
-        </g:HTMLPanel>
-        <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
-            <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
-        </g:HTMLPanel>
+                </g:HTMLPanel>
+                <g:HTMLPanel addStyleNames="{style.comment}" ui:field="genericComment">
+                </g:HTMLPanel>
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialPanel>
+        </design:MaterialPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

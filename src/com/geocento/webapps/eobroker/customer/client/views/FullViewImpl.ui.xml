@@ -22,7 +22,7 @@
 
         .sectionLabel {
             padding: 10px;
-            background: linear-gradient(to right, #c1c1c1, rgba(0,0,0,0));
+            background: linear-gradient(to right, #809dab, rgba(0,0,0,0));
             text-transform: capitalize;
         }
         .sectionLabel span {

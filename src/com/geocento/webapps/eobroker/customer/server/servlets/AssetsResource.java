@@ -289,6 +289,7 @@ public class AssetsResource implements AssetsService {
                     ProductServiceFeasibilityDTO productServiceFeasibilityDTO = new ProductServiceFeasibilityDTO();
                     productServiceFeasibilityDTO.setId(productService.getId());
                     productServiceFeasibilityDTO.setName(productService.getName());
+                    productServiceFeasibilityDTO.setImageURL(productService.getImageUrl());
                     productServiceFeasibilityDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
                     productServiceFeasibilityDTO.setApiURL(productService.getApiUrl());
                     return productServiceFeasibilityDTO;

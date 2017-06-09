@@ -44,7 +44,7 @@ public class ExpandPanel extends Composite {
     }
 
     private void updateDisplay() {
-        label.setIconType(isOpen() ? IconType.ARROW_DOWNWARD : IconType.ARROW_FORWARD);
+        label.setIconType(isOpen() ? IconType.KEYBOARD_ARROW_DOWN : IconType.KEYBOARD_ARROW_RIGHT);
     }
 
     private boolean isOpen() {

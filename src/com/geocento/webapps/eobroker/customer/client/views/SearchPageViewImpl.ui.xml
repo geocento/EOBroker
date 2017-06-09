@@ -142,9 +142,17 @@
             margin-bottom: 20px;
             background: white;
         }
+
         .searchBox, .searchBox i {
             height: 54px !important;
             line-height: 54px !important;
+        }
+
+        .filterByTimeFrame {
+            float: left;
+            height: 100%;
+            line-height: 100%;
+            margin-top: 25px;
         }
 
     </ui:style>
@@ -169,8 +177,11 @@
                         <widgets:CategorySearchBox category="companies" placeholder="Type in name of company" addStyleNames="{style.searchBox}" ui:field="companyFilter"></widgets:CategorySearchBox>
                         <widgets:CategorySearchBox category="products" placeholder="Type in name of product category" addStyleNames="{style.searchBox}" ui:field="productFilter"></widgets:CategorySearchBox>
                         <g:HTMLPanel ui:field="timeFrame">
+<!--
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
-                            <design:MaterialRow>
+-->
+                            <design:MaterialCheckBox addStyleNames="{style.optionTitle}, {style.filterByTimeFrame}" ui:field="filterByTimeFrame"></design:MaterialCheckBox>
+                            <design:MaterialRow marginLeft="40">
                                 <design:MaterialColumn grid="s6 m6 l6">
                                     <design:MaterialDatePicker placeholder="Start date" dateSelectionType="YEAR_MONTH_DAY" ui:field="start"></design:MaterialDatePicker>
                                 </design:MaterialColumn>

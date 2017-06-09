@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
@@ -9,9 +10,11 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFormElement;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
@@ -19,6 +22,7 @@ import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -27,6 +31,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.Color;
@@ -78,6 +83,10 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     MaterialPanel actions;
     @UiField
     HTMLPanel suppliers;
+    @UiField
+    MaterialPanel colorPanel;
+    @UiField
+    HTMLPanel genericComment;
 
     private Presenter presenter;
 
@@ -140,10 +149,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         image.setImageUrl(productFormDTO.getImageUrl());
         title.setText(productFormDTO.getName());
         description.setText(productFormDTO.getDescription());
-        clearForm();
-        for (FormElement formElement : productFormDTO.getFormFields()) {
-            addFormElement(formElement);
-        }
+        setFormElements(productFormDTO.getFormFields());
         // add choice of suppliers
         suppliers.setVisible(true);
         clearSuppliers();
@@ -151,11 +157,15 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
             MaterialCheckBox materialCheckBox =
                     new MaterialCheckBox("<span style='display: inline;'><b>" + productServiceDTO.getName() + "</b> " +
                             "by <img style='max-height: 24px; vertical-align: middle;' src='" + productServiceDTO.getCompanyLogo() + "'/> <b>" + productServiceDTO.getCompanyName() + "</b></span>", true);
+            materialCheckBox.getElement().getStyle().setMarginBottom(10, com.google.gwt.dom.client.Style.Unit.PX);
             materialCheckBox.setObject(productServiceDTO);
             materialCheckBox.setValue(true);
             productServices.add(materialCheckBox);
         }
-        setComment(productFormDTO.getProductServices().size() + " services available for this product");
+        setComment(productFormDTO.getProductServices().size() + " services available for this product category");
+        // add generic comment
+        genericComment.clear();
+        genericComment.add(new MaterialLabel("Click on the submit button to send your request to all selected suppliers."));
         // add actions
         actions.clear();
         MaterialAnchorButton information = new MaterialAnchorButton("Information");
@@ -173,18 +183,24 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     public void setProductService(ProductServiceFormDTO productServiceFormDTO) {
         navigation.setVisible(true);
         navigation.clear();
+        navigation.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
+        colorPanel.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
         addBreadcrumb(productServiceFormDTO.getCompanyDTO());
         addBreadcrumb(productServiceFormDTO.getProduct());
         image.setImageUrl(productServiceFormDTO.getServiceImage());
         title.setText(productServiceFormDTO.getName());
         description.setText(productServiceFormDTO.getDescription());
-        clearForm();
-        for (FormElement formElement : productServiceFormDTO.getFormFields()) {
-            addFormElement(formElement);
-        }
+        setFormElements(productServiceFormDTO.getFormFields());
         // add choice of suppliers
         suppliers.setVisible(false);
         clearSuppliers();
+        // add generic comment
+        genericComment.clear();
+        genericComment.add(new HTML("Click on the submit button to send your request to the supplier. " +
+                "You can also send your request to <a href='#" + PlaceHistoryHelper.convertPlace(
+                new ProductFormPlace(Utils.generateTokens(ProductFormPlace.TOKENS.id.toString(), productServiceFormDTO.getProduct().getId() + "")))
+                + "'>multiple suppliers</a> at the same time."
+        ));
         // add actions
         actions.clear();
         MaterialAnchorButton information = new MaterialAnchorButton("Information");
@@ -196,6 +212,18 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
                 Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceFormDTO.getId())), "_blank", null);
             }
         });
+    }
+
+    private void setFormElements(List<FormElement> formFields) {
+        clearForm();
+        for (FormElement formElement : formFields) {
+            addFormElement(formElement);
+        }
+        // add text for comment
+        TextFormElement additionalInformation = new TextFormElement();
+        additionalInformation.setName("Additional information");
+        additionalInformation.setDescription("Please add any additional information you deem important");
+        addFormElement(additionalInformation);
     }
 
     @Override

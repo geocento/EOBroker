@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
@@ -12,6 +13,9 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
@@ -133,6 +137,10 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialLabel message;
     @UiField
     MaterialLabel feasibilityComment;
+    @UiField
+    MaterialChip supplier;
+    @UiField
+    MaterialImage serviceImage;
 
     private Presenter presenter;
 
@@ -160,7 +168,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         sideProfile.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
 
         tab.setBackgroundColor(Color.TEAL_LIGHTEN_2);
-        resultsTab.setEnabled(false);
+        //resultsTab.setEnabled(false);
 
         startDate.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
@@ -223,6 +231,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         };
         resultsTable.setTableBuilder(tableBuilder);
+        displayResultMessage("No query performed, fill in your query in the query tab and press the check feasibility button");
 
         // define columns
         Column<CoverageFeature, Boolean> checkColumn = new Column<CoverageFeature, Boolean>(new MaterialCheckBoxCell()) {
@@ -331,21 +340,30 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void displayLoadingResults(String message) {
-        resultsTab.setEnabled(true);
         tab.selectTab("results");
-        this.message.setVisible(false);
+        hideResults();
         loadingResults.setVisible(true);
         loadingResults.setText(message);
-        results.setVisible(false);
         onResize(null);
     }
 
     @Override
     public void hideLoadingResults() {
-        this.message.setVisible(false);
-        loadingResults.setVisible(false);
+        hideResults();
         results.setVisible(true);
         onResize(null);
+    }
+
+    private void displayResultMessage(String message) {
+        hideResults();
+        this.message.setVisible(true);
+        this.message.setText(message);
+    }
+
+    private void hideResults() {
+        this.message.setVisible(false);
+        loadingResults.setVisible(false);
+        results.setVisible(false);
     }
 
     @Override
@@ -370,6 +388,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void setServices(List<ProductServiceFeasibilityDTO> productServices) {
+/*
         serviceDropdown.clear();
         for(final ProductServiceFeasibilityDTO productServiceFeasibilityDTO : productServices) {
             MaterialLink materialLink = new MaterialLink(productServiceFeasibilityDTO.getName());
@@ -385,7 +404,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             serviceDropdown.add(materialLink);
         }
         // TODO - add somewhere else
+        tab.selectTab("query");
         onResize(null);
+*/
     }
 
     @Override
@@ -403,6 +424,14 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         servicesLink.setText(productServiceFeasibilityDTO.getName());
+        serviceImage.setUrl(productServiceFeasibilityDTO.getImageURL());
+        supplier.setText(productServiceFeasibilityDTO.getCompanyDTO().getName());
+        supplier.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(
+                new FullViewPlace(
+                        Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(),
+                                productServiceFeasibilityDTO.getCompanyDTO().getId() + ""))));
+        tab.selectTab("query");
+        onResize(null);
     }
 
     @Override

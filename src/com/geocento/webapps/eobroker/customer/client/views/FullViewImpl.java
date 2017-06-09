@@ -143,14 +143,14 @@ public class FullViewImpl extends Composite implements FullView {
         addSection("Description", new HTML(productDescriptionDTO.getDescription()));
         // create tab panel for offering
         MaterialPanel offeringPanel = new MaterialPanel();
-        setMatchingServices(offeringPanel, "Bespoke services available for this product category", productDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
-                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
-        addSection("Bespoke services available", offeringPanel);
-
-        offeringPanel = new MaterialPanel();
         setMatchingDatasets(offeringPanel, "Off the shelf products for this product category", productDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
                 SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString()))));
         addSection("Off the shelf products available", offeringPanel);
+
+        offeringPanel = new MaterialPanel();
+        setMatchingServices(offeringPanel, "Bespoke services available for this product category", productDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
+        addSection("Bespoke services available", offeringPanel);
 
         offeringPanel = new MaterialPanel();
         setMatchingSoftwares(offeringPanel, "Software solutions supporting the generation of this product category", productDescriptionDTO.getSoftwares(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
@@ -657,8 +657,8 @@ public class FullViewImpl extends Composite implements FullView {
                     "Sample data from this off the shelf product has been provided. Click on the icon to access the data.",
                     materialRow);
         } else {
-            addSection("Methods to access the data",
-                    "No access method has been provided",
+            addSection("Sample data",
+                    "No sample data has been provided",
                     createSubsection(""));
         }
         // add terms and conditions tab panel
@@ -959,14 +959,14 @@ public class FullViewImpl extends Composite implements FullView {
 
         // create tab panel for offers
         MaterialPanel offeringPanel = new MaterialPanel();
-        setMatchingServices(offeringPanel, "Bespoke services provided by this company", companyDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
-                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
-        addSection("Bespoke services", offeringPanel);
-
-        offeringPanel = new MaterialPanel();
         setMatchingDatasets(offeringPanel, "Off the shelf products provided by this company", companyDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
                 SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString()))));
         addSection("Off the shelf data products", offeringPanel);
+
+        offeringPanel = new MaterialPanel();
+        setMatchingServices(offeringPanel, "Bespoke services provided by this company", companyDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
+        addSection("Bespoke services", offeringPanel);
 
         offeringPanel = new MaterialPanel();
         setMatchingSoftwares(offeringPanel, "Software solutions provided by this company", companyDescriptionDTO.getSoftware(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
@@ -1255,6 +1255,10 @@ public class FullViewImpl extends Composite implements FullView {
             label.addStyleName(style.offeringSubSection());
             productRow.add(label);
         }
+
+        container.add(createComment("If off the shelf products are not available or not suitable for your request, you may ask for a bespoke service. " +
+                "When requesting a bespoke service, you will be asked to fill in a form with your requirements. " +
+                "The service providers you selected will provide you with a proposal with their best offer."));
     }
 
     public void setMatchingDatasets(MaterialPanel container, String comment, List<ProductDatasetDTO> productDatasets, String moreUrl) {
@@ -1276,6 +1280,9 @@ public class FullViewImpl extends Composite implements FullView {
             label.addStyleName(style.offeringSubSection());
             productRow.add(label);
         }
+
+        container.add(createComment("Off the shelf products are products which have already been generated and can be downloaded or purchased. " +
+                "If you would rather get a proposal from suppliers, please use a bespoke service instead."));
     }
 
     public void setMatchingSoftwares(MaterialPanel container, String comment, List<SoftwareDTO> softwares, String moreUrl) {

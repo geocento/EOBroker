@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.SearchResponse;
 import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
@@ -10,6 +11,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
@@ -38,6 +40,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.HasData;
+import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
@@ -109,6 +112,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     MaterialPanel resultsContainer;
     @UiField
     SimplePanel pagerPanel;
+    @UiField
+    MaterialSideProfile sideProfile;
 
     private Presenter presenter;
 
@@ -160,17 +165,14 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         searchPanel.getElement().getParentElement().addClassName("z-depth-1");
         searchPanel.getElement().getParentElement().getStyle().setZIndex(10);
 
+        sideProfile.setBackgroundColor(CategoryUtils.getColor(Category.productdatasets));
+
         mapContainer.setPresenter(aoi -> presenter.aoiChanged(aoi));
 
         additionalFieldsPanel.setOpen(false);
         additionalFieldsPanel.addOpenHandler(event -> updateAdditionalFieldsMessage());
         additionalFieldsPanel.addCloseHandler(event -> updateAdditionalFieldsMessage());
         updateAdditionalFieldsMessage();
-
-        Scheduler.get().scheduleDeferred(() -> {
-            tab.selectTab("query");
-            onResize(null);
-        });
 
         Window.addResizeHandler(this);
     }
@@ -549,6 +551,10 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         name.setText(productDatasetCatalogueDTO.getName());
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
+        Scheduler.get().scheduleDeferred(() -> {
+            tab.selectTab("query");
+            onResize(null);
+        });
     }
 
     @Override

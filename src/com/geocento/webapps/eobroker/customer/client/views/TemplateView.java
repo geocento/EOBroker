@@ -396,7 +396,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     }
 
     public void displaySignedIn(boolean signedIn) {
-        orders.setVisible(signedIn);
+        //orders.setVisible(signedIn);
         notifications.setVisible(signedIn);
         signIn.setVisible(!signedIn);
         userWidget.setVisible(signedIn);

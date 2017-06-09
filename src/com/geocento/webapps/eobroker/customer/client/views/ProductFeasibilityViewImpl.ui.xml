@@ -77,6 +77,10 @@
             background: white;
         }
 
+        .name {
+
+        }
+
         .content {
             position: fixed;
             top: 64px;
@@ -89,6 +93,10 @@
             margin: 10px;
         }
 
+        .supplier {
+            cursor: pointer;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <m:MaterialPanel addStyleNames="{style.content}">
@@ -97,7 +105,16 @@
                 <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
                     <m:MaterialPanel>
                         <sideprofile:MaterialSideProfile ui:field="sideProfile">
+                            <m:MaterialImage float="LEFT" margin="0" ui:field="serviceImage"></m:MaterialImage>
+                            <m:MaterialPanel marginLeft="70" marginTop="0">
+                                <m:MaterialLink text="" fontSize="1.2em" textColor="WHITE" padding="5" truncate="true" addStyleNames="{style.name}" ui:field="servicesLink"></m:MaterialLink>
+                                <m:MaterialPanel marginTop="5">
+                                    <m:MaterialChip fontSize="0.8em" addStyleNames="{style.supplier}" ui:field="supplier"></m:MaterialChip>
+                                </m:MaterialPanel>
+                            </m:MaterialPanel>
+<!--
                             <m:MaterialLink text="Services" activates="service" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="servicesLink"></m:MaterialLink>
+-->
                             <m:MaterialDropDown activator="service" ui:field="serviceDropdown">
                             </m:MaterialDropDown>
                         </sideprofile:MaterialSideProfile>

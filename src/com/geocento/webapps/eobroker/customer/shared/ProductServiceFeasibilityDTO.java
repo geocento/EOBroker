@@ -9,6 +9,7 @@ public class ProductServiceFeasibilityDTO {
 
     Long id;
     String name;
+    String imageURL;
     String apiURL;
     CompanyDTO companyDTO;
 
@@ -29,6 +30,14 @@ public class ProductServiceFeasibilityDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public CompanyDTO getCompanyDTO() {
