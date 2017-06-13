@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
+import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
 import com.geocento.webapps.eobroker.common.shared.entities.Message;
@@ -11,6 +12,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.supplier.client.services.OrdersService;
 import com.geocento.webapps.eobroker.supplier.server.util.MessageHelper;
@@ -441,7 +443,14 @@ public class OrdersResource implements OrdersService {
             em.persist(message);
             conversation.getMessages().add(message);
             try {
+                // notify
+                // TODO - maybe do not send notification message AND message but generate notification on the client side?
                 NotificationHelper.notifyCustomer(em, conversation.getCustomer(), Notification.TYPE.MESSAGE, "New reply from supplier " + user.getCompany().getName(), conversation.getId());
+                // send message
+                WebSocketMessage webSocketMessage = new WebSocketMessage();
+                webSocketMessage.setType(WebSocketMessage.TYPE.message);
+                webSocketMessage.setMessageDTO(com.geocento.webapps.eobroker.customer.shared.utils.MessageHelper.convertToDTO(message));
+                NotificationSocket.sendMessage(conversation.getCustomer().getUsername(), webSocketMessage);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }

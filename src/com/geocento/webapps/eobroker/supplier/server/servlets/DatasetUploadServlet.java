@@ -1,13 +1,16 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessFile;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
-import com.google.gson.Gson;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -113,11 +116,12 @@ public class DatasetUploadServlet extends HttpServlet {
             try {
                 final User user = em.find(User.class, logUserName);
                 System.out.println("Processing resource");
-                SampleUploadDTO sampleUploadDTO = processAndStoreResource(out, user, resourceId, saveFile);
+                DatasetAccess dataAccess = processAndStoreResource(out, user, resourceId, saveFile);
                 response.setStatus(200);
                 response.setContentType("text/html");
                 PrintWriter writer = response.getWriter();
-                writer.print("<html><body><value>" + new Gson().toJson(sampleUploadDTO) + "</value></body></html>");
+                ObjectMapper objectMapper = new ObjectMapper();
+                writer.print("<html><body><value>" + objectMapper.writeValueAsString(dataAccess) + "</value></body></html>");
                 writer.flush();
                 writer.close();
             } finally {
@@ -141,7 +145,7 @@ public class DatasetUploadServlet extends HttpServlet {
         writer.close();
     }
 
-    protected SampleUploadDTO processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName) throws Exception {
+    protected DatasetAccess processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName) throws Exception {
         try {
             // save file to disk first
             Long companyId = user.getCompany().getId();
@@ -166,35 +170,50 @@ public class DatasetUploadServlet extends HttpServlet {
             String storeName = resourceName.substring(resourceName.lastIndexOf("/") + 1).substring(0, resourceName.lastIndexOf("."));
             String layerName = null;
             // create response
+            DatasetAccess datasetAccess = null;
             SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
             switch (extension) {
                 case "kml":
                     // TODO - get KML file and convert to shapefile
                     // issue is with the styling which needs to be saved as well
                     break;
-                case "zip":
+                case "zip": {
                     layerName = publishShapefile(workspaceName, storeName, file);
-                    sampleUploadDTO.setLayerName(layerName);
-                    sampleUploadDTO.setServer(ServerUtil.getSettings().getGeoserverOWS());
-                    sampleUploadDTO.setStyleName("geometries");
-                    break;
+                    DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+                    datasetAccessOGC.setUri(layerName);
+                    datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
+                    datasetAccessOGC.setCorsEnabled(true);
+                    datasetAccessOGC.setStyleName("geometry");
+                    datasetAccess = datasetAccessOGC;
+                } break;
                 case "tiff":
-                case "tif":
+                case "tif": {
                     layerName = publishGeoTiff(workspaceName, storeName, file);
-                    sampleUploadDTO.setLayerName(layerName);
-                    sampleUploadDTO.setServer(ServerUtil.getSettings().getGeoserverOWS());
-                    sampleUploadDTO.setStyleName("raster");
-                    break;
+                    DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+                    datasetAccessOGC.setUri(layerName);
+                    datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
+                    datasetAccessOGC.setCorsEnabled(true);
+                    datasetAccessOGC.setStyleName("raster");
+                    // WCS is automatically published
+                    datasetAccessOGC.setWcsServerUrl(ServerUtil.getSettings().getGeoserverOWS());
+                    datasetAccessOGC.setWcsResourceName(layerName);
+                    datasetAccess = datasetAccessOGC;
+                } break;
                 case "pdf":
                 case "csv":
                 case "ppt":
-                case "doc":
-                    sampleUploadDTO.setFileUri(filePath);
-                    break;
+                case "doc": {
+                    DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
+                    datasetAccessFile.setUri(filePath);
+                    // TODO - add file size
+                    //datasetAccessFile.setSize(file.getTotalSpace())
+                    datasetAccess = datasetAccessFile;
+                } break;
                 default:
                     throw new Exception("File format '" + extension + "' not supported");
             }
-            return sampleUploadDTO;
+            datasetAccess.setHostedData(false);
+            return datasetAccess;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

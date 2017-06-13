@@ -23,6 +23,9 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.HeaderGroup;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,8 +35,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.*;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -106,7 +113,9 @@ public class ProxyServlet extends HttpServlet {
 
 			URLConnection con = url.openConnection();
 
-			if (con.getContentType() != null)
+            copyRequestHeaders(request, con);
+
+            if (con.getContentType() != null)
 				response.setContentType(con.getContentType());
 			else
 				response.setContentType("text/xml");
@@ -120,7 +129,7 @@ public class ProxyServlet extends HttpServlet {
 				client_accepts_gzip = (encoding_list.contains("gzip"));
 			}
 			response.setDateHeader("Date", System.currentTimeMillis());
-			
+
 			if (client_accepts_gzip) {
 				response.setHeader("Content-Encoding", "gzip");
 				ByteArrayOutputStream output_to_tmp = new ByteArrayOutputStream();
@@ -141,4 +150,68 @@ public class ProxyServlet extends HttpServlet {
         }
 
     }
+
+    /**
+     * Copy request headers from the servlet client to the proxy request.
+     * This is easily overridden to add your own.
+     */
+    protected void copyRequestHeaders(HttpServletRequest servletRequest, URLConnection proxyRequest) {
+        // Get an Enumeration of all of the header names sent by the client
+        @SuppressWarnings("unchecked")
+        Enumeration<String> enumerationOfHeaderNames = servletRequest.getHeaderNames();
+        while (enumerationOfHeaderNames.hasMoreElements()) {
+            String headerName = enumerationOfHeaderNames.nextElement();
+            copyRequestHeader(servletRequest, proxyRequest, headerName);
+        }
+    }
+
+    /** These are the "hop-by-hop" headers that should not be copied.
+     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
+     * I use an HttpClient HeaderGroup class instead of Set&lt;String&gt; because this
+     * approach does case insensitive lookup faster.
+     */
+    protected static final HeaderGroup hopByHopHeaders;
+    static {
+        hopByHopHeaders = new HeaderGroup();
+        String[] headers = new String[] {
+                "Connection", "Keep-Alive", "Proxy-Authenticate", "Proxy-Authorization",
+                "TE", "Trailers", "Transfer-Encoding", "Upgrade", "Cookie", "Accept-Encoding" };
+        for (String header : headers) {
+            hopByHopHeaders.addHeader(new BasicHeader(header, null));
+        }
+    }
+
+    protected static final HeaderGroup headersToAdd;
+    static {
+        headersToAdd = new HeaderGroup();
+        String[] headers = new String[] {
+                "Host", "User-Agent", "Referer"
+                };
+        for (String header : headers) {
+            headersToAdd.addHeader(new BasicHeader(header, null));
+        }
+    }
+
+    /**
+     * Copy a request header from the servlet client to the proxy request.
+     * This is easily overridden to filter out certain headers if desired.
+     */
+    protected void copyRequestHeader(HttpServletRequest servletRequest, URLConnection proxyRequest,
+                                     String headerName) {
+        //Instead the content-length is effectively set via InputStreamEntity
+        if (headerName.equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH))
+            return;
+        if (hopByHopHeaders.containsHeader(headerName))
+            return;
+        if(!headersToAdd.containsHeader(headerName))
+            return;
+
+        @SuppressWarnings("unchecked")
+        Enumeration<String> headers = servletRequest.getHeaders(headerName);
+        while (headers.hasMoreElements()) {
+            String headerValue = headers.nextElement();
+            proxyRequest.setRequestProperty(headerName, headerValue);
+        }
+    }
+
 }

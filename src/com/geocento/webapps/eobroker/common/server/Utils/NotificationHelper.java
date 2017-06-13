@@ -8,6 +8,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notifi
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -45,6 +47,14 @@ public class NotificationHelper {
         supplierNotification.setMessage(message);
         supplierNotification.setLinkId(linkId);
         em.persist(supplierNotification);
+        try {
+            SupplierWebSocketMessage webSocketMessage = new SupplierWebSocketMessage();
+            webSocketMessage.setType(SupplierWebSocketMessage.TYPE.notification);
+            webSocketMessage.setNotificationDTO(NotificationHelper.createSupplierNotificationDTO(supplierNotification));
+            //NotificationSocket.sendMessage(supplierNotification.getCompany(), webSocketMessage);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public static void notifyAdmin(EntityManager em, AdminNotification.TYPE type, String message, String linkId) {
@@ -62,5 +72,14 @@ public class NotificationHelper {
         notificationDTO.setLinkId(notification.getLinkId());
         notificationDTO.setCreationDate(notification.getCreationDate());
         return notificationDTO;
+    }
+
+    public static SupplierNotificationDTO createSupplierNotificationDTO(SupplierNotification notification) {
+        SupplierNotificationDTO supplierNotificationDTO = new SupplierNotificationDTO();
+        supplierNotificationDTO.setType(notification.getType());
+        supplierNotificationDTO.setMessage(notification.getMessage());
+        supplierNotificationDTO.setLinkId(notification.getLinkId());
+        supplierNotificationDTO.setCreationDate(notification.getCreationDate());
+        return supplierNotificationDTO;
     }
 }

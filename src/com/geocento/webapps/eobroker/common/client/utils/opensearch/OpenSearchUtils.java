@@ -36,19 +36,25 @@ public class OpenSearchUtils {
 
     private static NumberFormat format = NumberFormat.getFormat("#.##");
 
-    public static void getRecords(int start, int startPage, OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
+    String requestURL;
+    boolean isCORS;
+    private OpenSearchDescription openSearchDescription;
+    private Url selectedUrl;
+
+    public OpenSearchUtils(String requestURL, boolean isCORS) {
+        this.requestURL = requestURL;
+        this.isCORS = isCORS;
+    }
+
+    public void getRecords(int start, int count, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
         // find the suitable URL
-        Url url = selectSuitableUrl(openSearchDescription.getUrl());
-        if(url == null) {
-            throw new Exception("No supported formats available in url templates");
-        }
-        String selectedFormat = url.getType();
-        String datasetURL = url.getTemplate();
+        String selectedFormat = selectedUrl.getType();
+        String datasetURL = selectedUrl.getTemplate();
         // build request
         String requestURL;
         // get basic URL
         requestURL = datasetURL.split("\\?")[0];
-        List<Parameter> supportedParameters = url.getParameters();
+        List<Parameter> supportedParameters = selectedUrl.getParameters();
         HashMap<String, String> requestedParameters = new HashMap<String, String>();
         Parameter searchParameter = getSupportedParameterType(supportedParameters, "", "searchTerms");
         if(searchParameter != null) {
@@ -79,12 +85,20 @@ public class OpenSearchUtils {
         if(startIndexParameter == null) {
             throw new Exception("Missing start index parameter in URL");
         }
-        requestedParameters.put(startIndexParameter.getName(), (url.getIndexOffset() + start) + "");
+        requestedParameters.put(startIndexParameter.getName(), (selectedUrl.getIndexOffset() + start) + "");
+
+/*
         Parameter startPageParameter = getSupportedParameterType(supportedParameters, "", "startPage");
         if(startPageParameter == null) {
             throw new Exception("Missing count parameter in URL");
         }
-        requestedParameters.put(startPageParameter.getName(), (url.getPageOffset() + startPage) + "");
+        requestedParameters.put(startPageParameter.getName(), (selectedUrl.getPageOffset() + startPage) + "");
+*/
+        Parameter countParameter = getSupportedParameterType(supportedParameters, "", "count");
+        if(countParameter == null) {
+            throw new Exception("Missing count parameter in URL");
+        }
+        requestedParameters.put(countParameter.getName(), count + "");
 
         List<String> requestedValues = new ArrayList<String>();
         for(String parameterName : requestedParameters.keySet()) {
@@ -105,7 +119,7 @@ public class OpenSearchUtils {
                             // parse response
                             SearchResponse searchResponse = parseSearchResponse(response.getText(), selectedFormat);
                             // do not forget to subtract the offsets
-                            searchResponse.setStart(searchResponse.getStart() - url.getIndexOffset());
+                            searchResponse.setStart(searchResponse.getStart() - selectedUrl.getIndexOffset());
                             callback.onSuccess(searchResponse);
                         } else {
                             throw new Exception("Error querying the requested server: " + response.getStatusText());
@@ -158,7 +172,7 @@ public class OpenSearchUtils {
         });
     }
 
-    public static void getDescription(String requestURL, AsyncCallback<OpenSearchDescription> callback) {
+    public void getDescription(String requestURL, AsyncCallback<OpenSearchDescription> callback) {
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, maybeProxyRequest(requestURL));
         try {
             builder.sendRequest(null, new RequestCallback() {
@@ -172,7 +186,7 @@ public class OpenSearchUtils {
                     try {
                         if (200 <= response.getStatusCode() && response.getStatusCode() < 300) {
                             // parse response
-                            OpenSearchDescription openSearchDescription = new OpenSearchDescription();
+                            openSearchDescription = new OpenSearchDescription();
                             Document document = XMLParser.parse(response.getText());
                             Element element = document.getDocumentElement();
                             openSearchDescription.setShortName(getElementValue(element, "ShortName"));
@@ -188,6 +202,10 @@ public class OpenSearchUtils {
                                 }
                             }
                             openSearchDescription.setUrl(urls);
+                            selectedUrl = selectSuitableUrl(openSearchDescription.getUrl());
+                            if(selectedUrl == null) {
+                                throw new Exception("No supported formats available in url templates");
+                            }
                             callback.onSuccess(openSearchDescription);
                         } else {
                             throw new Exception("Error querying the requested server: " + response.getStatusText());
@@ -270,7 +288,10 @@ public class OpenSearchUtils {
         return parameters;
     }
 
-    private static String maybeProxyRequest(String requestURL) {
+    private String maybeProxyRequest(String requestURL) {
+        if(isCORS) {
+            return requestURL;
+        }
         String hostPageUrl = Window.Location.getHostName();
         boolean sameDomain = requestURL.startsWith(hostPageUrl) || requestURL.contains("//" + hostPageUrl);
         // call the getCapabilities via a proxy if the domain is different
@@ -380,20 +401,9 @@ public class OpenSearchUtils {
             Node whereNode = XMLUtil.getUniqueNode(entryNode, "where");
             boolean gmlStyle = whereNode != null;
             if(gmlStyle) {
-                Node geometry = XMLUtil.getUniqueNode(whereNode, "Polygon");
-                if (geometry != null) {
-                    NodeList posNodes = ((Element) geometry).getElementsByTagName("posList");
-                    record.setGeometryWKT("POLYGON((" + parseGeorssCoordinates(XMLUtil.getNodeValue(posNodes.item(0))) + "))");
-                } else {
-                    geometry = XMLUtil.getUniqueNode(whereNode, "LineString");
-                    if (geometry != null) {
-                        record.setGeometryWKT("LINESTRING(" + parseGeorssCoordinates(XMLUtil.getNodeValue(((Element) geometry).getElementsByTagName("postList").item(0))) + ")");
-                    } else {
-                        geometry = XMLUtil.getUniqueNode(whereNode, "Point");
-                        if (geometry != null) {
-                            record.setGeometryWKT("POINT(" + parseGeorssCoordinates(XMLUtil.getNodeValue(((Element) geometry).getElementsByTagName("pos").item(0))) + ")");
-                        }
-                    }
+                Node geometry = XMLUtil.getFirstNode(whereNode);
+                if(geometry != null) {
+                    record.setGeometryWKT(fromGMLToWKT(geometry));
                 }
             } else {
                 String geometry = XMLUtil.getUniqueNodeValue(entryNode, "polygon");
@@ -416,6 +426,54 @@ public class OpenSearchUtils {
         }
         searchResponse.setRecords(records);
         return searchResponse;
+    }
+
+    private static String fromGMLToWKT(Node geometry) {
+        String nodeName = geometry.getNodeName();
+        if(nodeName.contains(":")) {
+            nodeName = nodeName.substring(nodeName.indexOf(":") + 1);
+        }
+        switch(nodeName) {
+            case "Polygon":
+                return "POLYGON((" + parseGMLCoordinates(geometry) + "))";
+            case "MultiPolygon":
+                List<String> polygons = new ArrayList<String>();
+                NodeList polygonNodes = ((Element) geometry).getElementsByTagName("Polygon");
+                for(int index = 0; index < polygonNodes.getLength(); index++) {
+                    polygons.add("((" + parseGMLCoordinates(polygonNodes.item(index)) + "))");
+                }
+                return "MULTIPOLYGON(" + StringUtils.join(polygons, ",") + ")";
+            case "LineString":
+                return "LINESTRING(" + parseGMLCoordinates(geometry) + ")";
+            case "Point":
+                return "POINT(" + parseGMLCoordinates(geometry) + ")";
+
+        }
+        return null;
+    }
+
+    private static String parseGMLCoordinates(Node geometry) {
+        // coordinates can be in pos, poslist or coordinates
+        NodeList posListNodes = ((Element) geometry).getElementsByTagName("posList");
+        if(posListNodes != null && posListNodes.getLength() > 0) {
+            return parseGeorssCoordinates(XMLUtil.getNodeValue(posListNodes.item(0)));
+        } else {
+            NodeList coordinates = ((Element) geometry).getElementsByTagName("coordinates");
+            if(coordinates != null && coordinates.getLength() > 0) {
+                return parseGeorssCoordinates(XMLUtil.getNodeValue(coordinates.item(0)));
+            } else {
+                NodeList posNodes = ((Element) geometry).getElementsByTagName("coordinates");
+                if(posNodes != null && posNodes.getLength() > 0) {
+                    List<String> wktCoordinates = new ArrayList<String>();
+                    for(int index = 0; index < posNodes.getLength(); index++) {
+                        String[] coordinateValues = XMLUtil.getNodeValue(posNodes.item(index)).split("\\s+");
+                        wktCoordinates.add(coordinateValues[1] + " " + coordinateValues[0]);
+                    }
+                    return StringUtils.join(wktCoordinates, ",");
+                }
+            }
+        }
+        return null;
     }
 
     private static String parseGeorssCoordinates(String coordinates) {
@@ -460,4 +518,7 @@ public class OpenSearchUtils {
         return "<div style='padding: 5px; white-space: nowrap; text-overflow: ellipsis;'><b>" + name + ": </b>" + (value == null ? "NA" : value.toString()) + "</div>";
     }
 
+    public List<Parameter> getUrlParameters() {
+        return selectedUrl.getParameters();
+    }
 }

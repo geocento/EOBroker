@@ -8,19 +8,17 @@ import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.utils.DatasetAccessMapper;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.PerformanceValueWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -43,12 +41,11 @@ import java.util.List;
  */
 public class ProductDatasetViewImpl extends Composite implements ProductDatasetView {
 
-    private Presenter presenter;
-
     interface ProductDatasetViewUiBinder extends UiBinder<Widget, ProductDatasetViewImpl> {
     }
 
     private static ProductDatasetViewUiBinder ourUiBinder = GWT.create(ProductDatasetViewUiBinder.class);
+
     @UiField
     MaterialTextBox name;
     @UiField
@@ -122,6 +119,8 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField
     MaterialListValueBox<DatasetStandard> datasetsStandard;
 
+    private Presenter presenter;
+
     public ProductDatasetViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
@@ -169,6 +168,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 return;
             }
             String response = StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>");
+
+            DatasetAccessMapper datasetAccessMapper = GWT.create(DatasetAccessMapper.class);
+            DatasetAccess datasetAccess = datasetAccessMapper.read(response);
+            addSample(datasetAccess);
+
+/*
             JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
             SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
             sampleUploadDTO.setFileUri(sampleUploadDTOJson.containsKey("fileUri") ? sampleUploadDTOJson.get("fileUri").isString().stringValue() : null);
@@ -192,6 +197,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 datasetAccessOGC.setHostedData(false);
                 addSample(datasetAccessOGC);
             }
+*/
         });
 
         sampleUploader.addDragOverHandler(event -> MaterialAnimator.animate(Transition.RUBBERBAND, sampleUploader, 0));

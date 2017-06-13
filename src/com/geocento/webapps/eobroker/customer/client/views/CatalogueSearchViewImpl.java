@@ -237,7 +237,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
                 final int start = display.getVisibleRange().getStart();
                 int length = display.getVisibleRange().getLength();
                 if(presenter != null) {
-                    presenter.onRecordRangeChanged(start, (int) (start / length));
+                    presenter.onRecordRangeChanged(start, length); //(int) (start / length));
                 }
             }
         };

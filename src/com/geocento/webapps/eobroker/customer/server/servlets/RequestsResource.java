@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
+import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -731,6 +732,18 @@ public class RequestsResource implements RequestsService {
             message.setCreationDate(new Date());
             em.persist(message);
             conversation.getMessages().add(message);
+            try {
+                // notify
+                // TODO - maybe do not send notification message AND message but generate notification on the client side?
+                NotificationHelper.notifySupplier(em, conversation.getCompany(), SupplierNotification.TYPE.MESSAGE, "New reply from user " + user.getUsername(), conversation.getId());
+                // send message
+                WebSocketMessage webSocketMessage = new WebSocketMessage();
+                webSocketMessage.setType(WebSocketMessage.TYPE.message);
+                webSocketMessage.setMessageDTO(com.geocento.webapps.eobroker.customer.shared.utils.MessageHelper.convertToDTO(message));
+                NotificationSocket.sendMessage(conversation.getCustomer().getUsername(), webSocketMessage);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
             em.getTransaction().commit();
             return MessageHelper.convertToDTO(message);
         } catch (Exception e) {

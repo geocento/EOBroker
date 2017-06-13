@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.admin.client.events.RemoveProduct;
 import com.geocento.webapps.eobroker.admin.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.admin.client.places.ProductPlace;
 import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -13,7 +14,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 
@@ -28,7 +28,7 @@ public class ProductWidget extends Composite {
     private static ProductWidgetUiBinder ourUiBinder = GWT.create(ProductWidgetUiBinder.class);
 
     @UiField
-    MaterialImage image;
+    MaterialImageLoading image;
     @UiField
     MaterialLabel title;
     @UiField
@@ -40,7 +40,7 @@ public class ProductWidget extends Composite {
 
     public ProductWidget(final ProductDTO productDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        image.setUrl(productDTO.getImageUrl() == null || productDTO.getImageUrl().length() == 0 ? "./images/noImage.png" : productDTO.getImageUrl());
+        image.setImageUrl(productDTO.getImageUrl());
         title.setText(productDTO.getName());
         description.setText(productDTO.getDescription());
         edit.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductPlace(productDTO.getId())));

@@ -9,16 +9,12 @@ import com.geocento.webapps.eobroker.common.shared.entities.utils.LevenshteinDis
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,6 +85,7 @@ public class ContextListener implements ServletContextListener {
                 em.getTransaction().commit();
                 products.clear();
             }
+/*
             if(products.size() == 0) {
                 em.getTransaction().begin();
                 CSVParser csvParser = new CSVParser(new FileReader(this.getClass().getResource("/products.csv").getFile()), CSVFormat.DEFAULT);
@@ -109,6 +106,7 @@ public class ContextListener implements ServletContextListener {
                 }
                 em.getTransaction().commit();
             }
+*/
             // add companies and some users
             em.getTransaction().begin();
             TypedQuery<Company> companyQuery = em.createQuery("select c from Company c", Company.class);

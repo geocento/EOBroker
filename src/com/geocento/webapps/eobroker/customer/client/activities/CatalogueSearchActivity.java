@@ -45,7 +45,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
     private ProductDatasetCatalogueDTO productDatasetCatalogueDTO;
 
     // the different search points possible
-    private OpenSearchDescription openSearchDescription;
+    private OpenSearchUtils openSearchUtils;
 
     public CatalogueSearchActivity(CatalogueSearchPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -141,7 +141,8 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
                             case OpenSearch:
                                 displayFullLoading("Loading catalogue service...");
-                                OpenSearchUtils.getDescription(productDatasetCatalogueDTO.getDatasetURL(), new AsyncCallback<OpenSearchDescription>() {
+                                openSearchUtils = new OpenSearchUtils(productDatasetCatalogueDTO.getDatasetURL(), false);
+                                openSearchUtils.getDescription(productDatasetCatalogueDTO.getDatasetURL(), new AsyncCallback<OpenSearchDescription>() {
                                     @Override
                                     public void onFailure(Throwable caught) {
                                         hideFullLoading();
@@ -151,9 +152,8 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                                     @Override
                                     public void onSuccess(OpenSearchDescription result) {
                                         hideFullLoading();
-                                        CatalogueSearchActivity.this.openSearchDescription = result;
                                         // TODO - configure view to reflect the open search interface
-                                        List<Parameter> parameters = openSearchDescription.getUrl().get(0).getParameters();
+                                        List<Parameter> parameters = openSearchUtils.getUrlParameters();
                                         parameters = ListUtil.filterValues(parameters, new ListUtil.CheckValue<Parameter>() {
                                             @Override
                                             public boolean isValue(Parameter value) {
@@ -161,22 +161,24 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                                             }
                                         });
                                         List<FormElement> formElements = new ArrayList<FormElement>();
-                                        for(Parameter parameter : parameters) {
+                                        for (Parameter parameter : parameters) {
                                             FormElement formElement = null;
                                             switch (parameter.getFieldType()) {
                                                 case "integer": {
                                                     IntegerFormElement integerFormElement = new IntegerFormElement();
                                                     formElement = integerFormElement;
-                                                } break;
+                                                }
+                                                break;
                                                 case "string": {
                                                     TextFormElement textFormElement = new TextFormElement();
                                                     textFormElement.setPattern(parameter.getPattern());
                                                     formElement = textFormElement;
-                                                } break;
+                                                }
+                                                break;
                                                 default:
                                                     break;
                                             }
-                                            if(formElement != null) {
+                                            if (formElement != null) {
                                                 formElement.setName(parameter.getName());
                                                 formElement.setDescription(parameter.getTitle());
                                                 formElements.add(formElement);
@@ -289,15 +291,15 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                 CatalogueSearchPlace.TOKENS.start.toString(), startDate.getTime() + "",
                 CatalogueSearchPlace.TOKENS.stop.toString(), stopDate.getTime() + ""
         ))), false);
-        search(0, 0);
+        search(0, 25);
     }
 
-    private void search(int start, int startPage) {
+    private void search(int start, int count) {
         // check standard used
         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
             case OpenSearch:
                 try {
-                    OpenSearchUtils.getRecords(start, startPage, openSearchDescription, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
+                    openSearchUtils.getRecords(start, count, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -348,8 +350,8 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
     }
 
     @Override
-    public void onRecordRangeChanged(int start, int pageStart) {
-        search(start, pageStart);
+    public void onRecordRangeChanged(int start, int count) {
+        search(start, count);
     }
 
     public void setAoi(AoIDTO aoi) {

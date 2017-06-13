@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
@@ -259,8 +260,8 @@ public class AssetsResource implements AssetsService {
             List<DatasetAccess> dbSamples = updateSamples(em, productService.getSamples(), productServiceDTO.getSamples());
             productService.setSamples(dbSamples);
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + getProductServiceTSV(productService) +
-                    ", tsvname = " + getProductServiceNameTSV(productService) + " where id = " + productService.getId() +
+            Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + DBHelper.getProductServiceTSV(productService) +
+                    ", tsvname = " + DBHelper.getProductServiceNameTSV(productService) + " where id = " + productService.getId() +
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
@@ -359,20 +360,14 @@ public class AssetsResource implements AssetsService {
                         }
                     }
                     dbDatasetAccessOGC.setServerUrl(datasetAccessOGC.getServerUrl());
+                    dbDatasetAccessOGC.setWcsServerUrl(datasetAccessOGC.getWcsServerUrl());
+                    dbDatasetAccessOGC.setWcsResourceName(datasetAccessOGC.getWcsResourceName());
+                    dbDatasetAccessOGC.setCorsEnabled(datasetAccessOGC.isCorsEnabled());
                 }
                 changedDbSamples.add(dbDatasetAccess);
             }
         }
         return changedDbSamples;
-    }
-
-    private static String getProductServiceNameTSV(ProductService productService) {
-        return "setweight(to_tsvector('english','service on-demand'), 'A') || setweight(to_tsvector('english','" + productService.getName() + "'), 'B')";
-    }
-
-    private static String getProductServiceTSV(ProductService productService) {
-        return "setweight(to_tsvector('english','service on-demand " + productService.getName() + "'), 'A') " +
-                "|| setweight(to_tsvector('english','" + productService.getDescription() + "'), 'B')";
     }
 
     @Override
@@ -514,17 +509,17 @@ public class AssetsResource implements AssetsService {
             // define the style
             String workspace = user.getCompany().getId() + "";
             // TODO - change when geoserver workspace style is fixed
-            String styleName = workspace + "___" + styleDTO.getStyleName();
+            String styleName = styleDTO.getStyleName(); //workspace + "___" + styleDTO.getStyleName();
             String sldBody = styleDTO.getSldBody();
             // publish to GeoServer
-            boolean added = GeoserverUtils.getGeoserverPublisher().publishStyle(sldBody, styleName);
 /*
-            boolean added = GeoserverUtils.getGeoserverPublisher().publishStyleInWorkspace(workspace, sldBody, styleName);
+            boolean added = GeoserverUtils.getGeoserverPublisher().publishStyle(sldBody, styleName);
 */
+            boolean added = GeoserverUtils.getGeoserverPublisher().publishStyleInWorkspace(workspace, sldBody, styleName);
             if(!added) {
-                throw new RequestException("Failed to add style");
+                throw new RequestException("Failed to add style, style name is probably taken");
             }
-            return workspace + ":" + styleName;
+            return "\"" + workspace + ":" + styleName + "\"";
         } catch (Exception e) {
             throw new RequestException("Problem creating style");
         } finally {
@@ -544,22 +539,23 @@ public class AssetsResource implements AssetsService {
             GeoServerRESTReader reader = GeoserverUtils.getGeoserverReader(); //new GeoServerRESTReader(RESTURL, RESTUSER, RESTPW);
             ArrayList<String> styles = new ArrayList<String>();
             // add the user ones first
-/*
             RESTStyleList stylesResponse = reader.getStyles(workspace);
             if(stylesResponse != null) {
                 for(String styleName : stylesResponse.getNames()) {
                     styles.add(workspace + ":" + styleName);
                 }
             }
-*/
-            RESTStyleList stylesResponse = reader.getStyles();
+            stylesResponse = reader.getStyles();
             if(stylesResponse != null) {
+                styles.addAll(stylesResponse.getNames());
+/*
                 styles.addAll(ListUtil.filterValues(stylesResponse.getNames(), new ListUtil.CheckValue<String>() {
                     @Override
                     public boolean isValue(String value) {
                         return !(value.contains("___") && !value.startsWith(workspace + "___"));
                     }
                 }));
+*/
             }
             return styles;
         } catch (Exception e) {
@@ -1057,6 +1053,9 @@ public class AssetsResource implements AssetsService {
                                 }
                             }
                             dbDatasetAccessOGC.setServerUrl(datasetAccessOGC.getServerUrl());
+                            dbDatasetAccessOGC.setWcsServerUrl(datasetAccessOGC.getWcsServerUrl());
+                            dbDatasetAccessOGC.setWcsResourceName(datasetAccessOGC.getWcsResourceName());
+                            dbDatasetAccessOGC.setCorsEnabled(datasetAccessOGC.isCorsEnabled());
                         }
                         dbDatasetAccesses.add(dbDatasetAccess);
                     }
@@ -1069,8 +1068,8 @@ public class AssetsResource implements AssetsService {
             productDataset.setDatasetStandard(productDatasetDTO.getDatasetStandard());
             productDataset.setDatasetURL(productDatasetDTO.getDatasetURL());
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + getProductDatasetTSV(productDataset) +
-                    ", tsvname = " + getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +
+            Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + DBHelper.getProductDatasetTSV(productDataset) +
+                    ", tsvname = " + DBHelper.getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
@@ -1081,15 +1080,6 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
-    }
-
-    private static String getProductDatasetNameTSV(ProductDataset productDataset) {
-        return "setweight(to_tsvector('english','dataset off the shelf'), 'A') || setweight(to_tsvector('english','" + productDataset.getName() + "'), 'B')";
-    }
-
-    private static String getProductDatasetTSV(ProductDataset productDataset) {
-        return "setweight(to_tsvector('english','dataset off the shelf " + productDataset.getName() + "'), 'A') " +
-                "|| setweight(to_tsvector('english','" + productDataset.getDescription() + "'), 'B')";
     }
 
     private SoftwareDTO createSoftwareDTO(Software software) {
@@ -1215,8 +1205,8 @@ public class AssetsResource implements AssetsService {
             software.setImageUrl(softwareDTO.getImageUrl());
             software.setSoftwareType(softwareDTO.getSoftwareType());
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE software SET tsv = " + getSoftwareTSV(software) +
-                    ", tsvname = " + getSoftwareNameTSV(software) + " where id = " + software.getId() +
+            Query query = em.createNativeQuery("UPDATE software SET tsv = " + DBHelper.getSoftwareTSV(software) +
+                    ", tsvname = " + DBHelper.getSoftwareNameTSV(software) + " where id = " + software.getId() +
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
@@ -1232,15 +1222,6 @@ public class AssetsResource implements AssetsService {
     @Override
     public void removeSoftware(Long id) throws RequestException {
 
-    }
-
-    private static String getSoftwareNameTSV(Software software) {
-        return "setweight(to_tsvector('english','software'), 'A') || setweight(to_tsvector('english','" + software.getName() + "'), 'B')";
-    }
-
-    private static String getSoftwareTSV(Software software) {
-        return "setweight(to_tsvector('english','software " + software.getName() + "'), 'A') " +
-                "|| setweight(to_tsvector('english','" + software.getDescription() + "'), 'B')";
     }
 
     private ProjectDTO createProjectDTO(Project project) {
@@ -1409,8 +1390,8 @@ public class AssetsResource implements AssetsService {
 
             project.setImageUrl(projectDTO.getImageUrl());
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE project SET tsv = " + getProjectTSV(project) +
-                    ", tsvname = " + getProjectNameTSV(project) + " where id = " + project.getId() +
+            Query query = em.createNativeQuery("UPDATE project SET tsv = " + DBHelper.getProjectTSV(project) +
+                    ", tsvname = " + DBHelper.getProjectNameTSV(project) + " where id = " + project.getId() +
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
@@ -1449,15 +1430,6 @@ public class AssetsResource implements AssetsService {
                 break;
         }
         return offerDTO;
-    }
-
-    private static String getProjectNameTSV(Project project) {
-        return "setweight(to_tsvector('english','dataset off the shelf'), 'A') || setweight(to_tsvector('english','" + project.getName() + "'), 'B')";
-    }
-
-    private static String getProjectTSV(Project project) {
-        return "setweight(to_tsvector('english','dataset off the shelf " + project.getName() + "'), 'A') " +
-                "|| setweight(to_tsvector('english','" + project.getDescription() + "'), 'B')";
     }
 
 }

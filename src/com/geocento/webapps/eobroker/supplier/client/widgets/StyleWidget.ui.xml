@@ -17,7 +17,7 @@
     <design:MaterialPanel backgroundColor="WHITE" padding="0" marginBottom="10" shadow="0" addStyleNames="{style.panel}">
         <design:MaterialPanel ui:field="selectPanel">
             <design:MaterialPanel float="RIGHT">
-                <design:MaterialButton type="FLOATING" iconType="EDIT" backgroundColor="WHITE" shadow="0" iconColor="BLUE" marginRight="10" ui:field="edit"></design:MaterialButton>
+                <design:MaterialButton visible="false" type="FLOATING" iconType="EDIT" backgroundColor="WHITE" shadow="0" iconColor="BLUE" marginRight="10" ui:field="edit"></design:MaterialButton>
                 <design:MaterialButton type="FLOATING" iconType="DELETE" backgroundColor="WHITE" shadow="0" iconColor="BLUE" marginRight="10" ui:field="delete"></design:MaterialButton>
                 <design:MaterialButton type="FLOATING" iconType="ADD" backgroundColor="GREEN" shadow="0" iconColor="WHITE" marginRight="10" ui:field="select"></design:MaterialButton>
             </design:MaterialPanel>

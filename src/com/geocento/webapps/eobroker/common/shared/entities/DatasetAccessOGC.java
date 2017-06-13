@@ -16,6 +16,11 @@ public class DatasetAccessOGC extends DatasetAccess {
     String styleName;
 
     // TODO - add support for WCS
+    @Column(length = 1000)
+    String wcsServerUrl;
+    String wcsResourceName;
+
+    boolean corsEnabled;
 
     public DatasetAccessOGC() {
     }
@@ -35,5 +40,29 @@ public class DatasetAccessOGC extends DatasetAccess {
 
     public void setStyleName(String styleName) {
         this.styleName = styleName;
+    }
+
+    public String getWcsServerUrl() {
+        return wcsServerUrl;
+    }
+
+    public void setWcsServerUrl(String wcsServerUrl) {
+        this.wcsServerUrl = wcsServerUrl;
+    }
+
+    public String getWcsResourceName() {
+        return wcsResourceName;
+    }
+
+    public void setWcsResourceName(String wcsResourceName) {
+        this.wcsResourceName = wcsResourceName;
+    }
+
+    public boolean isCorsEnabled() {
+        return corsEnabled;
+    }
+
+    public void setCorsEnabled(boolean corsEnabled) {
+        this.corsEnabled = corsEnabled;
     }
 }

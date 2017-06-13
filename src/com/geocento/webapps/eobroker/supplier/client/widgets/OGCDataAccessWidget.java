@@ -7,10 +7,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.ui.MaterialLabel;
-import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.MaterialPanel;
-import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.*;
 
 /**
  * Created by thomas on 08/11/2016.
@@ -19,7 +16,13 @@ public class OGCDataAccessWidget extends DataAccessWidget {
 
     private MaterialTextBox serverUrl;
 
-    private MaterialLink materialLink;
+    private MaterialLink styleNameEditor;
+
+    private MaterialTextBox wcsServer;
+
+    private MaterialTextBox wcsResourceName;
+
+    private MaterialCheckBox corsEnabled;
 
     public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri) {
         super(datasetAccess, editableUri);
@@ -41,13 +44,13 @@ public class OGCDataAccessWidget extends DataAccessWidget {
             materialLabel.setDisplay(Display.INLINE_BLOCK);
             materialLabel.setMarginRight(10);
             panel.add(materialLabel);
-            materialLink = new MaterialLink(datasetAccess.getStyleName());
+            styleNameEditor = new MaterialLink(datasetAccess.getStyleName());
             String styleName = ((DatasetAccessOGC) datasetAccess).getStyleName();
             setStyle(styleName);
-            materialLink.setDisplay(Display.INLINE_BLOCK);
-            materialLink.setIconType(IconType.EDIT);
-            materialLink.setIconPosition(IconPosition.RIGHT);
-            materialLink.addClickHandler(new ClickHandler() {
+            styleNameEditor.setDisplay(Display.INLINE_BLOCK);
+            styleNameEditor.setIconType(IconType.EDIT);
+            styleNameEditor.setIconPosition(IconPosition.RIGHT);
+            styleNameEditor.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
                     // TODO - display style name window
@@ -60,9 +63,29 @@ public class OGCDataAccessWidget extends DataAccessWidget {
                     });
                 }
             });
-            panel.add(materialLink);
+            panel.add(styleNameEditor);
             addField(panel);
         }
+        wcsServer = new MaterialTextBox();
+        wcsServer.setPlaceholder("The WCS service server URL, if available");
+        wcsServer.setMarginTop(20);
+        wcsServer.setReadOnly(!editableUri);
+        wcsServer.setText(datasetAccess.getWcsServerUrl());
+        addField(wcsServer);
+        wcsResourceName = new MaterialTextBox();
+        wcsResourceName.setPlaceholder("The WCS resource name, if available");
+        wcsResourceName.setMarginTop(20);
+        wcsResourceName.setReadOnly(!editableUri);
+        wcsResourceName.setText(datasetAccess.getWcsResourceName());
+        addField(wcsResourceName);
+        corsEnabled = new MaterialCheckBox();
+        corsEnabled.setText("CORS enabled");
+        corsEnabled.setEnabled(!editableUri);
+        corsEnabled.setValue(datasetAccess.isCorsEnabled());
+        MaterialPanel materialPanel = new MaterialPanel();
+        materialPanel.add(corsEnabled);
+        materialPanel.setMarginTop(20);
+        addField(materialPanel);
     }
 
     private void setServerUrl(String serverUrl) {
@@ -70,7 +93,7 @@ public class OGCDataAccessWidget extends DataAccessWidget {
     }
 
     private void setStyle(String styleName) {
-        materialLink.setText(styleName == null ? "default" : styleName);
+        styleNameEditor.setText(styleName == null ? "default" : styleName);
     }
 
     public DatasetAccess getDatasetAccess() {
@@ -78,8 +101,11 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         // update fields if editable
         if(editableUri) {
             ((DatasetAccessOGC) datasetAccess).setServerUrl(serverUrl.getText());
+            ((DatasetAccessOGC) datasetAccess).setWcsServerUrl(wcsServer.getText());
+            ((DatasetAccessOGC) datasetAccess).setWcsResourceName(wcsResourceName.getText());
+            ((DatasetAccessOGC) datasetAccess).setCorsEnabled(corsEnabled.getValue());
         } else {
-            String styleName = materialLink.getText();
+            String styleName = styleNameEditor.getText();
             if(styleName.contentEquals("default")) {
                 styleName = null;
             }

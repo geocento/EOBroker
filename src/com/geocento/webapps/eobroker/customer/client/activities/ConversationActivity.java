@@ -5,6 +5,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
+import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -156,6 +158,13 @@ public class ConversationActivity extends TemplateActivity implements Conversati
     @Override
     protected void bind() {
         super.bind();
+
+        activityEventBus.addHandler(MessageEvent.TYPE, new MessageEventHandler() {
+            @Override
+            public void onMessage(MessageEvent event) {
+                addMessage(event.getMessage());
+            }
+        });
 
         handlers.add(conversationView.getSubmitMessage().addClickHandler(new ClickHandler() {
             @Override

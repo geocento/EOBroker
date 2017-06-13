@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material">
     <ui:style>
 
         .buttonPanel {
@@ -22,7 +23,7 @@
         <design:MaterialLabel ui:field="comment"></design:MaterialLabel>
         <g:FlowPanel addStyleNames="{style.container}" ui:field="container"></g:FlowPanel>
         <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-            <design:MaterialListBox addStyleNames="{style.selectElement}" ui:field="selectElement"></design:MaterialListBox>
+            <design:MaterialListValueBox addStyleNames="{style.selectElement}" ui:field="selectElement"></design:MaterialListValueBox>
             <design:MaterialButton text="Add Element" ui:field="addElement"></design:MaterialButton>
         </g:HTMLPanel>
     </g:HTMLPanel>

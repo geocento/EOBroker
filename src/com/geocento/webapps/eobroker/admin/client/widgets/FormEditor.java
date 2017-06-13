@@ -17,6 +17,7 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialListBox;
+import gwt.material.design.client.ui.MaterialListValueBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class FormEditor extends Composite {
     private static enum TYPE {aoi, text, date, choice, integerNumber, doubleNumber};
 
     @UiField
-    MaterialListBox selectElement;
+    MaterialListValueBox<TYPE> selectElement;
     @UiField
     MaterialButton addElement;
     @UiField
@@ -43,14 +44,17 @@ public class FormEditor extends Composite {
     MaterialLabel comment;
 
     public FormEditor() {
+
+        selectElement = new MaterialListValueBox<TYPE>();
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         //selectElement.addItem("Area of Interest", TYPE.aoi.toString());
-        selectElement.addItem("Text", TYPE.text.toString());
-        selectElement.addItem("Date", TYPE.date.toString());
-        selectElement.addItem("Choice", TYPE.choice.toString());
-        selectElement.addItem("Number (integer)", TYPE.integerNumber.toString());
-        selectElement.addItem("Number (double)", TYPE.doubleNumber.toString());
+        selectElement.addItem(TYPE.text, "Text");
+        selectElement.addItem(TYPE.date, "Date");
+        selectElement.addItem(TYPE.choice, "Choice");
+        selectElement.addItem(TYPE.integerNumber, "Number (integer)");
+        selectElement.addItem(TYPE.doubleNumber, "Number (double)");
     }
 
     public void setElements(List<FormElement> formElements) {
@@ -133,7 +137,7 @@ public class FormEditor extends Composite {
 
     @UiHandler("addElement")
     void addElement(ClickEvent clickEvent) {
-        TYPE elementType = TYPE.valueOf(selectElement.getSelectedValue());
+        TYPE elementType = selectElement.getSelectedValue();
         addFormElement(createElement(elementType));
     }
 

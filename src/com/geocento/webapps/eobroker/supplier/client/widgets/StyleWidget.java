@@ -50,7 +50,12 @@ public class StyleWidget extends Composite {
 
     private void updateName() {
         String name = style == null || style.length() == 0 ? "No name" : style;
-        this.name.setText(name);
+        boolean ownWorkspace = name.contains(":");
+        this.name.setText(ownWorkspace ? name.substring(name.indexOf(":") + 1) : name);
+        delete.setVisible(ownWorkspace);
+        if(!ownWorkspace) {
+            selectPanel.setBackgroundColor(Color.AMBER_LIGHTEN_5);
+        }
         editName.setText(name);
     }
 
@@ -71,8 +76,8 @@ public class StyleWidget extends Composite {
     @UiHandler("validate")
     void validate(ClickEvent clickEvent) {
         String name = editName.getText();
-        if(name.length() == 0) {
-            MaterialToast.fireToast("Please provide a valid name", Color.RED.getCssName());
+        if(name.length() == 0 || name.contains(":")) {
+            MaterialToast.fireToast("Please provide a valid name, only letters are allowed", Color.RED.getCssName());
             return;
         }
         // update style

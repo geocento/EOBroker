@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:design="urn:import:gwt.material.design.client.ui">
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
     <ui:style>
 
         .description {
@@ -15,7 +16,7 @@
     </ui:style>
     <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL" shadow="1">
         <design:MaterialCardImage>
-            <design:MaterialImage ui:field="image"></design:MaterialImage>
+            <widgets:MaterialImageLoading ui:field="image"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="WHITE">
             <design:MaterialLabel truncate="true" fontSize="1.4em" ui:field="title"/>

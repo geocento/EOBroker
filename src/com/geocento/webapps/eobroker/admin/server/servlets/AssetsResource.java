@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.MailContent;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
+import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
@@ -119,8 +120,8 @@ public class AssetsResource implements AssetsService {
                 em.merge(product);
             }
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE product SET tsv = " + getProductTSV(product) +
-                    ", tsvname = " + getProductNameTSV(product) + " where id = " + product.getId() +
+            Query query = em.createNativeQuery("UPDATE product SET tsv = " + DBHelper.getProductTSV(product) +
+                    ", tsvname = " + DBHelper.getProductNameTSV(product) + " where id = " + product.getId() +
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
@@ -134,24 +135,6 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
-    }
-
-    private static String getProductNameTSV(Product product) {
-        return "setweight(to_tsvector('english','product'), 'A') || setweight(to_tsvector('english','" + product.getName() + "'), 'B')";
-    }
-
-    private static String getProductTSV(Product product) {
-        return "setweight(to_tsvector('english','product " + product.getSector().getName() + " " + product.getThematic().getName() + " " + product.getName() + "'), 'A') " +
-                "|| setweight(to_tsvector('english','" + product.getShortDescription() + "'), 'B')";
-    }
-
-    private static String getCompanyNameTSV(Company company) {
-        return "setweight(to_tsvector('english','company'), 'A') || setweight(to_tsvector('english','" + company.getName() + "'), 'B')";
-    }
-
-    private static String getCompanyTSV(Company company) {
-        return "setweight(to_tsvector('english','company " + company.getName() + "'), 'A') " +
-                "|| setweight(to_tsvector('english','" + company.getDescription() + "'), 'B')";
     }
 
     @Override
@@ -451,8 +434,8 @@ public class AssetsResource implements AssetsService {
                 em.merge(dbCompany);
             }
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE company SET tsv = " + getCompanyTSV(dbCompany) +
-                    ", tsvname = " + getCompanyNameTSV(dbCompany) + " where id = " + dbCompany.getId() +
+            Query query = em.createNativeQuery("UPDATE company SET tsv = " + DBHelper.getCompanyTSV(dbCompany) +
+                    ", tsvname = " + DBHelper.getCompanyNameTSV(dbCompany) + " where id = " + dbCompany.getId() +
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();

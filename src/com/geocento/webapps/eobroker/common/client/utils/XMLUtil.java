@@ -82,4 +82,16 @@ public class XMLUtil {
         return null;
     }
 
+    public static Node getFirstNode(Node node) {
+        if(node != null) {
+            NodeList nodeList = node.getChildNodes();
+            for(int index = 0; index < nodeList.getLength(); index++) {
+                Node firstNode = nodeList.item(index);
+                if (firstNode.getNodeType() == Node.ELEMENT_NODE) {
+                    return firstNode;
+                }
+            }
+        }
+        return null;
+    }
 }
