@@ -9,6 +9,8 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 
+import java.util.List;
+
 /**
  * Created by thomas on 09/05/2016.
  */
@@ -25,6 +27,8 @@ public interface VisualisationView extends IsWidget {
     void displayLayerInfo(LayerInfoDTO layerInfoDTO);
 
     void setProductDataset(ProductDatasetVisualisationDTO productDatasetVisualisationDTO);
+
+    void setAdditionalDatasets(List<DatasetAccess> datasetAccesses);
 
     void selectDataAccess(DatasetAccess datasetAccess);
 
@@ -51,6 +55,8 @@ public interface VisualisationView extends IsWidget {
     void displayGetFeatureInfoContent(String content);
 
     void displayGetFeatureInfoLoading(String message);
+
+    void enableWCS(boolean enable);
 
     public interface Presenter {
         void datasetAccessSelected(DatasetAccess datasetAccess);

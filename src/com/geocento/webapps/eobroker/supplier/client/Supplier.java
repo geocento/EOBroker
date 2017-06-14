@@ -1,9 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.client;
 
+import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
 import com.geocento.webapps.eobroker.supplier.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.AppPlaceHistoryMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.supplier.client.utils.SupplierNotificationSocketHelper;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.LoginInfo;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -102,6 +104,9 @@ public class Supplier implements EntryPoint {
 
     public static void setLoginInfo(LoginInfo loginInfo) {
         Supplier.loginInfo = loginInfo;
+        if(loginInfo != null) {
+            SupplierNotificationSocketHelper.getInstance().startMaybeNotifications();
+        }
     }
 
     public static LoginInfo getLoginInfo() {

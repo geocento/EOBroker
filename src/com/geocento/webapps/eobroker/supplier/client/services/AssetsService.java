@@ -201,4 +201,8 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     List<TestimonialDTO> getTestimonials() throws RequestException;
 
+    @GET
+    @Path("/assets/statistics/")
+    @Produces("application/json")
+    SupplierStatisticsDTO getStatistics() throws RequestException;
 }

@@ -233,6 +233,15 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                             }
                             searchPageView.setMatchingProducts(products, moreUrl);
                         }
+                        {
+                            List<ProductDatasetDTO> productDatasetDTOs = searchResult.getProductDatasets();
+                            boolean more = searchResult.isMoreProductDatasets();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.productdatasets, text) : null;
+                            if (more) {
+                                productDatasetDTOs = productDatasetDTOs.subList(0, 4);
+                            }
+                            searchPageView.setMatchingDatasets(productDatasetDTOs, moreUrl);
+                        }
                         // add on demand services
                         {
                             List<ProductServiceDTO> productServiceDTOs = searchResult.getProductServices();
@@ -242,15 +251,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                                 productServiceDTOs = productServiceDTOs.subList(0, 4);
                             }
                             searchPageView.setMatchingServices(productServiceDTOs, moreUrl);
-                        }
-                        {
-                            List<ProductDatasetDTO> productDatasetDTOs = searchResult.getProductDatasets();
-                            boolean more = searchResult.isMoreProductDatasets();
-                            String moreUrl = more ? getSearchCategoryUrl(Category.productdatasets, text) : null;
-                            if (more) {
-                                productDatasetDTOs = productDatasetDTOs.subList(0, 4);
-                            }
-                            searchPageView.setMatchingDatasets(productDatasetDTOs, moreUrl);
                         }
                         {
                             List<SoftwareDTO> softwareDTOs = searchResult.getSoftwares();

@@ -4,7 +4,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:sideprofile="urn:import:gwt.material.design.addins.client.sideprofile"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
-             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.VisualisationViewImpl.Style">
 
@@ -136,7 +136,7 @@
             </g:west>
             <g:center>
                 <g:HTMLPanel addStyleNames="{style.displayPanel}" ui:field="displayPanel">
-                    <maps:MapContainer width="100%" height="100%" editable="false" search="true" ui:field="mapContainer"></maps:MapContainer>
+                    <maps:VisualisationMapContainer width="100%" height="100%" editable="false" search="true" ui:field="mapContainer"></maps:VisualisationMapContainer>
                 </g:HTMLPanel>
             </g:center>
             <g:south size="120">

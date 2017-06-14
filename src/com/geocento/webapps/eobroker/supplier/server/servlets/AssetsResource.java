@@ -721,6 +721,11 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public SupplierStatisticsDTO getStatistics() throws RequestException {
+        return null;
+    }
+
+    @Override
     public void removeProductDataset(Long id) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();

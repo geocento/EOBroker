@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -33,6 +34,10 @@ public class DataAccessWidget extends Composite {
     MaterialRow fields;
     @UiField
     MaterialButton remove;
+    @UiField
+    ExpandPanel panel;
+    @UiField
+    MaterialTooltip typeTooltip;
 
     protected final DatasetAccess datasetAccess;
 
@@ -69,13 +74,16 @@ public class DataAccessWidget extends Composite {
             text = "API";
             uriName = "The URL to the API documentation";
         }
-        type.setText(text);
+        typeTooltip.setText(text);
         type.setIconType(iconType);
+        boolean newDataAccess = datasetAccess.getTitle() == null;
+        panel.setLabel(newDataAccess ? "New data access - TODO fill information" : datasetAccess.getTitle());
         title.setText(datasetAccess.getTitle());
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());
         uri.setReadOnly(!editableUri);
         uri.setPlaceholder(uriName);
+        panel.setOpen(newDataAccess);
     }
 
     public DatasetAccess getDatasetAccess() {

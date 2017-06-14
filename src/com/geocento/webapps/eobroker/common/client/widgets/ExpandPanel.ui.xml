@@ -2,8 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:design="urn:import:gwt.material.design.client.ui">
     <design:MaterialPanel>
-        <design:MaterialPanel ui:field="header">
-            <design:MaterialLink ui:field="label"></design:MaterialLink>
+        <design:MaterialPanel display="FLEX" ui:field="header">
+            <design:MaterialLink flexGrow="1" ui:field="label"></design:MaterialLink>
         </design:MaterialPanel>
         <design:MaterialPanel ui:field="content">
         </design:MaterialPanel>

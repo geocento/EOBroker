@@ -57,6 +57,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new ConversationsActivity((ConversationsPlace) place, clientFactory);
         } else if(place instanceof NotificationsPlace) {
             return new NotificationsActivity((NotificationsPlace) place, clientFactory);
+        } else if(place instanceof StatisticsPlace) {
+            return new StatisticsActivity((StatisticsPlace) place, clientFactory);
         } else if(place instanceof SettingsPlace) {
             return new SettingsActivity((SettingsPlace) place, clientFactory);
         }

@@ -190,13 +190,18 @@ public class DatasetUploadServlet extends HttpServlet {
                 case "tif": {
                     layerName = publishGeoTiff(workspaceName, storeName, file);
                     DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+                    // TODO - change to have direct access to full product for download
+/*
+                    datasetAccessOGC.setUri(filePath);
+                    datasetAccessOGC.setLayerName(layerName);
+*/
                     datasetAccessOGC.setUri(layerName);
                     datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
                     datasetAccessOGC.setCorsEnabled(true);
                     datasetAccessOGC.setStyleName("raster");
                     // WCS is automatically published
                     datasetAccessOGC.setWcsServerUrl(ServerUtil.getSettings().getGeoserverOWS());
-                    datasetAccessOGC.setWcsResourceName(layerName);
+                    datasetAccessOGC.setWcsResourceName(layerName.replace(":", "__"));
                     datasetAccess = datasetAccessOGC;
                 } break;
                 case "pdf":

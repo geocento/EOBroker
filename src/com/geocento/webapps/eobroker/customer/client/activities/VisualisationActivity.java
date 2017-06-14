@@ -1,12 +1,17 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.WMSUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
+import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfo;
 import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfoHandler;
+import com.geocento.webapps.eobroker.customer.client.events.WCSRequest;
+import com.geocento.webapps.eobroker.customer.client.events.WCSRequestHandler;
 import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.VisualisationView;
@@ -35,6 +40,10 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
     public LayerInfoDTO currentLayer;
 
     private VisualisationView visualisationView;
+
+    private DatasetAccess datasetAccess;
+
+    private ArrayList<DatasetAccess> datasetAccesses;
 
     public VisualisationActivity(VisualisationPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -147,7 +156,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         visualisationView.setProductDataset(productDatasetVisualisationDTO);
         DatasetAccess datasetAccess = null;
         if(datasetId != null) {
-            ArrayList<DatasetAccess> datasetAccesses = new ArrayList<DatasetAccess>();
+            datasetAccesses = new ArrayList<DatasetAccess>();
             if(productDatasetVisualisationDTO.getDatasetAccess() != null) {
                 datasetAccesses.addAll(productDatasetVisualisationDTO.getDatasetAccess());
             }
@@ -237,6 +246,27 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
             }
         });
 
+        activityEventBus.addHandler(WCSRequest.TYPE, new WCSRequestHandler() {
+            @Override
+            public void onWCSRequest(WCSRequest event) {
+                // replace with CRS aware extent
+                Extent bounds = AoIUtil.getExtent(event.getAoi());
+                String serverUrl = ((DatasetAccessOGC) datasetAccess).getWcsServerUrl();
+                serverUrl = serverUrl + (serverUrl.contains("?") ? "" : "?");
+                Window.open(serverUrl +
+                        "service=WCS&" +
+                        "request=GetCoverage&" +
+                        "version=2.0.1&" +
+                        "coverageid=" + ((DatasetAccessOGC) datasetAccess).getWcsResourceName() + "&" +
+                        "SUBSET=Long(" + bounds.getWest() + "," + bounds.getEast() + ")&" +
+                        "SUBSET=Lat(" + bounds.getSouth() + "," + bounds.getNorth() + ")&" +
+                        // TODO - add bands selection
+                        "SUBSETTINGCRS=http://www.opengis.net/def/crs/EPSG/0/4326&" +
+                        "Format=geotiff", "_blank", null);
+
+            }
+        });
+
     }
 
     @Override
@@ -248,9 +278,16 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
     }
 
     private void setDataAccess(DatasetAccess datasetAccess) {
+        this.datasetAccess = datasetAccess;
         visualisationView.selectDataAccess(datasetAccess);
         visualisationView.setDataAccessDescription(datasetAccess.getPitch());
         visualisationView.setLoadingInformation("Loading...");
+        visualisationView.setAdditionalDatasets(ListUtil.filterValues(datasetAccesses, new ListUtil.CheckValue<DatasetAccess>() {
+            @Override
+            public boolean isValue(DatasetAccess value) {
+                return !value.getId().equals(datasetAccess.getId());
+            }
+        }));
         // TODO - load layer information
         try {
             REST.withCallback(new MethodCallback<LayerInfoDTO>() {
@@ -269,6 +306,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                     visualisationView.setWMSLayer(layerInfoDTO);
                     visualisationView.displayLayerInfo(layerInfoDTO);
                     visualisationView.enableGetFeatureInfo(layerInfoDTO.isQueryable());
+                    visualisationView.enableWCS(((DatasetAccessOGC) datasetAccess).getWcsServerUrl() != null);
                 }
             }).call(ServicesUtil.assetsService).getLayerInfo(datasetAccess.getId());
         } catch (RequestException e) {

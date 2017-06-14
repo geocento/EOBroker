@@ -69,13 +69,13 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         wcsServer = new MaterialTextBox();
         wcsServer.setPlaceholder("The WCS service server URL, if available");
         wcsServer.setMarginTop(20);
-        wcsServer.setReadOnly(!editableUri);
+        //wcsServer.setReadOnly(!editableUri);
         wcsServer.setText(datasetAccess.getWcsServerUrl());
         addField(wcsServer);
         wcsResourceName = new MaterialTextBox();
         wcsResourceName.setPlaceholder("The WCS resource name, if available");
         wcsResourceName.setMarginTop(20);
-        wcsResourceName.setReadOnly(!editableUri);
+        //wcsResourceName.setReadOnly(!editableUri);
         wcsResourceName.setText(datasetAccess.getWcsResourceName());
         addField(wcsResourceName);
         corsEnabled = new MaterialCheckBox();
@@ -85,6 +85,7 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         MaterialPanel materialPanel = new MaterialPanel();
         materialPanel.add(corsEnabled);
         materialPanel.setMarginTop(20);
+        materialPanel.setMarginBottom(20);
         addField(materialPanel);
     }
 

@@ -9,6 +9,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class NotificationEvent extends GwtEvent<NotificationEventHandler> {
 
     public static Type<NotificationEventHandler> TYPE = new Type<NotificationEventHandler>();
+
     private NotificationDTO notification;
 
     public Type<NotificationEventHandler> getAssociatedType() {

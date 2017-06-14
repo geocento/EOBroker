@@ -6,7 +6,7 @@ import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 import java.text.MessageFormat;
 
-public class CustomConfigurator extends ServerEndpointConfig.Configurator
+public class SupplierCustomConfigurator extends ServerEndpointConfig.Configurator
 {
     private HttpSession httpSession;
 
@@ -23,12 +23,12 @@ public class CustomConfigurator extends ServerEndpointConfig.Configurator
 
         if (endpoint instanceof NotificationSocket) {
             // The injection point:
-            ((NotificationSocket) endpoint).setHttpSession(httpSession);
+            ((SupplierNotificationSocket) endpoint).setHttpSession(httpSession);
         }
         else {
             throw new InstantiationException(
                     MessageFormat.format("Expected instanceof \"{0}\". Got instanceof \"{1}\".",
-                            NotificationSocket.class, endpoint.getClass()));
+                            SupplierNotificationSocket.class, endpoint.getClass()));
         }
 
         return endpoint;

@@ -1,13 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
-import com.github.nmorel.gwtjackson.client.ObjectMapper;
-
 /**
  * Created by thomas on 30/05/2017.
  */
 public class SupplierWebSocketMessage {
-
-    public static interface WebSocketMessageMapper extends ObjectMapper<SupplierWebSocketMessage> {};
 
     static public enum TYPE {notification, message};
 

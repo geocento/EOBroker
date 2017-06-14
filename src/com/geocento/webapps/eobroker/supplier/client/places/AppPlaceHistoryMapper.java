@@ -23,6 +23,8 @@ import com.google.gwt.place.shared.WithTokenizers;
         SuccessStoryPlace.Tokenizer.class,
         ConversationsPlace.Tokenizer.class,
         NotificationsPlace.Tokenizer.class,
-        SettingsPlace.Tokenizer.class})
+        StatisticsPlace.Tokenizer.class,
+        SettingsPlace.Tokenizer.class
+})
 public interface AppPlaceHistoryMapper extends PlaceHistoryMapper {
 }

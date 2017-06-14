@@ -34,6 +34,22 @@ public class AoIUtil {
     }
 
     public static Extent getExtent(AoIDTO aoi) {
-        return null;
+        Extent extent = new Extent();
+        extent.setEast(-180.0);
+        extent.setSouth(90.0);
+        extent.setWest(180.0);
+        extent.setNorth(-90.0);
+        String wkt = aoi.getWktGeometry();
+        wkt = wkt.substring(wkt.indexOf("((") + 2, wkt.indexOf("))"));
+        for(String latLongString : wkt.split(",")) {
+            String[] lngLat = latLongString.trim().split(" +");
+            double lat = Double.parseDouble(lngLat[1]);
+            double lng = Double.parseDouble(lngLat[0]);
+            extent.setEast(Math.max(lng, extent.getEast()));
+            extent.setWest(Math.min(lng, extent.getWest()));
+            extent.setNorth(Math.max(lat, extent.getNorth()));
+            extent.setSouth(Math.min(lat, extent.getSouth()));
+        }
+        return extent;
     }
 }

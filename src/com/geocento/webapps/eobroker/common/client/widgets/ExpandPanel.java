@@ -33,7 +33,7 @@ public class ExpandPanel extends Composite {
 
         setOpen(false);
 
-        header.addClickHandler(event -> {
+        label.addClickHandler(event -> {
             setOpen(!isOpen());
         });
     }
@@ -64,8 +64,18 @@ public class ExpandPanel extends Composite {
         label.setTextColor(color);
     }
 
+    public void setHeaderStyleNames(String headerStyleNames) {
+        header.addStyleName(headerStyleNames);
+    }
+
     public void setContentMargin(int margin) {
         content.setPaddingLeft(margin);
+    }
+
+    @UiChild(tagname = "header")
+    public void setHeader(Widget widget) {
+        label.setText("");
+        header.add(widget);
     }
 
     @UiChild(tagname = "content")

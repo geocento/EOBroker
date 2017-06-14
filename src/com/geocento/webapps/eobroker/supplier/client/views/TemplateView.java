@@ -108,6 +108,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLink conversations;
     @UiField
     MaterialLink notificationsLink;
+    @UiField
+    MaterialLink statistics;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -139,6 +141,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         successStories.setIconType(IconType.SENTIMENT_VERY_SATISFIED);
         conversations.setIconType(IconType.CHAT_BUBBLE);
         notificationsLink.setIconType(IconType.NOTIFICATIONS);
+        statistics.setIconType(IconType.PIE_CHART);
         settings.setIconType(IconType.SETTINGS);
 
         setLink(company, new CompanyPlace());
@@ -150,6 +153,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         setLink(successStories, new SuccessStoriesPlace());
         setLink(conversations, new ConversationsPlace());
         setLink(notificationsLink, new NotificationsPlace());
+        setLink(statistics, new StatisticsPlace());
         setLink(settings, new SettingsPlace());
 
         onResize(null);
@@ -216,6 +220,9 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
                 break;
             case "stories":
                 successStories.addStyleName(style.selected());
+                break;
+            case "statistics":
+                statistics.addStyleName(style.selected());
                 break;
             case "settings":
                 settings.addStyleName(style.selected());

@@ -4,8 +4,6 @@ import com.geocento.webapps.eobroker.common.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
-import com.geocento.webapps.eobroker.common.client.widgets.MoreWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
@@ -13,6 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfo;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.widgets.maps.VisualisationMapContainer;
 import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetVisualisationDTO;
@@ -55,7 +54,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     Style style;
 
     @UiField
-    MapContainer mapContainer;
+    VisualisationMapContainer mapContainer;
     @UiField
     HTMLPanel displayPanel;
     @UiField
@@ -240,22 +239,6 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         name.setText(productServiceVisualisationDTO.getName());
         setCompany(productServiceVisualisationDTO.getCompany());
         setProduct(productServiceVisualisationDTO.getProduct());
-        dataAccessList.clear();
-        boolean hasSamples = false;
-        // add samples
-        {
-            List<DatasetAccess> samples = productServiceVisualisationDTO.getSamples();
-            if (samples != null && samples.size() > 0) {
-                hasSamples = true;
-                MaterialLabel materialLabel = new MaterialLabel("Samples");
-                materialLabel.addStyleName(style.dataAccess());
-                dataAccessList.add(materialLabel);
-                for (final DatasetAccess datasetAccess : samples) {
-                    addDatasetAccess(datasetAccess);
-                }
-            }
-        }
-        moreDatasets.setVisible(hasSamples);
         moreDatasets.setText("More layers from this service...");
     }
 
@@ -291,36 +274,19 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         name.setText(productDatasetVisualisationDTO.getName());
         setCompany(productDatasetVisualisationDTO.getCompany());
         setProduct(productDatasetVisualisationDTO.getProduct());
+        moreDatasets.setText("More layers from this product...");
+    }
+
+    @Override
+    public void setAdditionalDatasets(List<DatasetAccess> datasetAccesses) {
         dataAccessList.clear();
-        boolean hasSamples = false;
-        // add data access
-        {
-            List<DatasetAccess> dataAccesses = productDatasetVisualisationDTO.getDatasetAccess();
-            if (dataAccesses != null && dataAccesses.size() > 0) {
-                hasSamples = true;
-                MaterialLabel materialLabel = new MaterialLabel("Full data access");
-                materialLabel.addStyleName(style.dataAccess());
-                dataAccessList.add(materialLabel);
-                for (final DatasetAccess datasetAccess : dataAccesses) {
-                    addDatasetAccess(datasetAccess);
-                }
+        boolean hasDatasets = datasetAccesses != null && datasetAccesses.size() > 0;
+        moreDatasets.setVisible(hasDatasets);
+        if (hasDatasets) {
+            for(DatasetAccess datasetAccess : datasetAccesses) {
+                addDatasetAccess(datasetAccess);
             }
         }
-        // add samples
-        {
-            List<DatasetAccess> samples = productDatasetVisualisationDTO.getSamples();
-            if (samples != null && samples.size() > 0) {
-                hasSamples = true;
-                MaterialLabel materialLabel = new MaterialLabel("Samples");
-                materialLabel.addStyleName(style.dataAccess());
-                dataAccessList.add(materialLabel);
-                for (final DatasetAccess datasetAccess : samples) {
-                    addDatasetAccess(datasetAccess);
-                }
-            }
-        }
-        moreDatasets.setVisible(hasSamples);
-        moreDatasets.setText("More layers from this dataset...");
     }
 
     private void addDatasetAccess(final DatasetAccess datasetAccess) {
@@ -385,6 +351,11 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     public void displayGetFeatureInfoLoading(String message) {
         featureInfo.clear();
         featureInfo.add(new LoadingWidget(message));
+    }
+
+    @Override
+    public void enableWCS(boolean enable) {
+        mapContainer.setWCSEnabled(enable);
     }
 
     @Override

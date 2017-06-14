@@ -97,6 +97,8 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialPanel notificationsPanel;
     @UiField
     MaterialRow notifications;
+    @UiField
+    MaterialPanel statisticsPanel;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -312,6 +314,14 @@ public class DashboardViewImpl extends Composite implements DashboardView {
             materialColumn.add(new ConversationWidget(conversationDTO));
             materialRow.add(materialColumn);
         }
+    }
+
+    @Override
+    public void displayStatistics(SupplierStatisticsDTO response) {
+        hideAll();
+        template.setPlace("statistics");
+        statisticsPanel.setVisible(true);
+        statisticsPanel.clear();
     }
 
     @Override
