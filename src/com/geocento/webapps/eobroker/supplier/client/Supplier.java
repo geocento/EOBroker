@@ -90,7 +90,7 @@ public class Supplier implements EntryPoint {
 
             @Override
             public void onSuccess(Method method, LoginInfo loginInfo) {
-                Supplier.loginInfo = loginInfo;
+                setLoginInfo(loginInfo);
                 historyHandler.handleCurrentHistory();
             }
         }).call(ServicesUtil.loginService).getSession();

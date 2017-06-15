@@ -278,7 +278,8 @@ public class OpenSearchUtils {
             }
             if(parameterType.contains(":")) {
                 parameter.setNamespace(parameterType.split(":")[0]);
-                parameter.setType(parameterType.split(":")[1]);
+                parameterType = parameterType.split(":")[1];
+                parameter.setType(parameterType);
             } else {
                 parameter.setType(parameterType);
             }

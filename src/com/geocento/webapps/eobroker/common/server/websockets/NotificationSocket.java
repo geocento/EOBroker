@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
@@ -16,12 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint(value = "/notifications", configurator = CustomConfigurator.class)
 public class NotificationSocket {
 
+    static Logger logger = Logger.getLogger(NotificationSocket.class);
+
     static private ConcurrentHashMap<String, List<Session>> userSessions = new ConcurrentHashMap<String, List<Session>>();
 
     private HttpSession httpSession;
 
     public NotificationSocket() {
-        System.out.println("Test example");
+        logger.info("Starting websocket handler");
     }
 
     @OnOpen
@@ -33,6 +36,7 @@ public class NotificationSocket {
             throw new IOException("Not signed in");
         }
         addUserSession(userSession.getUserName(), session);
+        logger.info("Open session for user " + userSession.getUserName());
     }
 
     private void addUserSession(String userName, Session session) {
@@ -59,7 +63,7 @@ public class NotificationSocket {
 
     @OnError
     public void onError(Throwable t) {
-        t.printStackTrace();
+        logger.error(t.getMessage(), t);
     }
 
     @OnClose
@@ -71,6 +75,7 @@ public class NotificationSocket {
             return;
         }
         removeUserSession(userSession.getUserName(), session);
+        logger.info("Close session for user " + userSession.getUserName());
     }
 
     public void setHttpSession(HttpSession httpSession) {

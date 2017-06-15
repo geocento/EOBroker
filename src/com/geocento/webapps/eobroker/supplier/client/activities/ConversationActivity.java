@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
+import com.geocento.webapps.eobroker.supplier.client.events.MessageEvent;
+import com.geocento.webapps.eobroker.supplier.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.supplier.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ConversationView;
@@ -105,6 +107,13 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                 }
             }
         }));
+
+        activityEventBus.addHandler(MessageEvent.TYPE, new MessageEventHandler() {
+            @Override
+            public void onMessage(MessageEvent event) {
+                addMessage(event.getMessage());
+            }
+        });
 
     }
 

@@ -3,14 +3,14 @@ package com.geocento.webapps.eobroker.customer.shared.feasibility;
 /**
  * Created by thomas on 27/07/2016.
  */
-public class CoverageFeature {
+public class ProductCandidate {
 
     String geometryWKT;
 
     String name;
     String description;
 
-    public CoverageFeature() {
+    public ProductCandidate() {
     }
 
     public String getGeometryWKT() {

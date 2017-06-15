@@ -1,7 +1,5 @@
 package com.geocento.webapps.eobroker.customer.shared.feasibility;
 
-import com.geocento.webapps.eobroker.common.shared.feasibility.TimeSerie;
-
 import java.util.List;
 
 /**

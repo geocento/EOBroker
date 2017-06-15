@@ -107,7 +107,7 @@
         </taskdef>
 
         <enunciate
-                basedir="${basedir}/src/com/geocento/webapps/eobroker/common/shared/feasibility"
+                basedir="${basedir}/src/com/geocento/webapps/eobroker/customer/shared/feasibility"
                 buildDir="${artifactsdir}/docs/build"
                 configfile="${basedir}/docs/enunciate.xml"
                 >

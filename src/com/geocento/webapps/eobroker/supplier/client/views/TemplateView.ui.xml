@@ -134,7 +134,7 @@
                     </m:MaterialTooltip>
                 </m:MaterialNavSection>
             </m:MaterialNavBar>
-            <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
+            <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" width="350px" ui:field="notificationsPanel"></m:MaterialDropDown>
         </header>
         <widgets:MaterialSideNav type="FIXED" m:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="sideNav">
             <g:HTMLPanel addStyleNames="{style.sidenavPanel}">

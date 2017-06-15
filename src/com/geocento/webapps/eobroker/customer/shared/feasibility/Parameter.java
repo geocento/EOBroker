@@ -1,12 +1,12 @@
-package com.geocento.webapps.eobroker.common.shared.feasibility;
+package com.geocento.webapps.eobroker.customer.shared.feasibility;
 
 /**
- * Created by thomas on 02/06/2017.
+ * Created by thomas on 15/06/2017.
  */
 public class Parameter {
 
     String name;
-    String value;
+    Object value;
 
     public Parameter() {
     }
@@ -19,11 +19,11 @@ public class Parameter {
         this.name = name;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 }

@@ -1,4 +1,6 @@
-package com.geocento.webapps.eobroker.common.shared.feasibility;
+package com.geocento.webapps.eobroker.customer.shared.feasibility;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
@@ -7,6 +9,7 @@ import java.util.Date;
  */
 public class TimeSerie {
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     Date date;
     Double value;
     String comment;

@@ -15,7 +15,7 @@ import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityVie
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -208,7 +208,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 feasibilityRequestDTO.setStop(stop);
                 feasibilityRequestDTO.setFormElementValues(formElementValues);
                 try {
-                    REST.withCallback(new MethodCallback<ProductFeasibilityResponse>() {
+                    REST.withCallback(new MethodCallback<FeasibilityResponse>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             productFeasibilityView.hideLoadingResults();
@@ -216,7 +216,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                         }
 
                         @Override
-                        public void onSuccess(Method method, ProductFeasibilityResponse response) {
+                        public void onSuccess(Method method, FeasibilityResponse response) {
                             productFeasibilityView.hideLoadingResults();
                             productFeasibilityView.displayResponse(response);
                         }

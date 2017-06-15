@@ -1339,7 +1339,7 @@ public class AssetsResource implements AssetsService {
             // fail silently
             try {
                 em.getTransaction().begin();
-                NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.TESTIMONIAL, "User " + userName + " has created a new testimonial on your company", testimonial.getId() + "");
+                NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.TESTIMONIAL, "New testimonial from user '" + userName + "'", testimonial.getId() + "");
                 // add event
                 EventHelper.createAndPropagateCompanyEvent(em, company, Category.companies, Event.TYPE.TESTIMONIAL, "User " + userName + " has added a new testimonial for company " + company.getName(), testimonial.getId() + "");
                 em.getTransaction().commit();

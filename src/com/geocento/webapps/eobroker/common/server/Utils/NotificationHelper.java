@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.server.Utils;
 
 import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
+import com.geocento.webapps.eobroker.common.server.websockets.SupplierNotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -46,12 +47,13 @@ public class NotificationHelper {
         supplierNotification.setType(type);
         supplierNotification.setMessage(message);
         supplierNotification.setLinkId(linkId);
+        supplierNotification.setCreationDate(new Date());
         em.persist(supplierNotification);
         try {
             SupplierWebSocketMessage webSocketMessage = new SupplierWebSocketMessage();
             webSocketMessage.setType(SupplierWebSocketMessage.TYPE.notification);
             webSocketMessage.setNotificationDTO(NotificationHelper.createSupplierNotificationDTO(supplierNotification));
-            //NotificationSocket.sendMessage(supplierNotification.getCompany(), webSocketMessage);
+            SupplierNotificationSocket.sendMessage(supplierNotification.getCompany().getId(), webSocketMessage);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

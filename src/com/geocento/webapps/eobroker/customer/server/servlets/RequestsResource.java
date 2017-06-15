@@ -3,7 +3,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
-import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
+import com.geocento.webapps.eobroker.common.server.websockets.SupplierNotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -17,6 +17,7 @@ import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.requests.*;
 import com.geocento.webapps.eobroker.customer.shared.utils.MessageHelper;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -284,7 +285,7 @@ public class RequestsResource implements RequestsService {
                 productServiceRequest.getSupplierRequests().add(productServiceSupplierRequest);
                 em.persist(productServiceSupplierRequest);
                 // notify the supplier
-                NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.PRODUCTREQUEST, "New request for quotation for service '" + productService.getName() + "' from user '" + user.getUsername() + "'", productServiceRequest.getId());
+                NotificationHelper.notifySupplier(em, productService.getCompany(), SupplierNotification.TYPE.PRODUCTREQUEST, "New request from user '" + user.getUsername() + "' for service '" + productService.getName() + "' ", productServiceRequest.getId());
             }
             em.getTransaction().commit();
             return createRequestDTO(productServiceRequest);
@@ -692,7 +693,7 @@ public class RequestsResource implements RequestsService {
             conversation.setCompany(company);
             conversation.setCreationDate(new Date());
             em.persist(conversation);
-            NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.MESSAGE, "User " + userName + " has started a new conversation", conversation.getId());
+            NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.MESSAGE, "New conversation from user '" + userName + "' on '" + conversation.getTopic() + "'", conversation.getId());
             em.getTransaction().commit();
             return createConversationDTO(conversation);
         } catch (Exception e) {
@@ -735,12 +736,12 @@ public class RequestsResource implements RequestsService {
             try {
                 // notify
                 // TODO - maybe do not send notification message AND message but generate notification on the client side?
-                NotificationHelper.notifySupplier(em, conversation.getCompany(), SupplierNotification.TYPE.MESSAGE, "New reply from user " + user.getUsername(), conversation.getId());
-                // send message
-                WebSocketMessage webSocketMessage = new WebSocketMessage();
-                webSocketMessage.setType(WebSocketMessage.TYPE.message);
-                webSocketMessage.setMessageDTO(com.geocento.webapps.eobroker.customer.shared.utils.MessageHelper.convertToDTO(message));
-                NotificationSocket.sendMessage(conversation.getCustomer().getUsername(), webSocketMessage);
+                NotificationHelper.notifySupplier(em, conversation.getCompany(), SupplierNotification.TYPE.MESSAGE, "New reply from user " + user.getUsername() + " on '" + conversation.getTopic() + "'", conversation.getId());
+                // send message to supplier
+                SupplierWebSocketMessage webSocketMessage = new SupplierWebSocketMessage();
+                webSocketMessage.setType(SupplierWebSocketMessage.TYPE.message);
+                webSocketMessage.setMessageDTO(com.geocento.webapps.eobroker.supplier.server.util.MessageHelper.convertToDTO(message));
+                SupplierNotificationSocket.sendMessage(conversation.getCompany().getId(), webSocketMessage);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }

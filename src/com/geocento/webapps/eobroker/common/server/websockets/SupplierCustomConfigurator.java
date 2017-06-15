@@ -21,7 +21,7 @@ public class SupplierCustomConfigurator extends ServerEndpointConfig.Configurato
     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
         T endpoint = super.getEndpointInstance(endpointClass);
 
-        if (endpoint instanceof NotificationSocket) {
+        if (endpoint instanceof SupplierNotificationSocket) {
             // The injection point:
             ((SupplierNotificationSocket) endpoint).setHttpSession(httpSession);
         }

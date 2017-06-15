@@ -171,7 +171,7 @@
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
                 </m:MaterialPanel>
-                <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" ui:field="notificationsPanel"></m:MaterialDropDown>
+                <m:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" width="350px" ui:field="notificationsPanel"></m:MaterialDropDown>
                 <!-- SideNav -->
                 <m:MaterialSideNav type="FIXED" m:id="sideNav" alwaysShowActivator="true" top="64" width="250" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="navigationPanel">
                     <g:HTMLPanel addStyleNames="{style.sidenavPanel}">

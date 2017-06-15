@@ -1,8 +1,19 @@
 package com.geocento.webapps.eobroker.customer.shared.feasibility;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * Created by thomas on 02/06/2017.
  */
+@JsonSubTypes({
+        @JsonSubTypes.Type(value=TimeStatistics.class, name="timeChart"),
+        @JsonSubTypes.Type(value=TimeStatistics.class, name="heatmapChart"),
+        @JsonSubTypes.Type(value=WMSStatistics.class, name="wmsChart"),
+        @JsonSubTypes.Type(value=BarChartStatistics.class, name="barChart"),
+        @JsonSubTypes.Type(value=PieChartStatistics.class, name="pieChart")
+})
+@JsonTypeInfo(use= JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.PROPERTY, property="@class")
 public class Statistics {
 
     String name;

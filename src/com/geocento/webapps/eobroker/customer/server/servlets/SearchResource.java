@@ -19,7 +19,7 @@ import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
@@ -793,7 +793,7 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public ProductFeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequest) throws RequestException {
+    public FeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequest) throws RequestException {
         if(feasibilityRequest == null) {
             throw new RequestException("Feasibility request cannot be null");
         }
@@ -841,8 +841,8 @@ public class SearchResource implements SearchService {
                     json.put(formElementValue.getFormid(), formElementValue.getValue());
                 }
                 String response = sendAPIRequest(productService.getApiUrl(), json.toString());
-                ProductFeasibilityResponse productFeasibilityResponse = builder.create().fromJson(response, ProductFeasibilityResponse.class);
-                return productFeasibilityResponse;
+                FeasibilityResponse feasibilityResponse = builder.create().fromJson(response, FeasibilityResponse.class);
+                return feasibilityResponse;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw new RequestException("Failed to access supplier API");

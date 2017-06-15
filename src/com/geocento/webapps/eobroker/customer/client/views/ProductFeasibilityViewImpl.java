@@ -15,24 +15,22 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
-import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.PieOpt;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.CoverageFeature;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductCandidate;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.DataSource;
 import com.geocento.webapps.eobroker.customer.shared.feasibility.FEASIBILITY;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductFeasibilityResponse;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -144,20 +142,20 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     private Presenter presenter;
 
-    private DataGrid<CoverageFeature> resultsTable;
+    private DataGrid<ProductCandidate> resultsTable;
 
-    private ListDataProvider<CoverageFeature> coverageFeaturesList;
+    private ListDataProvider<ProductCandidate> coverageFeaturesList;
 
-    private HashSet<CoverageFeature> selectedFeatures = new HashSet<CoverageFeature>();
+    private HashSet<ProductCandidate> selectedFeatures = new HashSet<ProductCandidate>();
 
     private class FeatureRendering {
         GraphicJSNI geometry;
         WMSLayerJSNI overlay;
     }
 
-    private HashMap<CoverageFeature, FeatureRendering> renderedFeatures = new HashMap<CoverageFeature, FeatureRendering>();
+    private HashMap<ProductCandidate, FeatureRendering> renderedFeatures = new HashMap<ProductCandidate, FeatureRendering>();
 
-    private CoverageFeature outlinedRecord;
+    private ProductCandidate outlinedRecord;
 
     private GraphicJSNI outlinedRecordGraphicJSNI;
 
@@ -199,7 +197,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     private void createResultsTable() {
 
         // create table
-        resultsTable = new DataGrid<CoverageFeature>(20, MyDataGridResources.INSTANCE);
+        resultsTable = new DataGrid<ProductCandidate>(20, MyDataGridResources.INSTANCE);
         resultsTable.setSize("100%", "100%");
         resultsTable.setPageSize(20);
 
@@ -209,9 +207,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         SimplePager pager = new SimplePager();
         pager.setDisplay(resultsTable);
 
-        resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<CoverageFeature>() {
+        resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<ProductCandidate>() {
             @Override
-            public void onCellPreview(CellPreviewEvent<CoverageFeature> event) {
+            public void onCellPreview(CellPreviewEvent<ProductCandidate> event) {
                 if (BrowserEvents.MOUSEOVER.equals(event.getNativeEvent().getType())) {
                     outlineRecord(event.getValue());
                 } else if (BrowserEvents.MOUSEOUT.equals(event.getNativeEvent().getType())) {
@@ -222,10 +220,10 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         features.setWidget(resultsTable);
 
-        SubrowTableBuilder tableBuilder = new SubrowTableBuilder<CoverageFeature>(resultsTable) {
+        SubrowTableBuilder tableBuilder = new SubrowTableBuilder<ProductCandidate>(resultsTable) {
 
             @Override
-            protected String getInformation(CoverageFeature coverageFeature) {
+            protected String getInformation(ProductCandidate coverageFeature) {
                 return coverageFeature.getDescription() == null ? "No information" : coverageFeature.getDescription();
             }
 
@@ -234,15 +232,15 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         displayResultMessage("No query performed, fill in your query in the query tab and press the check feasibility button");
 
         // define columns
-        Column<CoverageFeature, Boolean> checkColumn = new Column<CoverageFeature, Boolean>(new MaterialCheckBoxCell()) {
+        Column<ProductCandidate, Boolean> checkColumn = new Column<ProductCandidate, Boolean>(new MaterialCheckBoxCell()) {
             @Override
-            public Boolean getValue(CoverageFeature record) {
+            public Boolean getValue(ProductCandidate record) {
                 return selectedFeatures.contains(record);
             }
         };
-        checkColumn.setFieldUpdater(new FieldUpdater<CoverageFeature, Boolean>() {
+        checkColumn.setFieldUpdater(new FieldUpdater<ProductCandidate, Boolean>() {
             @Override
-            public void update(int index, CoverageFeature record, Boolean value) {
+            public void update(int index, ProductCandidate record, Boolean value) {
                 if (selectedFeatures.contains(record) != value) {
                     if (value) {
                         selectedFeatures.add(record);
@@ -254,9 +252,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                 }
             }
         });
-        TextColumn<CoverageFeature> titleColumn = new TextColumn<CoverageFeature>() {
+        TextColumn<ProductCandidate> titleColumn = new TextColumn<ProductCandidate>() {
             @Override
-            public String getValue(CoverageFeature object) {
+            public String getValue(ProductCandidate object) {
                 return object == null || object.getName() == null ? "Unknown" : object.getName();
             }
         };
@@ -267,7 +265,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         resultsTable.setColumnWidth(titleColumn, "100px");
         tableBuilder.addDeployableColumn(StyleResources.INSTANCE.info(), StyleResources.INSTANCE.info());
 
-        coverageFeaturesList = new ListDataProvider<CoverageFeature>();
+        coverageFeaturesList = new ListDataProvider<ProductCandidate>();
         coverageFeaturesList.addDataDisplay(resultsTable);
 
     }
@@ -276,27 +274,27 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
         MapJSNI map = mapContainer.map;
         // refresh products display on map
-        for(CoverageFeature coverageFeature : resultsTable.getVisibleItems()) {
+        for(ProductCandidate productCandidate : resultsTable.getVisibleItems()) {
             // skip if no geometry
-            if(coverageFeature.getGeometryWKT() == null) continue;
-            boolean toRender = selectedFeatures.contains(coverageFeature);
-            boolean rendered = renderedFeatures.containsKey(coverageFeature);
+            if(productCandidate.getGeometryWKT() == null) continue;
+            boolean toRender = selectedFeatures.contains(productCandidate);
+            boolean rendered = renderedFeatures.containsKey(productCandidate);
             if(toRender && !rendered) {
                 FeatureRendering featureRendering = new FeatureRendering();
-                String geometryWKT = coverageFeature.getGeometryWKT();
+                String geometryWKT = productCandidate.getGeometryWKT();
                 GeometryJSNI geometryJSNI = arcgisMap.createGeometry(geometryWKT);
                 featureRendering.geometry = map.getGraphics().addGraphic(geometryJSNI,
                         arcgisMap.createFillSymbol("#00ffff", 2, "rgba(0,0,0,0.0)"));
-                renderedFeatures.put(coverageFeature, featureRendering);
+                renderedFeatures.put(productCandidate, featureRendering);
             } else if(!toRender && rendered) {
-                FeatureRendering featureRendering = renderedFeatures.get(coverageFeature);
+                FeatureRendering featureRendering = renderedFeatures.get(productCandidate);
                 if(featureRendering.geometry != null) {
                     map.getGraphics().remove(featureRendering.geometry);
                 }
                 if(featureRendering.overlay != null) {
                     map.removeWMSLayer(featureRendering.overlay);
                 }
-                renderedFeatures.remove(coverageFeature);
+                renderedFeatures.remove(productCandidate);
             }
         }
         // remove previous outline record
@@ -313,8 +311,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         }
     }
 
-    private void outlineRecord(CoverageFeature coverageFeature) {
-        outlinedRecord = coverageFeature;
+    private void outlineRecord(ProductCandidate productCandidate) {
+        outlinedRecord = productCandidate;
         refreshMap();
     }
 
@@ -468,7 +466,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
-    public void displayResponse(final ProductFeasibilityResponse response) {
+    public void displayResponse(final FeasibilityResponse response) {
         Color color = Color.RED;
         String text = "Unknown";
         if (response.getFeasible() == FEASIBILITY.NONE) {
@@ -486,8 +484,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         feasibilityComment.setText(response.getMessage());
 
         // set the coverage features values
-        coverageFeaturesList.setList(response.getCoverages() == null ? new ArrayList<CoverageFeature>() : response.getCoverages());
-        coverageFeaturesValue.setText(response.getCoverages() == null ? "" : response.getCoverages().size() + "");
+        coverageFeaturesList.setList(response.getProductCandidates() == null ? new ArrayList<ProductCandidate>() : response.getProductCandidates());
+        coverageFeaturesValue.setText(response.getProductCandidates() == null ? "" : response.getProductCandidates().size() + "");
         refreshMap();
 
         feasibilityPanel.expand();
@@ -574,7 +572,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             if(coverageGraphics != null) {
                 map.getGraphics().remove(coverageGraphics);
             }
-            coverageGraphics = map.getGraphics().addGraphic(arcgisMap.createGeometry(response.getCoverages().get(0).getGeometryWKT()),
+            coverageGraphics = map.getGraphics().addGraphic(arcgisMap.createGeometry(response.getProductCandidates().get(0).getGeometryWKT()),
                     arcgisMap.createFillSymbol("#ffff00", 2, "rgba(0,255,0,0.5)"));
         }
         {
