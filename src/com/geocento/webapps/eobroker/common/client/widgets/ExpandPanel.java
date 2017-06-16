@@ -21,12 +21,20 @@ public class ExpandPanel extends Composite {
 
     private static ExpandPanelUiBinder ourUiBinder = GWT.create(ExpandPanelUiBinder.class);
 
+    public static interface OpenHandler {
+        void onOpen();
+    }
+
     @UiField
     MaterialLink label;
     @UiField
     MaterialPanel content;
     @UiField
     MaterialPanel header;
+
+    private OpenHandler openHandler;
+
+    private String id;
 
     public ExpandPanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -35,6 +43,9 @@ public class ExpandPanel extends Composite {
 
         label.addClickHandler(event -> {
             setOpen(!isOpen());
+            if(isOpen() && openHandler != null) {
+                openHandler.onOpen();
+            }
         });
     }
 
@@ -82,6 +93,18 @@ public class ExpandPanel extends Composite {
     public void setContent(Widget widget) {
         content.clear();
         content.add(widget);
+    }
+
+    public void setOpenHandler(OpenHandler openHandler) {
+        this.openHandler = openHandler;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.utils;
 
+import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.MessageEvent;
 import com.geocento.webapps.eobroker.supplier.client.places.NotificationEvent;
@@ -50,10 +51,14 @@ public class SupplierNotificationSocketHelper {
                             NotificationEvent notificationEvent = new NotificationEvent(webSocketMessage.getNotificationDTO());
                             Supplier.clientFactory.getEventBus().fireEvent(notificationEvent);
                             break;
-                        case message:
+                        case conversationMessage:
+                        case requestMessage:
                             MessageEvent messageEvent = new MessageEvent();
+                            messageEvent.setType(webSocketMessage.getType());
+                            messageEvent.setDestination(webSocketMessage.getDestination());
                             messageEvent.setMessage(webSocketMessage.getMessageDTO());
                             Supplier.clientFactory.getEventBus().fireEvent(messageEvent);
+                            break;
                     }
                 }
 

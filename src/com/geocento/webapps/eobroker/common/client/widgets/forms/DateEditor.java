@@ -53,6 +53,11 @@ public class DateEditor extends ElementEditor<DateFormElement> {
     }
 
     @Override
+    public void resetValue() {
+        setValue(null);
+    }
+
+    @Override
     public void setChangeListener(final ChangeListener changeListener) {
         datePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override

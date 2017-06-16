@@ -82,6 +82,8 @@ public abstract class ElementEditor<T extends FormElement> extends Composite imp
         return formElement;
     }
 
+    public abstract void resetValue();
+
     public abstract void setChangeListener(ChangeListener changeListener);
 
     @Override

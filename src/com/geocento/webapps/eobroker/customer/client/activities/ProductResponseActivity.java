@@ -4,9 +4,12 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
+import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ProductResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductResponseView;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceResponseDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceSupplierResponseDTO;
@@ -98,6 +101,7 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                     hideFullLoading();
                     request = productServiceResponseDTO;
                     productResponseView.displayTitle("Viewing your product request '" + productServiceResponseDTO.getId() + "'");
+                    productResponseView.displayImage(productServiceResponseDTO.getProduct().getImageUrl());
                     productResponseView.displayComment("See below your request and the suppliers' responses");
                     productResponseView.displayProductRequest(productServiceResponseDTO);
                     if(responseId == null) {
@@ -151,6 +155,25 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                 }
             }
         }));
+
+        activityEventBus.addHandler(MessageEvent.TYPE, new MessageEventHandler() {
+            @Override
+            public void onMessage(MessageEvent event) {
+                // check this is a relevant message
+                if (event.getType() == WebSocketMessage.TYPE.requestMessage) {
+                    for(ProductServiceSupplierResponseDTO productServiceSupplierResponseDTO : request.getSupplierResponses()) {
+                        if((productServiceSupplierResponseDTO.getId() + "").contentEquals(event.getDestination())) {
+                            productServiceSupplierResponseDTO.getMessages().add(event.getMessage());
+                            if(productServiceSupplierResponseDTO == selectedResponse) {
+                                addMessage(event.getMessage());
+                            } else {
+                                // TODO - put a notification element
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
     }
 

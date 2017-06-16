@@ -12,6 +12,7 @@ import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.ChangeStatus;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
+import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceSupplierResponseDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;

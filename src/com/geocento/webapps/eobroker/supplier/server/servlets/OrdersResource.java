@@ -2,7 +2,6 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
-import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
 import com.geocento.webapps.eobroker.common.shared.entities.Message;
@@ -12,16 +11,11 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
-import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
-import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.geocento.webapps.eobroker.supplier.client.services.OrdersService;
 import com.geocento.webapps.eobroker.supplier.server.util.MessageHelper;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ConversationDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ImagesRequestDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.MessageDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.UserHelper;
+import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -346,6 +340,12 @@ public class OrdersResource implements OrdersService {
                         }
                     });
                     productServiceSupplierRequest.getMessages().add(message);
+                    try {
+                        NotificationHelper.notifyCustomer(em, productServiceRequest.getCustomer(), Notification.TYPE.MESSAGE, "New message from company '" + user.getCompany().getName() + "' on request '" + productServiceSupplierRequest.getProductServiceRequest().getId() + "'", productServiceSupplierRequest.getProductServiceRequest().getId() + "");
+                        MessageHelper.sendUserRequestMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 } break;
             }
             em.getTransaction().commit();
@@ -446,11 +446,7 @@ public class OrdersResource implements OrdersService {
                 // notify
                 // TODO - maybe do not send notification message AND message but generate notification on the client side?
                 NotificationHelper.notifyCustomer(em, conversation.getCustomer(), Notification.TYPE.MESSAGE, "New reply from supplier " + user.getCompany().getName(), conversation.getId());
-                // send message
-                WebSocketMessage webSocketMessage = new WebSocketMessage();
-                webSocketMessage.setType(WebSocketMessage.TYPE.message);
-                webSocketMessage.setMessageDTO(com.geocento.webapps.eobroker.customer.shared.utils.MessageHelper.convertToDTO(message));
-                NotificationSocket.sendMessage(conversation.getCustomer().getUsername(), webSocketMessage);
+                MessageHelper.sendUserConversationMessage(conversation.getCustomer(), conversation.getId(), message);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }

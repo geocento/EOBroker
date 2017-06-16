@@ -50,11 +50,16 @@ public class TextEditor extends ElementEditor<TextFormElement> {
 
     @Override
     public void setFormElementValue(String value) {
-        setText(value);
+        setValue(value);
     }
 
-    public void setText(String text) {
+    public void setValue(String text) {
         textBox.setText(text);
+    }
+
+    @Override
+    public void resetValue() {
+        setValue(null);
     }
 
     @Override

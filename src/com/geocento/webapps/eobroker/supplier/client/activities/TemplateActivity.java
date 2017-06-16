@@ -50,7 +50,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
                 REST.withCallback(new MethodCallback<Void>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-
+                        Window.alert("Could not sign out session, reason is " + exception.getMessage());
                     }
 
                     @Override

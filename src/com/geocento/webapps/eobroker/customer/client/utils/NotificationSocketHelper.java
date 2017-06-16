@@ -50,10 +50,14 @@ public class NotificationSocketHelper {
                             notificationEvent.setNotification(webSocketMessage.getNotificationDTO());
                             Customer.clientFactory.getEventBus().fireEvent(notificationEvent);
                             break;
-                        case message:
+                        case conversationMessage:
+                        case requestMessage:
                             MessageEvent messageEvent = new MessageEvent();
                             messageEvent.setMessage(webSocketMessage.getMessageDTO());
+                            messageEvent.setType(webSocketMessage.getType());
+                            messageEvent.setDestination(webSocketMessage.getDestination());
                             Customer.clientFactory.getEventBus().fireEvent(messageEvent);
+                            break;
                     }
                 }
 

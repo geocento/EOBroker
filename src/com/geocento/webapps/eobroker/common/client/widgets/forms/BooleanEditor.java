@@ -43,6 +43,11 @@ public class BooleanEditor extends ElementEditor<BooleanFormElement> {
         setValue(Boolean.valueOf(value));
     }
 
+    @Override
+    public void resetValue() {
+        setValue(null);
+    }
+
     public void setValue(Boolean value) {
         materialSwitch.setValue(value);
     }

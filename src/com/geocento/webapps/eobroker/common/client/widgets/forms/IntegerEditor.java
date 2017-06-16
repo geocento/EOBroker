@@ -61,6 +61,11 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
     }
 
     @Override
+    public void resetValue() {
+        setValue(null);
+    }
+
+    @Override
     public void setChangeListener(final ChangeListener changeListener) {
         integerBox.addValueChangeHandler(new ValueChangeHandler<Integer>() {
             @Override

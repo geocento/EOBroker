@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ConversationView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ConversationDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.MessageDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -111,7 +112,10 @@ public class ConversationActivity extends TemplateActivity implements Conversati
         activityEventBus.addHandler(MessageEvent.TYPE, new MessageEventHandler() {
             @Override
             public void onMessage(MessageEvent event) {
-                addMessage(event.getMessage());
+                // check this is a relevant message
+                if(event.getType() == SupplierWebSocketMessage.TYPE.conversationMessage && event.getDestination().contentEquals(conversationDTO.getId())) {
+                    addMessage(event.getMessage());
+                }
             }
         });
 

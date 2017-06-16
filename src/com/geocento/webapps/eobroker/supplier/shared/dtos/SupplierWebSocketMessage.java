@@ -5,7 +5,17 @@ package com.geocento.webapps.eobroker.supplier.shared.dtos;
  */
 public class SupplierWebSocketMessage {
 
-    static public enum TYPE {notification, message};
+    private String destination;
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    static public enum TYPE {notification, conversationMessage, requestMessage};
 
     TYPE type;
 

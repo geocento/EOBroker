@@ -61,6 +61,11 @@ public class DoubleEditor extends ElementEditor<DoubleFormElement> {
     }
 
     @Override
+    public void resetValue() {
+        setValue(null);
+    }
+
+    @Override
     public void setChangeListener(final ChangeListener changeListener) {
         doubleBox.addValueChangeHandler(new ValueChangeHandler<Double>() {
             @Override

@@ -81,4 +81,9 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
         }
     }
 
+    @Override
+    public void resetValue() {
+        setValue(null);
+    }
+
 }

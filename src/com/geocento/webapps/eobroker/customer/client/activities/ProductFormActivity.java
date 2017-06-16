@@ -7,14 +7,13 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
+import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
-import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -71,35 +70,41 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
     @Override
     protected void bind() {
         super.bind();
+
         handlers.add(productFormView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 submitForm();
             }
         }));
+
     }
 
     private void submitForm() {
         try {
             List<FormElementValue> values = productFormView.getFormElementValues();
-            List<Long> productServiceIds = ListUtil.mutate(productFormView.getSelectedServices(), new ListUtil.Mutate<ProductServiceDTO, Long>() {
-                @Override
-                public Long mutate(ProductServiceDTO productServiceDTO) {
-                    return productServiceDTO.getId();
-                }
-            });
-            if(productServiceIds.size() == 0) {
-                throw new Exception("Please select at least one service");
-            }
-            displayLoading();
             ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
             productServiceRequestDTO.setProductId(productId);
             if(currentAoI == null) {
                 throw new Exception("Please define an AoI first");
             }
             productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(currentAoI));
-            productServiceRequestDTO.setProductServiceIds(productServiceIds);
+            if(productServiceId == null) {
+                List<Long> productServiceIds = ListUtil.mutate(productFormView.getSelectedServices(), new ListUtil.Mutate<ProductServiceDTO, Long>() {
+                    @Override
+                    public Long mutate(ProductServiceDTO productServiceDTO) {
+                        return productServiceDTO.getId();
+                    }
+                });
+                if (productServiceIds.size() == 0) {
+                    throw new Exception("Please select at least one service");
+                }
+                productServiceRequestDTO.setProductServiceIds(productServiceIds);
+            } else {
+                productServiceRequestDTO.setProductServiceIds(ListUtil.toList(productServiceId));
+            }
             productServiceRequestDTO.setValues(values);
+            displayLoading();
             try {
                 REST.withCallback(new MethodCallback<RequestDTO>() {
                     @Override
@@ -162,6 +167,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     public void onSuccess(Method method, final ProductFormDTO productFormDTO) {
                         hideLoading();
                         productFormView.setProduct(productFormDTO);
+                        clearRequest();
                     }
                 }).call(ServicesUtil.assetsService).getProductForm(productId);
             } catch (RequestException e) {
@@ -179,6 +185,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     public void onSuccess(Method method, final ProductServiceFormDTO productServiceFormDTO) {
                         hideLoading();
                         productFormView.setProductService(productServiceFormDTO);
+                        clearRequest();
                     }
                 }).call(ServicesUtil.assetsService).getProductServiceForm(productServiceId);
             } catch (RequestException e) {

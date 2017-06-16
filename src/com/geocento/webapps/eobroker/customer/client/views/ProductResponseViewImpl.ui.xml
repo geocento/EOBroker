@@ -1,0 +1,167 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+        >
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductResponseViewImpl.StyleFile">
+
+        .formValues {
+            margin: 0;
+            padding-bottom: 20px;
+        }
+
+        .section {
+            padding: 10px 0px 10px 10px;
+            font-size: 1rem;
+            color: #9e9e9e;
+        }
+
+        .buttonPanel {
+            padding: 20px 10px;
+        }
+
+        .mapPanel {
+            position: relative;
+        }
+
+        .panel {
+            margin: 0px auto;
+            max-width: 960px;
+        }
+
+        .title {
+            font-size: 1.4em;
+            margin: 10px 0px;
+        }
+
+        .details {
+            clear: both;
+            padding: 10px 0px;
+        }
+
+        .tabsPanel {
+            text-align: center;
+        }
+
+        .tabsPanel > * {
+            max-width: 960px;
+        }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+        }
+
+        .status {
+            text-transform: capitalize;
+        }
+
+        .requestDetails {
+
+        }
+
+        .responseTitle {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .colorPanel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .responsesContent {
+            position: relative;
+        }
+
+        .textConversation > textarea {
+            padding: 0px !important;
+        }
+
+        .conversation {
+            padding: 20px;
+        }
+
+        .response {
+            padding-left: 20px;
+        }
+
+        .image {
+            width: 100%;
+        }
+
+        .sectionLabel {
+            padding: 10px;
+            background: linear-gradient(to right, #809dab, rgba(0, 0, 0, 0));
+            text-transform: capitalize;
+        }
+
+    </ui:style>
+    <design:MaterialPanel addStyleNames="{style.panel}">
+        <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+            <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+                <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                    <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m8 l8">
+                    <design:MaterialPanel>
+                        <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                        <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
+                    </design:MaterialPanel>
+                    <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
+                        <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialDropDown activator="statuses" ui:field="statuses"></design:MaterialDropDown>
+        </design:MaterialRow>
+        <design:MaterialPanel layoutPosition="RELATIVE" ui:field="tabsPanel">
+            <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
+            <design:MaterialPanel layoutPosition="RELATIVE">
+                <widgets:ExpandPanel label="Your request" labelStyle="{style.sectionLabel}" labelColor="WHITE" open="true">
+                    <widgets:content>
+                        <design:MaterialRow addStyleNames="{style.formValues}" ui:field="requestTab">
+                            <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
+                            </design:MaterialColumn>
+                            <design:MaterialColumn grid="s12 m12 l6">
+                                <design:MaterialLabel text="Area of interest" addStyleNames="{style.section}"></design:MaterialLabel>
+                                <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                                    <maps:MapContainer width="100%" height="300px" editable="false" ui:field="mapContainer">
+                                    </maps:MapContainer>
+                                </g:HTMLPanel>
+                            </design:MaterialColumn>
+                        </design:MaterialRow>
+                    </widgets:content>
+                </widgets:ExpandPanel>
+                <design:MaterialPanel ui:field="offers">
+                </design:MaterialPanel>
+                <design:MaterialPanel addStyleNames="{style.responsesContent}" ui:field="responsesPanel">
+                    <design:MaterialPanel padding="20" ui:field="responsePanel">
+                        <g:HTMLPanel addStyleNames="{style.responseTitle}" ui:field="responseTitle"></g:HTMLPanel>
+                        <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.response}">
+                        </g:HTMLPanel>
+                        <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
+                        <design:MaterialRow marginTop="20" padding="10" ui:field="messages" addStyleNames="{style.formValues}">
+                        </design:MaterialRow>
+                        <design:MaterialPanel>
+                            <widgets:UserWidget float="LEFT" size="64" marginTop="20" ui:field="userImage"/>
+                            <widgets:ProgressButton float="RIGHT" iconType="SEND" type="FLOATING" size="LARGE" marginTop="20" ui:field="submitMessage">
+                            </widgets:ProgressButton>
+                            <design:MaterialTextArea marginLeft="100" marginRight="80" ui:field="message"></design:MaterialTextArea>
+                        </design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialPanel>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+</ui:UiBinder>

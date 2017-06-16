@@ -68,4 +68,5 @@ public class ProductServiceResponseDTO {
     public Request.STATUS getStatus() {
         return status;
     }
+
 }

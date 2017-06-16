@@ -10,13 +10,15 @@ public class WebSocketMessage {
 
     public static interface WebSocketMessageMapper extends ObjectMapper<WebSocketMessage> {};
 
-    static public enum TYPE {notification, message};
+    static public enum TYPE {notification, conversationMessage, requestMessage};
 
     TYPE type;
 
     // list of possible actual values
     NotificationDTO notificationDTO;
     MessageDTO messageDTO;
+
+    String destination;
 
     public WebSocketMessage() {
     }
@@ -44,4 +46,13 @@ public class WebSocketMessage {
     public void setMessageDTO(MessageDTO messageDTO) {
         this.messageDTO = messageDTO;
     }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
 }
