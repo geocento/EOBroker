@@ -70,7 +70,7 @@
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Date (only month and year count)" textColor="BLACK" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <design:MaterialDatePicker placeholder="Month and year" ui:field="date"></design:MaterialDatePicker>
+                    <design:MaterialDatePicker placeholder="Month and year" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="date"></design:MaterialDatePicker>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">

@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.shared.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

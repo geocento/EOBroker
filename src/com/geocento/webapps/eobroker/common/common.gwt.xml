@@ -10,6 +10,7 @@
     <inherits name="com.google.gwt.activity.Activity"/>
     <inherits name="org.fusesource.restygwt.RestyGWT"/>
     <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
+    <inherits name="com.googlecode.gwt.charts.Charts"/>
 
     <source path='client'/>
     <source path='shared'/>

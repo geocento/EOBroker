@@ -63,10 +63,10 @@
                         <m:MaterialListBox placeholder="Specify the application" ui:field="application"></m:MaterialListBox>
                     </m:MaterialColumn>
                     <m:MaterialColumn grid="s12 m6 l6">
-                        <m:MaterialDatePicker placeholder="Start time" ui:field="start"></m:MaterialDatePicker>
+                        <m:MaterialDatePicker placeholder="Start time" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="start"></m:MaterialDatePicker>
                     </m:MaterialColumn>
                     <m:MaterialColumn grid="s12 m6 l6">
-                        <m:MaterialDatePicker placeholder="Stop time" ui:field="stop"></m:MaterialDatePicker>
+                        <m:MaterialDatePicker placeholder="Stop time" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="stop"></m:MaterialDatePicker>
                     </m:MaterialColumn>
                     <m:MaterialColumn grid="s12">
                         <m:MaterialTextArea placeholder="Additional information" ui:field="information"></m:MaterialTextArea>

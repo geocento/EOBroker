@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.shared.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
 
 /**
  * Created by thomas on 02/06/2017.

@@ -15,7 +15,7 @@ import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityVie
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

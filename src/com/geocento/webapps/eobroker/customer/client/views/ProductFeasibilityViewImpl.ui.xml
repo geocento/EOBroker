@@ -131,13 +131,13 @@
                         <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" paddingTop="20" backgroundColor="WHITE">
                             <m:MaterialRow padding="0" margin="0" addStyleNames="{style.panel}">
                                 <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker ui:field="startDate" placeholder="Start Date" />
+                                    <m:MaterialDatePicker autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="startDate" placeholder="Start Date" />
                                     <!--
                                                             <forms:DateEditor ui:field="startDate"></forms:DateEditor>
                                     -->
                                 </m:MaterialColumn>
                                 <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker ui:field="stopDate" placeholder="Stop Date" />
+                                    <m:MaterialDatePicker autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="stopDate" placeholder="Stop Date" />
                                 </m:MaterialColumn>
                             </m:MaterialRow>
                             <m:MaterialRow padding="0" margin="0" ui:field="parameters">

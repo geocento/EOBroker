@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
@@ -24,7 +26,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
@@ -48,7 +49,7 @@ public class OrderViewImpl extends Composite implements OrderView {
     @UiField(provided = true)
     TemplateView template;
     @UiField
-    MaterialTitle title;
+    MaterialLabel title;
     @UiField
     MaterialColumn requestDescription;
     @UiField
@@ -67,6 +68,16 @@ public class OrderViewImpl extends Composite implements OrderView {
     ProgressButton submitResponse;
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor responseEditor;
+    @UiField
+    MaterialLabel description;
+    @UiField
+    MaterialLabel userName;
+    @UiField
+    ExpandPanel descriptionPanel;
+    @UiField
+    MaterialImageLoading image;
+    @UiField
+    MaterialButton status;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -136,12 +147,17 @@ public class OrderViewImpl extends Composite implements OrderView {
 
     @Override
     public void displayTitle(String title) {
-        this.title.setTitle(title);
+        this.title.setText(title);
+    }
+
+    @Override
+    public void displayDescription(String description) {
+        this.description.setText(description);
     }
 
     @Override
     public void displayUser(UserDTO customer) {
-        this.title.setDescription("From user '" + customer.getName() + "'");
+        userName.setText("From user '" + customer.getName() + "'");
     }
 
     @Override
@@ -161,6 +177,13 @@ public class OrderViewImpl extends Composite implements OrderView {
 
     @Override
     public void displayProductRequest(ProductServiceSupplierRequestDTO productServiceSupplierRequestDTO) {
+        displayTitle("Request for bespoke service '" + productServiceSupplierRequestDTO.getServiceName() + "'");
+        image.setImageUrl(productServiceSupplierRequestDTO.getServiceImage());
+        displayDescription("Request ID '" + productServiceSupplierRequestDTO.getId() +
+                "' requested on " + DateUtils.formatDateTime(productServiceSupplierRequestDTO.getCreationTime()));
+        displayUser(productServiceSupplierRequestDTO.getCustomer());
+        // TODO - change to take into account request status
+        status.setText("Submitted");
         this.requestDescription.clear();
         addRequestValue("Product requested", productServiceSupplierRequestDTO.getProduct().getName());
         if(productServiceSupplierRequestDTO.getFormValues().size() == 0) {

@@ -9,7 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResp
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 

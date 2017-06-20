@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.shared.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

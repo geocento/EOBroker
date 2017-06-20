@@ -1,11 +1,11 @@
-package com.geocento.webapps.eobroker.customer.shared.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
 
 import java.util.List;
 
 /**
  * Created by thomas on 15/06/2017.
  */
-public abstract class HeatMapStatistics extends Statistics {
+public class HeatMapStatistics extends Statistics {
 
     List<LocationValue> values;
 

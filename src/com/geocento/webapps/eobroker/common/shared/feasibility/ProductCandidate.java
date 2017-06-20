@@ -1,4 +1,6 @@
-package com.geocento.webapps.eobroker.customer.shared.feasibility;
+package com.geocento.webapps.eobroker.common.shared.feasibility;
+
+import java.util.List;
 
 /**
  * Created by thomas on 27/07/2016.
@@ -9,6 +11,8 @@ public class ProductCandidate {
 
     String name;
     String description;
+
+    List<Statistics> statistics;
 
     public ProductCandidate() {
     }
@@ -35,5 +39,19 @@ public class ProductCandidate {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     *
+     * Optional statistics on this product candidate
+     *
+     * @return
+     */
+    public List<Statistics> getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(List<Statistics> statistics) {
+        this.statistics = statistics;
     }
 }

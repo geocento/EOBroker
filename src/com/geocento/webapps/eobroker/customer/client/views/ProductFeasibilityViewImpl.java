@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
@@ -12,6 +13,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.feasibility.*;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
@@ -21,10 +23,6 @@ import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCel
 import com.geocento.webapps.eobroker.customer.client.widgets.PieOpt;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.ProductCandidate;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.DataSource;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.FEASIBILITY;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
@@ -492,6 +490,18 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         resultsTab.setEnabled(true);
 
+        // add stats
+        ChartWidget chartWidget = new ChartWidget();
+        chartWidget.loadChartAPI(new Runnable() {
+            @Override
+            public void run() {
+                // check available stats
+                for(Statistics statistics : response.getStatistics()) {
+                    chartWidget.addStatistics(statistics);
+                }
+            }
+        });
+        this.statistics.add(chartWidget);
 /*
         resultsTab.setVisible(true);
         results.clear();

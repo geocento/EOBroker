@@ -105,7 +105,7 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Founded in" iconType="ACCESS_TIME" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
-                <design:MaterialDatePicker placeholder="Date of the incorporation of the company" dateSelectionType="YEAR_MONTH_DAY" ui:field="startedIn"></design:MaterialDatePicker>
+                <design:MaterialDatePicker autoClose="true" placeholder="Date of the incorporation of the company" dateSelectionType="YEAR_MONTH_DAY" ui:field="startedIn"></design:MaterialDatePicker>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Address" iconType="LOCATION_CITY" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>

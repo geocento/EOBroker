@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.XMLUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
@@ -19,7 +20,10 @@ import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityRequest;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.Parameter;
+import com.geocento.webapps.eobroker.common.shared.feasibility.UserInformation;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
@@ -31,7 +35,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -548,6 +551,7 @@ public class SearchResource implements SearchService {
     public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
                                                        Long companyId, Long productId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         List<ProductService> productServices = null;
         EntityManager em = EMF.get().createEntityManager();
         List<String> additionalStatements = new ArrayList<String>();
@@ -598,6 +602,7 @@ public class SearchResource implements SearchService {
                                                        Long aoiId, String aoiWKT,
                                                        ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame,
                                                        Long companyId, Long productId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
         List<String> additionalStatements = new ArrayList<String>();
@@ -660,6 +665,7 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<SoftwareDTO> listSoftware(String textFilter, Integer start, Integer limit, Long aoiId, SoftwareType softwareType) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         List<Software> softwares = null;
         EntityManager em = EMF.get().createEntityManager();
         List<String> additionalStatements = new ArrayList<String>();
@@ -716,6 +722,7 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<ProjectDTO> listProjects(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         List<Project> projects = null;
         EntityManager em = EMF.get().createEntityManager();
         List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit, null);
@@ -747,6 +754,7 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<com.geocento.webapps.eobroker.common.shared.imageapi.Product> queryImages(SearchQuery searchQuery) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         try {
             SearchRequest searchRequest = new SearchRequest();
             searchRequest.setAoiWKT(searchQuery.getAoiWKT());
@@ -793,27 +801,28 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public FeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequest) throws RequestException {
-        if(feasibilityRequest == null) {
+    public FeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequestDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(feasibilityRequestDTO == null) {
             throw new RequestException("Feasibility request cannot be null");
         }
-        Long productServiceId = feasibilityRequest.getProductServiceId();
+        Long productServiceId = feasibilityRequestDTO.getProductServiceId();
         if(productServiceId == null) {
             throw new RequestException("Product service id cannot be null");
         }
-        String aoiWKT = feasibilityRequest.getAoiWKT();
+        String aoiWKT = feasibilityRequestDTO.getAoiWKT();
         if(aoiWKT == null) {
             throw new RequestException("AoI id cannot be null");
         }
-        Date start = feasibilityRequest.getStart();
+        Date start = feasibilityRequestDTO.getStart();
         if(start == null) {
             throw new RequestException("Start date cannot be null");
         }
-        Date stop = feasibilityRequest.getStop();
+        Date stop = feasibilityRequestDTO.getStop();
         if(stop == null) {
             throw new RequestException("Stop date cannot be null");
         }
-        List<FormElementValue> formElementValues = feasibilityRequest.getFormElementValues();
+        List<FormElementValue> formElementValues = feasibilityRequestDTO.getFormElementValues();
         if(formElementValues == null) {
             // TODO - allow empty form values?
             formElementValues = new ArrayList<FormElementValue>();
@@ -831,17 +840,28 @@ public class SearchResource implements SearchService {
             }
 */
             // now call the API with the parameters
-            JSONObject json = new JSONObject();
             try {
-                json.put("aoiWKT", aoiWKT); //AoIUtil.toWKT(aoi));
-                json.put("start", start.getTime());
-                json.put("stop", stop.getTime());
-                // TODO - check they match the actual API definition?
-                for(FormElementValue formElementValue : formElementValues) {
-                    json.put(formElementValue.getFormid(), formElementValue.getValue());
-                }
-                String response = sendAPIRequest(productService.getApiUrl(), json.toString());
-                FeasibilityResponse feasibilityResponse = builder.create().fromJson(response, FeasibilityResponse.class);
+                FeasibilityRequest feasibilityRequest = new FeasibilityRequest();
+                User user = em.find(User.class, userName);
+                UserInformation userInformation = new UserInformation();
+                userInformation.setUserName(userName);
+                userInformation.setUserCompany(user.getCompany() == null ? null : user.getCompany().getName());
+                feasibilityRequest.setUserInformation(userInformation);
+                feasibilityRequest.setAoiWKT(aoiWKT);
+                feasibilityRequest.setStart(start);
+                feasibilityRequest.setStop(stop);
+                feasibilityRequest.setServiceParameters(ListUtil.mutate(formElementValues, new ListUtil.Mutate<FormElementValue, Parameter>() {
+                    @Override
+                    public Parameter mutate(FormElementValue formElementValue) {
+                        Parameter parameter = new Parameter();
+                        parameter.setName(formElementValue.getFormid());
+                        parameter.setValue(formElementValue.getValue());
+                        return parameter;
+                    }
+                }));
+                ObjectMapper objectMapper = new ObjectMapper();
+                String response = sendAPIRequest(productService.getApiUrl(), objectMapper.writeValueAsString(feasibilityRequest));
+                FeasibilityResponse feasibilityResponse = objectMapper.readValue(response, FeasibilityResponse.class);
                 return feasibilityResponse;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

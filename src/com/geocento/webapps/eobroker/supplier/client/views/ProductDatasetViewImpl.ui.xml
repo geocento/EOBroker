@@ -117,9 +117,9 @@
                 <design:MaterialLink text="Temporal coverage" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialPanel addStyleNames="{style.timePeriod}">
-                        <design:MaterialDatePicker placeholder="From" dateSelectionType="YEAR_MONTH_DAY" ui:field="from"></design:MaterialDatePicker>
+                        <design:MaterialDatePicker autoClose="true" placeholder="From" dateSelectionType="YEAR_MONTH_DAY" ui:field="from"></design:MaterialDatePicker>
                         <design:MaterialCheckBox text="" ui:field="untilCheck"></design:MaterialCheckBox>
-                        <design:MaterialDatePicker placeholder="Until" dateSelectionType="YEAR_MONTH_DAY" ui:field="until"></design:MaterialDatePicker>
+                        <design:MaterialDatePicker autoClose="true" placeholder="Until" dateSelectionType="YEAR_MONTH_DAY" ui:field="until"></design:MaterialDatePicker>
                         <design:MaterialCheckBox text="Refreshed" ui:field="refreshed"></design:MaterialCheckBox>
                         <design:MaterialTextBox placeholder="Describe refresh rate" length="100" ui:field="refreshRateDescription"></design:MaterialTextBox>
                     </design:MaterialPanel>

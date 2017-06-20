@@ -70,8 +70,11 @@ public class OrdersResource implements OrdersService {
             if(productSupplierServiceRequest == null) {
                 throw new RequestException("Could not find supplier service request");
             }
+            productServiceSupplierRequestDTO.setServiceName(productSupplierServiceRequest.getProductService().getName());
+            productServiceSupplierRequestDTO.setServiceImage(productSupplierServiceRequest.getProductService().getImageUrl());
             productServiceSupplierRequestDTO.setSupplierResponse(productSupplierServiceRequest.getResponse());
             productServiceSupplierRequestDTO.setMessages(MessageHelper.convertToDTO(productSupplierServiceRequest.getMessages()));
+            productServiceSupplierRequestDTO.setCreationTime(productServiceRequest.getCreationDate());
             return productServiceSupplierRequestDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

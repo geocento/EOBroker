@@ -135,10 +135,10 @@
                         <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
                             <m:MaterialRow marginTop="20">
                                 <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker textColor="BLACK" selectionType="YEAR_MONTH_DAY" ui:field="startDate" placeholder="Start Date" />
+                                    <m:MaterialDatePicker textColor="BLACK" autoClose="true" selectionType="YEAR_MONTH_DAY" ui:field="startDate" placeholder="Start Date" />
                                 </m:MaterialColumn>
                                 <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker textColor="BLACK" selectionType="YEAR_MONTH_DAY" ui:field="stopDate" placeholder="Stop Date" />
+                                    <m:MaterialDatePicker textColor="BLACK" autoClose="true" selectionType="YEAR_MONTH_DAY" ui:field="stopDate" placeholder="Stop Date" />
                                 </m:MaterialColumn>
                                 <m:MaterialColumn grid="s12">
                                     <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>

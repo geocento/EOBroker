@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
@@ -92,8 +93,6 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         public void onSuccess(Method method, ProductServiceSupplierRequestDTO productServiceSupplierRequestDTO) {
                             hideFullLoading();
                             request = productServiceSupplierRequestDTO;
-                            orderView.displayTitle("Viewing product request '" + productServiceSupplierRequestDTO.getId() + "'");
-                            orderView.displayUser(productServiceSupplierRequestDTO.getCustomer());
                             orderView.displayProductRequest(productServiceSupplierRequestDTO);
                         }
                     }).call(ServicesUtil.ordersService).getProductRequest(orderId);
@@ -159,6 +158,7 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         @Override
                         public void onSuccess(Method method, MessageDTO response) {
                             hideLoading();
+                            orderView.getMessageText().setText("");
                             addMessage(response);
                         }
                     }).call(ServicesUtil.ordersService).addRequestMessage(type, request.getId(), orderView.getMessageText().getText());

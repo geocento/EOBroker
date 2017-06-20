@@ -63,8 +63,8 @@
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Project dates" textColor="BLACK" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <design:MaterialDatePicker placeholder="From" ui:field="from"></design:MaterialDatePicker>
-                    <design:MaterialDatePicker placeholder="Until" ui:field="until"></design:MaterialDatePicker>
+                    <design:MaterialDatePicker placeholder="From" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="from"></design:MaterialDatePicker>
+                    <design:MaterialDatePicker placeholder="Until" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="until"></design:MaterialDatePicker>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">

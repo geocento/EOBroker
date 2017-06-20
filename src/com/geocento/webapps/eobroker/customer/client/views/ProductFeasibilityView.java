@@ -4,7 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.customer.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;

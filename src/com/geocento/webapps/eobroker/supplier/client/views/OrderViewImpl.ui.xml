@@ -28,47 +28,89 @@
             position: relative;
         }
 
+        .sectionLabel {
+            padding: 10px;
+            background: linear-gradient(to right, #809dab, rgba(0, 0, 0, 0));
+            text-transform: capitalize;
+        }
+
+        .image {
+            width: 100%;
+        }
+
+        .title {
+            font-size: 1.4em;
+            margin: 10px 0px;
+        }
+
+        .status {
+            text-transform: capitalize;
+        }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+        }
+
+        .userName {
+
+        }
+
     </ui:style>
     <views:TemplateView titleText="Manage user requests" ui:field="template">
-        <design:MaterialTitle title="" ui:field="title"></design:MaterialTitle>
-        <design:MaterialCollapsible accordion="false" shadow="0">
-            <design:MaterialCollapsibleItem shadow="0" active="true">
-                <design:MaterialCollapsibleHeader shadow="0">
-                    <design:MaterialLabel fontSize="1.2em">Request details</design:MaterialLabel>
-                </design:MaterialCollapsibleHeader>
-                <design:MaterialCollapsibleBody margin="0" padding="0" shadow="0">
-                    <design:MaterialRow  addStyleNames="{style.formValues}">
-                        <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
-                        </design:MaterialColumn>
-                        <design:MaterialColumn grid="s12 m12 l6">
-                            <design:MaterialLabel text="" addStyleNames="{style.section}"></design:MaterialLabel>
-                            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                                <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
-                                </maps:ArcGISMap>
-                            </g:HTMLPanel>
-                        </design:MaterialColumn>
-                    </design:MaterialRow>
-                </design:MaterialCollapsibleBody>
-            </design:MaterialCollapsibleItem>
-            <design:MaterialCollapsibleItem active="true">
-                <design:MaterialCollapsibleHeader>
-                    <design:MaterialLabel fontSize="1.2em">Your offer</design:MaterialLabel>
-                </design:MaterialCollapsibleHeader>
-                <design:MaterialCollapsibleBody>
-                    <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
-                        <material:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></material:MaterialRichEditor>
-                        <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                            <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
-                            </widgets:ProgressButton>
+        <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+            <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
+                <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                    <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m8 l8">
+                    <design:MaterialPanel>
+                        <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                        <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
+                    </design:MaterialPanel>
+                    <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                    <design:MaterialLabel addStyleNames="{style.userName}" ui:field="userName"></design:MaterialLabel>
+                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
+                        <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialDropDown activator="statuses" ui:field="statuses"></design:MaterialDropDown>
+        </design:MaterialRow>
+        <widgets:ExpandPanel label="Description" labelStyle="{style.sectionLabel}" labelColor="WHITE" open="true" ui:field="descriptionPanel">
+            <widgets:content>
+                <design:MaterialRow  addStyleNames="{style.formValues}">
+                    <design:MaterialColumn ui:field="requestDescription" grid="s12 m12 l6">
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m12 l6">
+                        <design:MaterialLabel text="" addStyleNames="{style.section}"></design:MaterialLabel>
+                        <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                            <maps:ArcGISMap width="100%" height="300px" ui:field="mapContainer">
+                            </maps:ArcGISMap>
                         </g:HTMLPanel>
+                    </design:MaterialColumn>
+                </design:MaterialRow>
+            </widgets:content>
+        </widgets:ExpandPanel>
+        <widgets:ExpandPanel label="Your offer" labelStyle="{style.sectionLabel}" labelColor="WHITE" ui:field="response">
+            <widgets:content>
+                <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
+                    <material:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></material:MaterialRichEditor>
+                    <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                        <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
+                        </widgets:ProgressButton>
                     </g:HTMLPanel>
-                </design:MaterialCollapsibleBody>
-            </design:MaterialCollapsibleItem>
-            <design:MaterialCollapsibleItem active="true">
-                <design:MaterialCollapsibleHeader>
-                    <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
-                </design:MaterialCollapsibleHeader>
-                <design:MaterialCollapsibleBody>
+                </g:HTMLPanel>
+            </widgets:content>
+        </widgets:ExpandPanel>
+        <widgets:ExpandPanel label="Conversation" labelStyle="{style.sectionLabel}" labelColor="WHITE" ui:field="conversation">
+            <widgets:content>
+                <design:MaterialPanel>
                     <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
                     </design:MaterialRow>
                     <design:MaterialPanel>
@@ -77,8 +119,8 @@
                         </widgets:ProgressButton>
                         <design:MaterialTextArea marginLeft="100" marginRight="80" ui:field="message"></design:MaterialTextArea>
                     </design:MaterialPanel>
-                </design:MaterialCollapsibleBody>
-            </design:MaterialCollapsibleItem>
-        </design:MaterialCollapsible>
+                </design:MaterialPanel>
+            </widgets:content>
+        </widgets:ExpandPanel>
     </views:TemplateView>
 </ui:UiBinder>

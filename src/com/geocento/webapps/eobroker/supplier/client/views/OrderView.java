@@ -17,6 +17,8 @@ public interface OrderView extends IsWidget {
 
     void displayTitle(String title);
 
+    void displayDescription(String description);
+
     void displayUser(UserDTO customer);
 
     void setPresenter(Presenter presenter);

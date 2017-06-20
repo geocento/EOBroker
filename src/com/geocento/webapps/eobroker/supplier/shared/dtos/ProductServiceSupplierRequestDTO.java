@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +14,9 @@ public class ProductServiceSupplierRequestDTO extends BaseRequestDTO {
     List<FormElementValue> formValues;
     private String supplierResponse;
     private String aoIWKT;
+    private String serviceName;
+    private Date creationTime;
+    private String serviceImage;
 
     public ProductServiceSupplierRequestDTO() {
     }
@@ -49,4 +53,27 @@ public class ProductServiceSupplierRequestDTO extends BaseRequestDTO {
         return aoIWKT;
     }
 
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public String getServiceImage() {
+        return serviceImage;
+    }
+
+    public void setServiceImage(String serviceImage) {
+        this.serviceImage = serviceImage;
+    }
 }

@@ -183,10 +183,10 @@
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}, {style.filterByTimeFrame}" ui:field="filterByTimeFrame"></design:MaterialCheckBox>
                             <design:MaterialRow marginLeft="40">
                                 <design:MaterialColumn grid="s6 m6 l6">
-                                    <design:MaterialDatePicker placeholder="Start date" dateSelectionType="YEAR_MONTH_DAY" ui:field="start"></design:MaterialDatePicker>
+                                    <design:MaterialDatePicker placeholder="Start date" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="start"></design:MaterialDatePicker>
                                 </design:MaterialColumn>
                                 <design:MaterialColumn grid="s6 m6 l6">
-                                    <design:MaterialDatePicker placeholder="Stop date" dateSelectionType="YEAR_MONTH_DAY" ui:field="stop"></design:MaterialDatePicker>
+                                    <design:MaterialDatePicker placeholder="Stop date" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="stop"></design:MaterialDatePicker>
                                 </design:MaterialColumn>
                             </design:MaterialRow>
                         </g:HTMLPanel>
