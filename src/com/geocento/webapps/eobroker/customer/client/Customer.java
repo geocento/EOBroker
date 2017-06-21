@@ -107,7 +107,7 @@ public class Customer implements EntryPoint {
         com.geocento.webapps.eobroker.common.client.styles.StyleResources.INSTANCE.style().ensureInjected();
         StyleResources.INSTANCE.style().ensureInjected();
         Defaults.setServiceRoot(GWT.getModuleBaseURL() + "api");
-        Defaults.setDateFormat(null);
+        //Defaults.setDateFormat(null);
     }
 
     public static void setLoginInfo(LoginInfo loginInfo) {

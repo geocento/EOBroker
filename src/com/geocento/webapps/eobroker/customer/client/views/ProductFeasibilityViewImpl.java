@@ -1,10 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
+import com.geocento.webapps.eobroker.common.client.styles.MyCellTableResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
@@ -20,7 +20,6 @@ import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
-import com.geocento.webapps.eobroker.customer.client.widgets.PieOpt;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -39,18 +38,11 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
-import com.googlecode.gwt.charts.client.ChartLoader;
-import com.googlecode.gwt.charts.client.ChartPackage;
-import com.googlecode.gwt.charts.client.ColumnType;
-import com.googlecode.gwt.charts.client.DataTable;
-import com.googlecode.gwt.charts.client.corechart.PieChart;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
 import gwt.material.design.client.constants.Color;
@@ -128,7 +120,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @UiField
     LoadingWidget loadingResults;
     @UiField
-    HTMLPanel statistics;
+    MaterialPanel statistics;
     @UiField
     MaterialLabel message;
     @UiField
@@ -137,12 +129,22 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialChip supplier;
     @UiField
     MaterialImage serviceImage;
+    @UiField
+    SimplePanel pagerPanel;
+    @UiField
+    MaterialLabel messageCandidates;
+    @UiField
+    MaterialCollapsibleItem statisticsPanel;
+    @UiField
+    ChartPanel chartPanel;
 
     private Presenter presenter;
 
-    private DataGrid<ProductCandidate> resultsTable;
+    private CellTable<ProductCandidate> resultsTable;
 
     private ListDataProvider<ProductCandidate> coverageFeaturesList;
+
+    private ColumnSortEvent.ListHandler<ProductCandidate> sortDataHandler;
 
     private HashSet<ProductCandidate> selectedFeatures = new HashSet<ProductCandidate>();
 
@@ -195,7 +197,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     private void createResultsTable() {
 
         // create table
-        resultsTable = new DataGrid<ProductCandidate>(20, MyDataGridResources.INSTANCE);
+        resultsTable = new CellTable<ProductCandidate>(20, MyCellTableResources.INSTANCE);
         resultsTable.setSize("100%", "100%");
         resultsTable.setPageSize(20);
 
@@ -204,6 +206,13 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         // add a pager
         SimplePager pager = new SimplePager();
         pager.setDisplay(resultsTable);
+
+        coverageFeaturesList = new ListDataProvider<ProductCandidate>();
+        coverageFeaturesList.setList(new ArrayList<ProductCandidate>());
+        coverageFeaturesList.addDataDisplay(resultsTable);
+
+        sortDataHandler = new ColumnSortEvent.ListHandler<>(coverageFeaturesList.getList());
+        resultsTable.addColumnSortHandler(sortDataHandler);
 
         resultsTable.addCellPreviewHandler(new CellPreviewEvent.Handler<ProductCandidate>() {
             @Override
@@ -217,6 +226,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         });
 
         features.setWidget(resultsTable);
+        pagerPanel.setWidget(pager);
 
         SubrowTableBuilder tableBuilder = new SubrowTableBuilder<ProductCandidate>(resultsTable) {
 
@@ -227,7 +237,10 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         };
         resultsTable.setTableBuilder(tableBuilder);
+
+/*
         displayResultMessage("No query performed, fill in your query in the query tab and press the check feasibility button");
+*/
 
         // define columns
         Column<ProductCandidate, Boolean> checkColumn = new Column<ProductCandidate, Boolean>(new MaterialCheckBoxCell()) {
@@ -260,11 +273,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         resultsTable.setColumnWidth(checkColumn, "30px");
         //resultsTable.addColumn(geometryColumn, SafeHtmlUtils.fromSafeConstant("<br/>"));
         resultsTable.addColumn(titleColumn, "title");
-        resultsTable.setColumnWidth(titleColumn, "100px");
+        //resultsTable.setColumnWidth(titleColumn, "100px");
         tableBuilder.addDeployableColumn(StyleResources.INSTANCE.info(), StyleResources.INSTANCE.info());
-
-        coverageFeaturesList = new ListDataProvider<ProductCandidate>();
-        coverageFeaturesList.addDataDisplay(resultsTable);
 
     }
 
@@ -421,11 +431,11 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         servicesLink.setText(productServiceFeasibilityDTO.getName());
         serviceImage.setUrl(productServiceFeasibilityDTO.getImageURL());
-        supplier.setText(productServiceFeasibilityDTO.getCompanyDTO().getName());
+        supplier.setText(productServiceFeasibilityDTO.getCompany().getName());
         supplier.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(
                 new FullViewPlace(
                         Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(),
-                                productServiceFeasibilityDTO.getCompanyDTO().getId() + ""))));
+                                productServiceFeasibilityDTO.getCompany().getId() + ""))));
         tab.selectTab("query");
         onResize(null);
     }
@@ -482,8 +492,15 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         feasibilityComment.setText(response.getMessage());
 
         // set the coverage features values
-        coverageFeaturesList.setList(response.getProductCandidates() == null ? new ArrayList<ProductCandidate>() : response.getProductCandidates());
+        coverageFeaturesList.getList().clear();
+        boolean hasProductCandidates = response.getProductCandidates() != null && response.getProductCandidates().size() > 0;
+        if(hasProductCandidates) {
+            coverageFeaturesList.getList().addAll(response.getProductCandidates());
+        }
+        resultsTable.setVisible(hasProductCandidates);
         coverageFeaturesValue.setText(response.getProductCandidates() == null ? "" : response.getProductCandidates().size() + "");
+        messageCandidates.setText(hasProductCandidates ? "List of possible products" : "No product available");
+        pagerPanel.setVisible(hasProductCandidates && response.getProductCandidates().size() > resultsTable.getPageSize());
         refreshMap();
 
         feasibilityPanel.expand();
@@ -491,17 +508,20 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         resultsTab.setEnabled(true);
 
         // add stats
-        ChartWidget chartWidget = new ChartWidget();
-        chartWidget.loadChartAPI(new Runnable() {
+        chartPanel.clear();
+        chartPanel.loadChartAPI(new Runnable() {
             @Override
             public void run() {
+                // make sure the panel is expanded to get the right width
                 // check available stats
                 for(Statistics statistics : response.getStatistics()) {
-                    chartWidget.addStatistics(statistics);
+                    chartPanel.addStatistics(statistics);
                 }
+                //chartPanel.setWidth();
+                chartPanel.onResize(null);
             }
         });
-        this.statistics.add(chartWidget);
+        this.statistics.add(chartPanel);
 /*
         resultsTab.setVisible(true);
         results.clear();
@@ -674,6 +694,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         return feasibilityHeader;
     }
 
+/*
     private void displaySensors(Widget target, final List<DataSource> dataSources) {
         cutOut.setTarget(target);
         chartsArea.clear();
@@ -719,6 +740,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         });
         cutOut.open();
     }
+*/
 
     @UiHandler("btnCutOutClose")
     void closeCutOut(ClickEvent clickEvent) {
@@ -756,6 +778,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             mapContainer.map.resize();
         }
         searchPanel.onResize();
+        chartPanel.onResize(null);
     }
 
 }

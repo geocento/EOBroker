@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
@@ -15,7 +16,6 @@ import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityVie
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
-import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -163,7 +163,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
             @Override
             public void onClick(ClickEvent event) {
                 clientFactory.getPlaceController().goTo(new ProductFormPlace(
-                        ProductFormPlace.TOKENS.id.toString() + "=" + productServiceFeasibilityDTO.getId()));
+                        ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceFeasibilityDTO.getId()));
             }
         });
         productFeasibilityView.getContactButton().addClickHandler(new ClickHandler() {
@@ -171,7 +171,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
             public void onClick(ClickEvent event) {
                 clientFactory.getPlaceController().goTo(new ConversationPlace(
                         Utils.generateTokens(
-                                ConversationPlace.TOKENS.companyid.toString(), productServiceFeasibilityDTO.getCompanyDTO().getId() + "",
+                                ConversationPlace.TOKENS.companyid.toString(), productServiceFeasibilityDTO.getCompany().getId() + "",
                                 ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productServiceFeasibilityDTO.getName() + "'")));
             }
         });
@@ -217,7 +217,15 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
                         @Override
                         public void onSuccess(Method method, FeasibilityResponse response) {
+/*
+                            // TODO - update history with feasibility request ID
+                            History.
+*/
                             productFeasibilityView.hideLoadingResults();
+                            if(response.getStatusCode() > 299) {
+                                productFeasibilityView.displayResultsError(response.getStatusMessage());
+                                return;
+                            }
                             productFeasibilityView.displayResponse(response);
                         }
                     }).call(ServicesUtil.searchService).callSupplierAPI(feasibilityRequestDTO);

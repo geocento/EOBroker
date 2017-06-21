@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value=TimeGanttStatistics.class, name="timeGanttChart"),
         @JsonSubTypes.Type(value=TimeLineStatistics.class, name="timeLineChart"),
-        @JsonSubTypes.Type(value=HeatMapStatistics.class, name="heatmapChart"),
         @JsonSubTypes.Type(value=WMSStatistics.class, name="wmsChart"),
         @JsonSubTypes.Type(value=BarChartStatistics.class, name="barChart"),
         @JsonSubTypes.Type(value=PieChartStatistics.class, name="pieChart")

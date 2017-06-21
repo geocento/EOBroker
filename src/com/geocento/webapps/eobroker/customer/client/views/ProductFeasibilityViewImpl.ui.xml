@@ -6,7 +6,8 @@
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:cutout="urn:import:gwt.material.design.addins.client.cutout"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
-             xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps">
+             xmlns:cmaps="urn:import:com.geocento.webapps.eobroker.customer.client.widgets.maps"
+             xmlns:charts="urn:import:com.geocento.webapps.eobroker.common.client.widgets.charts">
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityViewImpl.Style">
 
         .providers {
@@ -20,11 +21,13 @@
         }
 
         .queryPanel {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
             line-height: normal !important;
         }
 
         .result {
-            min-height: 200px;
             overflow: hidden;
             overflow-y: auto;
             padding: 0;
@@ -97,8 +100,17 @@
             cursor: pointer;
         }
 
+        .pager {
+            text-align: center;
+        }
+
+        .statistics {
+            padding: 1rem;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+    <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <m:MaterialPanel addStyleNames="{style.content}">
         <g:DockLayoutPanel addStyleNames="{style.contentPanel}">
             <g:west size="350">
@@ -127,7 +139,7 @@
                             </m:MaterialTabItem>
                         </m:MaterialTab>
                     </m:MaterialPanel>
-                    <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}" ui:field="queryPanel">
+                    <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}, {resCommon.style.slimScrollbar}" ui:field="queryPanel">
                         <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" paddingTop="20" backgroundColor="WHITE">
                             <m:MaterialRow padding="0" margin="0" addStyleNames="{style.panel}">
                                 <m:MaterialColumn grid="s6">
@@ -151,17 +163,17 @@
                         <m:MaterialColumn m:id="results" grid="s12" padding="0">
                             <widgets:LoadingWidget addStyleNames="{style.loadingResults}" ui:field="loadingResults"></widgets:LoadingWidget>
                             <m:MaterialLabel padding="10" ui:field="message"></m:MaterialLabel>
-                            <g:HTMLPanel addStyleNames="{style.result}" ui:field="results">
-                                <m:MaterialCollapsible margin="0" backgroundColor="WHITE">
+                            <g:HTMLPanel ui:field="results">
+                                <m:MaterialCollapsible margin="0" backgroundColor="WHITE" shadow="0">
                                     <m:MaterialCollapsibleItem ui:field="feasibilityPanel">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
                                             <g:HTMLPanel>
                                                 <m:MaterialLink text="PARTIAL" textColor="ORANGE" float="RIGHT" width="auto" ui:field="feasibilityValue"></m:MaterialLink>
-                                                <m:MaterialLink iconType="TRAFFIC" text="Feasibility:"></m:MaterialLink>
+                                                <m:MaterialLink iconType="TRAFFIC" text="Feasibility status"></m:MaterialLink>
                                             </g:HTMLPanel>
                                         </m:MaterialCollapsibleHeader>
                                         <m:MaterialCollapsibleBody>
-                                            <m:MaterialLabel padding="20" ui:field="feasibilityComment">
+                                            <m:MaterialLabel ui:field="feasibilityComment">
                                             </m:MaterialLabel>
                                         </m:MaterialCollapsibleBody>
                                     </m:MaterialCollapsibleItem>
@@ -169,21 +181,26 @@
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
                                             <g:HTMLPanel>
                                                 <m:MaterialLink text="83%" textColor="BLUE" float="RIGHT" width="auto" ui:field="coverageFeaturesValue"></m:MaterialLink>
-                                                <m:MaterialLink text="Products" textColor="BLUE" iconType="LAYERS"/>
+                                                <m:MaterialLink text="Product candidates" textColor="BLUE" iconType="LAYERS"/>
                                             </g:HTMLPanel>
                                         </m:MaterialCollapsibleHeader>
-                                        <m:MaterialCollapsibleBody>
-                                            <g:SimplePanel addStyleNames="{style.result}" ui:field="features">
-                                            </g:SimplePanel>
+                                        <m:MaterialCollapsibleBody padding="0">
+                                            <m:MaterialPanel>
+                                                <m:MaterialLabel padding="10" ui:field="messageCandidates"></m:MaterialLabel>
+                                                <g:SimplePanel addStyleNames="{style.result}" ui:field="features">
+                                                </g:SimplePanel>
+                                                <g:SimplePanel addStyleNames="{style.pager}" ui:field="pagerPanel"></g:SimplePanel>
+                                            </m:MaterialPanel>
                                         </m:MaterialCollapsibleBody>
                                     </m:MaterialCollapsibleItem>
-                                    <m:MaterialCollapsibleItem ui:field="options">
+                                    <m:MaterialCollapsibleItem ui:field="statisticsPanel">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
-                                            <m:MaterialLink text="Performances" textColor="BLUE" iconType="PIE_CHART"/>
+                                            <m:MaterialLink text="Statistics" textColor="BLUE" iconType="PIE_CHART"/>
                                         </m:MaterialCollapsibleHeader>
-                                        <m:MaterialCollapsibleBody>
-                                            <g:HTMLPanel addStyleNames="{style.section}" ui:field="statistics">
-                                            </g:HTMLPanel>
+                                        <m:MaterialCollapsibleBody padding="0">
+                                            <m:MaterialPanel addStyleNames="{style.statistics}" ui:field="statistics">
+                                                <charts:ChartPanel ui:field="chartPanel"></charts:ChartPanel>
+                                            </m:MaterialPanel>
                                         </m:MaterialCollapsibleBody>
                                     </m:MaterialCollapsibleItem>
                                 </m:MaterialCollapsible>

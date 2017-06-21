@@ -12,6 +12,8 @@
     <inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
     <inherits name="com.googlecode.gwt.charts.Charts"/>
 
+    <set-property name="restygwt.encodeDecode.useGwtJackson" value="true" />
+
     <source path='client'/>
     <source path='shared'/>
 

@@ -11,7 +11,7 @@ public class ProductServiceFeasibilityDTO {
     String name;
     String imageURL;
     String apiURL;
-    CompanyDTO companyDTO;
+    CompanyDTO company;
 
     public ProductServiceFeasibilityDTO() {
     }
@@ -40,12 +40,12 @@ public class ProductServiceFeasibilityDTO {
         this.imageURL = imageURL;
     }
 
-    public CompanyDTO getCompanyDTO() {
-        return companyDTO;
+    public CompanyDTO getCompany() {
+        return company;
     }
 
-    public void setCompany(CompanyDTO companyDTO) {
-        this.companyDTO = companyDTO;
+    public void setCompany(CompanyDTO company) {
+        this.company = company;
     }
 
     public String getApiURL() {
