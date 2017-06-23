@@ -38,13 +38,18 @@ public class ChartPanel extends MaterialPanel implements ResizeHandler {
 
     public void addPieChartStatistics(PieChartStatistics pieChartStatistics) {
         PieChart chart = new PieChart();
-        chart.setWidth(getOffsetWidth() + "px");
+        chart.setWidth("100%");
         chart.setHeight("100%");
-        add(chart);
+        DataTable dataTable = createDataTable(pieChartStatistics.getValues(), "Labels", "Values");
+        PieChartOptions options = PieChartOptions.create();
+        chart.draw(dataTable, options);
+        addChartWidget(chart);
+    }
+
+    private DataTable createDataTable(Map<String, Double> values, String textLabel, String valueLabel) {
         DataTable dataTable = DataTable.create();
-        dataTable.addColumn(ColumnType.STRING, "Labels");
-        dataTable.addColumn(ColumnType.NUMBER, "Values");
-        Map<String, Double> values = pieChartStatistics.getValues();
+        dataTable.addColumn(ColumnType.STRING, textLabel);
+        dataTable.addColumn(ColumnType.NUMBER, valueLabel);
         dataTable.addRows(values.size());
         int index = 0;
         for(String label : values.keySet()) {
@@ -52,18 +57,30 @@ public class ChartPanel extends MaterialPanel implements ResizeHandler {
             dataTable.setValue(index, 1, values.get(label));
             index++;
         }
-        PieChartOptions options = PieChartOptions.create();
-        chart.draw(dataTable, options);
+        return dataTable;
     }
 
     public void addBarChartStatistics(BarChartStatistics barChartStatistics) {
-        MaterialPanel materialPanel = new MaterialPanel();
-        materialPanel.setLayoutPosition(Style.Position.RELATIVE);
-        add(materialPanel);
         BarChart chart = new BarChart();
         chart.setWidth("100%");
         chart.setHeight("100%");
         chart.getElement().getStyle().setProperty("boxSizing", "border-box");
+        DataTable dataTable = createDataTable(barChartStatistics.getValues(),"Labels", "Values");
+        BarChartOptions options = BarChartOptions.create();
+        HAxis hAxis = HAxis.create();
+        hAxis.setTitle(barChartStatistics.getxLabel());
+        options.setHAxis(hAxis);
+        VAxis vAxis = VAxis.create();
+        vAxis.setTitle(barChartStatistics.getyLabel());
+        options.setVAxis(vAxis);
+        chart.draw(dataTable, options);
+        addChartWidget(chart);
+    }
+
+    private void addChartWidget(Widget chart) {
+        MaterialPanel materialPanel = new MaterialPanel();
+        materialPanel.setLayoutPosition(Style.Position.RELATIVE);
+        add(materialPanel);
         materialPanel.add(chart);
         {
             MaterialLink viewLink = new MaterialLink();
@@ -85,25 +102,6 @@ public class ChartPanel extends MaterialPanel implements ResizeHandler {
                 Window.alert("TODO - display in full screen");
             });
         }
-        DataTable dataTable = DataTable.create();
-        dataTable.addColumn(ColumnType.STRING, "Labels");
-        dataTable.addColumn(ColumnType.NUMBER, "Values");
-        Map<String, Double> values = barChartStatistics.getValues();
-        dataTable.addRows(values.size());
-        int index = 0;
-        for(String label : values.keySet()) {
-            dataTable.setValue(index, 0, label);
-            dataTable.setValue(index, 1, values.get(label));
-            index++;
-        }
-        BarChartOptions options = BarChartOptions.create();
-        HAxis hAxis = HAxis.create();
-        hAxis.setTitle(barChartStatistics.getxLabel());
-        options.setHAxis(hAxis);
-        VAxis vAxis = VAxis.create();
-        vAxis.setTitle(barChartStatistics.getyLabel());
-        options.setVAxis(vAxis);
-        chart.draw(dataTable, options);
     }
 
     public void loadChartAPI(Runnable runnable) {
