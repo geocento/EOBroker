@@ -509,238 +509,25 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         // add stats
         chartPanel.clear();
-        chartPanel.loadChartAPI(new Runnable() {
-            @Override
-            public void run() {
-                // make sure the panel is expanded to get the right width
-                // check available stats
-                for(Statistics statistics : response.getStatistics()) {
-                    chartPanel.addStatistics(statistics);
-                }
-                //chartPanel.setWidth();
-                chartPanel.onResize(null);
-            }
-        });
-        this.statistics.add(chartPanel);
-/*
-        resultsTab.setVisible(true);
-        results.clear();
-        // add main collapsible panel
-        MaterialCollapsible materialCollapsible = new MaterialCollapsible();
-        materialCollapsible.setBackgroundColor(Color.WHITE);
-        results.add(materialCollapsible);
-
-        // add feasibility result
-        {
-            MaterialCollapsibleItem materialCollapsibleItem = new MaterialCollapsibleItem();
-            materialCollapsible.add(materialCollapsibleItem);
-            // add the header
-            FeasibilityHeader feasibilityHeader = addFeasibilityHeader(materialCollapsibleItem, "Feasibility", IconType.TRAFFIC);
-            // add the message
-            HTMLPanel messagePanel = new HTMLPanel("<p>" + response.getMessage() + "</p>");
-            messagePanel.addStyleName(style.section());
-            MaterialCollapsibleBody materialCollapsibleBody = new MaterialCollapsibleBody(messagePanel);
-            materialCollapsibleItem.add(materialCollapsibleBody);
-            if (response.getFeasible() == ProductFeasibilityResponse.FEASIBILITY.NONE) {
-                feasibilityHeader.setIndicatorText("NOT FEASIBLE");
-                feasibilityHeader.setIndicatorColor(Color.RED);
-                return;
-            } else if (response.getFeasible() == ProductFeasibilityResponse.FEASIBILITY.PARTIAL) {
-                feasibilityHeader.setIndicatorText("PARTIAL");
-                feasibilityHeader.setIndicatorColor(Color.ORANGE);
-            } else if (response.getFeasible() == ProductFeasibilityResponse.FEASIBILITY.GOOD) {
-                feasibilityHeader.setIndicatorText("LIKELY");
-                feasibilityHeader.setIndicatorColor(Color.AMBER);
-            }
-        }
-
-        // add the coverage section
-        {
-            MaterialCollapsibleItem materialCollapsibleItem = new MaterialCollapsibleItem();
-            materialCollapsible.add(materialCollapsibleItem);
-            // add the header
-            FeasibilityHeader feasibilityHeader = addFeasibilityHeader(materialCollapsibleItem, "Potential coverage", IconType.LAYERS);
-            feasibilityHeader.setIndicatorText(NumberFormat.getFormat(".#").format(response.getBestCoverageValue() * 100.0) + "%");
-            // add the different values
-            HTMLPanel valuesPanel = new HTMLPanel("");
-            valuesPanel.addStyleName(style.section());
-            MaterialCollapsibleBody materialCollapsibleBody = new MaterialCollapsibleBody(valuesPanel);
-            materialCollapsibleItem.add(materialCollapsibleBody);
-            final FeasibilityHeader sensorsUsed = new FeasibilityHeader();
-            sensorsUsed.setHeaderText("Sensors used");
-            sensorsUsed.setIndicatorText(response.getSensors().size() + "");
-            sensorsUsed.addClickHandler(new ClickHandler() {
+        if(response.getStatistics() != null && response.getStatistics().size() > 0){
+            chartPanel.loadChartAPI(new Runnable() {
                 @Override
-                public void onClick(ClickEvent event) {
-                    displaySensors(sensorsUsed, response.getSensors());
+                public void run() {
+                    // make sure the panel is expanded to get the right width
+                    // check available stats
+                    for (Statistics statistics : response.getStatistics()) {
+                        chartPanel.addStatistics(statistics);
+                    }
+                    //chartPanel.setWidth();
+                    chartPanel.onResize(null);
                 }
             });
-            valuesPanel.add(sensorsUsed);
-            final FeasibilityHeader imageCoverage = new FeasibilityHeader();
-            imageCoverage.setHeaderText("AoIDTO coverage");
-            imageCoverage.setIndicatorText(NumberFormat.getFormat(".#").format(response.getBestCoverageValue() * 100.0) + "%");
-            imageCoverage.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    displaySensors(imageCoverage, response.getSensors());
-                }
-            });
-            valuesPanel.add(imageCoverage);
-            final FeasibilityHeader revisitRate = new FeasibilityHeader();
-            revisitRate.setHeaderText("Revisit rate");
-            revisitRate.setIndicatorText(response.getBestRevisitRate() == null ? "none" : response.getBestRevisitRate() + " days");
-            revisitRate.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    displaySensors(revisitRate, response.getSensors());
-                }
-            });
-            valuesPanel.add(revisitRate);
-            // add coverage
-            MapJSNI map = mapContainer.map;
-            ArcgisMapJSNI arcgisMap = mapContainer.getArcgisMap();
-            if(coverageGraphics != null) {
-                map.getGraphics().remove(coverageGraphics);
-            }
-            coverageGraphics = map.getGraphics().addGraphic(arcgisMap.createGeometry(response.getProductCandidates().get(0).getGeometryWKT()),
-                    arcgisMap.createFillSymbol("#ffff00", 2, "rgba(0,255,0,0.5)"));
+        } else {
+            MaterialLabel materialLabel = new MaterialLabel("No statistic has been provided");
+            materialLabel.addStyleName(style.subsection());
+            chartPanel.add(materialLabel);
         }
-        {
-            MaterialCollapsibleItem materialCollapsibleItem = new MaterialCollapsibleItem();
-            materialCollapsible.add(materialCollapsibleItem);
-            // add the header
-            FeasibilityHeader feasibilityHeader = addFeasibilityHeader(materialCollapsibleItem, "Delivery", IconType.LAYERS);
-            feasibilityHeader.setIndicatorText("");
-            // add the different values
-            HTMLPanel valuesPanel = new HTMLPanel("");
-            valuesPanel.addStyleName(style.section());
-            MaterialCollapsibleBody materialCollapsibleBody = new MaterialCollapsibleBody(valuesPanel);
-            materialCollapsibleItem.add(materialCollapsibleBody);
-            // add information on time to delivery
-            MaterialLabel timeToDelivery = new MaterialLabel("Time to delivery");
-            final MaterialLink timeView = new MaterialLink("Not provided");
-            timeView.setFloat(com.google.gwt.dom.client.Style.Float.RIGHT);
-            timeToDelivery.add(timeView);
-            timeView.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                }
-            });
-            // add information on data delivered formats
-            MaterialLabel formatsDelivered = new MaterialLabel("Formats: PDF, Shapefile, OGC");
-            valuesPanel.add(formatsDelivered);
-        }
-        {
-            MaterialCollapsibleItem materialCollapsibleItem = new MaterialCollapsibleItem();
-            materialCollapsible.add(materialCollapsibleItem);
-            // add the header
-            FeasibilityHeader feasibilityHeader = addFeasibilityHeader(materialCollapsibleItem, "Output", IconType.DATA_USAGE);
-            feasibilityHeader.setIndicatorText("");
-            // add the different values
-            HTMLPanel valuesPanel = new HTMLPanel("");
-            valuesPanel.addStyleName(style.section());
-            MaterialCollapsibleBody materialCollapsibleBody = new MaterialCollapsibleBody(valuesPanel);
-            materialCollapsibleItem.add(materialCollapsibleBody);
-            MaterialLabel features = new MaterialLabel("Features");
-            features.addStyleName(style.subsection());
-            valuesPanel.add(features);
-            for(Feature feature : response.getFeatures()) {
-                valuesPanel.add(new MaterialTooltip(new MaterialLabel(feature.getName()), feature.getDescription()));
-            }
-            MaterialLabel sampleOutput = new MaterialLabel("Sample output");
-            sampleOutput.addStyleName(style.subsection());
-            valuesPanel.add(sampleOutput);
-            if(response.getSamples() != null) {
-                MaterialLink pdfReport = new MaterialLink();
-                pdfReport.setText("Sample report");
-                pdfReport.setIconType(IconType.FILE_DOWNLOAD);
-                pdfReport.setHref(response.getSamples().getPdfReport());
-                pdfReport.setTarget("_blank;");
-                pdfReport.setDisplay(Display.BLOCK);
-                pdfReport.setHeight("2em");
-                valuesPanel.add(pdfReport);
-                MaterialLink wmsLink = new MaterialLink();
-                wmsLink.setText("OGC service");
-                wmsLink.setIconType(IconType.MAP);
-                wmsLink.setHref(response.getSamples().getWmsLayer());
-                wmsLink.setTarget("_blank;");
-                wmsLink.setDisplay(Display.BLOCK);
-                wmsLink.setHeight("2em");
-                valuesPanel.add(wmsLink);
-            }
-        }
-        {
-            MaterialCollapsibleItem materialCollapsibleItem = new MaterialCollapsibleItem();
-            materialCollapsible.add(materialCollapsibleItem);
-            // add the header
-            FeasibilityHeader feasibilityHeader = addFeasibilityHeader(materialCollapsibleItem, "Additional information", IconType.LAYERS);
-            feasibilityHeader.setIndicatorText("");
-            // add the different values
-            HTMLPanel valuesPanel = new HTMLPanel("Additional text TBD provided by supplier");
-            valuesPanel.addStyleName(style.section());
-            MaterialCollapsibleBody materialCollapsibleBody = new MaterialCollapsibleBody(valuesPanel);
-            materialCollapsibleItem.add(materialCollapsibleBody);
-        }
-*/
     }
-
-    private FeasibilityHeader addFeasibilityHeader(MaterialCollapsibleItem materialCollapsibleItem, String text, IconType iconType) {
-        MaterialCollapsibleHeader materialCollapsibleHeader = new MaterialCollapsibleHeader();
-        materialCollapsibleItem.add(materialCollapsibleHeader);
-        FeasibilityHeader feasibilityHeader = new FeasibilityHeader();
-        feasibilityHeader.setHeaderText(text);
-        feasibilityHeader.setHeaderIcon(iconType);
-        materialCollapsibleHeader.add(feasibilityHeader);
-        return feasibilityHeader;
-    }
-
-/*
-    private void displaySensors(Widget target, final List<DataSource> dataSources) {
-        cutOut.setTarget(target);
-        chartsArea.clear();
-        MaterialRow materialRow = new MaterialRow();
-        chartsArea.add(materialRow);
-        final MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
-        materialRow.add(materialColumn);
-        MaterialCard materialCard = new MaterialCard();
-        MaterialCardTitle materialCardTitle = new MaterialCardTitle();
-        materialCardTitle.setText("Potential sensors used for service");
-        materialCard.add(materialCardTitle);
-        final MaterialCardContent materialCardContent = new MaterialCardContent();
-        materialCard.add(materialCardContent);
-        materialColumn.add(materialCard);
-        ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART);
-        chartLoader.loadApi(new Runnable() {
-
-            @Override
-            public void run() {
-                PieChart chart = new PieChart();
-                chart.setWidth("100%");
-                chart.setHeight("100%");
-                materialCardContent.add(chart);
-                DataTable dataTable = DataTable.create();
-                dataTable.addColumn(ColumnType.STRING, "Sensor type");
-                dataTable.addColumn(ColumnType.NUMBER, "Number of sensors");
-                HashMap<DataSource.IMAGETYPE, Integer> sensorType = new HashMap<DataSource.IMAGETYPE, Integer>();
-                for(DataSource dataSource : dataSources) {
-                    DataSource.IMAGETYPE imageType = dataSource.getImagetype();
-                    sensorType.put(imageType, sensorType.get(imageType) == null ? new Integer(1) : (sensorType.get(imageType) + 1));
-                }
-                dataTable.addRows(sensorType.size());
-                int index = 0;
-                for(DataSource.IMAGETYPE imageType : sensorType.keySet()) {
-                    dataTable.setValue(index, 0, imageType.toString());
-                    dataTable.setValue(index, 1, sensorType.get(imageType));
-                }
-                PieOpt opt = new PieOpt();
-                opt.setColors("2196f3", "42a5f5", "64b5f6", "90caf9", "bbdefb");
-
-                chart.draw(dataTable, opt.get());
-            }
-        });
-        cutOut.open();
-    }
-*/
 
     @UiHandler("btnCutOutClose")
     void closeCutOut(ClickEvent clickEvent) {

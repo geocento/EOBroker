@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+
+    <design:MaterialPanel>
+        <design:MaterialPanel layoutPosition="RELATIVE">
+            <design:MaterialLink textColor="BLACK" fontSize="0.9em" paddingBottom="10" ui:field="label"></design:MaterialLink>
+            <design:MaterialTooltip text="Description" ui:field="description">
+                <design:MaterialLink layoutPosition="ABSOLUTE" right="5" top="5" iconSize="TINY" iconType="INFO" ui:field="descriptionLink"></design:MaterialLink>
+            </design:MaterialTooltip>
+        </design:MaterialPanel>
+        <design:MaterialPanel layoutPosition="RELATIVE">
+            <design:MaterialTooltip text="Open in full window size">
+                <design:MaterialLink layoutPosition="ABSOLUTE" right="5" bottom="5" iconSize="TINY" iconType="OPEN_IN_NEW" ui:field="viewLink"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialPanel ui:field="chartPanel"></design:MaterialPanel>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+
+</ui:UiBinder>
