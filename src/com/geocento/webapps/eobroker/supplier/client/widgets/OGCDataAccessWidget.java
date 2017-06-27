@@ -24,7 +24,15 @@ public class OGCDataAccessWidget extends DataAccessWidget {
 
     private MaterialCheckBox corsEnabled;
 
+    public OGCDataAccessWidget(DatasetAccessOGC datasetAccess) {
+        this(datasetAccess, datasetAccess.isHostedData(), true);
+    }
+
     public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri) {
+        this(datasetAccess, editableUri, true);
+    }
+
+    public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri, boolean withWCS) {
         super(datasetAccess, editableUri);
         //  rename uri to layer name
         uri.setPlaceholder("Provide the layer name for this data");
@@ -66,21 +74,23 @@ public class OGCDataAccessWidget extends DataAccessWidget {
             panel.add(styleNameEditor);
             addField(panel);
         }
-        wcsServer = new MaterialTextBox();
-        wcsServer.setPlaceholder("The WCS service server URL, if available");
-        wcsServer.setMarginTop(20);
-        //wcsServer.setReadOnly(!editableUri);
-        wcsServer.setText(datasetAccess.getWcsServerUrl());
-        addField(wcsServer);
-        wcsResourceName = new MaterialTextBox();
-        wcsResourceName.setPlaceholder("The WCS resource name, if available");
-        wcsResourceName.setMarginTop(20);
-        //wcsResourceName.setReadOnly(!editableUri);
-        wcsResourceName.setText(datasetAccess.getWcsResourceName());
-        addField(wcsResourceName);
+        if(withWCS) {
+            wcsServer = new MaterialTextBox();
+            wcsServer.setPlaceholder("The WCS service server URL, if available");
+            wcsServer.setMarginTop(20);
+            //wcsServer.setReadOnly(!editableUri);
+            wcsServer.setText(datasetAccess.getWcsServerUrl());
+            addField(wcsServer);
+            wcsResourceName = new MaterialTextBox();
+            wcsResourceName.setPlaceholder("The WCS resource name, if available");
+            wcsResourceName.setMarginTop(20);
+            //wcsResourceName.setReadOnly(!editableUri);
+            wcsResourceName.setText(datasetAccess.getWcsResourceName());
+            addField(wcsResourceName);
+        }
         corsEnabled = new MaterialCheckBox();
         corsEnabled.setText("CORS enabled");
-        corsEnabled.setEnabled(!editableUri);
+        corsEnabled.setEnabled(editableUri);
         corsEnabled.setValue(datasetAccess.isCorsEnabled());
         MaterialPanel materialPanel = new MaterialPanel();
         materialPanel.add(corsEnabled);
@@ -102,8 +112,8 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         // update fields if editable
         if(editableUri) {
             ((DatasetAccessOGC) datasetAccess).setServerUrl(serverUrl.getText());
-            ((DatasetAccessOGC) datasetAccess).setWcsServerUrl(wcsServer.getText());
-            ((DatasetAccessOGC) datasetAccess).setWcsResourceName(wcsResourceName.getText());
+            ((DatasetAccessOGC) datasetAccess).setWcsServerUrl(wcsServer == null ? null : wcsServer.getText());
+            ((DatasetAccessOGC) datasetAccess).setWcsResourceName(wcsResourceName == null ? null : wcsResourceName.getText());
             ((DatasetAccessOGC) datasetAccess).setCorsEnabled(corsEnabled.getValue());
         } else {
             String styleName = styleNameEditor.getText();

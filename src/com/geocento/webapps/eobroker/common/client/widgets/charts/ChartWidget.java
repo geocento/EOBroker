@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.shared.feasibility.*;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -76,6 +77,7 @@ public class ChartWidget extends Composite implements ResizeHandler {
         timeGrid.setHeight("25px");
         // resize later
         timeGrid.setWidth("100%");
+        timeGrid.getElement().getStyle().setMarginBottom(30, Style.Unit.PX);
         timeGrid.clearAll();
         List<Date> dates = new ArrayList<Date>();
         // find min and max of time series

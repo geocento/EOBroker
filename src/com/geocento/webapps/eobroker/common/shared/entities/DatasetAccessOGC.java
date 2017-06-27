@@ -15,7 +15,6 @@ public class DatasetAccessOGC extends DatasetAccess {
     String serverUrl;
     String styleName;
 
-    // TODO - add support for WCS
     @Column(length = 1000)
     String wcsServerUrl;
     String wcsResourceName;

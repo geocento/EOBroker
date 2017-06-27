@@ -134,6 +134,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
             productServiceView.setProductGeoinformation(null);
         }
         productServiceView.setExtent(AoIUtil.fromWKT(productServiceDTO.getExtent()));
+        productServiceView.setCoverageLayers(productServiceDTO.getCoverageLayers());
         productServiceView.getWebsite().setText(productServiceDTO.getWebsite());
         productServiceView.getAPIUrl().setText(productServiceDTO.getApiURL() == null ? "" : productServiceDTO.getApiURL());
         productServiceView.setSelectedDataAccessTypes(productServiceDTO.getSelectedDataAccessTypes());
@@ -165,6 +166,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                 productServiceDTO.setProvidedPerformances(productServiceView.getSelectedPerformances());
                 productServiceDTO.setPerformancesComment(productServiceView.getPerformancesComment().getText());
                 productServiceDTO.setExtent(productServiceView.getExtent() == null ? null : AoIUtil.toWKT(productServiceView.getExtent()));
+                productServiceDTO.setCoverageLayers(productServiceView.getCoverageLayers());
                 productServiceDTO.setEmail(productServiceView.getEmail().getText());
                 productServiceDTO.setWebsite(productServiceView.getWebsite().getText());
                 productServiceDTO.setFullDescription(productServiceView.getFullDescription());

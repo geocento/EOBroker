@@ -18,17 +18,18 @@ public class ProductServiceEditDTO {
     String website;
     String fullDescription;
     String extent;
+    List<DatasetAccessOGC> coverageLayers;
     List<FeatureDescription> productFeatures;
     List<Long> selectedFeatures;
     String apiURL;
-    private List<DatasetAccess> samples;
-    private List<AccessType> selectedDataAccessTypes;
-    private List<PerformanceDescription> performances;
-    private List<PerformanceValue> providedPerformances;
-    private String performancesComment;
-    private String geoinformationComment;
-    private String disseminationComment;
-    private String timeToDelivery;
+    List<DatasetAccess> samples;
+    List<AccessType> selectedDataAccessTypes;
+    List<PerformanceDescription> performances;
+    List<PerformanceValue> providedPerformances;
+    String performancesComment;
+    String geoinformationComment;
+    String disseminationComment;
+    String timeToDelivery;
 
     public ProductServiceEditDTO() {
     }
@@ -191,5 +192,13 @@ public class ProductServiceEditDTO {
 
     public void setTimeToDelivery(String timeToDelivery) {
         this.timeToDelivery = timeToDelivery;
+    }
+
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        return coverageLayers;
+    }
+
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers = coverageLayers;
     }
 }

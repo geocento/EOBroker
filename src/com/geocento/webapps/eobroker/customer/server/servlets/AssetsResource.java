@@ -468,6 +468,7 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setPerformancesComments(productService.getPerformancesComment());
             productServiceDescriptionDTO.setTimeToDelivery(productService.getTimeToDelivery());
             productServiceDescriptionDTO.setExtent(productService.getExtent());
+            productServiceDescriptionDTO.setCoverageLayers(productService.getCoverageLayers());
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
             productServiceDescriptionDTO.setSelectedAccessTypes(productService.getSelectedAccessTypes());
             productServiceDescriptionDTO.setSamples(productService.getSamples());

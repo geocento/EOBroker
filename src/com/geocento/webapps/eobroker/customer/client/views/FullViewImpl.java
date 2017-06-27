@@ -300,8 +300,10 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         extentPanel.add(mapContainer);
-        extentPanel.add(createSubsection("Statistics on the coverage of this service"));
-        extentPanel.add(createComment("TODO - show stats on service if provided"));
+        List<DatasetAccessOGC> coverageLayers = productServiceDescriptionDTO.getCoverageLayers();
+        if(coverageLayers != null && coverageLayers.size() > 0) {
+            extentPanel.add(createComment("Additional information is available for the coverage of this service, click on the stats layers icon in the map above"));
+        }
         addSection("Extent of the service",
                 worldWide ? "This bespoke service is available worldwide" : "This is the area that can be covered by the bespoke service"
                 , extentPanel);
@@ -313,7 +315,7 @@ public class FullViewImpl extends Composite implements FullView {
             timeDeliveryLabel.setPadding(20);
             timeDeliveryLabel.setText(productServiceDescriptionDTO.getTimeToDelivery());
             timeToDeliveryPanel.add(timeDeliveryLabel);
-            addSection("Time to delivery", "Time to delivery indicates the time it will take between the availability of data and the final product is delivered", extentPanel);
+            addSection("Time to delivery", "Time to delivery indicates the time it will take between the availability of data and the final product is delivered", timeToDeliveryPanel);
             //materialColumn.add(performancesPanel);
         }
 

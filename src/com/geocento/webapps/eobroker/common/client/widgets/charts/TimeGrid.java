@@ -43,6 +43,8 @@ public class TimeGrid extends Composite implements ResizeHandler {
     @UiField
     AbsolutePanel timeTicks;
 
+    private List<Date> dates;
+
     private Date minDate;
     private Date maxDate;
 
@@ -198,6 +200,12 @@ public class TimeGrid extends Composite implements ResizeHandler {
     }
 
     public void setDates(List<Date> dates) {
+        this.dates = dates;
+        drawTicks();
+    }
+
+    private void drawTicks() {
+        clearTicks();
         for (Date date : dates) {
             HTMLPanel tickPanel = new HTMLPanel("");
             tickPanel.addStyleName(style.tickItem());
@@ -209,6 +217,7 @@ public class TimeGrid extends Composite implements ResizeHandler {
     @Override
     public void onResize(ResizeEvent event) {
         drawBands();
+        drawTicks();
     }
 
 }

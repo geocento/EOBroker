@@ -144,6 +144,7 @@ public class AssetsResource implements AssetsService {
             productServiceDTO.setWebsite(productService.getWebsite());
             productServiceDTO.setServiceImage(productService.getImageUrl());
             productServiceDTO.setExtent(productService.getExtent());
+            productServiceDTO.setCoverageLayers(productService.getCoverageLayers());
             if(productService.getProduct() != null) {
                 productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
                 productServiceDTO.setProductFeatures(productService.getProduct().getGeoinformation());
@@ -256,6 +257,9 @@ public class AssetsResource implements AssetsService {
             productService.setApiUrl(productServiceDTO.getApiURL());
             productService.setDisseminationComment(productServiceDTO.getDisseminationComment());
             productService.setTimeToDelivery(productServiceDTO.getTimeToDelivery());
+            // update the coverage layers
+            List<DatasetAccessOGC> dbCoverageLayers = updateCoverageLayers(em, productService.getCoverageLayers(), productServiceDTO.getCoverageLayers());
+            productService.setCoverageLayers(dbCoverageLayers);
             // update the sample access
             List<DatasetAccess> dbSamples = updateSamples(em, productService.getSamples(), productServiceDTO.getSamples());
             productService.setSamples(dbSamples);
@@ -290,6 +294,44 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private List<DatasetAccessOGC> updateCoverageLayers(EntityManager em, List<DatasetAccessOGC> dbCoverageLayers, List<DatasetAccessOGC> coverageLayers) {
+        List<DatasetAccessOGC> changeCoverageLayers = new ArrayList<DatasetAccessOGC>();
+        if (coverageLayers != null && coverageLayers.size() > 0) {
+            for (final DatasetAccessOGC datasetAccess : coverageLayers) {
+                DatasetAccessOGC dbDatasetAccess = null;
+                if (datasetAccess.getId() != null) {
+                    dbDatasetAccess = ListUtil.findValue(dbCoverageLayers, new ListUtil.CheckValue<DatasetAccessOGC>() {
+                        @Override
+                        public boolean isValue(DatasetAccessOGC value) {
+                            return value.getId().equals(datasetAccess.getId());
+                        }
+                    });
+                }
+                if (dbDatasetAccess == null) {
+                    em.persist(datasetAccess);
+                    dbDatasetAccess = datasetAccess;
+                }
+                dbDatasetAccess.setTitle(datasetAccess.getTitle());
+                dbDatasetAccess.setPitch(datasetAccess.getPitch());
+                dbDatasetAccess.setUri(datasetAccess.getUri());
+                // now do some data access specific stuff
+                // check if style has changed
+                if (!StringUtils.areStringEqualsOrNull(dbDatasetAccess.getStyleName(), ((DatasetAccessOGC) datasetAccess).getStyleName())) {
+                    // update db and update geoserver
+                    try {
+                        dbDatasetAccess.setStyleName(datasetAccess.getStyleName());
+                    } catch (Exception e) {
+
+                    }
+                }
+                dbDatasetAccess.setServerUrl(datasetAccess.getServerUrl());
+                dbDatasetAccess.setCorsEnabled(datasetAccess.isCorsEnabled());
+                changeCoverageLayers.add(dbDatasetAccess);
+            }
+        }
+        return changeCoverageLayers;
     }
 
     @Override

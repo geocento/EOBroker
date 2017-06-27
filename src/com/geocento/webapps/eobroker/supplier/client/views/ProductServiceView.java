@@ -67,6 +67,10 @@ public interface ProductServiceView extends IsWidget {
 
     AoIDTO getExtent();
 
+    void setCoverageLayers(List<DatasetAccessOGC> coverageLayers);
+
+    List<DatasetAccessOGC> getCoverageLayers();
+
     HasText getAPIUrl();
 
     TemplateView getTemplateView();

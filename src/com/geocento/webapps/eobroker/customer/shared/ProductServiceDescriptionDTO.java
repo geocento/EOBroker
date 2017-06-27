@@ -1,9 +1,6 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
-import com.geocento.webapps.eobroker.common.shared.entities.AccessType;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.PerformanceValue;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 import java.util.List;
@@ -24,14 +21,15 @@ public class ProductServiceDescriptionDTO {
     CompanyDTO company;
     boolean hasFeasibility;
     List<ProductServiceDTO> suggestedServices;
-    private List<FeatureDescription> geoinformation;
-    private String geoinformationComment;
-    private List<PerformanceValue> performances;
-    private String performancesComments;
-    private String extent;
-    private List<DatasetAccess> samples;
-    private List<AccessType> selectedAccessTypes;
-    private String timeToDelivery;
+    List<FeatureDescription> geoinformation;
+    String geoinformationComment;
+    List<PerformanceValue> performances;
+    String performancesComments;
+    String extent;
+    List<DatasetAccessOGC> coverageLayers;
+    List<DatasetAccess> samples;
+    List<AccessType> selectedAccessTypes;
+    String timeToDelivery;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -138,6 +136,14 @@ public class ProductServiceDescriptionDTO {
 
     public String getExtent() {
         return extent;
+    }
+
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        return coverageLayers;
+    }
+
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers = coverageLayers;
     }
 
     public void setSamples(List<DatasetAccess> samples) {

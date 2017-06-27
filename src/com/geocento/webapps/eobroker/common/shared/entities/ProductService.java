@@ -68,6 +68,10 @@ public class ProductService {
     @Column(length = 1000)
     String apiUrl;
 
+    @JoinTable(name = "productservice_coveragelayers")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<DatasetAccessOGC> coverageLayers;
+
     @JoinTable(name = "productservice_samples")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> samples;
@@ -248,5 +252,13 @@ public class ProductService {
 
     public void setDisseminationComment(String disseminationComment) {
         this.disseminationComment = disseminationComment;
+    }
+
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        return coverageLayers;
+    }
+
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers = coverageLayers;
     }
 }

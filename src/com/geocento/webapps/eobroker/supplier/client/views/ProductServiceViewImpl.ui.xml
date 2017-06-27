@@ -141,6 +141,16 @@
                     <maps:MapContainer addStyleNames="{style.mapContainer}" height="200" ui:field="mapContainer"></maps:MapContainer>
                 </design:MaterialPanel>
                 <design:MaterialLabel margin="20" textColor="ORANGE" text="Leave empty if your service has worldwide coverage"></design:MaterialLabel>
+                <design:MaterialLabel margin="20" textColor="BLACK" text="Add coverage layer"></design:MaterialLabel>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="coverageLayersMessage"></design:MaterialLabel>
+                    <design:MaterialPanel ui:field="coverageLayers">
+                    </design:MaterialPanel>
+                    <design:MaterialPanel>
+                        <design:MaterialButton text="Add layer" ui:field="addCoverageLayer"></design:MaterialButton>
+                    </design:MaterialPanel>
+                    <design:MaterialLabel margin="20" textColor="BLACK" text="These layers are used to provide additional information on your service coverage such as statistics"></design:MaterialLabel>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Service product" textColor="BLACK" iconType="MAP"/>
