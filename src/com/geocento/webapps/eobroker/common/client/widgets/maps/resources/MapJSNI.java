@@ -14,9 +14,13 @@ public class MapJSNI extends JavaScriptObject {
         return this.graphics;
     }-*/;
 
-    public final native void removeAllLayers() /*-{
+/*
+    public final native void removeAllLayers() */
+/*-{
         this.removeAllLayers();
-    }-*/;
+    }-*//*
+;
+*/
 
     public final native void resize() /*-{
         this.resize();

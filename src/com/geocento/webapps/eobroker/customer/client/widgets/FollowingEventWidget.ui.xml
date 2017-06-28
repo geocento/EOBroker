@@ -5,8 +5,9 @@
         .message {
             overflow: hidden;
             line-height: 1.2em;
-            height: 3em;
-            padding: 5px;
+            height: 2.4em;
+            margin: 5px;
+            padding: 0px;
             font-size: 1em;
             /* TODO - find something more cross browser */
             -webkit-line-clamp: 2;
@@ -23,8 +24,8 @@
 
     </ui:style>
     <design:MaterialPanel height="6em" backgroundColor="WHITE" padding="0" shadow="1">
-        <design:MaterialPanel height="100%" backgroundColor="GREEN" float="LEFT">
-            <design:MaterialImage backgroundColor="GREEN" textColor="WHITE" height="100%" ui:field="image"/>
+        <design:MaterialPanel height="100%" padding="5" float="LEFT">
+            <design:MaterialImage textColor="WHITE" height="100%" ui:field="image"/>
         </design:MaterialPanel>
         <design:MaterialPanel height="100%" padding="10">
             <design:MaterialButton float="RIGHT" type="FLOATING" shadow="0" backgroundColor="WHITE" iconColor="GREEN" iconType="EXIT_TO_APP" ui:field="action"></design:MaterialButton>

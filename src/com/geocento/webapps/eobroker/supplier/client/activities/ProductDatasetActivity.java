@@ -127,6 +127,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         productDatasetView.setTemporalCoverage(productDatasetDTO.getTemporalCoverage() == null ? new TemporalCoverage() : productDatasetDTO.getTemporalCoverage());
         productDatasetView.getTemporalCoverageComment().setText(productDatasetDTO.getTemporalCoverageComment());
         productDatasetView.setExtent(AoIUtil.fromWKT(productDatasetDTO.getExtent()));
+        productDatasetView.setCoverageLayers(productDatasetDTO.getCoverageLayers());
         productDatasetView.setDataAccess(productDatasetDTO.getDatasetAccesses());
         productDatasetView.setSampleDataAccess(productDatasetDTO.getSamples());
         productDatasetView.getDatasetStandard().setValue(productDatasetDTO.getDatasetStandard());
@@ -157,6 +158,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                 productDatasetDTO.setServiceType(productDatasetView.getServiceType());
                 productDatasetDTO.setProduct(productDatasetView.getSelectedProduct());
                 productDatasetDTO.setExtent(productDatasetView.getExtent() == null ? null : AoIUtil.toWKT(productDatasetView.getExtent()));
+                productDatasetDTO.setCoverageLayers(productDatasetView.getCoverageLayers());
                 productDatasetDTO.setDatasetAccesses(productDatasetView.getDataAccesses());
                 productDatasetDTO.setSamples(productDatasetView.getSamples());
                 productDatasetDTO.setSelectedFeatures(ListUtil.mutate(productDatasetView.getSelectedGeoinformation(), new ListUtil.Mutate<FeatureDescription, Long>() {
@@ -218,7 +220,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                             displaySuccess("Off the shelf data product saved");
                             productDatasetDTO.setId(companyId);
                         }
-                    }).call(ServicesUtil.assetsService).saveProductDataset(productDatasetDTO);
+                    }).call(ServicesUtil.assetsService).updateProductDataset(productDatasetDTO);
                 } catch (RequestException e) {
                 }
             }

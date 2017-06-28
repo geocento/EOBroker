@@ -243,6 +243,9 @@ public class AssetsResource implements AssetsService {
             productService.setWebsite(productServiceDTO.getWebsite());
             productService.setFullDescription(productServiceDTO.getFullDescription());
             productService.setExtent(productServiceDTO.getExtent());
+            // update the coverage layers
+            List<DatasetAccessOGC> dbCoverageLayers = updateCoverageLayers(em, productService.getCoverageLayers(), productServiceDTO.getCoverageLayers());
+            productService.setCoverageLayers(dbCoverageLayers);
             productService.setGeoinformation(ListUtil.filterValues(productService.getProduct().getGeoinformation(), new ListUtil.CheckValue<FeatureDescription>() {
                 @Override
                 public boolean isValue(FeatureDescription value) {
@@ -257,9 +260,6 @@ public class AssetsResource implements AssetsService {
             productService.setApiUrl(productServiceDTO.getApiURL());
             productService.setDisseminationComment(productServiceDTO.getDisseminationComment());
             productService.setTimeToDelivery(productServiceDTO.getTimeToDelivery());
-            // update the coverage layers
-            List<DatasetAccessOGC> dbCoverageLayers = updateCoverageLayers(em, productService.getCoverageLayers(), productServiceDTO.getCoverageLayers());
-            productService.setCoverageLayers(dbCoverageLayers);
             // update the sample access
             List<DatasetAccess> dbSamples = updateSamples(em, productService.getSamples(), productServiceDTO.getSamples());
             productService.setSamples(dbSamples);
@@ -985,6 +985,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDTO.setTemporalCoverage(productDataset.getTemporalCoverage());
             productDatasetDTO.setTemporalCoverageComment(productDataset.getTemporalCoverageComment());
             productDatasetDTO.setExtent(productDataset.getExtent());
+            productDatasetDTO.setCoverageLayers(productDataset.getCoverageLayers());
             productDatasetDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             productDatasetDTO.setSamples(productDataset.getSamples());
             productDatasetDTO.setDatasetStandard(productDataset.getDatasetStandard());
@@ -999,7 +1000,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Long saveProductDataset(final ProductDatasetDTO productDatasetDTO) throws RequestException {
+    public Long updateProductDataset(final ProductDatasetDTO productDatasetDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -1035,6 +1036,7 @@ public class AssetsResource implements AssetsService {
             }
             productDataset.setProduct(product);
             productDataset.setImageUrl(productDatasetDTO.getImageUrl());
+/*
             String extentWKT = productDatasetDTO.getExtent();
             if(extentWKT == null) {
                 Extent extent = new Extent();
@@ -1050,7 +1052,11 @@ public class AssetsResource implements AssetsService {
                         extent.getEast() + " " + extent.getNorth() +
                         "))";
             }
-            productDataset.setExtent(extentWKT);
+*/
+            productDataset.setExtent(productDatasetDTO.getExtent());
+            // update the coverage layers
+            List<DatasetAccessOGC> dbCoverageLayers = updateCoverageLayers(em, productDataset.getCoverageLayers(), productDatasetDTO.getCoverageLayers());
+            productDataset.setCoverageLayers(dbCoverageLayers);
             // set selected features
             productDataset.setGeoinformation(ListUtil.filterValues(productDataset.getProduct().getGeoinformation(), new ListUtil.CheckValue<FeatureDescription>() {
                 @Override

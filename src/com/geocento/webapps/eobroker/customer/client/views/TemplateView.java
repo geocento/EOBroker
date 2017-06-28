@@ -453,6 +453,11 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         }
     }
 
+    public void displayWebsocketError(String message) {
+        // TODO - change for something more specific
+        displayError(message);
+    }
+
     @Override
     public Widget asWidget() {
         return this;

@@ -7,16 +7,25 @@ import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.MorePanel;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ExtentJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerInfoJSNI;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.*;
+import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -26,6 +35,9 @@ import com.google.gwt.user.client.ui.*;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.ui.*;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
+import org.fusesource.restygwt.client.REST;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,12 +147,8 @@ public class FullViewImpl extends Composite implements FullView {
             }
         }
         // add description
-        MaterialPanel fullDescriptionPanel = new MaterialPanel();
-        HTML fullDescription = new HTML(productDescriptionDTO.getDescription());
-        fullDescription.getElement().getStyle().setProperty("minHeight", "6em");
-        fullDescriptionPanel.add(fullDescription);
-        fullDescriptionPanel.setPadding(10);
-        addSection("Description", new HTML(productDescriptionDTO.getDescription()));
+        MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(productDescriptionDTO.getDescription());
+        addSection("Description", fullDescriptionPanel);
         // create tab panel for offering
         MaterialPanel offeringPanel = new MaterialPanel();
         setMatchingDatasets(offeringPanel, "Off the shelf products for this product category", productDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
@@ -235,7 +243,8 @@ public class FullViewImpl extends Composite implements FullView {
         description.setText(productServiceDescriptionDTO.getDescription());
 
         // now add the sections
-        addSection("Description", new HTML(productServiceDescriptionDTO.getFullDescription()));
+        MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(productServiceDescriptionDTO.getFullDescription());
+        addSection("Description", fullDescriptionPanel);
 
         // add actions
         {
@@ -278,7 +287,7 @@ public class FullViewImpl extends Composite implements FullView {
         MaterialPanel extentPanel = new MaterialPanel();
         extentPanel.setPaddingRight(20);
         final MapContainer mapContainer = new MapContainer();
-        mapContainer.setHeight("300px");
+        mapContainer.setHeight("400px");
         mapContainer.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         mapContainer.setEditable(false);
         mapContainer.setBasemapVisible(false);
@@ -300,9 +309,11 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         extentPanel.add(mapContainer);
+        extentPanel.setPaddingBottom(20);
         List<DatasetAccessOGC> coverageLayers = productServiceDescriptionDTO.getCoverageLayers();
         if(coverageLayers != null && coverageLayers.size() > 0) {
             extentPanel.add(createComment("Additional information is available for the coverage of this service, click on the stats layers icon in the map above"));
+            addCoverageLayers(mapContainer, coverageLayers);
         }
         addSection("Extent of the service",
                 worldWide ? "This bespoke service is available worldwide" : "This is the area that can be covered by the bespoke service"
@@ -418,6 +429,60 @@ public class FullViewImpl extends Composite implements FullView {
                 materialRow.add(materialColumn);
             }
         }
+    }
+
+    private void addCoverageLayers(MapContainer mapContainer, List<DatasetAccessOGC> coverageLayers) {
+        MaterialPanel materialPanel = new MaterialPanel();
+        materialPanel.setBackgroundColor(Color.WHITE);
+        materialPanel.setPadding(5);
+        materialPanel.setPaddingLeft(10);
+        materialPanel.setPaddingRight(10);
+        MaterialListValueBox<DatasetAccessOGC> layers = new MaterialListValueBox<DatasetAccessOGC>();
+        //layers.insert(new MaterialLink(IconType.LAYERS), 0);
+        layers.setPlaceholder("Select an information layer");
+        layers.setWidth("auto");
+        layers.setMultipleSelect(false);
+        layers.setBackgroundColor(Color.WHITE);
+        for(DatasetAccessOGC datasetAccessOGC : coverageLayers) {
+            layers.addItem(datasetAccessOGC, datasetAccessOGC.getTitle());
+        }
+        layers.setValue(null);
+        materialPanel.add(layers);
+        // TODO - move all this to the map container?
+        layers.addValueChangeHandler(new ValueChangeHandler<DatasetAccessOGC>() {
+
+            public WMSLayerJSNI layer;
+
+            @Override
+            public void onValueChange(ValueChangeEvent<DatasetAccessOGC> event) {
+                if(layer != null) {
+                    mapContainer.map.removeWMSLayer(layer);
+                }
+                DatasetAccessOGC selectedLayer = layers.getSelectedValue();
+                if(selectedLayer != null) {
+                    try {
+                        REST.withCallback(new MethodCallback<LayerInfoDTO>() {
+
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
+                                Extent extent = layerInfoDTO.getExtent();
+                                ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
+                                layer = mapContainer.map.addWMSLayer(layerInfoDTO.getServerUrl(),
+                                        WMSLayerInfoJSNI.createInfo(layerInfoDTO.getLayerName(), layerInfoDTO.getLayerName()),
+                                        extentJSNI, layerInfoDTO.getStyleName());
+                                mapContainer.map.setExtent(extentJSNI);
+                            }
+                        }).call(ServicesUtil.assetsService).getLayerInfo(selectedLayer.getId());
+                    } catch (RequestException e) {
+                    }
+                }
+            }
+        });
+        mapContainer.addControl(materialPanel, Position.BOTTOM, Position.LEFT);
     }
 
     private Widget createComment(String comment) {
@@ -575,10 +640,14 @@ public class FullViewImpl extends Composite implements FullView {
                 }
             });
             extentPanel.add(mapContainer);
-            extentPanel.add(createSubsection("Statistics on the coverage of this off the shelf product"));
-            extentPanel.add(createComment("TODO - show stats on off the shelf product if provided"));
-            addSection("Extent of the service",
-                    worldWide ? "This bespoke service is available worldwide" : "This is the area that can be covered by the bespoke service"
+            extentPanel.setPaddingBottom(20);
+            List<DatasetAccessOGC> coverageLayers = productDatasetDescriptionDTO.getCoverageLayers();
+            if(coverageLayers != null && coverageLayers.size() > 0) {
+                extentPanel.add(createComment("Additional information is available for the coverage of this off the shelf data product, select a stats layer in the map above"));
+                addCoverageLayers(mapContainer, coverageLayers);
+            }
+            addSection("Extent of the off the shelf product",
+                    worldWide ? "This off the shelf data product is available worldwide" : "This is the area that is covered by the off the shelf data product"
                     , extentPanel);
         }
         // add a compare button
@@ -1065,10 +1134,11 @@ public class FullViewImpl extends Composite implements FullView {
 
     private MaterialPanel createFullDescriptionPanel(String fullDescription) {
         MaterialPanel fullDescriptionPanel = new MaterialPanel();
+        fullDescriptionPanel.setPaddingTop(30);
+        fullDescriptionPanel.setPaddingBottom(20);
         HTML fullDescriptionHTML = new HTML(fullDescription);
         fullDescriptionHTML.getElement().getStyle().setProperty("minHeight", "6em");
         fullDescriptionPanel.add(fullDescriptionHTML);
-        fullDescriptionPanel.setPadding(10);
         return fullDescriptionPanel;
     }
 

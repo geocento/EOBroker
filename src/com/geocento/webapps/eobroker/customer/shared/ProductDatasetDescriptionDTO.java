@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.PerformanceValue;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -32,6 +33,7 @@ public class ProductDatasetDescriptionDTO {
     List<DatasetAccess> samples;
     List<ProductDatasetDTO> suggestedDatasets;
     DatasetStandard catalogueStandard;
+    private List<DatasetAccessOGC> coverageLayers;
 
     public ProductDatasetDescriptionDTO() {
     }
@@ -186,5 +188,13 @@ public class ProductDatasetDescriptionDTO {
 
     public void setCatalogueStandard(DatasetStandard catalogueStandard) {
         this.catalogueStandard = catalogueStandard;
+    }
+
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        return coverageLayers;
+    }
+
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers = coverageLayers;
     }
 }

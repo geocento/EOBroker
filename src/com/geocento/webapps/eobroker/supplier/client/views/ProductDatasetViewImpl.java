@@ -16,6 +16,7 @@ import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -118,6 +119,12 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialTextBox datasetsURL;
     @UiField
     MaterialListValueBox<DatasetStandard> datasetsStandard;
+    @UiField
+    MaterialPanel coverageLayers;
+    @UiField
+    MaterialButton addCoverageLayer;
+    @UiField
+    MaterialLabel coverageLayersMessage;
 
     private Presenter presenter;
 
@@ -294,6 +301,54 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @Override
     public AoIDTO getExtent() {
         return mapContainer.getAoi();
+    }
+
+    @Override
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers.clear();
+        if(coverageLayers != null && coverageLayers.size() > 0) {
+            for(DatasetAccessOGC coverageLayer : coverageLayers) {
+                addCoverageLayer(coverageLayer);
+            }
+        }
+        updateCoverageLayersMessage();
+    }
+
+    private void addCoverageLayer(DatasetAccessOGC coverageLayer) {
+        OGCDataAccessWidget ogcDataAccessWidget = new OGCDataAccessWidget(coverageLayer, true, false);
+        ogcDataAccessWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
+        this.coverageLayers.add(ogcDataAccessWidget);
+        ogcDataAccessWidget.getRemove().addClickHandler(event -> {
+            if(Window.confirm("Are you sure you want to remove this layer?")) {
+                this.coverageLayers.remove(ogcDataAccessWidget);
+                updateCoverageLayersMessage();
+            }
+        });
+        updateCoverageLayersMessage();
+    }
+
+    private void updateCoverageLayersMessage() {
+        List<DatasetAccessOGC> coverageLayers = getCoverageLayers();
+        coverageLayersMessage.setText(coverageLayers.size() == 0 ? "No layer, add a layer using the button below" :
+                coverageLayers.size() + " layers provided, add more using the button below");
+    }
+
+    @Override
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        List<DatasetAccessOGC> coverageLayers = new ArrayList<DatasetAccessOGC>();
+        for(int index = 0; index < this.coverageLayers.getWidgetCount(); index++) {
+            Widget widget = this.coverageLayers.getWidget(index);
+            if(widget instanceof OGCDataAccessWidget) {
+                OGCDataAccessWidget ogcDataAccessWidget = (OGCDataAccessWidget) widget;
+                coverageLayers.add((DatasetAccessOGC) ogcDataAccessWidget.getDatasetAccess());
+            }
+        }
+        return coverageLayers;
+    }
+
+    @UiHandler("addCoverageLayer")
+    void addCoverageLayer(ClickEvent clickEvent) {
+        addCoverageLayer(new DatasetAccessOGC());
     }
 
     @Override

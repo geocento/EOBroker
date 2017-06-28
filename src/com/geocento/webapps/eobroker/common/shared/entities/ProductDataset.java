@@ -40,6 +40,10 @@ public class ProductDataset {
     @Convert(converter = GeometryConverter.class)
     String extent;
 
+    @JoinTable(name = "productdataset_coveragelayers")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<DatasetAccessOGC> coverageLayers;
+
     @Enumerated(EnumType.STRING)
     ServiceType serviceType;
 
@@ -174,6 +178,14 @@ public class ProductDataset {
 
     public void setExtent(String extent) {
         this.extent = extent;
+    }
+
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        return coverageLayers;
+    }
+
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers = coverageLayers;
     }
 
     public ServiceType getServiceType() {

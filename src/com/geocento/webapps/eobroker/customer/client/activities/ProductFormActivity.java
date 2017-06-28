@@ -7,13 +7,14 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
-import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
-import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
-import com.geocento.webapps.eobroker.customer.shared.*;
+import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -184,6 +185,8 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     @Override
                     public void onSuccess(Method method, final ProductServiceFormDTO productServiceFormDTO) {
                         hideLoading();
+                        // make sure we also update the product id
+                        productId = productServiceFormDTO.getProduct().getId();
                         productFormView.setProductService(productServiceFormDTO);
                         clearRequest();
                     }

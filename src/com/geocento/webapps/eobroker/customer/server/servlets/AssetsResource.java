@@ -514,6 +514,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setPerformances(productDataset.getPerformances());
             productDatasetDescriptionDTO.setPerformancesComments(productDataset.getPerformancesComment());
             productDatasetDescriptionDTO.setExtent(productDataset.getExtent());
+            productDatasetDescriptionDTO.setCoverageLayers(productDataset.getCoverageLayers());
             productDatasetDescriptionDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
             productDatasetDescriptionDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
             productDatasetDescriptionDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
@@ -1004,7 +1005,7 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<Notification> query = em.createQuery("select s from Notification s where s.user = :user order by s.creationDate", Notification.class);
+            TypedQuery<Notification> query = em.createQuery("select s from Notification s where s.user = :user order by s.creationDate DESC", Notification.class);
             query.setParameter("user", user);
             query.setFirstResult(start);
             query.setMaxResults(limit);

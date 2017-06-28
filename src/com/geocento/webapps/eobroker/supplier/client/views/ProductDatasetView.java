@@ -47,6 +47,10 @@ public interface ProductDatasetView extends IsWidget {
 
     void setExtent(AoIDTO aoi);
 
+    void setCoverageLayers(List<DatasetAccessOGC> coverageLayers);
+
+    List<DatasetAccessOGC> getCoverageLayers();
+
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
     AoIDTO getExtent();

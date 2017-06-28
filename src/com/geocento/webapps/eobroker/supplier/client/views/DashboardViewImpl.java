@@ -285,15 +285,13 @@ public class DashboardViewImpl extends Composite implements DashboardView {
         notificationsPanel.setVisible(true);
         this.notifications.clear();
         if(supplierNotificationDTOs == null || supplierNotificationDTOs.size() == 0) {
-            this.conversations.add(new MaterialLabel("No notifications..."));
+            this.notificationsPanel.add(new MaterialLabel("No notifications..."));
             return;
         }
-        MaterialRow materialRow = new MaterialRow();
-        this.notificationsPanel.add(materialRow);
         for(SupplierNotificationDTO supplierNotificationDTO : supplierNotificationDTOs) {
             MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
             materialColumn.add(new NotificationWidget(supplierNotificationDTO));
-            materialRow.add(materialColumn);
+            notifications.add(materialColumn);
         }
     }
 

@@ -180,6 +180,14 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                 }
             }
         });
+
+        activityEventBus.addHandler(WebSocketFailedEvent.TYPE, new WebSocketFailedEventHandler() {
+            @Override
+            public void onWebSocketFailed(WebSocketFailedEvent event) {
+                templateView.displayWebsocketError("Failed to connect with server...");
+                // TODO - take specific action when 
+            }
+        });
     }
 
     @Override

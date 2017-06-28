@@ -2,10 +2,12 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
@@ -155,8 +157,8 @@ public class MapContainer extends Composite {
                             }
                         });
 
-/*
                         listLayers.getElement().getStyle().setProperty("maxWidth", ((int) Math.floor(mapContainer.getOffsetWidth() * 0.6)) + "px");
+/*
                         arcgisMap.createBaseMaps(map, listLayers.getElement());
 */
                         arcgisMap.createBaseMapToggle(map, basemapToggle.getElement());
@@ -347,6 +349,22 @@ public class MapContainer extends Composite {
         materialButton.setWaves(WavesType.LIGHT);
         materialButton.setIconSize(IconSize.SMALL);
         addButtons.insert(new ListItem(materialButton), 0);
+    }
+
+    public void addControl(MaterialWidget widget, Position verticalPosition, Position horizontalPosition) {
+        // TODO - check if this doesn't already exist in the ArcGIS library
+        widget.setLayoutPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
+        if(verticalPosition == Position.BOTTOM) {
+            widget.setBottom(10);
+        } else {
+            widget.setTop(10);
+        }
+        if(horizontalPosition == Position.LEFT) {
+            widget.setLeft(10);
+        } else {
+            widget.setRight(10);
+        }
+        panel.add(widget);
     }
 
     protected void displayLoading() {

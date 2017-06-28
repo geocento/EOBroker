@@ -104,7 +104,7 @@ public interface AssetsService extends DirectRestService {
     @POST
     @Path("/assets/productdataset/")
     @Produces("application/json")
-    Long saveProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException;
+    Long updateProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException;
 
     @DELETE
     @Path("/assets/productdataset/{id}")

@@ -33,6 +33,7 @@ public class ProductDatasetDTO {
     String temporalCoverageComment;
     DatasetStandard datasetStandard;
     String datasetURL;
+    private List<DatasetAccessOGC> coverageLayers;
 
     public ProductDatasetDTO() {
     }
@@ -211,5 +212,13 @@ public class ProductDatasetDTO {
 
     public void setDatasetURL(String datasetURL) {
         this.datasetURL = datasetURL;
+    }
+
+    public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
+        this.coverageLayers = coverageLayers;
+    }
+
+    public List<DatasetAccessOGC> getCoverageLayers() {
+        return coverageLayers;
     }
 }
