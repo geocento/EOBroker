@@ -59,6 +59,9 @@
                         <design:MaterialListBox placeholder="User role" ui:field="role"></design:MaterialListBox>
                     </design:MaterialColumn>
                     <design:MaterialColumn grid="s12 m6 l6">
+                        <design:MaterialListValueBox placeholder="User status" ui:field="status"></design:MaterialListValueBox>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m12 l12">
                         <widgets:CompanyTextBox addStyleNames="{style.company}" ui:field="company"></widgets:CompanyTextBox>
                     </design:MaterialColumn>
                 </design:MaterialRow>

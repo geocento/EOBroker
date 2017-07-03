@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.RequestAccessPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.LoginPageView;
 import com.google.gwt.event.dom.client.*;
@@ -58,6 +59,13 @@ public class LoginPageActivity extends AbstractApplicationActivity implements Lo
                         }
                     }
                 }));
+
+        handlers.add(loginPageView.getRequestAccess().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new RequestAccessPlace());
+            }
+        }));
     }
 
     private void signIn() {

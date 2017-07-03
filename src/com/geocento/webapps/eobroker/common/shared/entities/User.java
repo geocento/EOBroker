@@ -46,6 +46,12 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     List<Following> followings;
 
+    @Enumerated(EnumType.STRING)
+    REGISTRATION_STATUS status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date lastNotificationCheck;
+
     public User() {
     }
 
@@ -105,6 +111,14 @@ public class User {
         this.company = company;
     }
 
+    public void setStatus(REGISTRATION_STATUS status) {
+        this.status = status;
+    }
+
+    public REGISTRATION_STATUS getStatus() {
+        return status;
+    }
+
     public void setLastLoggedIn(Date lastLoggedIn) {
         this.lastLoggedIn = lastLoggedIn;
     }
@@ -127,5 +141,13 @@ public class User {
 
     public void setFollowings(List<Following> followings) {
         this.followings = followings;
+    }
+
+    public Date getLastNotificationCheck() {
+        return lastNotificationCheck;
+    }
+
+    public void setLastNotificationCheck(Date lastNotificationCheck) {
+        this.lastNotificationCheck = lastNotificationCheck;
     }
 }

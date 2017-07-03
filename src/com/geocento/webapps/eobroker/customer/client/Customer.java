@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.customer.client.places.AppPlaceHistoryMapper;
 import com.geocento.webapps.eobroker.customer.client.places.LoginPagePlace;
+import com.geocento.webapps.eobroker.customer.client.places.RequestAccessPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
@@ -92,7 +93,7 @@ public class Customer implements EntryPoint {
     }
 
     private boolean requiresLogin(Place place) {
-        return true;
+        return !(place instanceof RequestAccessPlace);
 /*
         return place instanceof RequestsPlace ||
                 place instanceof ImagesResponsePlace ||

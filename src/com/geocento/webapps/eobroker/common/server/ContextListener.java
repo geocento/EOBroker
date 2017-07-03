@@ -3,7 +3,10 @@ package com.geocento.webapps.eobroker.common.server;
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import org.apache.log4j.Logger;
@@ -12,23 +15,24 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by thomas on 06/06/2016.
  */
 public class ContextListener implements ServletContextListener {
 
+    static private SimpleDateFormat timeFormat = new SimpleDateFormat("YYYY-MMM-dd 'at' hh:mm:ss");
+    static {
+        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
     Logger logger = Logger.getLogger(ContextListener.class);
 
     private Timer notificationsTimer;
     private Timer errorReportingTimer;
     private Timer supplierNotificationsTimer;
-
-    private boolean reset = false;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -69,41 +73,108 @@ public class ContextListener implements ServletContextListener {
     }
 
     private void startSupplierNotifications() {
+        supplierNotificationsTimer = new Timer();
+        // run the checks every 5 minutes
+        final long timerChecks = 5 * ServerUtil.minuteInMs;
+        supplierNotificationsTimer.schedule(new TimerTask() {
 
+            @Override
+            public void run() {
+                // get all notifications which happend in the las   t timer checks time period
+                EntityManager em = EMF.get().createEntityManager();
+                try {
+                    em.getTransaction().begin();
+                    Date now = new Date();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(now);
+                    calendar.add(Calendar.MINUTE, ServerUtil.getSettings().getNotificationDelay());
+                    // TODO - first get the users which are concerned by this new round of notifications
+                    TypedQuery<Company> queryCompanies = em.createQuery("SELECT c FROM Company c WHERE c.lastNotificationCheck is NULL OR c.lastNotificationCheck < :lastNotificationCheck", Company.class);
+                    queryCompanies.setParameter("lastNotificationCheck", calendar.getTime());
+                    TypedQuery<SupplierNotification> notificationQuery = em.createQuery("SELECT s FROM SupplierNotification s WHERE s.sent = :sent AND s.company IN :companies", SupplierNotification.class);
+                    notificationQuery.setParameter("sent", false);
+                    notificationQuery.setParameter("companies", queryCompanies.getResultList());
+                    logger.debug("New supplier notifications: " + notificationQuery.getResultList().size());
+                    // group notifications by users
+                    HashMap<Company, List<SupplierNotification>> notifications = ListUtil.group(notificationQuery.getResultList(), new ListUtil.GetValue<Company, SupplierNotification>() {
+                        @Override
+                        public Company getLabel(SupplierNotification value) {
+                            return value.getCompany();
+                        }
+
+                        @Override
+                        public List<SupplierNotification> createList() {
+                            return new ArrayList<SupplierNotification>();
+                        }
+                    });
+                    // send emails
+                    for (Company company : notifications.keySet()) {
+                        // TODO - only send notifications based on user preferences
+                        List<SupplierNotification> companyNotifications = notifications.get(company);
+                        try {
+                            MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ORDER);
+                            mailContent.addTitle("You have new notifications");
+                            mailContent.addTable(ListUtil.mutate(companyNotifications, notification -> ListUtil.toList(new String[]{
+                                    notification.getMessage(), ", on " + timeFormat.format(notification.getCreationDate()),
+                                    "<a href='" + ServerUtil.getSettings().getSupplierWebsiteUrl() + "#notifications:id=" + notification.getId() +
+                                            "'>View</a>"
+                            })));
+                            mailContent.addAction("view all notifications", null, ServerUtil.getSettings().getSupplierWebsiteUrl() + "#notifications:");
+                            // send email to all users within the company which are supplier users
+                            TypedQuery<User> supplierUsersQuery = em.createQuery("select u from users u where u.company = :company AND u.role = :role", User.class);
+                            supplierUsersQuery.setParameter("company", company);
+                            supplierUsersQuery.setParameter("role", User.USER_ROLE.supplier);
+                            for(User user : supplierUsersQuery.getResultList()) {
+                                mailContent.sendEmail(company.getEmail(), "New notifications on EO Broker", false);
+                            }
+                            // update notification
+                            for(Notification notification : userNotifications) {
+                                notification.setSent(true);
+                            }
+                            company.setLastNotificationCheck(now);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    }
+                    em.getTransaction().commit();
+                } catch (Exception e) {
+                    logger.error("Error running notification email service. Reason is " + e.getMessage());
+                } finally {
+                    em.close();
+                }
+            }
+        }, 1000, timerChecks);
     }
 
     private void startNotifications() {
         notificationsTimer = new Timer();
         // run the checks every 5 minutes
-        // TODO - problem when the server gets restarted, there is a number of notifications that do not get sent, use a sent flag instead?
-        final long timerChecks = 30 * 60 * 1000L;
+        final long timerChecks = 5 * ServerUtil.minuteInMs;
         notificationsTimer.schedule(new TimerTask() {
 
             public Date lastFetchedNotifications = new Date();
 
             @Override
             public void run() {
-/*
-                long notificationsDelay = 30 * ServerUtil.minuteInMs;
-                try {
-                    notificationsDelay = ServerUtil.getSettings().getNotificationDelay();
-                } catch (Exception e) {
-                    logger.error("No notification delay set, defaulting to 30 minutes");
-                }
                 // get all notifications which happend in the las   t timer checks time period
                 EntityManager em = EMF.get().createEntityManager();
                 try {
                     em.getTransaction().begin();
-                    Date nowDate = new Date();
-                    Date date = lastFetchedNotifications;
-                    lastFetchedNotifications = nowDate;
-                    // do only order notifications for now
-                    TypedQuery<Notification> query = em.createQuery("SELECT n FROM Notification n WHERE n.type = :type AND n.creationDate > :fetchDate", Notification.class);
-                    query.setParameter("type", Notification.TYPE.ORDER);
-                    query.setParameter("fetchDate", date);
-                    logger.debug("New notifications: " + query.getResultList().size());
+                    Date now = new Date();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(now);
+                    calendar.add(Calendar.MINUTE, ServerUtil.getSettings().getNotificationDelay());
+                    // TODO - first get the users which are concerned by this new round of notifications
+                    TypedQuery<User> queryUsers = em.createQuery("SELECT u FROM users u WHERE u.lastNotificationCheck is NULL OR u.lastNotificationCheck < :lastNotificationCheck", User.class);
+                    queryUsers.setParameter("lastNotificationCheck", calendar.getTime());
+                    TypedQuery<Notification> notificationQuery = em.createQuery("SELECT n FROM Notification n WHERE n.sent = :sent AND n.user IN :users", Notification.class);
+                    //query.setParameter("type", Notification.TYPE.ORDER);
+                    //query.setParameter("fetchDate", date);
+                    notificationQuery.setParameter("sent", false);
+                    notificationQuery.setParameter("users", queryUsers.getResultList());
+                    logger.debug("New notifications: " + notificationQuery.getResultList().size());
                     // group notifications by users
-                    HashMap<User, List<Notification>> notifications = ListUtil.group(query.getResultList(), new ListUtil.GetValue<User, Notification>() {
+                    HashMap<User, List<Notification>> notifications = ListUtil.group(notificationQuery.getResultList(), new ListUtil.GetValue<User, Notification>() {
                         @Override
                         public User getLabel(Notification value) {
                             return value.getUser();
@@ -114,22 +185,33 @@ public class ContextListener implements ServletContextListener {
                             return new ArrayList<Notification>();
                         }
                     });
-                    for(User user : notifications.keySet()) {
-                        MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.CONSUMER);
-                        mailContent.addTitle("You have new notifications on your orders");
-                        mailContent.addTable(ListUtil.mutate(notifications.get(user), new ListUtil.Mutate<Notification, List<String>>() {
-                            @Override
-                            public List<String> mutate(Notification notification) {
-                                EIOrdersPlace.TOKENS token = Notification.getPlace(notification.getLink()) == Notification.PLACES.USER_COVERAGE ? EIOrdersPlace.TOKENS.coverage : EIOrdersPlace.TOKENS.order;
-                                return ListUtil.toList(new String[] {
-                                        notification.getMessage(), ", on " + timeFormat.format(notification.getLastUpdate()),
-                                        "<a href='" + createUserLink(new EIOrdersPlace(Utils.generateTokens(token.toString(), Notification.getValue(notification.getLink())))) +
-                                                "'>View</a>"
-                                });
+                    // send emails
+                    for (User user : notifications.keySet()) {
+                        // TODO - only send notifications based on user preferences
+                        List<Notification> userNotifications = notifications.get(user);
+                        try {
+                            MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.CONSUMER);
+                            mailContent.addTitle("You have new notifications");
+                            mailContent.addTable(ListUtil.mutate(userNotifications, new ListUtil.Mutate<Notification, List<String>>() {
+                                @Override
+                                public List<String> mutate(Notification notification) {
+                                    return ListUtil.toList(new String[]{
+                                            notification.getMessage(), ", on " + timeFormat.format(notification.getCreationDate()),
+                                            "<a href='" + ServerUtil.getSettings().getWebsiteUrl() + "#notifications:id=" + notification.getId() +
+                                                    "'>View</a>"
+                                    });
+                                }
+                            }));
+                            mailContent.addAction("view all notifications", null, ServerUtil.getSettings().getWebsiteUrl() + "#notifications:");
+                            mailContent.sendEmail(user.getEmail(), "New notifications on EO Broker", false);
+                            // update notification
+                            for(Notification notification : userNotifications) {
+                                notification.setSent(true);
                             }
-                        }));
-                        mailContent.addAction("view your Orders", null, ServerUtil.getApplicationSettings().getWebsiteUrl() + "#orders:");
-                        mailContent.sendEmail(user, "New notifications on your orders", false);
+                            user.setLastNotificationCheck(now);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     }
                     em.getTransaction().commit();
                 } catch (Exception e) {
@@ -137,7 +219,6 @@ public class ContextListener implements ServletContextListener {
                 } finally {
                     em.close();
                 }
-*/
             }
         }, 1000, timerChecks);
     }
@@ -222,6 +303,18 @@ public class ContextListener implements ServletContextListener {
                         em.persist(supplierSettings);
                         supplierSettings.setCompany(company);
                         company.setSettings(supplierSettings);
+                    }
+                    em.getTransaction().commit();
+                }
+            }
+            {
+                // check all companies have their supplier settings
+                TypedQuery<User> query = em.createQuery("select u from users u where u.status is NULL", User.class);
+                List<User> users = query.getResultList();
+                if (users.size() > 0) {
+                    em.getTransaction().begin();
+                    for (User user : users) {
+                        user.setStatus(REGISTRATION_STATUS.APPROVED);
                     }
                     em.getTransaction().commit();
                 }

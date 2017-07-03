@@ -57,6 +57,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new NotificationsActivity((NotificationsPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {
             return new LoginPageActivity((LoginPagePlace) place, clientFactory);
+        } else if(place instanceof RequestAccessPlace) {
+            return new RequestAccessActivity((RequestAccessPlace) place, clientFactory);
         }
         return null;
     }

@@ -47,26 +47,6 @@ public interface AssetsService extends DirectRestService {
                                          @QueryParam("filter") String filter) throws RequestException;
 
     @GET
-    @Path("/assets/productservices/{id}")
-    @Produces("application/json")
-    public ProductServiceDTO getProductService(@PathParam("id") Long id) throws RequestException;
-
-    @GET
-    @Path("/assets/productservices/")
-    @Produces("application/json")
-    public List<ProductServiceDTO> listProductServices() throws RequestException;
-
-    @POST
-    @Path("/assets/productservices/")
-    @Produces("application/json")
-    public Long addProductService(ProductServiceDTO productService);
-
-    @PUT
-    @Path("/assets/productservices/")
-    @Produces("application/json")
-    public void updateProductService(ProductServiceDTO product) throws RequestException;
-
-    @GET
     @Path("/assets/companies/{id}")
     @Produces("application/json")
     public CompanyDTO getCompany(@PathParam("id") Long id) throws RequestException;
@@ -89,6 +69,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/companies/")
     @Produces("application/json")
     Long saveCompany(CompanyDTO companyDTO) throws RequestException;
+
+    @PUT
+    @Path("/companies/status/")
+    void approveCompany(Long id) throws RequestException;
 
     @GET
     @Path("/assets/newsitem/")
@@ -171,4 +155,5 @@ public interface AssetsService extends DirectRestService {
     @Consumes("application/json")
     @Produces("application/json")
     LogsDTO getLogs() throws RequestException;
+
 }

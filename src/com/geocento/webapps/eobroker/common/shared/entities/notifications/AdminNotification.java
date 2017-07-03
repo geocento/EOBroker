@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 public class AdminNotification {
 
-    static public enum TYPE {MESSAGE, ERROR};
+    static public enum TYPE {MESSAGE, USER, COMPANY, ERROR};
 
     @Id
     @GeneratedValue

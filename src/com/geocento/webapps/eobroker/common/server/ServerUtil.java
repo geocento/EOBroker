@@ -14,8 +14,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ServerUtil {
-	
-		public static String getUrlData(String urlString) throws Exception {
+
+    public static long minuteInMs = 60 * 1000L;
+    public static long hoursInMs = minuteInMs * 60;
+
+    public static String getUrlData(String urlString) throws Exception {
 			String response = "";
 			HttpURLConnection connection = null;
 			InputStream connectionIstream = null; //output for the target is input for the connection

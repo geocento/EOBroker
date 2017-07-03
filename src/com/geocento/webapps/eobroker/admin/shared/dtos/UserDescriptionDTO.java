@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.admin.shared.dtos;
 
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
@@ -13,6 +14,7 @@ public class UserDescriptionDTO {
     private String password;
     private User.USER_ROLE userRole;
     private String email;
+    private REGISTRATION_STATUS status;
 
     public UserDescriptionDTO() {
     }
@@ -55,5 +57,13 @@ public class UserDescriptionDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setStatus(REGISTRATION_STATUS status) {
+        this.status = status;
+    }
+
+    public REGISTRATION_STATUS getStatus() {
+        return status;
     }
 }

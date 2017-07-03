@@ -15,7 +15,10 @@
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="Edit company" link="companies" ui:field="template">
         <design:MaterialPanel padding="20">
-            <design:MaterialTitle title="Edit this company's profile" ui:field="title"></design:MaterialTitle>
+            <design:MaterialPanel>
+                <design:MaterialTitle title="Edit this company's profile" ui:field="title"></design:MaterialTitle>
+                <design:MaterialButton visible="false" text="VALIDATE" float="RIGHT" ui:field="validate"></design:MaterialButton>
+            </design:MaterialPanel>
             <design:MaterialRow>
                 <design:MaterialColumn grid="s12">
                     <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>

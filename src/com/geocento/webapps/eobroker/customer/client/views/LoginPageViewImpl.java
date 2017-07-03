@@ -12,10 +12,7 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.ImageType;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialCheckBox;
-import gwt.material.design.client.ui.MaterialImage;
-import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -39,6 +36,8 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
     MaterialCheckBox keepLoggedIn;
     @UiField
     MaterialButton login;
+    @UiField
+    MaterialLink requestAccess;
 
     public LoginPageViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -82,4 +81,8 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
         return password;
     }
 
+    @Override
+    public HasClickHandlers getRequestAccess() {
+        return requestAccess;
+    }
 }

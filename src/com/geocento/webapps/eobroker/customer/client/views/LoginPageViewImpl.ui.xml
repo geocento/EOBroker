@@ -38,6 +38,9 @@
                         <design:MaterialColumn grid="s12 m12 l6">
                             <design:MaterialCheckBox text="Keep me logged in" ui:field="keepLoggedIn"/>
                         </design:MaterialColumn>
+                        <design:MaterialColumn textAlign="RIGHT" grid="s12 m12 l6">
+                            <design:MaterialLink text="Request access" ui:field="requestAccess"/>
+                        </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>
             </design:MaterialPanel>

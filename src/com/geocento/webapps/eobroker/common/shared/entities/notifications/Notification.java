@@ -32,6 +32,9 @@ public class Notification {
     @Temporal(TemporalType.TIMESTAMP)
     Date creationDate;
 
+    boolean sent;
+    boolean viewed;
+
     public Long getId() {
         return id;
     }
@@ -78,5 +81,21 @@ public class Notification {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
+
+    public boolean isViewed() {
+        return viewed;
+    }
+
+    public void setViewed(boolean viewed) {
+        this.viewed = viewed;
     }
 }

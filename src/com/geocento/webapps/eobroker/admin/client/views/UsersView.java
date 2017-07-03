@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.shared.dtos.UserDescriptionDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -34,6 +35,8 @@ public interface UsersView extends IsWidget {
     String getUserEmail();
 
     User.USER_ROLE getUserRole();
+
+    REGISTRATION_STATUS getUserStatus();
 
     CompanyDTO getUserCompany();
 

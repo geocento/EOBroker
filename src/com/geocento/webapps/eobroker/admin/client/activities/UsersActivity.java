@@ -89,6 +89,7 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
             public void onClick(ClickEvent event) {
                 userDescriptionDTO.setName(usersView.getUserName());
                 userDescriptionDTO.setEmail(usersView.getUserEmail());
+                userDescriptionDTO.setStatus(usersView.getUserStatus());
                 userDescriptionDTO.setUserRole(usersView.getUserRole());
                 userDescriptionDTO.setCompanyDTO(usersView.getUserCompany());
                 try {
@@ -128,6 +129,7 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
             public void onClick(ClickEvent event) {
                 userDescriptionDTO.setName(usersView.getUserName());
                 userDescriptionDTO.setEmail(usersView.getUserEmail());
+                userDescriptionDTO.setStatus(usersView.getUserStatus());
                 userDescriptionDTO.setUserRole(usersView.getUserRole());
                 userDescriptionDTO.setCompanyDTO(usersView.getUserCompany());
                 try {

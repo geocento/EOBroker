@@ -9,7 +9,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialTextArea;
 import gwt.material.design.client.ui.MaterialTextBox;
@@ -44,6 +43,8 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     MaterialTitle title;
     @UiField(provided = true)
     TemplateView template;
+    @UiField
+    MaterialButton validate;
 
     public CompanyViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -76,6 +77,16 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     @Override
     public HasText getEmail() {
         return email;
+    }
+
+    @Override
+    public void displayValidate(boolean display) {
+        validate.setVisible(display);
+    }
+
+    @Override
+    public HasClickHandlers getValidate() {
+        return validate;
     }
 
     @Override

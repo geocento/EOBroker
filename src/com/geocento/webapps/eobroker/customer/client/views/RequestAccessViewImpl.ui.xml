@@ -1,0 +1,81 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+             xmlns:widgetsc="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+        >
+    <ui:style>
+        .panel {
+            background: url("http://2.bp.blogspot.com/-x4D3EPELYRU/VMHu52a4qUI/AAAAAAAAHek/EmnIgqTtu_U/s0/fon116%2B2160x1920.png");
+            background-size: 100%;
+            padding: 0px !important;
+            padding-top: 20% !important;
+        }
+
+        .fieldPanel {
+            background: white;
+            padding: 6%;
+        }
+
+        .imgProfile {
+            margin-top: -120px;
+            width: 40%;
+            margin-left: 30%;
+            border: 5px solid #fff;
+        }
+
+        .rowAction {
+            margin-top: 20px;
+        }
+
+        .login_demo {
+            padding: 5%;
+        }
+
+        .searchBox {
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .searchBox, .searchBox i {
+            height: 54px !important;
+            line-height: 54px !important;
+        }
+
+        .section {
+            padding: 30px 20px 10px;
+            font-size: 1.2em;
+        }
+
+    </ui:style>
+    <design:MaterialRow backgroundColor="GREY_LIGHTEN_4" addStyleNames="{style.login_demo}">
+        <design:MaterialColumn grid="s12 m8 l6" offset="m2 l3" >
+            <design:MaterialPanel shadow="1" addStyleNames="{style.panel}">
+                <design:MaterialPanel addStyleNames="{style.fieldPanel}">
+                    <design:MaterialImage addStyleNames="{style.imgProfile} z-depth-1" ui:field="logo"/>
+                    <design:MaterialPanel ui:field="content">
+                        <design:MaterialLabel text="Please provide your user information" addStyleNames="{style.section}"></design:MaterialLabel>
+                        <design:MaterialTextBox type="TEXT" placeholder="Choose a user name" ui:field="userName"/>
+                        <design:MaterialTextBox type="PASSWORD" placeholder="Choose a password" ui:field="password"/>
+                        <design:MaterialTextBox type="TEXT" placeholder="Your full name" ui:field="fullName"/>
+                        <design:MaterialTextBox type="EMAIL" placeholder="Your email address" ui:field="email"/>
+                        <design:MaterialTextBox type="TEXT" placeholder="Your phone number" ui:field="phoneNumber"/>
+                        <design:MaterialLabel text="Please select a company" addStyleNames="{style.section}"></design:MaterialLabel>
+                        <widgets:CategorySearchBox category="companies" placeholder="Type in name of company" addStyleNames="{style.searchBox}" ui:field="company"></widgets:CategorySearchBox>
+                        <design:MaterialLink text="Or register a new one" ui:field="createNewCompany"></design:MaterialLink>
+                        <design:MaterialPanel visible="false" ui:field="companyRegistration">
+                            <design:MaterialTextBox type="TEXT" placeholder="Company name" ui:field="companyName"/>
+                            <design:MaterialTextBox type="TEXT" placeholder="Company description" visibleLength="200" ui:field="companyDescription"/>
+                            <design:MaterialTextBox type="TEXT" placeholder="Company Address" visibleLength="200" ui:field="companyAddress"/>
+                            <widgetsc:CountryEditor placeholder="Country of incorporation" ui:field="companyCountry"></widgetsc:CountryEditor>
+                            <design:MaterialPanel>
+                                <design:MaterialCheckBox text="Register as an EO Broker supplier" ui:field="supplierCompany"></design:MaterialCheckBox>
+                            </design:MaterialPanel>
+                        </design:MaterialPanel>
+                        <widgetsc:MaterialMessage margin="10" ui:field="message"></widgetsc:MaterialMessage>
+                        <widgetsc:MaterialLoadingButton backgroundColor="BLUE" waves="LIGHT" text="Submit" width="100%" marginTop="30" ui:field="submit"/>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialPanel>
+        </design:MaterialColumn>
+    </design:MaterialRow>
+</ui:UiBinder>

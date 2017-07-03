@@ -56,4 +56,6 @@ public interface ClientFactory {
     CatalogueSearchView getCatalogueSearchView();
 
     NotificationsView getNotificationsView();
+
+    RequestAccessView getRequestAccessView();
 }

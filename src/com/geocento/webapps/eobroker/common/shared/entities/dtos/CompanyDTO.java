@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE;
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ public class CompanyDTO {
     private Date startedIn;
     private boolean following;
     private int followers;
+    private REGISTRATION_STATUS status;
 
     public CompanyDTO() {
     }
@@ -138,5 +140,13 @@ public class CompanyDTO {
 
     public int getFollowers() {
         return followers;
+    }
+
+    public void setStatus(REGISTRATION_STATUS status) {
+        this.status = status;
+    }
+
+    public REGISTRATION_STATUS getStatus() {
+        return status;
     }
 }

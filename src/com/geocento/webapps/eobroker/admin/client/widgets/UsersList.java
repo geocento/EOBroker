@@ -21,6 +21,7 @@ public class UsersList extends AsyncPagingCellTable<UserDescriptionDTO> {
 
     private Column<UserDescriptionDTO, String> editColumn;
     private TextColumn<UserDescriptionDTO> nameColumn;
+    private TextColumn<UserDescriptionDTO> statusColumn;
     private Column<UserDescriptionDTO, String> thumbnailColumn;
 
     @Override
@@ -34,6 +35,15 @@ public class UsersList extends AsyncPagingCellTable<UserDescriptionDTO> {
         };
         addResizableColumn(nameColumn, "User Name", "100px");
         nameColumn.setSortable(true);
+
+        statusColumn = new TextColumn<UserDescriptionDTO>() {
+            @Override
+            public String getValue(UserDescriptionDTO object) {
+                return object.getStatus() == null ? "Undefined" : object.getStatus().toString();
+            }
+        };
+        addResizableColumn(statusColumn, "User Status", "100px");
+        statusColumn.setSortable(true);
 
         TextColumn<UserDescriptionDTO> emailColumn = new TextColumn<UserDescriptionDTO>() {
             @Override

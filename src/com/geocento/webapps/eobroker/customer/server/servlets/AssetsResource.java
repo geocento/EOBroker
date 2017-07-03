@@ -1,12 +1,11 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
-import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
-import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
+import com.geocento.webapps.eobroker.common.server.Utils.*;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
@@ -1438,6 +1437,86 @@ public class AssetsResource implements AssetsService {
             productServiceFormDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
             productServiceFormDTO.setFormFields(productService.getProduct().getFormFields());
             return productServiceFormDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public CompanyDTO createCompany(CreateCompanyDTO createCompanyDTO) throws RequestException {
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // TODO - check a few values
+            Company company = new Company();
+            company.setName(createCompanyDTO.getName());
+            company.setDescription(createCompanyDTO.getDescription());
+            company.setAddress(createCompanyDTO.getAddress());
+            company.setCountryCode(createCompanyDTO.getCountryCode());
+            company.setStatus(REGISTRATION_STATUS.PENDING);
+            // TODO - manage companies which are not suppliers!
+            if(createCompanyDTO.isSupplier()) {
+                company.setSupplier(createCompanyDTO.isSupplier());
+            }
+            em.persist(company);
+            // add notification
+            try {
+                NotificationHelper.notifyAdmin(em, AdminNotification.TYPE.COMPANY,
+                        "New company '" + company.getName() + "' has been created, please validate", company.getId() + "");
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            em.getTransaction().commit();
+            return CompanyHelper.createCompanyDTO(company);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void createUser(CreateUserDTO createUserDTO) throws RequestException {
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // TODO - check a few values
+            User user = new User();
+            user.setStatus(REGISTRATION_STATUS.PENDING);
+            user.setUsername(createUserDTO.getUserName());
+            user.setPassword(com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createPasswordHash(createUserDTO.getUserPassword()));
+            user.setEmail(createUserDTO.getEmail());
+            user.setRole(User.USER_ROLE.customer);
+            // find company
+            Company dbCompany = em.find(Company.class, createUserDTO.getCompanyId());
+            if(dbCompany == null) {
+                throw new RequestException("Missing company");
+            }
+            user.setCompany(dbCompany);
+/*
+            // TODO - manage companies which are not suppliers!
+            if(dbCompany.isSupplier()) {
+                //company.setSupplier(companyDTO.isSupplier());
+            }
+*/
+            em.persist(user);
+            // add notification
+            try {
+                NotificationHelper.notifyAdmin(em, AdminNotification.TYPE.USER, "New user '" + user.getUsername() + "' has registered, please validate", user.getUsername());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
         } finally {
             em.close();
         }

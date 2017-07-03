@@ -23,6 +23,8 @@ public interface LoginPageView extends IsWidget {
 
     HasKeyPressHandlers getPasswordBox();
 
+    HasClickHandlers getRequestAccess();
+
     public interface Presenter {
     }
 

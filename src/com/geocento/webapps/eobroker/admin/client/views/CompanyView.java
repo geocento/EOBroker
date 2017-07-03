@@ -17,6 +17,10 @@ public interface CompanyView extends IsWidget {
 
     HasText getEmail();
 
+    void displayValidate(boolean display);
+
+    HasClickHandlers getValidate();
+
     HasText getWebsite();
 
     HasText getDescription();

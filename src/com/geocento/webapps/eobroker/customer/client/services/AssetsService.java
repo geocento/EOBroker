@@ -198,4 +198,13 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     ProductServiceFormDTO getProductServiceForm(@PathParam("id") Long productServiceId) throws RequestException;
 
+    @POST
+    @Path("/assets/company/create")
+    @Consumes("application/json")
+    CompanyDTO createCompany(CreateCompanyDTO createCompanyDTO) throws RequestException;
+
+    @POST
+    @Path("/assets/user/create")
+    @Consumes("application/json")
+    void createUser(CreateUserDTO createUserDTO) throws RequestException;
 }

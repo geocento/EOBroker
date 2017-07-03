@@ -37,6 +37,9 @@ public class Company {
     @Temporal(TemporalType.TIMESTAMP)
     Date startedIn;
 
+    @Enumerated(EnumType.STRING)
+    REGISTRATION_STATUS status;
+
     @Column(length = 1000)
     String address;
 
@@ -76,6 +79,11 @@ public class Company {
     List<Project> projects;
 
     Long followers;
+
+    boolean supplier;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date lastNotificationCheck;
 
     public Company() {
     }
@@ -238,5 +246,29 @@ public class Company {
 
     public Long getFollowers() {
         return followers;
+    }
+
+    public void setStatus(REGISTRATION_STATUS status) {
+        this.status = status;
+    }
+
+    public REGISTRATION_STATUS getStatus() {
+        return status;
+    }
+
+    public boolean isSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(boolean supplier) {
+        this.supplier = supplier;
+    }
+
+    public Date getLastNotificationCheck() {
+        return lastNotificationCheck;
+    }
+
+    public void setLastNotificationCheck(Date lastNotificationCheck) {
+        this.lastNotificationCheck = lastNotificationCheck;
     }
 }

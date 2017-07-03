@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.admin.client.widgets.CompanyTextBox;
 import com.geocento.webapps.eobroker.admin.client.widgets.UsersList;
 import com.geocento.webapps.eobroker.admin.shared.dtos.UserDescriptionDTO;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.core.client.GWT;
@@ -65,6 +66,8 @@ public class UsersViewImpl extends Composite implements UsersView {
     MaterialTitle title;
     @UiField
     MaterialButton create;
+    @UiField
+    MaterialListValueBox<REGISTRATION_STATUS> status;
 
     private Presenter presenter;
 
@@ -91,6 +94,11 @@ public class UsersViewImpl extends Composite implements UsersView {
         // set the user role values
         for(User.USER_ROLE role : User.USER_ROLE.values()) {
             this.role.addItem(role.toString());
+        }
+
+        // set the user registration status values
+        for(REGISTRATION_STATUS status : REGISTRATION_STATUS.values()) {
+            this.status.addItem(status, status.toString());
         }
     }
 
@@ -133,6 +141,7 @@ public class UsersViewImpl extends Composite implements UsersView {
         userName.setText(userDescriptionDTO.getName());
         email.setText(userDescriptionDTO.getEmail());
         role.setSelectedValue(userDescriptionDTO.getUserRole().toString());
+        status.setSelectedValue(userDescriptionDTO.getStatus() == null ? null : userDescriptionDTO.getStatus().toString());
         company.setCompany(userDescriptionDTO.getCompanyDTO());
         editUser.open();
     }
@@ -160,6 +169,11 @@ public class UsersViewImpl extends Composite implements UsersView {
     @Override
     public User.USER_ROLE getUserRole() {
         return User.USER_ROLE.valueOf(role.getSelectedValue());
+    }
+
+    @Override
+    public REGISTRATION_STATUS getUserStatus() {
+        return status.getSelectedValue();
     }
 
     @Override

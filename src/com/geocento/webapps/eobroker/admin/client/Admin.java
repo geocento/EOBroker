@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.admin.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.admin.client.places.AppPlaceHistoryMapper;
 import com.geocento.webapps.eobroker.admin.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -14,6 +15,7 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.EventBus;
@@ -54,6 +56,10 @@ public class Admin implements EntryPoint {
             public Place filter(Place place) {
                 // sign in is required for any page
                 if(loginInfo == null) {
+                    return new LoginPagePlace();
+                }
+                if(loginInfo.getUserRole() != User.USER_ROLE.administrator) {
+                    Window.alert("You are not an administrator");
                     return new LoginPagePlace();
                 }
                 return place;

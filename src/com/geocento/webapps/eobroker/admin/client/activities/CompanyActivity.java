@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.admin.client.places.CompanyPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.CompanyView;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -75,6 +76,8 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
         this.company = company;
         companyView.setTitleLine(company.getId() == null ? "Create company" : "Edit company");
         companyView.getName().setText(company.getName());
+        boolean isValidated = company.getStatus() == REGISTRATION_STATUS.APPROVED;
+        companyView.displayValidate(!isValidated);
         companyView.setIconUrl(company.getIconURL());
         companyView.getDescription().setText(company.getDescription());
         companyView.getWebsite().setText(company.getWebsite());
@@ -83,6 +86,28 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
     @Override
     protected void bind() {
         super.bind();
+
+        handlers.add(companyView.getValidate().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                try {
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            companyView.setLoadingError("Error validating company, reason is " + exception.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void result) {
+                            companyView.hideLoading("Company validated");
+                            company.setStatus(REGISTRATION_STATUS.APPROVED);
+                            setCompany(company);
+                        }
+                    }).call(ServicesUtil.assetsService).approveCompany(company.getId());
+                } catch (RequestException e) {
+                }
+            }
+        }));
 
         handlers.add(companyView.getSubmit().addClickHandler(new ClickHandler() {
             @Override

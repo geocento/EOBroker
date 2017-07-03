@@ -9,7 +9,6 @@ import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
-import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -209,103 +208,6 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public ProductServiceDTO getProductService(Long id) throws RequestException {
-        UserUtils.verifyUserAdmin(request);
-        if(id == null) {
-            throw new RequestException("Id cannot be null");
-        }
-        EntityManager em = EMF.get().createEntityManager();
-        try {
-            ProductService productService = em.find(ProductService.class, id);
-            if(productService == null) {
-                throw new RequestException("Unknown product");
-            }
-            ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-            productServiceDTO.setId(productService.getId());
-            productServiceDTO.setName(productService.getName());
-            productServiceDTO.setDescription(productService.getDescription());
-            productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-            productServiceDTO.setCompanyName(productService.getCompany().getName());
-            productServiceDTO.setServiceImage(productService.getImageUrl());
-            return productServiceDTO;
-        } catch (Exception e) {
-            throw new RequestException("Error");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
-    public List<ProductServiceDTO> listProductServices() throws RequestException {
-        String userName = UserUtils.verifyUserAdmin(request);
-        EntityManager em = EMF.get().createEntityManager();
-        try {
-            User user = em.find(User.class, userName);
-            TypedQuery<ProductService> query = em.createQuery("select p from ProductService p where p.company = :company", ProductService.class);
-            query.setParameter("company", user.getCompany());
-            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
-                @Override
-                public ProductServiceDTO mutate(ProductService productService) {
-                    ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                    productServiceDTO.setId(productService.getId());
-                    productServiceDTO.setName(productService.getName());
-                    productServiceDTO.setDescription(productService.getDescription());
-                    productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                    productServiceDTO.setCompanyName(productService.getCompany().getName());
-                    productServiceDTO.setServiceImage(productService.getImageUrl());
-                    productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
-                    return productServiceDTO;
-                }
-            });
-        } catch (Exception e) {
-            throw new RequestException("Error");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
-    public Long addProductService(ProductServiceDTO productService) {
-        return null;
-    }
-
-    @Override
-    public void updateProductService(ProductServiceDTO productServiceDTO) throws RequestException {
-        String userName = UserUtils.verifyUserAdmin(request);
-        if(productServiceDTO == null || productServiceDTO.getId() == null) {
-            throw new RequestException("Product service cannot be null");
-        }
-        EntityManager em = EMF.get().createEntityManager();
-        ProductService productService = em.find(ProductService.class, productServiceDTO.getId());
-        if(productService == null) {
-            throw new RequestException("Unknown product");
-        }
-        User user = em.find(User.class, userName);
-        if(!user.getCompany().getName().contentEquals(productServiceDTO.getCompanyName())) {
-            throw new AuthorizationException();
-        }
-        try {
-            em.getTransaction().begin();
-            productService.setName(productServiceDTO.getName());
-            productService.setDescription(productServiceDTO.getDescription());
-            Product product = em.find(Product.class, productServiceDTO.getProduct().getId());
-            if (product == null) {
-                throw new RequestException("Product does not exist");
-            }
-            productService.setProduct(product);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error updating product");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
     public CompanyDTO getCompany(Long id) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
@@ -357,7 +259,9 @@ public class AssetsResource implements AssetsService {
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Company, CompanyDTO>() {
                 @Override
                 public CompanyDTO mutate(Company company) {
-                    return CompanyHelper.createCompanyDTO(company);
+                    CompanyDTO companyDTO = CompanyHelper.createCompanyDTO(company);
+                    companyDTO.setStatus(company.getStatus());
+                    return companyDTO;
                 }
             });
         } catch (Exception e) {
@@ -440,6 +344,39 @@ public class AssetsResource implements AssetsService {
             query.executeUpdate();
             em.getTransaction().commit();
             return dbCompany.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void approveCompany(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Company dbCompany = null;
+            dbCompany = em.find(Company.class, id);
+            if (dbCompany == null) {
+                throw new RequestException("Could not company to approve");
+            }
+            dbCompany.setStatus(REGISTRATION_STATUS.APPROVED);
+            if(dbCompany.isSupplier()) {
+                // if new company create workspace
+                GeoserverUtils.getGeoserverPublisher().createWorkspace(dbCompany.getId() + "");
+                // update the keyphrases
+                Query query = em.createNativeQuery("UPDATE company SET tsv = " + DBHelper.getCompanyTSV(dbCompany) +
+                        ", tsvname = " + DBHelper.getCompanyNameTSV(dbCompany) + " where id = " + dbCompany.getId() +
+                        ";");
+                query.executeUpdate();
+            }
+            em.getTransaction().commit();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if(em.getTransaction().isActive()) {
@@ -702,7 +639,7 @@ public class AssetsResource implements AssetsService {
             }
             query.setFirstResult(start);
             query.setMaxResults(limit);
-            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<User,UserDescriptionDTO>() {
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<User, UserDescriptionDTO>() {
                 @Override
                 public UserDescriptionDTO mutate(User user) {
                     return createUserDescriptionDTO(user);
@@ -740,6 +677,7 @@ public class AssetsResource implements AssetsService {
         userDescriptionDTO.setEmail(user.getEmail());
         userDescriptionDTO.setUserRole(user.getRole());
         userDescriptionDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(user.getCompany()));
+        userDescriptionDTO.setStatus(user.getStatus());
         return userDescriptionDTO;
     }
 
@@ -763,9 +701,28 @@ public class AssetsResource implements AssetsService {
                 dbCompany = em.find(Company.class, userDescriptionDTO.getCompanyDTO().getId());
             }
             dbUser.setCompany(dbCompany);
+            REGISTRATION_STATUS previousStatus = dbUser.getStatus();
+            dbUser.setStatus(userDescriptionDTO.getStatus());
             dbUser.setRole(userDescriptionDTO.getUserRole());
             dbUser.setEmail(userDescriptionDTO.getEmail());
             em.getTransaction().commit();
+            boolean statusChanged = previousStatus != userDescriptionDTO.getStatus();
+            if(statusChanged) {
+                // send email
+                try {
+                    // check for errors to report
+                    MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.CONSUMER);
+                    mailContent.addTitle("Your user account");
+                    if(dbUser.getStatus() == REGISTRATION_STATUS.APPROVED) {
+                        mailContent.addLine("Your EO Broker user account has been approved. You can now access the EO Broker.");
+                    } else if(dbUser.getStatus() == REGISTRATION_STATUS.UNAPPROVED) {
+                        mailContent.addLine("Your EO Broker user account has been disabled. Please contact us for more information.");
+                    }
+                    mailContent.sendEmail(dbUser.getEmail(), "Your EO Broker user account", false);
+                } catch (Exception e) {
+                    throw new RequestException("Could not send email, please retry");
+                }
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if(em.getTransaction().isActive()) {
@@ -801,6 +758,7 @@ public class AssetsResource implements AssetsService {
                 password = new KeyGenerator(8).CreateKey();
             }
             dbUser.setPassword(com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createPasswordHash(password));
+            dbUser.setStatus(REGISTRATION_STATUS.APPROVED);
             em.persist(dbUser);
             Company dbCompany = null;
             if(userDescriptionDTO.getCompanyDTO() != null) {

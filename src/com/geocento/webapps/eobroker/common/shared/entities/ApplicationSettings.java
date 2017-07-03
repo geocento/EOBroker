@@ -58,6 +58,8 @@ public class ApplicationSettings {
     @Column(length = 10000)
     private String supportEmail;
     int maxSampleSizeMB;
+    private int notificationDelay;
+    private String supplierWebsiteUrl;
 
     public ApplicationSettings() {
         id = 1L;
@@ -237,5 +239,21 @@ public class ApplicationSettings {
 
     public void setMaxSampleSizeMB(int maxSampleSizeMB) {
         this.maxSampleSizeMB = maxSampleSizeMB;
+    }
+
+    public int getNotificationDelay() {
+        return notificationDelay;
+    }
+
+    public void setNotificationDelay(int notificationDelay) {
+        this.notificationDelay = notificationDelay;
+    }
+
+    public String getSupplierWebsiteUrl() {
+        return supplierWebsiteUrl;
+    }
+
+    public void setSupplierWebsiteUrl(String supplierWebsiteUrl) {
+        this.supplierWebsiteUrl = supplierWebsiteUrl;
     }
 }
