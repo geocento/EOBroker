@@ -758,6 +758,7 @@ public class AssetsResource implements AssetsService {
                 password = new KeyGenerator(8).CreateKey();
             }
             dbUser.setPassword(com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createPasswordHash(password));
+            dbUser.setFullName(userDescriptionDTO.getName());
             dbUser.setStatus(REGISTRATION_STATUS.APPROVED);
             em.persist(dbUser);
             Company dbCompany = null;

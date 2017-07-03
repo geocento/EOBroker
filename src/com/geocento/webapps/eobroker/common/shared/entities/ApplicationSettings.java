@@ -54,12 +54,13 @@ public class ApplicationSettings {
     @Column(length = 1000)
     String about;
     @Column(length = 10000)
-    private String termsAndConditionsURL;
+    String termsAndConditionsURL;
     @Column(length = 10000)
-    private String supportEmail;
+    String supportEmail;
     int maxSampleSizeMB;
-    private int notificationDelay;
-    private String supplierWebsiteUrl;
+    int notificationDelay;
+    @Column(length = 10000)
+    String supplierWebsiteUrl;
 
     public ApplicationSettings() {
         id = 1L;

@@ -88,6 +88,7 @@ public class RequestAccessViewImpl extends Composite implements RequestAccessVie
                 RequestAccessViewImpl.this.companyDTO = companyDTO;
                 displayCompanyRegistration(false);
             }
+            company.setText(companyDTO.getName());
         });
 
         displayCompanyRegistration(false);

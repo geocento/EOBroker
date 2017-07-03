@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.common.server.websockets;
+package com.geocento.webapps.eobroker.customer.server.websockets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

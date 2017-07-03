@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.common.server.Utils;
 
-import com.geocento.webapps.eobroker.common.server.websockets.NotificationSocket;
-import com.geocento.webapps.eobroker.common.server.websockets.SupplierNotificationSocket;
+import com.geocento.webapps.eobroker.customer.server.websockets.NotificationSocket;
+import com.geocento.webapps.eobroker.supplier.server.websockets.SupplierNotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -30,6 +30,8 @@ public class NotificationHelper {
         notification.setMessage(message);
         notification.setLinkId(linkId);
         notification.setCreationDate(new Date());
+        notification.setSent(false);
+        notification.setViewed(false);
         em.persist(notification);
         try {
             WebSocketMessage webSocketMessage = new WebSocketMessage();
@@ -48,6 +50,8 @@ public class NotificationHelper {
         supplierNotification.setMessage(message);
         supplierNotification.setLinkId(linkId);
         supplierNotification.setCreationDate(new Date());
+        supplierNotification.setSent(false);
+        supplierNotification.setViewed(false);
         em.persist(supplierNotification);
         try {
             SupplierWebSocketMessage webSocketMessage = new SupplierWebSocketMessage();
@@ -64,6 +68,9 @@ public class NotificationHelper {
         adminNotification.setType(type);
         adminNotification.setMessage(message);
         adminNotification.setLinkId(linkId);
+        adminNotification.setCreationDate(new Date());
+        adminNotification.setSent(false);
+        adminNotification.setViewed(false);
         em.persist(adminNotification);
     }
 

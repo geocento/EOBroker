@@ -89,11 +89,10 @@ public class ContextListener implements ServletContextListener {
                     calendar.setTime(now);
                     calendar.add(Calendar.MINUTE, ServerUtil.getSettings().getNotificationDelay());
                     // TODO - first get the users which are concerned by this new round of notifications
-                    TypedQuery<Company> queryCompanies = em.createQuery("SELECT c FROM Company c WHERE c.lastNotificationCheck is NULL OR c.lastNotificationCheck < :lastNotificationCheck", Company.class);
-                    queryCompanies.setParameter("lastNotificationCheck", calendar.getTime());
-                    TypedQuery<SupplierNotification> notificationQuery = em.createQuery("SELECT s FROM SupplierNotification s WHERE s.sent = :sent AND s.company IN :companies", SupplierNotification.class);
+                    TypedQuery<SupplierNotification> notificationQuery = em.createQuery("SELECT s FROM SupplierNotification s " +
+                            "WHERE s.sent = :sent AND (s.company.lastNotificationCheck is NULL OR s.company.lastNotificationCheck < :lastNotificationCheck)", SupplierNotification.class);
                     notificationQuery.setParameter("sent", false);
-                    notificationQuery.setParameter("companies", queryCompanies.getResultList());
+                    notificationQuery.setParameter("lastNotificationCheck", calendar.getTime());
                     logger.debug("New supplier notifications: " + notificationQuery.getResultList().size());
                     // group notifications by users
                     HashMap<Company, List<SupplierNotification>> notifications = ListUtil.group(notificationQuery.getResultList(), new ListUtil.GetValue<Company, SupplierNotification>() {
@@ -125,10 +124,10 @@ public class ContextListener implements ServletContextListener {
                             supplierUsersQuery.setParameter("company", company);
                             supplierUsersQuery.setParameter("role", User.USER_ROLE.supplier);
                             for(User user : supplierUsersQuery.getResultList()) {
-                                mailContent.sendEmail(company.getEmail(), "New notifications on EO Broker", false);
+                                mailContent.sendEmail(user.getEmail(), "New notifications on EO Broker", false);
                             }
                             // update notification
-                            for(Notification notification : userNotifications) {
+                            for(SupplierNotification notification : companyNotifications) {
                                 notification.setSent(true);
                             }
                             company.setLastNotificationCheck(now);
@@ -164,14 +163,10 @@ public class ContextListener implements ServletContextListener {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(now);
                     calendar.add(Calendar.MINUTE, ServerUtil.getSettings().getNotificationDelay());
-                    // TODO - first get the users which are concerned by this new round of notifications
-                    TypedQuery<User> queryUsers = em.createQuery("SELECT u FROM users u WHERE u.lastNotificationCheck is NULL OR u.lastNotificationCheck < :lastNotificationCheck", User.class);
-                    queryUsers.setParameter("lastNotificationCheck", calendar.getTime());
-                    TypedQuery<Notification> notificationQuery = em.createQuery("SELECT n FROM Notification n WHERE n.sent = :sent AND n.user IN :users", Notification.class);
-                    //query.setParameter("type", Notification.TYPE.ORDER);
-                    //query.setParameter("fetchDate", date);
+                    // TODO - optimise the query as when many users are registered it might end up a problem
+                    TypedQuery<Notification> notificationQuery = em.createQuery("SELECT n FROM Notification n WHERE n.sent = :sent AND (n.user.lastNotificationCheck is NULL OR n.user.lastNotificationCheck < :lastNotificationCheck)", Notification.class);
                     notificationQuery.setParameter("sent", false);
-                    notificationQuery.setParameter("users", queryUsers.getResultList());
+                    notificationQuery.setParameter("lastNotificationCheck", calendar.getTime());
                     logger.debug("New notifications: " + notificationQuery.getResultList().size());
                     // group notifications by users
                     HashMap<User, List<Notification>> notifications = ListUtil.group(notificationQuery.getResultList(), new ListUtil.GetValue<User, Notification>() {

@@ -5,6 +5,7 @@
     <inherits name='com.google.gwt.user.User'/>
     <inherits name="com.google.gwt.activity.Activity"/>
     <inherits name="com.geocento.webapps.eobroker.common.common"/>
+    <inherits name="org.realityforge.gwt.websockets.WebSockets"/>
 
     <entry-point class='com.geocento.webapps.eobroker.admin.client.Admin'/>
 

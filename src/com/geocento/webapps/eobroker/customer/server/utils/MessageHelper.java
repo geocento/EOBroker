@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.customer.server.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.geocento.webapps.eobroker.common.server.websockets.SupplierNotificationSocket;
+import com.geocento.webapps.eobroker.supplier.server.websockets.SupplierNotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Company;
 import com.geocento.webapps.eobroker.common.shared.entities.Message;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;

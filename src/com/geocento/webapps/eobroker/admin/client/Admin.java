@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.admin.client.places.LoginPagePlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
+import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.activity.shared.FilteredActivityMapper;
@@ -103,6 +104,10 @@ public class Admin implements EntryPoint {
 
     public static void setLoginInfo(LoginInfo loginInfo) {
         Admin.loginInfo = loginInfo;
+        // start the notification websocket if user is signed in
+        if(loginInfo != null) {
+            NotificationSocketHelper.getInstance().startMaybeNotifications();
+        }
     }
 
     public static LoginInfo getLoginInfo() {

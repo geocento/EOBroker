@@ -1,12 +1,14 @@
 package com.geocento.webapps.eobroker.supplier.client.utils;
 
-import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.MessageEvent;
+import com.geocento.webapps.eobroker.supplier.client.events.WebSocketClosedEvent;
+import com.geocento.webapps.eobroker.supplier.client.events.WebSocketFailedEvent;
 import com.geocento.webapps.eobroker.supplier.client.places.NotificationEvent;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.WebSocketMessageMapper;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
 
@@ -18,6 +20,8 @@ public class SupplierNotificationSocketHelper {
     static private SupplierNotificationSocketHelper instance;
 
     private WebSocket webSocket;
+
+    private int attempts = 0;
 
     protected SupplierNotificationSocketHelper() {
     }
@@ -39,6 +43,7 @@ public class SupplierNotificationSocketHelper {
             webSocket.setListener( new WebSocketListenerAdapter() {
                 @Override
                 public void onOpen( final WebSocket webSocket ) {
+                    attempts = 0;
                 }
 
                 @Override
@@ -64,8 +69,24 @@ public class SupplierNotificationSocketHelper {
 
                 @Override
                 public void onClose(WebSocket webSocket, boolean wasClean, int code, String reason) {
-                    super.onClose(webSocket, wasClean, code, reason);
                     // TODO - needs a strategy to restart the socket
+                    SupplierNotificationSocketHelper.this.webSocket = null;
+                    // normal close error code
+                    if(code == 1000 || code == 1001) {
+                        Supplier.clientFactory.getEventBus().fireEvent(new WebSocketClosedEvent());
+                        startMaybeNotifications();
+                    } else {
+                        // keep trying
+                        Supplier.clientFactory.getEventBus().fireEvent(new WebSocketFailedEvent());
+                        attempts++;
+                        new Timer() {
+
+                            @Override
+                            public void run() {
+                                startMaybeNotifications();
+                            }
+                        }.schedule(3000 + (2000 * attempts));
+                    }
                 }
             } );
             webSocket.connect("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "suppliernotifications");

@@ -23,6 +23,9 @@ public class User {
     String password;
 
     @Column(length = 1000)
+    String fullName;
+
+    @Column(length = 1000)
     String email;
 
     @Column(length = 1000)
@@ -77,6 +80,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
