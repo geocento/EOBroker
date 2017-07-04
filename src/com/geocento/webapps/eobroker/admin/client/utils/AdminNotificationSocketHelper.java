@@ -8,6 +8,7 @@ import com.geocento.webapps.eobroker.admin.shared.dtos.AdminWebSocketMessage;
 import com.geocento.webapps.eobroker.admin.shared.dtos.AdminWebSocketMessageMapper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
 
@@ -55,6 +56,10 @@ public class AdminNotificationSocketHelper {
                             NotificationEvent notificationEvent = new NotificationEvent();
                             notificationEvent.setNotification(webSocketMessage.getNotificationDTO());
                             Admin.clientFactory.getEventBus().fireEvent(notificationEvent);
+                            break;
+                        case logout:
+                            Window.alert("You have been signed out");
+                            Window.Location.reload();
                             break;
                     }
                 }

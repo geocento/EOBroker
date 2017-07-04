@@ -1,12 +1,9 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
-import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.places.EOBrokerPlace;
-import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
-import com.geocento.webapps.eobroker.customer.client.widgets.FollowingEventWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.FollowingEventsList;
 import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
@@ -41,7 +38,7 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.MaterialSlider slider;
     @UiField
-    MaterialRow newsFeed;
+    FollowingEventsList followingEvents;
 
     private Presenter presenter;
 
@@ -53,6 +50,14 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        followingEvents.setPresenter(new AsyncPagingWidgetList.Presenter() {
+            @Override
+            public void loadMore() {
+                if (presenter != null) {
+                    presenter.loadMoreFollowingEvents();
+                }
+            }
+        });
     }
 
     @Override
@@ -81,24 +86,27 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
     }
 
     @Override
-    public void setLoadingNewsFeed(boolean loading) {
-        newsFeed.clear();
+    public void setLoadingFollowingEvents(boolean loading) {
+        followingEvents.setLoading(loading);
+/*
         if(loading) {
-            newsFeed.add(new LoadingWidget("Loading..."));
+            followingEvents.add(new LoadingWidget("Loading..."));
         }
+*/
     }
 
     @Override
-    public void setNewsFeed(List<FollowingEventDTO> followingEventDTOs) {
-        this.newsFeed.clear();
+    public void addNewsFollowingEvents(boolean hasMore, List<FollowingEventDTO> followingEventDTOs) {
+        followingEvents.addData(followingEventDTOs, hasMore);
+/*
         if(followingEventDTOs.size() == 0) {
             MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
-            this.newsFeed.add(materialColumn);
+            this.followingEvents.add(materialColumn);
             materialColumn.add(new MaterialLabel("No news in your network, follow more companies and products to be up to date with the EO Broker"));
         } else {
             for (FollowingEventDTO followingEventDTO : followingEventDTOs) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
-                this.newsFeed.add(materialColumn);
+                this.followingEvents.add(materialColumn);
                 FollowingEventWidget followingEventWidget = new FollowingEventWidget(followingEventDTO);
                 followingEventWidget.getAction().addClickHandler(event -> {
                     EOBrokerPlace place = null;
@@ -155,6 +163,12 @@ public class LandingPageViewImpl extends Composite implements LandingPageView {
                 materialColumn.add(followingEventWidget);
             }
         }
+*/
+    }
+
+    @Override
+    public void clearNewsFeed() {
+        this.followingEvents.clearData();
     }
 
     @Override

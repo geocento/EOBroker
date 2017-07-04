@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.NotificationsPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.supplier.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.event.shared.EventBus;
@@ -42,7 +43,37 @@ public class NotificationsActivity extends TemplateActivity implements Dashboard
     }
 
     private void handleHistory() {
+
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        // if id was provided, go directly to notification
+        if(tokens.containsKey(NotificationsPlace.TOKENS.id.toString())) {
+            // no need for company id
+            displayFullLoading("Loading notification...");
+            try {
+                REST.withCallback(new MethodCallback<SupplierNotificationDTO>() {
+
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideFullLoading();
+                        Window.alert("Problem loading notification");
+                        // could not find notification so load all notifications instead
+                        clientFactory.getPlaceController().goTo(new NotificationsPlace());
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, SupplierNotificationDTO supplierNotificationDTO) {
+                        hideFullLoading();
+                        clientFactory.getPlaceController().goTo(NotificationHelper.convertToPlace(supplierNotificationDTO));
+                    }
+
+                }).call(ServicesUtil.assetsService).getNotification(Long.parseLong(tokens.get(NotificationsPlace.TOKENS.id.toString())));
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
         try {
             displayFullLoading("Loading notifications...");
             REST.withCallback(new MethodCallback<List<SupplierNotificationDTO>>() {

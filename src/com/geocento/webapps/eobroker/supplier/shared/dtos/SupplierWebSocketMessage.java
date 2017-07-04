@@ -15,7 +15,7 @@ public class SupplierWebSocketMessage {
         return destination;
     }
 
-    static public enum TYPE {notification, conversationMessage, requestMessage};
+    static public enum TYPE {notification, conversationMessage, logout, requestMessage};
 
     TYPE type;
 

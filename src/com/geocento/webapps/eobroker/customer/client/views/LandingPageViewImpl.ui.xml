@@ -54,8 +54,11 @@
             <cwidgets:MaterialSlider ui:field="slider" fullscreen="false">
             </cwidgets:MaterialSlider>
             <m:MaterialLabel addStyleNames="{style.newsFeedTitle}" text="Updates in your network" />
+            <widgets:FollowingEventsList ui:field="followingEvents"></widgets:FollowingEventsList>
+<!--
             <m:MaterialRow ui:field="newsFeed">
             </m:MaterialRow>
+-->
 <!--
             <m:MaterialTitle title="Featured offers" />
             <m:MaterialRow ui:field="offers">

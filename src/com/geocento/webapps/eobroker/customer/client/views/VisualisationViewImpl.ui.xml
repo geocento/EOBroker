@@ -96,7 +96,7 @@
                             </design:MaterialPanel>
                         </design:MaterialPanel>
                     </sideprofile:MaterialSideProfile>
-                    <design:MaterialPanel addStyleNames="{style.infoPanel}, {resCommon.style.slimScrollbar}">
+                    <design:MaterialPanel backgroundColor="WHITE" addStyleNames="{style.infoPanel}, {resCommon.style.slimScrollbar}">
                         <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
                         <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="RED" ui:field="errorMessage"></design:MaterialLabel>
                         <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">

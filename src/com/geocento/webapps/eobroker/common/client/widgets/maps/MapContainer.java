@@ -383,4 +383,8 @@ public class MapContainer extends Composite {
         getArcgisMap().hideInfoWindow(map);
     }
 
+    public void addWidget(Widget widget) {
+        panel.add(widget);
+    }
+
 }

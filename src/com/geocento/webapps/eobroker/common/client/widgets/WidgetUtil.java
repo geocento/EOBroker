@@ -50,4 +50,23 @@ public class WidgetUtil {
         }
     }
 
+    /**
+     *
+     * Scans parent tree until it finds a widget matching the check value condition
+     *
+     * @param widget
+     * @param checkValue
+     * @return
+     */
+    public static Widget findParent(Widget widget, CheckValue checkValue) {
+        Widget parent = widget.getParent();
+        if(parent == null) {
+            return null;
+        }
+        if(checkValue.isValue(parent)) {
+            return parent;
+        }
+        return findParent(parent, checkValue);
+    }
+
 }

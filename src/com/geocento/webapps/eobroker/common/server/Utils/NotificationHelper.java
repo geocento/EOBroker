@@ -57,7 +57,7 @@ public class NotificationHelper {
             SupplierWebSocketMessage webSocketMessage = new SupplierWebSocketMessage();
             webSocketMessage.setType(SupplierWebSocketMessage.TYPE.notification);
             webSocketMessage.setNotificationDTO(NotificationHelper.createSupplierNotificationDTO(supplierNotification));
-            SupplierNotificationSocket.sendMessage(supplierNotification.getCompany().getId(), webSocketMessage);
+            SupplierNotificationSocket.sendCompanyMessage(supplierNotification.getCompany().getId(), webSocketMessage);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

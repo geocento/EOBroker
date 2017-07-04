@@ -114,7 +114,7 @@ public class ContextListener implements ServletContextListener {
                             MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ORDER);
                             mailContent.addTitle("You have new notifications");
                             mailContent.addTable(ListUtil.mutate(companyNotifications, notification -> ListUtil.toList(new String[]{
-                                    notification.getMessage(), ", on " + timeFormat.format(notification.getCreationDate()),
+                                    notification.getMessage(), "on " + timeFormat.format(notification.getCreationDate()),
                                     "<a href='" + ServerUtil.getSettings().getSupplierWebsiteUrl() + "#notifications:id=" + notification.getId() +
                                             "'>View</a>"
                             })));

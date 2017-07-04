@@ -2,7 +2,6 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
-import com.geocento.webapps.eobroker.customer.shared.Offer;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.List;
@@ -18,11 +17,14 @@ public interface LandingPageView extends IsWidget {
 
     void setNewsItems(List<NewsItem> newsItems);
 
-    void setLoadingNewsFeed(boolean loading);
+    void setLoadingFollowingEvents(boolean loading);
 
-    void setNewsFeed(List<FollowingEventDTO> followingEventDTOs);
+    void addNewsFollowingEvents(boolean hasMore, List<FollowingEventDTO> followingEventDTOs);
+
+    void clearNewsFeed();
 
     public interface Presenter {
+        void loadMoreFollowingEvents();
     }
 
 }

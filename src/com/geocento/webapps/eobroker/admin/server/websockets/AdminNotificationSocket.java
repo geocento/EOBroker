@@ -4,24 +4,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.admin.shared.dtos.AdminWebSocketMessage;
 import com.geocento.webapps.eobroker.common.server.UserSession;
+import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
+import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ServerEndpoint(value = "/adminnotifications", configurator = AdminCustomConfigurator.class)
-public class AdminNotificationSocket {
+@ServerEndpoint(value = "/adminnotifications", configurator = BaseCustomConfigurator.class)
+public class AdminNotificationSocket extends BaseNotificationSocket {
 
     static Logger logger = Logger.getLogger(AdminNotificationSocket.class);
 
     static private ConcurrentHashMap<String, List<Session>> userSessions = new ConcurrentHashMap<String, List<Session>>();
-
-    private HttpSession httpSession;
 
     public AdminNotificationSocket() {
         logger.info("Starting websocket handler");
@@ -40,6 +41,7 @@ public class AdminNotificationSocket {
     }
 
     private void addUserSession(UserSession userSession, Session session) {
+        super.addHttpSession(session);
         // add user session
         {
             String userName = userSession.getUserName();
@@ -53,6 +55,7 @@ public class AdminNotificationSocket {
     }
 
     private void removeUserSession(UserSession userSession, Session session) {
+        super.removeHttpSession(session);
         {
             List<Session> sessions = userSessions.get(userSession.getUserCompanyId());
             if (sessions == null) {
@@ -84,25 +87,15 @@ public class AdminNotificationSocket {
         logger.info("Close session for user " + userSession.getUserName());
     }
 
-    public void setHttpSession(HttpSession httpSession) {
-        this.httpSession = httpSession;
-    }
-
-    public UserSession getUserSession() {
-        if(httpSession == null) {
-            return null;
-        }
-        return (UserSession) httpSession.getAttribute("userSession");
-    }
-
-    static public void sendMessage(AdminWebSocketMessage webSocketMessage) throws JsonProcessingException {
+    static public void sendUserMessage(String userName, AdminWebSocketMessage webSocketMessage) throws JsonProcessingException {
         if(userSessions == null || userSessions.size() == 0) {
             return;
         }
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(webSocketMessage);
-        for(String userName : userSessions.keySet()) {
-            for (Session session : userSessions.get(userName)) {
+        Collection<String> userNames = userName == null ? ListUtil.toList(userName) : userSessions.keySet();
+        for(String sessionUserName : userNames) {
+            for (Session session : userSessions.get(sessionUserName)) {
                 try {
                     session.getBasicRemote().sendText(message);
                 } catch (Exception e) {
@@ -111,5 +104,9 @@ public class AdminNotificationSocket {
                 }
             }
         }
+    }
+
+    static public void sendAllMessage(AdminWebSocketMessage webSocketMessage) throws JsonProcessingException {
+        sendUserMessage(null, webSocketMessage);
     }
 }

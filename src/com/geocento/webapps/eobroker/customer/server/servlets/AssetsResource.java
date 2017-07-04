@@ -1026,6 +1026,24 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public NotificationDTO getNotification(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Notification notification = em.find(Notification.class, id);
+            if(!notification.getUser().getUsername().contentEquals(userName)) {
+                throw new RequestException("Not authorised");
+            }
+            return NotificationHelper.createNotificationDTO(notification);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notification");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public LayerInfoDTO getLayerInfo(Long id) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
@@ -1242,7 +1260,7 @@ public class AssetsResource implements AssetsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             User user = em.find(User.class, userName);
-            TypedQuery<FollowingEvent> query = em.createQuery("select f from FollowingEvent f where f.user = :user order by f.creationDate", FollowingEvent.class);
+            TypedQuery<FollowingEvent> query = em.createQuery("select f from FollowingEvent f where f.user = :user order by f.creationDate DESC", FollowingEvent.class);
             query.setParameter("user", user);
             query.setFirstResult(start);
             query.setMaxResults(limit);

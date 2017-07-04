@@ -2,11 +2,12 @@ package com.geocento.webapps.eobroker.supplier.server.websockets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
+import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -14,15 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ServerEndpoint(value = "/suppliernotifications", configurator = SupplierCustomConfigurator.class)
-public class SupplierNotificationSocket {
+@ServerEndpoint(value = "/suppliernotifications", configurator = BaseCustomConfigurator.class)
+public class SupplierNotificationSocket extends BaseNotificationSocket {
 
     static Logger logger = Logger.getLogger(SupplierNotificationSocket.class);
 
     static private ConcurrentHashMap<Long, List<Session>> companySessions = new ConcurrentHashMap<Long, List<Session>>();
     static private ConcurrentHashMap<String, List<Session>> userSessions = new ConcurrentHashMap<String, List<Session>>();
-
-    private HttpSession httpSession;
 
     public SupplierNotificationSocket() {
         logger.info("Starting websocket handler");
@@ -41,6 +40,7 @@ public class SupplierNotificationSocket {
     }
 
     private void addUserSession(UserSession userSession, Session session) {
+        super.addHttpSession(session);
         // add company session
         {
             Long companyId = userSession.getUserCompanyId();
@@ -60,10 +60,16 @@ public class SupplierNotificationSocket {
                 userSessions.put(userName, sessions);
             }
             sessions.add(session);
+/*
+            if (httpSession != null) {
+                httpSession.setAttribute("ADMINWEBSOCKET_SESSION", userName);
+            }
+*/
         }
     }
 
     private void removeUserSession(UserSession userSession, Session session) {
+        super.removeHttpSession(session);
         {
             List<Session> sessions = companySessions.get(userSession.getUserName());
             if (sessions == null) {
@@ -102,22 +108,7 @@ public class SupplierNotificationSocket {
         logger.info("Close session for user " + userSession.getUserName());
     }
 
-    public void setHttpSession(HttpSession httpSession) {
-        this.httpSession = httpSession;
-    }
-
-    public UserSession getUserSession() {
-        if(httpSession == null) {
-            return null;
-        }
-        return (UserSession) httpSession.getAttribute("userSession");
-    }
-
-    static public void sendMessage(Long companyId, SupplierWebSocketMessage webSocketMessage) throws JsonProcessingException {
-        List<Session> sessions = companySessions.get(companyId);
-        if(sessions == null) {
-            return;
-        }
+    static public void sendMessage(List<Session> sessions, SupplierWebSocketMessage webSocketMessage) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(webSocketMessage);
         for(Session session : sessions) {
@@ -128,5 +119,21 @@ public class SupplierNotificationSocket {
 
             }
         }
+    }
+
+    static public void sendCompanyMessage(Long companyId, SupplierWebSocketMessage webSocketMessage) throws JsonProcessingException {
+        List<Session> sessions = companySessions.get(companyId);
+        if(sessions == null) {
+            return;
+        }
+        sendMessage(sessions, webSocketMessage);
+    }
+
+    static public void sendUserMessage(String userName, SupplierWebSocketMessage webSocketMessage) throws JsonProcessingException {
+        List<Session> sessions = userSessions.get(userName);
+        if(sessions == null) {
+            return;
+        }
+        sendMessage(sessions, webSocketMessage);
     }
 }

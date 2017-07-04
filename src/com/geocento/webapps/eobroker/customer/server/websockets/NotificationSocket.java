@@ -2,11 +2,12 @@ package com.geocento.webapps.eobroker.customer.server.websockets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
+import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -14,14 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ServerEndpoint(value = "/notifications", configurator = CustomConfigurator.class)
-public class NotificationSocket {
+@ServerEndpoint(value = "/notifications", configurator = BaseCustomConfigurator.class)
+public class NotificationSocket extends BaseNotificationSocket {
 
     static Logger logger = Logger.getLogger(NotificationSocket.class);
 
     static private ConcurrentHashMap<String, List<Session>> userSessions = new ConcurrentHashMap<String, List<Session>>();
-
-    private HttpSession httpSession;
 
     public NotificationSocket() {
         logger.info("Starting websocket handler");
@@ -40,6 +39,7 @@ public class NotificationSocket {
     }
 
     private void addUserSession(String userName, Session session) {
+        super.addHttpSession(session);
         List<Session> sessions = userSessions.get(userName);
         if(sessions == null) {
             sessions = new ArrayList<Session>();
@@ -49,6 +49,7 @@ public class NotificationSocket {
     }
 
     private void removeUserSession(String userName, Session session) {
+        super.removeHttpSession(session);
         List<Session> sessions = userSessions.get(userName);
         if(sessions == null) {
             return;
@@ -76,17 +77,6 @@ public class NotificationSocket {
         }
         removeUserSession(userSession.getUserName(), session);
         logger.info("Close session for user " + userSession.getUserName());
-    }
-
-    public void setHttpSession(HttpSession httpSession) {
-        this.httpSession = httpSession;
-    }
-
-    public UserSession getUserSession() {
-        if(httpSession == null) {
-            return null;
-        }
-        return (UserSession) httpSession.getAttribute("userSession");
     }
 
     static public void sendMessage(String userName, WebSocketMessage webSocketMessage) throws JsonProcessingException {

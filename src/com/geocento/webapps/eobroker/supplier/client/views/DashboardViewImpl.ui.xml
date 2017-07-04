@@ -4,6 +4,7 @@
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
              xmlns:forms="urn:import:com.geocento.webapps.eobroker.common.client.widgets.forms"
+             xmlns:charts="urn:import:com.geocento.webapps.eobroker.common.client.widgets.charts"
         >
     <ui:style>
         .panel header {
@@ -73,7 +74,7 @@
             font-size: 0.8em;
         }
 
-        .statistics {
+        .chartPanel {
             margin: 20px 0px;
         }
 
@@ -170,8 +171,8 @@
                 <g:HTMLPanel>
                     <design:MaterialTitle title="Your company statistics"></design:MaterialTitle>
                 </g:HTMLPanel>
-                <design:MaterialPanel addStyleNames="{style.statistics}">
-                </design:MaterialPanel>
+                <charts:ChartPanel addStyleNames="{style.chartPanel}" ui:field="chartPanel">
+                </charts:ChartPanel>
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="settingsPanel">
                 <g:HTMLPanel>

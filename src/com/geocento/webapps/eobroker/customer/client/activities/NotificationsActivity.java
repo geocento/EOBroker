@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.NotificationsPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.customer.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.customer.client.views.NotificationsView;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.event.shared.EventBus;
@@ -49,6 +50,34 @@ public class NotificationsActivity extends TemplateActivity implements Notificat
     private void handleHistory() {
 
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        // if id was provided, go directly to notification
+        if(tokens.containsKey(NotificationsPlace.TOKENS.id.toString())) {
+            // no need for company id
+            displayFullLoading("Loading notification...");
+            try {
+                REST.withCallback(new MethodCallback<NotificationDTO>() {
+
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideFullLoading();
+                        Window.alert("Problem loading notification");
+                        // could not find notification so load all notifications instead
+                        clientFactory.getPlaceController().goTo(new NotificationsPlace());
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, NotificationDTO notificationDTO) {
+                        hideFullLoading();
+                        clientFactory.getPlaceController().goTo(NotificationHelper.createNotificationPlace(notificationDTO));
+                    }
+
+                }).call(ServicesUtil.assetsService).getNotification(Long.parseLong(tokens.get(NotificationsPlace.TOKENS.id.toString())));
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         // no need for company id
         displayFullLoading("Loading notifications...");

@@ -39,7 +39,7 @@ public class MessageHelper {
         webSocketMessage.setType(type);
         webSocketMessage.setDestination(destinationId);
         webSocketMessage.setMessageDTO(com.geocento.webapps.eobroker.supplier.server.util.MessageHelper.convertToDTO(message));
-        SupplierNotificationSocket.sendMessage(company.getId(), webSocketMessage);
+        SupplierNotificationSocket.sendCompanyMessage(company.getId(), webSocketMessage);
     }
 
     public static void sendCompanyConversationMessage(Company company, String destinationId, Message message) throws JsonProcessingException {

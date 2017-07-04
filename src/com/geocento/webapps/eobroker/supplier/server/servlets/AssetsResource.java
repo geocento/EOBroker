@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
+import com.geocento.webapps.eobroker.common.shared.feasibility.BarChartStatistics;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
@@ -31,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
@@ -764,7 +767,39 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public SupplierStatisticsDTO getStatistics() throws RequestException {
-        return null;
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            SupplierStatisticsDTO supplierStatisticsDTO = new SupplierStatisticsDTO();
+            // collect some information
+            List<Product> products = new ArrayList<Product>();
+            for(ProductService productService : user.getCompany().getServices()) {
+                products.add(productService.getProduct());
+            }
+            for(ProductDataset productDataset : user.getCompany().getDatasets()) {
+                products.add(productDataset.getProduct());
+            }
+            // create a dummy one to illustrate the purpose
+            BarChartStatistics barChartStatistics = new BarChartStatistics();
+            barChartStatistics.setName("Product searches");
+            barChartStatistics.setDescription("Number Searches involving your product categories in the past month");
+            barChartStatistics.setxLabel("Product category");
+            barChartStatistics.setyLabel("Number of searches");
+            Map<String, Double> values = new HashMap<String, Double>();
+            for(Product product : products) {
+                values.put(product.getName(), Math.floor(Math.random() * 100));
+            }
+            barChartStatistics.setValues(values);
+            supplierStatisticsDTO.setStatistics(ListUtil.toList(barChartStatistics));
+            return supplierStatisticsDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error getting statistics");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -799,12 +834,7 @@ public class AssetsResource implements AssetsService {
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<SupplierNotification, SupplierNotificationDTO>() {
                 @Override
                 public SupplierNotificationDTO mutate(SupplierNotification supplierNotification) {
-                    SupplierNotificationDTO supplierNotificationDTO = new SupplierNotificationDTO();
-                    supplierNotificationDTO.setType(supplierNotification.getType());
-                    supplierNotificationDTO.setMessage(supplierNotification.getMessage());
-                    supplierNotificationDTO.setLinkId(supplierNotification.getLinkId());
-                    supplierNotificationDTO.setCreationDate(supplierNotification.getCreationDate());
-                    return supplierNotificationDTO;
+                    return createNotificationDTO(supplierNotification);
                 }
             });
         } catch (Exception e) {
@@ -813,6 +843,34 @@ public class AssetsResource implements AssetsService {
             }
             logger.error(e.getMessage(), e);
             throw new RequestException("Error loading notifications");
+        } finally {
+            em.close();
+        }
+    }
+
+    private SupplierNotificationDTO createNotificationDTO(SupplierNotification supplierNotification) {
+        SupplierNotificationDTO supplierNotificationDTO = new SupplierNotificationDTO();
+        supplierNotificationDTO.setType(supplierNotification.getType());
+        supplierNotificationDTO.setMessage(supplierNotification.getMessage());
+        supplierNotificationDTO.setLinkId(supplierNotification.getLinkId());
+        supplierNotificationDTO.setCreationDate(supplierNotification.getCreationDate());
+        return supplierNotificationDTO;
+    }
+
+    @Override
+    public SupplierNotificationDTO getNotification(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            SupplierNotification notification = em.find(SupplierNotification.class, id);
+            if(notification.getCompany() != user.getCompany()) {
+                throw new RequestException("Not authorised");
+            }
+            return createNotificationDTO(notification);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notification");
         } finally {
             em.close();
         }

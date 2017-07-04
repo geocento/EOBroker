@@ -5,8 +5,10 @@ import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.Utils.BCrypt;
 import com.geocento.webapps.eobroker.common.server.Utils.UserUtils;
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
+import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -34,6 +36,9 @@ public class LoginResource implements LoginService {
         try {
             User user = em.find(User.class, userName);
             if(user != null) {
+                if(user.getStatus() != REGISTRATION_STATUS.APPROVED) {
+                    throw new RequestException("Not authorised");
+                }
                 String hashFromDB = user.getPassword();
                 boolean valid = BCrypt.checkpw(passwordHash, hashFromDB);
                 if(valid) {

@@ -77,6 +77,11 @@ public interface AssetsService extends DirectRestService {
     List<SupplierNotificationDTO> getNotifications() throws RequestException;
 
     @GET
+    @Path("/assets/notifications/{id}")
+    @Produces("application/json")
+    SupplierNotificationDTO getNotification(@PathParam("id") Long id) throws RequestException;
+
+    @GET
     @Path("/assets/dataset/")
     @Produces("application/json")
     List<DatasetProviderDTO> listDatasets() throws RequestException;

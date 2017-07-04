@@ -139,6 +139,11 @@ public interface AssetsService extends DirectRestService {
     List<NotificationDTO> listNotifications(@QueryParam("start") int start, @QueryParam("limit") int limit) throws RequestException;
 
     @GET
+    @Path("/assets/notifications/{id}")
+    @Produces("application/json")
+    NotificationDTO getNotification(@PathParam("id") Long id) throws RequestException;
+
+    @GET
     @Path("/assets/spatial/{id}")
     @Produces("application/json")
     LayerInfoDTO getLayerInfo(@PathParam("id") Long id) throws RequestException;

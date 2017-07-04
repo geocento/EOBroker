@@ -8,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class NotificationsPlace extends EOBrokerPlace {
 
-    public static enum TOKENS {};
+    public static enum TOKENS {id};
 
     public NotificationsPlace() {
     }

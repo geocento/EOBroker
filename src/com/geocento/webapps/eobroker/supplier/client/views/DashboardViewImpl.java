@@ -1,9 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
+import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormCreator;
 import com.geocento.webapps.eobroker.common.shared.entities.NOTIFICATION_DELAY;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.feasibility.Statistics;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.*;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
@@ -13,6 +15,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.sun.org.glassfish.external.statistics.Statistic;
 import gwt.material.design.client.ui.*;
 
 import java.util.List;
@@ -99,6 +102,8 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialRow notifications;
     @UiField
     MaterialPanel statisticsPanel;
+    @UiField
+    ChartPanel chartPanel;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -315,11 +320,19 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     }
 
     @Override
-    public void displayStatistics(SupplierStatisticsDTO response) {
+    public void displayStatistics(SupplierStatisticsDTO supplierStatisticsDTO) {
         hideAll();
         template.setPlace("statistics");
         statisticsPanel.setVisible(true);
-        statisticsPanel.clear();
+        chartPanel.clear();
+        chartPanel.loadChartAPI(new Runnable() {
+            @Override
+            public void run() {
+                for(Statistics statistic : supplierStatisticsDTO.getStatistics()) {
+                    chartPanel.addStatistics(statistic);
+                }
+            }
+        });
     }
 
     @Override

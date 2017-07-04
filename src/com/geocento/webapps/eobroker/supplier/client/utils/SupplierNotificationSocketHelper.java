@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessa
 import com.geocento.webapps.eobroker.supplier.shared.dtos.WebSocketMessageMapper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
 
@@ -63,6 +64,10 @@ public class SupplierNotificationSocketHelper {
                             messageEvent.setDestination(webSocketMessage.getDestination());
                             messageEvent.setMessage(webSocketMessage.getMessageDTO());
                             Supplier.clientFactory.getEventBus().fireEvent(messageEvent);
+                            break;
+                        case logout:
+                            Window.alert("You have been signed out");
+                            Window.Location.reload();
                             break;
                     }
                 }

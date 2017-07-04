@@ -43,7 +43,7 @@ public class Utils {
     }
 
     public static String getImageMaybe(String imageUrl) {
-        return imageUrl == null || !imageUrl.startsWith("http") ? "./images/noImage.png" : imageUrl;
+        return imageUrl == null || imageUrl.length() < 5 ? "./images/noImage.png" : imageUrl;
     }
 
     public static <T extends Enum<T>> String[] enumNameToStringArray(T[] values) {

@@ -5,7 +5,7 @@ package com.geocento.webapps.eobroker.admin.shared.dtos;
  */
 public class AdminWebSocketMessage {
 
-    static public enum TYPE {notification, conversationMessage, requestMessage};
+    static public enum TYPE {notification, conversationMessage, logout, requestMessage};
 
     TYPE type;
 

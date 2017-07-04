@@ -87,6 +87,8 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         formCreator.addTextEditor(settings.getDataDirectory(), "Data directory", "The path for the data directory on the local machine", 5, 100);
         formCreator.addTextEditor(settings.getServerType(), "Server type", "The server type, whether local, staging or production", 5, 100);
         formCreator.addTextEditor(settings.getWebsiteUrl(), "Website URL", "The website URL, used for links in emails", 5, 100);
+        formCreator.addTextEditor(settings.getSupplierWebsiteUrl(), "Supplier Website URL", "The supplier website URL, used for links in emails", 5, 100);
+        formCreator.addIntegerEditor(settings.getNotificationDelay(), "Notification delay on hours", "The notification delay for sending emails, expressed in hours");
     }
 
     @Override
@@ -116,6 +118,8 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         settings.setDataDirectory(String.valueOf(values.get(index++).getValue()));
         settings.setServerType(String.valueOf(values.get(index++).getValue()));
         settings.setWebsiteUrl(String.valueOf(values.get(index++).getValue()));
+        settings.setSupplierWebsiteUrl(String.valueOf(values.get(index++).getValue()));
+        settings.setNotificationDelay(Integer.valueOf(values.get(index++).getValue()));
 
         return settings;
     }

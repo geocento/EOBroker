@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.admin.client.activities;
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
 import com.geocento.webapps.eobroker.admin.client.events.LogOut;
 import com.geocento.webapps.eobroker.admin.client.events.LogOutHandler;
+import com.geocento.webapps.eobroker.admin.client.events.NotificationEvent;
+import com.geocento.webapps.eobroker.admin.client.events.NotificationEventHandler;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.TemplateView;
 import com.geocento.webapps.eobroker.admin.shared.dtos.NotificationDTO;
@@ -75,6 +77,20 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
                 }).call(ServicesUtil.loginService).signout();
             }
         });
+
+        activityEventBus.addHandler(NotificationEvent.TYPE, new NotificationEventHandler() {
+            @Override
+            public void onNotification(NotificationEvent event) {
+                // update notifications
+                NotificationDTO notificationDTO = event.getNotification();
+                // make sure it is not already included
+                if(!userNotifications.contains(notificationDTO)) {
+                    userNotifications.add(notificationDTO);
+                    templateView.setNotifications(userNotifications);
+                }
+            }
+        });
+
     }
 
     protected void displayLoading(String message) {

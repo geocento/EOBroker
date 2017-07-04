@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.customer.server.websockets;
+package com.geocento.webapps.eobroker.common.server.websockets;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.HandshakeResponse;
@@ -6,7 +6,7 @@ import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 import java.text.MessageFormat;
 
-public class CustomConfigurator extends ServerEndpointConfig.Configurator
+public class BaseCustomConfigurator extends ServerEndpointConfig.Configurator
 {
     private HttpSession httpSession;
 
@@ -21,14 +21,14 @@ public class CustomConfigurator extends ServerEndpointConfig.Configurator
     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
         T endpoint = super.getEndpointInstance(endpointClass);
 
-        if (endpoint instanceof NotificationSocket) {
+        if (endpoint instanceof BaseNotificationSocket) {
             // The injection point:
-            ((NotificationSocket) endpoint).setHttpSession(httpSession);
+            ((BaseNotificationSocket) endpoint).setHttpSession(httpSession);
         }
         else {
             throw new InstantiationException(
                     MessageFormat.format("Expected instanceof \"{0}\". Got instanceof \"{1}\".",
-                            NotificationSocket.class, endpoint.getClass()));
+                            BaseNotificationSocket.class, endpoint.getClass()));
         }
 
         return endpoint;

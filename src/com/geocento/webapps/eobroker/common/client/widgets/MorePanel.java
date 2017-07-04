@@ -70,7 +70,7 @@ public class MorePanel extends Composite {
         return fullContentDisplayed;
     }
 
-    private void displayMoreContent(boolean display) {
+    public void displayMoreContent(boolean display) {
         fullContentDisplayed = display;
         moreLabel.setText(fullContentDisplayed ? "Show less..." : "Show more...");
         if(fullContentDisplayed) {

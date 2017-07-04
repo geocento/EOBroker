@@ -24,6 +24,9 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
 
     private LandingPageView landingPageView;
 
+    private int start = 0;
+    private int limit = 10;
+
     public LandingPageActivity(LandingPagePlace place, ClientFactory clientFactory) {
         super(clientFactory);
         this.place = place;
@@ -56,20 +59,24 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
     }
 
     private void loadFollowingEvents() {
-        landingPageView.setLoadingNewsFeed(true);
+        if(start == 0) {
+            landingPageView.clearNewsFeed();
+        }
+        landingPageView.setLoadingFollowingEvents(true);
         try {
             REST.withCallback(new MethodCallback<List<FollowingEventDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    landingPageView.setLoadingNewsFeed(false);
+                    landingPageView.setLoadingFollowingEvents(false);
                 }
 
                 @Override
                 public void onSuccess(Method method, List<FollowingEventDTO> followingEventDTOs) {
-                    landingPageView.setLoadingNewsFeed(false);
-                    landingPageView.setNewsFeed(followingEventDTOs);
+                    landingPageView.setLoadingFollowingEvents(false);
+                    start += followingEventDTOs.size();
+                    landingPageView.addNewsFollowingEvents(followingEventDTOs.size() == limit, followingEventDTOs);
                 }
-            }).call(ServicesUtil.assetsService).getFollowingEvents(0, 10);
+            }).call(ServicesUtil.assetsService).getFollowingEvents(start, limit);
         } catch (Exception e) {
 
         }
@@ -94,4 +101,8 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         }).call(ServicesUtil.assetsService).getNewsItems();
     }
 
+    @Override
+    public void loadMoreFollowingEvents() {
+        loadFollowingEvents();
+    }
 }

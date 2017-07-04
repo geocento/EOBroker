@@ -376,6 +376,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         // add a link to more notifications
         if(hasMore) {
             MaterialLink materialLink = new MaterialLink("See all notifications");
+            materialLink.setTruncate(true);
             materialLink.setFontSize("0.8em");
             materialLink.setPadding(10);
             materialLink.getElement().getStyle().setProperty("borderTop", "1px solid grey");
