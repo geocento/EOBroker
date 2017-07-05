@@ -1,14 +1,18 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
 import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
+import com.geocento.webapps.eobroker.customer.client.events.NotificationEvent;
+import com.geocento.webapps.eobroker.customer.client.events.NotificationEventHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ProductResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductResponseView;
+import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceResponseDTO;
@@ -105,7 +109,7 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                     productResponseView.displayComment("See below your request and the suppliers' responses");
                     productResponseView.displayProductRequest(productServiceResponseDTO);
                     if(responseId == null) {
-                        selectedResponse = null; //request.getSupplierResponses().get(0);
+                        selectedResponse = request.getSupplierResponses().get(0);
                     } else {
                         selectedResponse = ListUtil.findValue(productServiceResponseDTO.getSupplierResponses(), new ListUtil.CheckValue<ProductServiceSupplierResponseDTO>() {
                             @Override
@@ -174,6 +178,19 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                 }
             }
         });
+
+        // check notification is not a new response
+        activityEventBus.addHandler(NotificationEvent.TYPE, new NotificationEventHandler() {
+            @Override
+            public void onNotification(NotificationEvent event) {
+                NotificationDTO notificationDTO = event.getNotification();
+                // TODO - change so that it handles product request response changes as well as product request messages
+                if(notificationDTO.getType() == Notification.TYPE.PRODUCTREQUEST) {
+
+                }
+            }
+        });
+
 
     }
 

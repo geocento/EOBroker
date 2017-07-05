@@ -323,4 +323,10 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         }
         mainPanel.getElement().getStyle().setProperty("minHeight", (Window.getClientHeight() - 100) + "px");
     }
+
+    public void displayWebsocketError(String message) {
+        // TODO - change for something more specific
+        displayError(message);
+    }
+
 }

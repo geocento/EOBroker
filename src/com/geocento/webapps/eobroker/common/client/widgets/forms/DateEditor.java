@@ -40,7 +40,7 @@ public class DateEditor extends ElementEditor<DateFormElement> {
     public FormElementValue getFormElementValue() throws Exception {
         Date value = datePicker.getValue();
         FormElementValue formElementValue = new FormElementValue();
-        formElementValue.setValue(DateUtil.displayUTCDate(value));
+        formElementValue.setValue(DateUtil.displaySimpleUTCDate(value));
         formElementValue.setName(formElement.getName());
         formElementValue.setFormid(formElement.getFormid());
         return formElementValue;

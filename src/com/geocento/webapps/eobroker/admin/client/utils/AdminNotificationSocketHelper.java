@@ -6,9 +6,11 @@ import com.geocento.webapps.eobroker.admin.client.events.WebSocketClosedEvent;
 import com.geocento.webapps.eobroker.admin.client.events.WebSocketFailedEvent;
 import com.geocento.webapps.eobroker.admin.shared.dtos.AdminWebSocketMessage;
 import com.geocento.webapps.eobroker.admin.shared.dtos.AdminWebSocketMessageMapper;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import gwt.material.design.client.ui.MaterialToast;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
 
@@ -56,6 +58,9 @@ public class AdminNotificationSocketHelper {
                             NotificationEvent notificationEvent = new NotificationEvent();
                             notificationEvent.setNotification(webSocketMessage.getNotificationDTO());
                             Admin.clientFactory.getEventBus().fireEvent(notificationEvent);
+                            if(notificationEvent.getNotification().getType() != AdminNotification.TYPE.MESSAGE) {
+                                MaterialToast.fireToast("New notification!");
+                            }
                             break;
                         case logout:
                             Window.alert("You have been signed out");

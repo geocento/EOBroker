@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.utils;
 
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
 import com.geocento.webapps.eobroker.customer.client.events.NotificationEvent;
@@ -9,6 +10,7 @@ import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import gwt.material.design.client.ui.MaterialToast;
 import org.realityforge.gwt.websockets.client.WebSocket;
 import org.realityforge.gwt.websockets.client.WebSocketListenerAdapter;
 
@@ -56,6 +58,9 @@ public class NotificationSocketHelper {
                             NotificationEvent notificationEvent = new NotificationEvent();
                             notificationEvent.setNotification(webSocketMessage.getNotificationDTO());
                             Customer.clientFactory.getEventBus().fireEvent(notificationEvent);
+                            if(notificationEvent.getNotification().getType() != Notification.TYPE.MESSAGE) {
+                                MaterialToast.fireToast("New notification!");
+                            }
                             break;
                         case conversationMessage:
                         case requestMessage:
@@ -64,6 +69,7 @@ public class NotificationSocketHelper {
                             messageEvent.setType(webSocketMessage.getType());
                             messageEvent.setDestination(webSocketMessage.getDestination());
                             Customer.clientFactory.getEventBus().fireEvent(messageEvent);
+                            MaterialToast.fireToast("New message!");
                             break;
                         case logout:
                             Window.alert("You have been signed out");

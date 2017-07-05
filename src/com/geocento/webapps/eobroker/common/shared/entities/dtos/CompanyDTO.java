@@ -22,10 +22,10 @@ public class CompanyDTO {
     String countryCode;
     COMPANY_SIZE companySize;
     List<String> awards;
-    private Date startedIn;
-    private boolean following;
-    private int followers;
-    private REGISTRATION_STATUS status;
+    Date startedIn;
+    boolean following;
+    int followers;
+    REGISTRATION_STATUS status;
 
     public CompanyDTO() {
     }

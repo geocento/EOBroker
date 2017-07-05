@@ -1,12 +1,9 @@
 package com.geocento.webapps.eobroker.common.server;
 
 import com.geocento.webapps.eobroker.admin.server.websockets.AdminNotificationSocket;
-import com.geocento.webapps.eobroker.admin.shared.dtos.AdminWebSocketMessage;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.customer.server.websockets.NotificationSocket;
-import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.server.websockets.SupplierNotificationSocket;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.annotation.WebListener;
@@ -29,6 +26,7 @@ public class ExpiryTrackerHttpSessionListener
     public void sessionDestroyed(HttpSessionEvent event) {
         logger.info("HTTP session destroyed");
         HttpSession httpSession = event.getSession();
+        String sessionID = httpSession.getId();
         // TODO - implement equivalent ones for the other applications?
         UserSession userSession = (UserSession) httpSession.getAttribute("userSession");
         if(userSession != null) {
@@ -37,24 +35,18 @@ public class ExpiryTrackerHttpSessionListener
             logger.info("User signed off is " + userName);
             if (userRole == User.USER_ROLE.administrator) {
                 try {
-                    AdminWebSocketMessage adminWebSocketMessage = new AdminWebSocketMessage();
-                    adminWebSocketMessage.setType(AdminWebSocketMessage.TYPE.logout);
-                    AdminNotificationSocket.sendUserMessage(userName, adminWebSocketMessage);
+                    AdminNotificationSocket.sendLogout(sessionID);
                 } catch (IOException ex) {
                 }
             }
             if (userRole == User.USER_ROLE.supplier || userRole == User.USER_ROLE.administrator) {
                 try {
-                    SupplierWebSocketMessage supplierWebSocketMessage = new SupplierWebSocketMessage();
-                    supplierWebSocketMessage.setType(SupplierWebSocketMessage.TYPE.logout);
-                    SupplierNotificationSocket.sendUserMessage(userName, supplierWebSocketMessage);
+                    SupplierNotificationSocket.sendLogout(sessionID);
                 } catch (IOException ex) {
                 }
             }
             try {
-                WebSocketMessage webSocketMessage = new WebSocketMessage();
-                webSocketMessage.setType(WebSocketMessage.TYPE.logout);
-                NotificationSocket.sendMessage(userName, webSocketMessage);
+                NotificationSocket.sendLogout(sessionID);
             } catch (IOException ex) {
             }
         }

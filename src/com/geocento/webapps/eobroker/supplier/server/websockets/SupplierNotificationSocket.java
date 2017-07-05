@@ -2,9 +2,9 @@ package com.geocento.webapps.eobroker.supplier.server.websockets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
-import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import org.apache.log4j.Logger;
 
@@ -136,4 +136,13 @@ public class SupplierNotificationSocket extends BaseNotificationSocket {
         }
         sendMessage(sessions, webSocketMessage);
     }
+
+    static public void sendLogout(String sessionID) throws JsonProcessingException {
+        SupplierWebSocketMessage supplierWebSocketMessage = new SupplierWebSocketMessage();
+        supplierWebSocketMessage.setType(SupplierWebSocketMessage.TYPE.logout);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(supplierWebSocketMessage);
+        sendHttpSessionMessage(sessionID, message);
+    }
+
 }

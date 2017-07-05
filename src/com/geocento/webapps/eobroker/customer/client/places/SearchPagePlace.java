@@ -15,7 +15,7 @@ public class SearchPagePlace extends EOBrokerPlace {
         super(token);
     }
 
-    public enum TOKENS {text, category, aoiId};
+    public enum TOKENS {text, category, aoiId, company, product};
 
     @Prefix("search")
     public static class Tokenizer implements PlaceTokenizer<SearchPagePlace> {

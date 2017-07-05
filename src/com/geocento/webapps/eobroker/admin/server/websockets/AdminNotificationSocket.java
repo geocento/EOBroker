@@ -109,4 +109,12 @@ public class AdminNotificationSocket extends BaseNotificationSocket {
     static public void sendAllMessage(AdminWebSocketMessage webSocketMessage) throws JsonProcessingException {
         sendUserMessage(null, webSocketMessage);
     }
+
+    static public void sendLogout(String sessionID) throws JsonProcessingException {
+        AdminWebSocketMessage adminWebSocketMessage = new AdminWebSocketMessage();
+        adminWebSocketMessage.setType(AdminWebSocketMessage.TYPE.logout);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(adminWebSocketMessage);
+        sendHttpSessionMessage(sessionID, message);
+    }
 }

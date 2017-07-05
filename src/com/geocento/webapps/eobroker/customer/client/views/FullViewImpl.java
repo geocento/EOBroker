@@ -144,13 +144,20 @@ public class FullViewImpl extends Composite implements FullView {
                 tags.add(followWidget);
             }
         }
+        {
+            addAction("REQUEST QUOTE", "#" + PlaceHistoryHelper.convertPlace(
+                    new ProductFormPlace(
+                            ProductFormPlace.TOKENS.id.toString() + "=" + productDescriptionDTO.getId())));
+        }
         // add description
         MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(productDescriptionDTO.getDescription());
         addSection("Description", fullDescriptionPanel);
         // create tab panel for offering
         MaterialPanel offeringPanel = new MaterialPanel();
         setMatchingDatasets(offeringPanel, "Off the shelf products for this product category", productDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
-                SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString()))));
+                SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString(),
+                SearchPagePlace.TOKENS.product.toString(), productDescriptionDTO.getId() + ""
+                ))));
         addSection("Off the shelf products available", offeringPanel);
 
         offeringPanel = new MaterialPanel();
@@ -356,17 +363,17 @@ public class FullViewImpl extends Composite implements FullView {
                                     // add information on service being compared
                                     comparePanelRow.add(materialColumn);
                                     MaterialLabelIcon materialLabelIcon = new MaterialLabelIcon();
-                                    materialLabelIcon.setImageUrl(productServiceDescriptionDTO.getServiceImage());
+                                    materialLabelIcon.setImageUrl(compareProductDescriptionDTO.getServiceImage());
                                     materialLabelIcon.setImageHeight("32px");
                                     materialLabelIcon.setSpacing(10);
-                                    materialLabelIcon.setText(productServiceDescriptionDTO.getName() + " provided by company " + productServiceDescriptionDTO.getCompany().getName());
+                                    materialLabelIcon.setText(compareProductDescriptionDTO.getName() + " provided by company " + compareProductDescriptionDTO.getCompany().getName());
                                     materialLabelIcon.getElement().getStyle().setProperty("margin", "10px 0px");
                                     materialColumn.add(materialLabelIcon);
                                     // add link to view the service
                                     MaterialLink viewService = new MaterialLink(IconType.OPEN_IN_BROWSER);
                                     viewService.setHref("#" + PlaceHistoryHelper.convertPlace(
                                             new FullViewPlace(Utils.generateTokens(
-                                                    FullViewPlace.TOKENS.productserviceid.toString(), productServiceDTO.getId() + ""
+                                                    FullViewPlace.TOKENS.productserviceid.toString(), compareProductDescriptionDTO.getId() + ""
                                             ))));
                                     viewService.setDisplay(Display.INLINE_BLOCK);
                                     viewService.setMarginLeft(10);
@@ -428,24 +435,6 @@ public class FullViewImpl extends Composite implements FullView {
             addSection("Time to delivery", "Time to delivery indicates the time it will take between the availability of data and the final product is delivered", timeToDeliveryPanel);
             //materialColumn.add(performancesPanel);
         }
-
-        // add map with extent of data
-/*
-        MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
-        featuresPanel.add(materialColumn);
-        // add a compare button
-        {
-            MaterialButton compareButton = new MaterialButton("Compare");
-            compareButton.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    Window.alert("TODO - show other offering to compare to");
-                }
-            });
-            //featuresPanel.add(compareButton);
-        }
-*/
-
         // add access panel
         MaterialPanel accessPanel = new MaterialPanel();
         List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
@@ -798,17 +787,17 @@ public class FullViewImpl extends Composite implements FullView {
                                     // add information on off the shelf product being compared
                                     comparePanelRow.add(materialColumn);
                                     MaterialLabelIcon materialLabelIcon = new MaterialLabelIcon();
-                                    materialLabelIcon.setImageUrl(productDatasetDescriptionDTO.getImageUrl());
+                                    materialLabelIcon.setImageUrl(compareProductDescriptionDTO.getImageUrl());
                                     materialLabelIcon.setImageHeight("32px");
                                     materialLabelIcon.setSpacing(10);
-                                    materialLabelIcon.setText(productDatasetDescriptionDTO.getName() + " provided by company " + productDatasetDescriptionDTO.getCompany().getName());
+                                    materialLabelIcon.setText(compareProductDescriptionDTO.getName() + " provided by company " + compareProductDescriptionDTO.getCompany().getName());
                                     materialLabelIcon.getElement().getStyle().setProperty("margin", "10px 0px");
                                     materialColumn.add(materialLabelIcon);
                                     // add link to view the off the shelf product
                                     MaterialLink viewDataset = new MaterialLink(IconType.OPEN_IN_BROWSER);
                                     viewDataset.setHref("#" + PlaceHistoryHelper.convertPlace(
                                             new FullViewPlace(Utils.generateTokens(
-                                                    FullViewPlace.TOKENS.productdatasetid.toString(), productDatasetDTO.getId() + ""
+                                                    FullViewPlace.TOKENS.productdatasetid.toString(), compareProductDescriptionDTO.getId() + ""
                                             ))));
                                     viewDataset.setDisplay(Display.INLINE_BLOCK);
                                     viewDataset.setMarginLeft(10);
@@ -860,17 +849,6 @@ public class FullViewImpl extends Composite implements FullView {
             addSection("Extent of the off the shelf product",
                     worldWide ? "This off the shelf data product is available worldwide" : "This is the area that is covered by the off the shelf data product"
                     , extentPanel);
-        }
-        // add a compare button
-        {
-            MaterialButton compareButton = new MaterialButton("Compare");
-            compareButton.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    Window.alert("TODO - show other offering to compare to");
-                }
-            });
-            //featuresPanel.add(compareButton);
         }
         // add access panel
         List<DatasetAccess> availableMapData = new ArrayList<DatasetAccess>();
@@ -986,7 +964,7 @@ public class FullViewImpl extends Composite implements FullView {
         setTabPanelColor(CategoryUtils.getColor(Category.software));
 
         // add tags
-        {
+        if(softwareDescriptionDTO.getSoftwareType() != null) {
             addTag(IconType.MONETIZATION_ON, softwareDescriptionDTO.getSoftwareType().getName(), Color.AMBER, Color.WHITE);
         }
 
@@ -1241,13 +1219,18 @@ public class FullViewImpl extends Composite implements FullView {
 
         // create tab panel for offers
         MaterialPanel offeringPanel = new MaterialPanel();
-        setMatchingDatasets(offeringPanel, "Off the shelf products provided by this company", companyDescriptionDTO.getProductDatasets(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
-                SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString()))));
+        setMatchingDatasets(offeringPanel, "Off the shelf products provided by this company", companyDescriptionDTO.getProductDatasets(),
+                "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
+                        SearchPagePlace.TOKENS.category.toString(), Category.productdatasets.toString(),
+                        SearchPagePlace.TOKENS.company.toString(), companyDescriptionDTO.getId() + ""
+                ))));
         addSection("Off the shelf data products", offeringPanel);
 
         offeringPanel = new MaterialPanel();
         setMatchingServices(offeringPanel, "Bespoke services provided by this company", companyDescriptionDTO.getProductServices(), "#" + PlaceHistoryHelper.convertPlace(new SearchPagePlace(Utils.generateTokens(
-                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString()))));
+                SearchPagePlace.TOKENS.category.toString(), Category.productservices.toString(),
+                SearchPagePlace.TOKENS.company.toString(), companyDescriptionDTO.getId() + ""
+                ))));
         addSection("Bespoke services", offeringPanel);
 
         offeringPanel = new MaterialPanel();
@@ -1558,6 +1541,21 @@ public class FullViewImpl extends Composite implements FullView {
                 productRow.add(serviceColumn);
                 serviceColumn.add(new ProductDatasetWidget(productDatasetDTO));
             }
+/*
+            if(hasMore) {
+                MaterialLoadingLink loadMore = new MaterialLoadingLink();
+                loadMore.setText("Load more...");
+                MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+                productRow.add(materialColumn);
+                materialColumn.add(loadMore);
+                loadMore.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+
+                    }
+                });
+            }
+*/
         } else {
             MaterialLabel label = new MaterialLabel("No off-the-shelf data found...");
             label.addStyleName(style.offeringSubSection());

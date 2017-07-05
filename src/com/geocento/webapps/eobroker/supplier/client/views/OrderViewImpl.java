@@ -78,6 +78,8 @@ public class OrderViewImpl extends Composite implements OrderView {
     MaterialImageLoading image;
     @UiField
     MaterialButton status;
+    @UiField
+    MaterialLabel messagesComment;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -212,15 +214,24 @@ public class OrderViewImpl extends Composite implements OrderView {
     private void displayMessages(List<MessageDTO> messages) {
         this.messages.clear();
         String userName = Supplier.getLoginInfo().getUserName();
-        if(messages.size() == 0) {
-            this.messages.add(new MaterialLabel("No messages yet..."));
-            message.setPlaceholder("Start a conversation...");
-        } else {
+        if(messages != null && messages.size() > 0) {
             for (MessageDTO messageDTO : messages) {
                 boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());
                 addMessage(messageDTO.getFrom(),
                         isCustomer, messageDTO.getMessage(), messageDTO.getCreationDate());
             }
+            message.setPlaceholder("Reply...");
+        }
+        updateMessagesComment();
+    }
+
+    private void updateMessagesComment() {
+        boolean hasMessages = messages.getWidgetCount() > 0;
+        messagesComment.setVisible(!hasMessages);
+        if(hasMessages) {
+            messagesComment.setText("No messages yet...");
+            message.setPlaceholder("Start a conversation...");
+        } else {
             message.setPlaceholder("Reply...");
         }
     }
@@ -253,12 +264,14 @@ public class OrderViewImpl extends Composite implements OrderView {
         materialLabel.setFloat(Style.Float.RIGHT);
         materialLabel.setFontSize(0.6, Style.Unit.EM);
         materialBubble.add(materialLabel);
+        updateMessagesComment();
     }
 
     private void displayAoI(AoIDTO aoi) {
         map.getGraphics().clear();
         if(aoi != null) {
             map.getGraphics().addGraphic(mapContainer.arcgisMap.createGeometryFromAoI(aoi), mapContainer.arcgisMap.createFillSymbol("#ff00ff", 2, "rgba(0,0,0,0.2)"));
+            map.setExtent(mapContainer.arcgisMap.createGeometryFromAoI(aoi).getExtent());
         }
     }
 

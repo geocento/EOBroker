@@ -70,6 +70,7 @@ public class OrdersResource implements OrdersService {
             if(productSupplierServiceRequest == null) {
                 throw new RequestException("Could not find supplier service request");
             }
+            productServiceSupplierRequestDTO.setSupplierRequestId(productSupplierServiceRequest.getId());
             productServiceSupplierRequestDTO.setServiceName(productSupplierServiceRequest.getProductService().getName());
             productServiceSupplierRequestDTO.setServiceImage(productSupplierServiceRequest.getProductService().getImageUrl());
             productServiceSupplierRequestDTO.setSupplierResponse(productSupplierServiceRequest.getResponse());
@@ -287,6 +288,15 @@ public class OrdersResource implements OrdersService {
                     });
                     productServiceSupplierRequest.setResponse(response);
                     NotificationHelper.notifyCustomer(em, user, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your product request", productServiceRequest.getId());
+/*
+                    try {
+                        WebSocketMessage webSocketMessage = new WebSocketMessage();
+                        webSocketMessage.setType(WebSocketMessage.TYPE.res);
+                        NotificationSocket.sendMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+*/
                 } break;
             }
             em.getTransaction().commit();
@@ -344,7 +354,8 @@ public class OrdersResource implements OrdersService {
                     });
                     productServiceSupplierRequest.getMessages().add(message);
                     try {
-                        NotificationHelper.notifyCustomer(em, productServiceRequest.getCustomer(), Notification.TYPE.MESSAGE, "New message from company '" + user.getCompany().getName() + "' on request '" + productServiceSupplierRequest.getProductServiceRequest().getId() + "'", productServiceSupplierRequest.getProductServiceRequest().getId() + "");
+                        // TODO - change to take into account that it is a message...
+                        NotificationHelper.notifyCustomer(em, productServiceRequest.getCustomer(), Notification.TYPE.PRODUCTREQUEST, "New message from company '" + user.getCompany().getName() + "' on request '" + productServiceSupplierRequest.getProductServiceRequest().getId() + "'", productServiceSupplierRequest.getProductServiceRequest().getId() + "");
                         MessageHelper.sendUserRequestMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);

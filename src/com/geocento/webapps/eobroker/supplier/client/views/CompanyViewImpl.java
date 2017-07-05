@@ -177,7 +177,7 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     @Override
     public void setAwards(List<String> awards) {
         this.awards.clear();
-        if(awards != null && awards.size() == 0) {
+        if(awards != null && awards.size() > 0) {
             for(String award : awards) {
                 addAward(award);
             }

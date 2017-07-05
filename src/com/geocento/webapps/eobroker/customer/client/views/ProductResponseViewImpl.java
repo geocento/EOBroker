@@ -89,6 +89,8 @@ public class ProductResponseViewImpl extends Composite implements ProductRespons
     MaterialPanel offers;
     @UiField
     MaterialImageLoading image;
+    @UiField
+    MaterialLabel messagesComment;
 
     private ClientFactoryImpl clientFactory;
 
@@ -167,6 +169,7 @@ public class ProductResponseViewImpl extends Composite implements ProductRespons
         materialLabel.setFloat(Style.Float.RIGHT);
         materialLabel.setFontSize(0.6, Style.Unit.EM);
         materialBubble.add(materialLabel);
+        updateMessagesComment();
     }
 
     protected void displayAoI(AoIDTO aoi) {
@@ -195,18 +198,23 @@ public class ProductResponseViewImpl extends Composite implements ProductRespons
         this.messages.clear();
         this.message.setText("");
         String userName = Customer.getLoginInfo().getUserName();
-        if(messages.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No messages yet...");
-            materialLabel.setMargin(20);
-            materialLabel.setTextColor(Color.GREY);
-            this.messages.add(materialLabel);
-            message.setPlaceholder("Start a conversation...");
-        } else {
+        if(messages != null && messages.size() > 0) {
             for (MessageDTO messageDTO : messages) {
                 boolean isCustomer = !userName.contentEquals(messageDTO.getFrom());
                 addMessage(messageDTO.getFrom(),
                         isCustomer, messageDTO.getMessage(), messageDTO.getCreationDate());
             }
+        }
+        updateMessagesComment();
+    }
+
+    private void updateMessagesComment() {
+        boolean hasMessages = messages.getWidgetCount() > 0;
+        messagesComment.setVisible(!hasMessages);
+        if(hasMessages) {
+            messagesComment.setText("No messages yet...");
+            message.setPlaceholder("Start a conversation...");
+        } else {
             message.setPlaceholder("Reply...");
         }
     }

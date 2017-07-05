@@ -205,6 +205,12 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
                     case MESSAGE:
                         place = new FeedbackPlace(FeedbackPlace.TOKENS.feedbackid.toString() + "=" + notificationDTO.getLinkId());
                         break;
+                    case USER:
+                        place = new UsersPlace(UsersPlace.TOKENS.name.toString() + "=" + notificationDTO.getLinkId());
+                        break;
+                    case COMPANY:
+                        place = new CompanyPlace(CompanyPlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
+                        break;
                 }
                 message.setHref("#" + PlaceHistoryHelper.convertPlace(place));
                 notificationsPanel.add(message);

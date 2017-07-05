@@ -31,19 +31,6 @@ public class CategorySearchBox extends MaterialSearch {
 
     public CategorySearchBox() {
 
-/*
-        String placeHolder = "";
-        switch(category) {
-            case companies:
-                placeHolder = "Type in name of company";
-                break;
-            case products:
-                placeHolder = "Type in name of product category";
-                break;
-        }
-        setPlaceholder(placeHolder);
-*/
-
         setPresenter(new MaterialSearch.Presenter() {
             @Override
             public void textChanged(String text) {

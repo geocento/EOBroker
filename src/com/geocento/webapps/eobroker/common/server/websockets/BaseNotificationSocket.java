@@ -54,4 +54,19 @@ public class BaseNotificationSocket {
             sessions.remove(session);
         }
     }
+
+    static public void sendHttpSessionMessage(String sessionId, String message) {
+        if(httpSessions == null || httpSessions.size() == 0 || !httpSessions.containsKey(sessionId)) {
+            return;
+        }
+        for (Session session : httpSessions.get(sessionId)) {
+            try {
+                session.getBasicRemote().sendText(message);
+            } catch (Exception e) {
+                // TODO - remove session?
+
+            }
+        }
+    }
+
 }

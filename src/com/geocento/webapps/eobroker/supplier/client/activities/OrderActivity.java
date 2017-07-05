@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
+import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceResponseDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceSupplierResponseDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
@@ -198,9 +199,13 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
             public void onMessage(MessageEvent event) {
                 // check this is a relevant message
                 if (event.getType() == SupplierWebSocketMessage.TYPE.requestMessage) {
-                    if(request.getId().equals(event.getDestination())) {
-                        request.getMessages().add(event.getMessage());
-                        addMessage(event.getMessage());
+                    if(request instanceof ProductServiceSupplierRequestDTO) {
+                        ProductServiceSupplierRequestDTO productServiceSupplierRequestDTO = (ProductServiceSupplierRequestDTO) request;
+                        // check if it belongs to the response
+                        if (productServiceSupplierRequestDTO.getSupplierRequestId().toString().equals(event.getDestination())) {
+                            request.getMessages().add(event.getMessage());
+                            addMessage(event.getMessage());
+                        }
                     }
                 }
             }

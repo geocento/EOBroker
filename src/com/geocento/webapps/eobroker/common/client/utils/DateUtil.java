@@ -20,8 +20,6 @@ public class DateUtil {
     private static DateTimeFormat fmtMonthOnly = DateTimeFormat.getFormat("MMMM");
     private static DateTimeFormat fmtDayOnly = DateTimeFormat.getFormat("EEEE 'the' dd");
     private static DateTimeFormat fmtTimeOnly = DateTimeFormat.getFormat("HH:mm:ss");
-    private static DateTimeFormat fmtUTC = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ssZ");
-    private static DateTimeFormat fmtUTCMS = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ss.SSSZ");
 
     public static long secondInMs = 1000;
     public static long minuteInMs = 60 * secondInMs;
@@ -214,28 +212,6 @@ public class DateUtil {
     public static int dayDiff(Date endDate, Date startDate)
     {
         return (int)Math.ceil(((double)endDate.getTime() - startDate.getTime()) / dayInMs);
-    }
-
-    public static String displayUTCDate(Date date) {
-        if(date == null) {
-            return "Undefined";
-        }
-        return fmtUTC.format(date);
-    }
-
-    public static Date parseUTCDate(String startTimeString) {
-        if(startTimeString == null) {
-            return null;
-        }
-        if(startTimeString.endsWith("Z")) {
-            startTimeString = startTimeString.substring(0, startTimeString.length() - 1) + "GMT-00:00";
-        }
-        boolean withMs = startTimeString.contains(".");
-        if(withMs) {
-            return fmtUTCMS.parse(startTimeString);
-        } else {
-            return fmtUTC.parse(startTimeString);
-        }
     }
 
     public static BANDTYPE getTimeBand(Date startTime, Date stopTime, int minBands) {

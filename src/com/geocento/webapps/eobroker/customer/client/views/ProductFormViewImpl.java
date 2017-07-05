@@ -109,6 +109,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @Override
     public void displayAoI(AoIDTO aoi) {
         mapContainer.displayAoI(aoi);
+        mapContainer.centerOnAoI();
     }
 
     @Override

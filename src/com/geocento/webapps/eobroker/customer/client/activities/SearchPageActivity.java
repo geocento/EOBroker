@@ -80,13 +80,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
-        Long aoiId = null;
-        if(tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
-            try {
-                aoiId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.aoiId.toString()));
-            } catch (Exception e) {
-            }
-        }
+
         Category category = null;
         if(tokens.containsKey(SearchPagePlace.TOKENS.category.toString())) {
             try {
@@ -95,6 +89,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
             }
         }
+
         String text = "";
         if(tokens.containsKey(SearchPagePlace.TOKENS.text.toString())) {
             text = tokens.get(SearchPagePlace.TOKENS.text.toString());
@@ -115,17 +110,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     break;
                 case productservices:
                     searchPageView.setFilterTitle("Bespoke services" + filterText);
-                    // TODO - check if we have product or company set
-                    // generally the filters need to be passed into the URL and the view updated accordingly
-/*
-                    if(tokens.containsKey(SearchPagePlace.TOKENS.productid.toString())) {
-                        try {
-                            category = Category.valueOf(tokens.get(SearchPagePlace.TOKENS.category.toString()));
-                        } catch (Exception e) {
-
-                        }
-                    }
-*/
                     break;
                 case productdatasets:
                     searchPageView.setFilterTitle("Off the shelf products" + filterText);
@@ -140,6 +124,133 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     searchPageView.setFilterTitle("Companies" + filterText);
                     break;
             }
+        }
+        // set the filters
+        Long aoiId = null;
+        if(tokens.containsKey(SearchPagePlace.TOKENS.aoiId.toString())) {
+            try {
+                aoiId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.aoiId.toString()));
+            } catch (Exception e) {
+            }
+        }
+        Long productId = null;
+        // generally the filters need to be passed into the URL and the view updated accordingly
+        if(tokens.containsKey(SearchPagePlace.TOKENS.product.toString())) {
+            try {
+                productId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.product.toString()));
+            } catch (Exception e) {
+
+            }
+        }
+        Long companyId = null;
+        if(tokens.containsKey(SearchPagePlace.TOKENS.company.toString())) {
+            try {
+                companyId = Long.parseLong(tokens.get(SearchPagePlace.TOKENS.company.toString()));
+            } catch (Exception e) {
+
+            }
+        }
+        // if we have filters, we need to load the filters first
+        if(aoiId != null || productId != null || companyId != null) {
+            displayFullLoading("Loading filters...");
+            final Long finalAoiId = aoiId;
+            final Long finalProductId = productId;
+            final Long finalCompanyId = companyId;
+            new Runnable() {
+
+                int toLoad =
+                        (finalAoiId == null ? 0 : 1) +
+                        (finalProductId == null ? 0 : 1) +
+                        (finalCompanyId == null ? 0 : 1)
+                        ;
+
+                @Override
+                public void run() {
+                    if(finalAoiId != null) {
+                        try {
+                            REST.withCallback(new MethodCallback<AoIDTO>() {
+                                @Override
+                                public void onFailure(Method method, Throwable exception) {
+                                    searchPageView.enableAoiFilter(false);
+                                    toLoad--;
+                                    checkCompleted();
+                                }
+
+                                @Override
+                                public void onSuccess(Method method, AoIDTO aoIDTO) {
+                                    setAoI(aoIDTO);
+                                    searchPageView.enableAoiFilter(true);
+                                    toLoad--;
+                                    checkCompleted();
+                                }
+                            }).call(ServicesUtil.assetsService).getAoI(finalAoiId);
+                        } catch (Exception e) {
+
+                        }
+                    } else {
+                        searchPageView.enableAoiFilter(false);
+                    }
+                    if(finalProductId != null) {
+                        try {
+                            REST.withCallback(new MethodCallback<ProductDTO>() {
+                                @Override
+                                public void onFailure(Method method, Throwable exception) {
+                                    searchPageView.setProductSelection(null);
+                                    toLoad--;
+                                    checkCompleted();
+                                }
+
+                                @Override
+                                public void onSuccess(Method method, ProductDTO productDTO) {
+                                    searchPageView.setProductSelection(productDTO);
+                                    toLoad--;
+                                    checkCompleted();
+                                }
+                            }).call(ServicesUtil.assetsService).getProduct(finalProductId);
+                        } catch (Exception e) {
+
+                        }
+                    } else {
+                        searchPageView.setProductSelection(null);
+                    }
+                    if(finalCompanyId != null) {
+                        try {
+                            REST.withCallback(new MethodCallback<CompanyDTO>() {
+                                @Override
+                                public void onFailure(Method method, Throwable exception) {
+                                    searchPageView.setCompanySelection(null);
+                                    toLoad--;
+                                    checkCompleted();
+                                }
+
+                                @Override
+                                public void onSuccess(Method method, CompanyDTO companyDTO) {
+                                    searchPageView.setCompanySelection(companyDTO);
+                                    toLoad--;
+                                    checkCompleted();
+                                }
+                            }).call(ServicesUtil.assetsService).getCompany(finalCompanyId);
+                        } catch (Exception e) {
+
+                        }
+                    } else {
+                        searchPageView.setProductSelection(null);
+                    }
+                }
+
+                private void checkCompleted() {
+                    if(toLoad == 0) {
+                        hideFullLoading();
+/*
+                        searchPageView.expandFilters(true);
+*/
+                        updateSearchResults();
+                    }
+                }
+
+            }.run();
+        } else {
+            updateSearchResults();
         }
 
         // add current AoI
@@ -157,8 +268,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 }
             }
         });
-
-        updateSearchResults();
 
     }
 

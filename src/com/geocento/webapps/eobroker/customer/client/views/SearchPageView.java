@@ -94,6 +94,8 @@ public interface SearchPageView extends IsWidget {
 
     void setCompanySelection(CompanyDTO companyDTO);
 
+    void enableAoiFilter(boolean aoiId);
+
     public interface Presenter {
 
         void loadMoreProducts();

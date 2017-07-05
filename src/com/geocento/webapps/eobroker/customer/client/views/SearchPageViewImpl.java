@@ -29,7 +29,6 @@ import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.events.ClearActiveEvent;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.jquery.client.api.Functions;
@@ -854,7 +853,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void setProductSelection(ProductDTO productDTO) {
         this.productDTO = productDTO;
-        productFilter.setValue(productDTO.getName());
+        productFilter.setValue(productDTO == null ? "" : productDTO.getName());
     }
 
     @Override
@@ -865,7 +864,12 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void setCompanySelection(CompanyDTO companyDTO) {
         this.companyDTO = companyDTO;
-        productFilter.setValue(companyDTO.getName());
+        companyFilter.setValue(companyDTO == null ? "" : companyDTO.getName());
+    }
+
+    @Override
+    public void enableAoiFilter(boolean enable) {
+        filterByAoI.setValue(enable);
     }
 
     @Override

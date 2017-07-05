@@ -111,6 +111,7 @@
         <widgets:ExpandPanel label="Conversation" labelStyle="{style.sectionLabel}" labelColor="WHITE" ui:field="conversation">
             <widgets:content>
                 <design:MaterialPanel>
+                    <design:MaterialLabel padding="10" ui:field="messagesComment"></design:MaterialLabel>
                     <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
                     </design:MaterialRow>
                     <design:MaterialPanel>

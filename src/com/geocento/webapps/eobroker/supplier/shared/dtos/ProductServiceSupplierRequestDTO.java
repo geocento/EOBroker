@@ -17,6 +17,7 @@ public class ProductServiceSupplierRequestDTO extends BaseRequestDTO {
     private String serviceName;
     private Date creationTime;
     private String serviceImage;
+    private Long supplierRequestId;
 
     public ProductServiceSupplierRequestDTO() {
     }
@@ -75,5 +76,13 @@ public class ProductServiceSupplierRequestDTO extends BaseRequestDTO {
 
     public void setServiceImage(String serviceImage) {
         this.serviceImage = serviceImage;
+    }
+
+    public void setSupplierRequestId(Long supplierRequestId) {
+        this.supplierRequestId = supplierRequestId;
+    }
+
+    public Long getSupplierRequestId() {
+        return supplierRequestId;
     }
 }

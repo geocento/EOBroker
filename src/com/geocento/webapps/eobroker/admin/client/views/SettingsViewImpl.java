@@ -88,7 +88,7 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         formCreator.addTextEditor(settings.getServerType(), "Server type", "The server type, whether local, staging or production", 5, 100);
         formCreator.addTextEditor(settings.getWebsiteUrl(), "Website URL", "The website URL, used for links in emails", 5, 100);
         formCreator.addTextEditor(settings.getSupplierWebsiteUrl(), "Supplier Website URL", "The supplier website URL, used for links in emails", 5, 100);
-        formCreator.addIntegerEditor(settings.getNotificationDelay(), "Notification delay on hours", "The notification delay for sending emails, expressed in hours");
+        formCreator.addIntegerEditor(settings.getNotificationDelay(), "Notification delay in minutes", "The notification delay for sending emails, expressed in minutes");
     }
 
     @Override
