@@ -100,11 +100,13 @@
                         <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
                         <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="RED" ui:field="errorMessage"></design:MaterialLabel>
                         <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
-                            <design:MaterialLabel addStyleNames="{style.title}" ui:field="selectedDataset"></design:MaterialLabel>
+                            <design:MaterialPanel addStyleNames="{style.title}" layoutPosition="RELATIVE">
+                                <design:MaterialTooltip ui:field="downloadTip">
+                                    <design:MaterialLink layoutPosition="ABSOLUTE" right="0" iconType="FILE_DOWNLOAD" iconColor="GREEN" ui:field="download"></design:MaterialLink>
+                                </design:MaterialTooltip>
+                                <design:MaterialLabel truncate="true" marginRight="30" ui:field="selectedDataset"></design:MaterialLabel>
+                            </design:MaterialPanel>
                             <design:MaterialLabel ui:field="description"></design:MaterialLabel>
-<!--
-                            <widgets:MoreWidget ui:field="description"></widgets:MoreWidget>
--->
                             <design:MaterialLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></design:MaterialLink>
                             <design:MaterialLabel addStyleNames="{style.layer}">Layer parameters</design:MaterialLabel>
                             <design:MaterialRow>

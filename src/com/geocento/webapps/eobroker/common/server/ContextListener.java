@@ -3,10 +3,12 @@ package com.geocento.webapps.eobroker.common.server;
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import org.apache.log4j.Logger;
@@ -15,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,9 +33,13 @@ public class ContextListener implements ServletContextListener {
 
     Logger logger = Logger.getLogger(ContextListener.class);
 
+    // notification timers
     private Timer notificationsTimer;
-    private Timer errorReportingTimer;
+    private Timer adminReportingTimer;
     private Timer supplierNotificationsTimer;
+
+    // clean up timer
+    private Timer cleanupTimer;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -56,7 +63,9 @@ public class ContextListener implements ServletContextListener {
         // start the supplier email notifications timer
         startSupplierNotifications();
         // start the reporting thread
-        startReportingTimer();
+        startAdminTimer();
+        // start the clean up thread
+        startCleanupTimer();
 
         // send an email to say we have started the application
         MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ADMIN);
@@ -68,8 +77,93 @@ public class ContextListener implements ServletContextListener {
         }
     }
 
-    private void startReportingTimer() {
+    private void startCleanupTimer() {
+        cleanupTimer = new Timer();
+        // run the clean up every day
+        final long timerChecks = 24 * ServerUtil.hoursInMs;
+        cleanupTimer.schedule(new TimerTask() {
 
+            public Date lastFetchedNotifications = new Date();
+
+            @Override
+            public void run() {
+                // TODO - do all the required clean up
+                EntityManager em = EMF.get().createEntityManager();
+                try {
+                    em.getTransaction().begin();
+                    em.getTransaction().commit();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    if (em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
+                } finally {
+                    em.close();
+                }
+            }
+        }, 1000, timerChecks);
+    }
+
+    private void startAdminTimer() {
+        adminReportingTimer = new Timer();
+        // run the checks every 5 minutes
+        final long timerChecks = 5 * ServerUtil.minuteInMs;
+        adminReportingTimer.schedule(new TimerTask() {
+
+            public Date lastFetchedNotifications = new Date();
+
+            @Override
+            public void run() {
+                // get all notifications which happend in the las   t timer checks time period
+                EntityManager em = EMF.get().createEntityManager();
+                try {
+                    Date now = new Date();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(now);
+                    calendar.add(Calendar.MINUTE, ServerUtil.getSettings().getNotificationDelay());
+                    // TODO - optimise the query as when many users are registered it might end up a problem
+                    TypedQuery<AdminNotification> notificationQuery = em.createQuery("SELECT a FROM AdminNotification a WHERE a.sent = :sent", AdminNotification.class);
+                    notificationQuery.setParameter("sent", false);
+                    List<AdminNotification> adminNotifications = notificationQuery.getResultList();
+                    logger.debug("New notifications: " + adminNotifications.size());
+                    if(adminNotifications.size() > 0) {
+                        // send emails
+                        try {
+                            em.getTransaction().begin();
+                            // get list of administrator users
+                            TypedQuery<String> adminQuery = em.createQuery("select u.email from users u where u.role = :role", String.class);
+                            List<String> adminEmails = adminQuery.getResultList();
+                            // now send emails
+                            MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ADMIN);
+                            mailContent.addTitle("You have new notifications");
+                            mailContent.addTable(ListUtil.mutate(adminNotifications, new ListUtil.Mutate<AdminNotification, List<String>>() {
+                                @Override
+                                public List<String> mutate(AdminNotification notification) {
+                                    notification.setSent(true);
+                                    return ListUtil.toList(new String[]{
+                                            notification.getMessage(), ", on " + timeFormat.format(notification.getCreationDate()),
+                                            "<a href='" + ServerUtil.getSettings().getWebsiteUrl() + "#notifications:id=" + notification.getId() +
+                                                    "'>View</a>"
+                                    });
+                                }
+                            }));
+                            mailContent.addAction("view all notifications", null, ServerUtil.getSettings().getAdminWebsiteUrl() + "#notifications:");
+                            mailContent.sendEmail(StringUtils.join(adminEmails, ","), "New notifications on EO Broker", false);
+                            em.getTransaction().commit();
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Error running notification email service. Reason is " + e.getMessage());
+                } finally {
+                    em.close();
+                }
+            }
+        }, 1000, timerChecks);
     }
 
     private void startSupplierNotifications() {
@@ -83,7 +177,6 @@ public class ContextListener implements ServletContextListener {
                 // get all notifications which happend in the las   t timer checks time period
                 EntityManager em = EMF.get().createEntityManager();
                 try {
-                    em.getTransaction().begin();
                     Date now = new Date();
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(now);
@@ -111,6 +204,7 @@ public class ContextListener implements ServletContextListener {
                         // TODO - only send notifications based on user preferences
                         List<SupplierNotification> companyNotifications = notifications.get(company);
                         try {
+                            em.getTransaction().begin();
                             MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ORDER);
                             mailContent.addTitle("You have new notifications");
                             mailContent.addTable(ListUtil.mutate(companyNotifications, notification -> ListUtil.toList(new String[]{
@@ -131,11 +225,14 @@ public class ContextListener implements ServletContextListener {
                                 notification.setSent(true);
                             }
                             company.setLastNotificationCheck(now);
+                            em.getTransaction().commit();
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }
                         }
                     }
-                    em.getTransaction().commit();
                 } catch (Exception e) {
                     logger.error("Error running notification email service. Reason is " + e.getMessage());
                 } finally {
@@ -158,7 +255,6 @@ public class ContextListener implements ServletContextListener {
                 // get all notifications which happend in the las   t timer checks time period
                 EntityManager em = EMF.get().createEntityManager();
                 try {
-                    em.getTransaction().begin();
                     Date now = new Date();
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(now);
@@ -185,13 +281,14 @@ public class ContextListener implements ServletContextListener {
                         // TODO - only send notifications based on user preferences
                         List<Notification> userNotifications = notifications.get(user);
                         try {
+                            em.getTransaction().begin();
                             MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.CONSUMER);
                             mailContent.addTitle("You have new notifications");
                             mailContent.addTable(ListUtil.mutate(userNotifications, new ListUtil.Mutate<Notification, List<String>>() {
                                 @Override
                                 public List<String> mutate(Notification notification) {
                                     return ListUtil.toList(new String[]{
-                                            notification.getMessage(), ", on " + timeFormat.format(notification.getCreationDate()),
+                                            notification.getMessage(), "on " + timeFormat.format(notification.getCreationDate()),
                                             "<a href='" + ServerUtil.getSettings().getWebsiteUrl() + "#notifications:id=" + notification.getId() +
                                                     "'>View</a>"
                                     });
@@ -204,11 +301,14 @@ public class ContextListener implements ServletContextListener {
                                 notification.setSent(true);
                             }
                             user.setLastNotificationCheck(now);
+                            em.getTransaction().commit();
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }
                         }
                     }
-                    em.getTransaction().commit();
                 } catch (Exception e) {
                     logger.error("Error running notification email service. Reason is " + e.getMessage());
                 } finally {
@@ -314,6 +414,41 @@ public class ContextListener implements ServletContextListener {
                     em.getTransaction().commit();
                 }
             }
+            {
+                // look for OGC datasets access without layername but uri set
+                TypedQuery<DatasetAccessOGC> query = em.createQuery("select d from DatasetAccessOGC d where d.layerName is NULL", DatasetAccessOGC.class);
+                List<DatasetAccessOGC> datasetAccessOGCs = query.getResultList();
+                if (datasetAccessOGCs.size() > 0) {
+                    em.getTransaction().begin();
+                    for (DatasetAccessOGC datasetAccessOGC : datasetAccessOGCs) {
+                        datasetAccessOGC.setUri(null);
+                        datasetAccessOGC.setLayerName(datasetAccessOGC.getUri());
+                    }
+                    em.getTransaction().commit();
+                }
+            }
+            {
+                // look for local datasets access without file size set
+                TypedQuery<DatasetAccess> query = em.createQuery("select d from DatasetAccess d where d.hostedData = :hostedData AND d.size is NULL", DatasetAccess.class);
+                query.setParameter("hostedData", false);
+                List<DatasetAccess> datasetAccesses = query.getResultList();
+                if (datasetAccesses.size() > 0) {
+                    em.getTransaction().begin();
+                    for (DatasetAccess datasetAccess : datasetAccesses) {
+                        try {
+                            File file = new File(ServerUtil.getSettings().getDataDirectory() + datasetAccess.getUri());
+                            if (file.exists()) {
+                                datasetAccess.setSize(file.length());
+                            } else {
+                                logger.error("File " + file.getName() + " does not exist on disk");
+                            }
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    }
+                    em.getTransaction().commit();
+                }
+            }
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -334,9 +469,13 @@ public class ContextListener implements ServletContextListener {
             supplierNotificationsTimer.cancel();
             supplierNotificationsTimer = null;
         }
-        if(errorReportingTimer != null) {
-            errorReportingTimer.cancel();
-            errorReportingTimer = null;
+        if(adminReportingTimer != null) {
+            adminReportingTimer.cancel();
+            adminReportingTimer = null;
+        }
+        if(cleanupTimer != null) {
+            cleanupTimer.cancel();
+            cleanupTimer = null;
         }
     }
 }

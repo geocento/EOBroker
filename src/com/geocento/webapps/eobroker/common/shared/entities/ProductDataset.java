@@ -89,6 +89,9 @@ public class ProductDataset {
     @Column(length = 1000)
     String website;
 
+    @Column(length = 100000)
+    String termsAndConditions;
+
     public ProductDataset() {
     }
 
@@ -282,5 +285,13 @@ public class ProductDataset {
 
     public void setDatasetURL(String datasetURL) {
         this.datasetURL = datasetURL;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

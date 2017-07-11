@@ -22,6 +22,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -95,6 +96,10 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     DockLayoutPanel panel;
     @UiField
     MaterialPanel featureInfo;
+    @UiField
+    MaterialLink download;
+    @UiField
+    MaterialTooltip downloadTip;
 
     private Presenter presenter;
 
@@ -356,6 +361,21 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @Override
     public void enableWCS(boolean enable) {
         mapContainer.setWCSEnabled(enable);
+    }
+
+    @Override
+    public HasClickHandlers getDownloadSample() {
+        return download;
+    }
+
+    @Override
+    public void displayDownload(boolean display) {
+        download.setVisible(display);
+    }
+
+    @Override
+    public void setDownloadTooltip(String message) {
+        downloadTip.setText(message);
     }
 
     @Override

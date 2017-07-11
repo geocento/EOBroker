@@ -61,6 +61,8 @@ public class ApplicationSettings {
     int notificationDelay;
     @Column(length = 10000)
     String supplierWebsiteUrl;
+    @Column(length = 10000)
+    String adminWebsiteUrl;
 
     public ApplicationSettings() {
         id = 1L;
@@ -256,5 +258,13 @@ public class ApplicationSettings {
 
     public void setSupplierWebsiteUrl(String supplierWebsiteUrl) {
         this.supplierWebsiteUrl = supplierWebsiteUrl;
+    }
+
+    public String getAdminWebsiteUrl() {
+        return adminWebsiteUrl;
+    }
+
+    public void setAdminWebsiteUrl(String adminWebsiteUrl) {
+        this.adminWebsiteUrl = adminWebsiteUrl;
     }
 }

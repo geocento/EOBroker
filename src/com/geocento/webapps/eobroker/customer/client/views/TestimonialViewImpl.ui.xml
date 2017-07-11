@@ -42,7 +42,7 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLabel addStyleNames="{style.section}" text="Name"></design:MaterialLabel>
-                <widgets:MaterialSearch placeholder="Type text" addStyleNames="{style.searchBox}" ui:field="searchBox"></widgets:MaterialSearch>
+                <material:MaterialSearch placeholder="Type text" addStyleNames="{style.searchBox}" ui:field="searchBox"></material:MaterialSearch>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLabel addStyleNames="{style.section}" text="Testimonial"></design:MaterialLabel>

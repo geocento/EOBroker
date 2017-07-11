@@ -83,6 +83,9 @@ public class ProductService {
     @Column
     String timeToDelivery;
 
+    @Column(length = 100000)
+    String termsAndConditions;
+
     public ProductService() {
     }
 
@@ -260,5 +263,13 @@ public class ProductService {
 
     public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
         this.coverageLayers = coverageLayers;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

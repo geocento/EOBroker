@@ -19,6 +19,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessAPP</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessFile</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessKML</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Software</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductSoftware</class>
@@ -62,6 +63,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Following</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.subscriptions.FollowingEvent</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.UserFile</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

@@ -25,7 +25,6 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -90,14 +89,16 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             }
         }
 
-        String text = "";
+        if(text == null) {
+            text = "";
+        }
         if(tokens.containsKey(SearchPagePlace.TOKENS.text.toString())) {
             text = tokens.get(SearchPagePlace.TOKENS.text.toString());
+            setSearchText(text, true);
         }
         this.start = 0;
         this.limit = 24;
         // now start the search
-        setSearchText(text, true);
         selectMenu(category);
         if(category == null) {
             searchPageView.displayFilters(null);
@@ -571,17 +572,20 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         final long lastCall = this.lastCall;
 
         if(text != null && text.length() > 0) {
+            displayListSuggestionsLoading("Searching...");
             REST.withCallback(new MethodCallback<List<Suggestion>>() {
 
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    hideListSuggestionsLoading();
+                    displayListSuggestionsError(exception.getMessage());
                 }
 
                 @Override
                 public void onSuccess(Method method, List<Suggestion> response) {
                     // show only if last one to be called
                     if (lastCall == SearchPageActivity.this.lastCall) {
+                        hideListSuggestionsLoading();
                         displayListSuggestions(response);
                     }
                 }
@@ -602,23 +606,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         return aoi.getWktGeometry();
     }
 
-    private List<Suggestion> getSuggestion(Category category) {
-        List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        switch (category) {
-            case products:
-                suggestions.add(new Suggestion("Browse products", Category.products, "browse::"));
-                break;
-            case companies:
-                suggestions.add(new Suggestion("Browse companies", Category.companies, "browse::"));
-                break;
-            case imagery:
-                suggestions.add(new Suggestion("Search for imagery", Category.imagery, "search::"));
-                suggestions.add(new Suggestion("Request quotation for imagery", Category.imagery, "request::"));
-                break;
-        }
-        return suggestions;
-    }
-
     @Override
     public void suggestionSelected(Suggestion suggestion) {
         // TODO - move to a helper class
@@ -630,64 +617,34 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         }
         EOBrokerPlace searchPlace = null;
         switch (suggestion.getCategory()) {
-            case imagery: {
-                if (action.contentEquals("search")) {
-                    searchPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + parameters +
-/*
-                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId())
-*/
-                            "");
-                    //setText(parameters);
-                } else if (action.contentEquals("request")) {
-                    searchPlace = new RequestImageryPlace(parameters);
-                    //setText("");
-                }
-                ;
-            } break;
             case products: {
                 String token = "";
-                Category category = suggestion.getCategory();
-                if (action.contentEquals("product")) {
+                if (action.contentEquals("access")) {
                     searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
                 } else if (action.contentEquals("browse")) {
                     token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.products.toString();
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-/*
-                    if (currentAoI != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
-                    }
-*/
                     searchPlace = new SearchPagePlace(token);
                 } else {
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-/*
-                    if (currentAoI != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
-                    }
-*/
                     searchPlace = new SearchPagePlace(token);
                 }
             } break;
             case companies: {
                 String token = "";
                 Category category = suggestion.getCategory();
-                if (action.contentEquals("company")) {
+                if (action.contentEquals("access")) {
                     searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
                 } else if (action.contentEquals("browse")) {
                     token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.companies.toString();
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
-/*
-                    if (currentAoI != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
-                    }
-*/
                     searchPlace = new SearchPagePlace(token);
                 } else {
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
@@ -713,11 +670,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     @Override
     public void textSelected(String text) {
         this.text = text;
-/*
-        if(text.trim().length() == 0) {
-            return;
-        }
-*/
         EOBrokerPlace eoBrokerPlace = null;
         if(category == null) {
             // go to general search results page
@@ -726,22 +678,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             if(category != null) {
                 token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
             }
-/*
-            if(currentAoI != null) {
-                token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
-            }
-*/
             eoBrokerPlace = new SearchPagePlace(token);
         } else {
             switch (category) {
-                case imagery:
-                    eoBrokerPlace = new ImageSearchPlace(ImageSearchPlace.TOKENS.text.toString() + "=" + text +
-/*
-                            (currentAoI == null ? "" : "&" + ImageSearchPlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId())
-*/
-                            ""
-                    );
-                    break;
                 case products:
                 case companies:
                 case productservices:
@@ -751,11 +690,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     String token = "";
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-/*
-                    if(currentAoI != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
-                    }
-*/
                     eoBrokerPlace = new SearchPagePlace(token);
             }
         }

@@ -3,16 +3,14 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor;
 import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.utils.DatasetAccessMapper;
-import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
-import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
-import com.geocento.webapps.eobroker.supplier.client.widgets.PerformanceValueWidget;
-import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
+import com.geocento.webapps.eobroker.supplier.client.widgets.*;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
@@ -125,6 +123,10 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialButton addCoverageLayer;
     @UiField
     MaterialLabel coverageLayersMessage;
+    @UiField
+    MaterialFilesWidget tandcsFiles;
+    @UiField
+    MaterialRichEditor termsAndConditions;
 
     private Presenter presenter;
 
@@ -442,7 +444,9 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
                 }
             }
         });
+        dataAccessWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
         materialColumn.add(dataAccessWidget);
+        updateSamplesMessage();
     }
 
     private void updateSamplesMessage() {
@@ -662,6 +666,16 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @Override
     public HasValue<DatasetStandard> getDatasetStandard() {
         return datasetsStandard;
+    }
+
+    @Override
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions.setHTML(termsAndConditions);
+    }
+
+    @Override
+    public String getTermsAndConditions() {
+        return termsAndConditions.getHTML();
     }
 
 }

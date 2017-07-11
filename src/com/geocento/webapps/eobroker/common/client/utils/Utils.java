@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.client.utils;
 
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
+import com.google.gwt.i18n.client.NumberFormat;
 
 import java.util.HashMap;
 
@@ -55,4 +56,20 @@ public class Utils {
         return result;
     }
 
+    static private NumberFormat numberFormat = NumberFormat.getFormat(".###");
+
+    public static String displayFileSize(Long size) {
+        if(size == null) {
+            return "unknown";
+        }
+        if(size < 1000) {
+            return size + " bytes";
+        } else if(size < 10E6) {
+            return numberFormat.format(size / 1000.0) + " KB";
+        } else if(size < 10E9) {
+            return numberFormat.format(size / 1000.0) + " MB";
+        } else { //if(size < 10E12) {
+            return numberFormat.format(size / 1000.0) + " GB";
+        }
+    }
 }

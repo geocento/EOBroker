@@ -38,6 +38,8 @@ public class DataAccessWidget extends Composite {
     ExpandPanel panel;
     @UiField
     MaterialTooltip typeTooltip;
+    @UiField
+    MaterialIntegerBox size;
 
     protected final DatasetAccess datasetAccess;
 
@@ -90,6 +92,7 @@ public class DataAccessWidget extends Composite {
         // update values first
         datasetAccess.setTitle(title.getText());
         datasetAccess.setPitch(pitch.getText());
+        datasetAccess.setSize(Long.valueOf(size.getValue()));
         datasetAccess.setUri(uri.getText());
         return datasetAccess;
     }

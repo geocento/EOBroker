@@ -33,7 +33,8 @@ public class ProductDatasetDTO {
     String temporalCoverageComment;
     DatasetStandard datasetStandard;
     String datasetURL;
-    private List<DatasetAccessOGC> coverageLayers;
+    List<DatasetAccessOGC> coverageLayers;
+    String termsAndConditions;
 
     public ProductDatasetDTO() {
     }
@@ -220,5 +221,13 @@ public class ProductDatasetDTO {
 
     public List<DatasetAccessOGC> getCoverageLayers() {
         return coverageLayers;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

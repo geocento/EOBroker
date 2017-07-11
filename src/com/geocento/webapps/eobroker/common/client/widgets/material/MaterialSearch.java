@@ -19,6 +19,8 @@
  */
 package com.geocento.webapps.eobroker.common.client.widgets.material;
 
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingLink;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -31,6 +33,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import gwt.material.design.client.base.HasActive;
 import gwt.material.design.client.base.SearchObject;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.InputType;
 import gwt.material.design.client.ui.MaterialIcon;
@@ -41,49 +44,15 @@ import gwt.material.design.client.ui.html.Label;
 
 import java.util.List;
 
-//@formatter:off
-
-/**
- * Material Search is a value box component that returns a result based on your search
- * <p>
- * <p>
- * <h3>UiBinder Usage:</h3>
- * <pre>
- * {@code
- * <m:MaterialSearch placeholder="Sample"/>
- * }
- * </pre>
- * <p>
- * <h3>Populating the search result objects</h3>
- * {@code
- * <p>
- * List<SearchObject> objects = new ArrayList<>();
- * <p>
- * private void onInitSearch() {
- * objects.add(new SearchObject(IconType.POLYMER, "Pushpin", "#!pushpin"));
- * objects.add(new SearchObject(IconType.POLYMER, "SideNavs", "#!sidenavs"));
- * objects.add(new SearchObject(IconType.POLYMER, "Scrollspy", "#!scrollspy"));
- * objects.add(new SearchObject(IconType.POLYMER, "Tabs", "#!tabs"));
- * txtSearch.setListSearches(objects);
- * }
- * <p>
- * }
- * </p>
- *
- * @author kevzlou7979
- * @author Ben Dol
- * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#navbar">Material Search</a>
- */
-//@formatter:on
 public class MaterialSearch extends MaterialValueBox<String> implements HasCloseHandlers<String>, HasActive {
 
     public interface Presenter {
         void textChanged(String text);
+
         void suggestionSelected(SearchObject suggestion);
+
         void textSelected(String text);
     }
-
-    private boolean initialized;
 
     private Label label = new Label();
     private MaterialIcon iconSearch = new MaterialIcon(IconType.SEARCH);
@@ -136,23 +105,21 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
                         if (getCurSel() == -1) {
                             hideListSearches();
                             presenter.textSelected(getText());
-/*
-                            Customer.clientFactory.getEventBus().fireEvent(new TextSelected(getText()));
-*/
-                        }
-                        MaterialLink selLink = getSelectedLink();
-                        reset(selLink.getText());
-                        selLink.fireEvent(new GwtEvent<ClickHandler>() {
-                            @Override
-                            public com.google.gwt.event.shared.GwtEvent.Type<ClickHandler> getAssociatedType() {
-                                return ClickEvent.getType();
-                            }
+                        } else {
+                            MaterialLink selLink = getSelectedLink();
+                            reset(selLink.getText());
+                            selLink.fireEvent(new GwtEvent<ClickHandler>() {
+                                @Override
+                                public com.google.gwt.event.shared.GwtEvent.Type<ClickHandler> getAssociatedType() {
+                                    return ClickEvent.getType();
+                                }
 
-                            @Override
-                            protected void dispatch(ClickHandler handler) {
-                                handler.onClick(null);
-                            }
-                        });
+                                @Override
+                                protected void dispatch(ClickHandler handler) {
+                                    handler.onClick(null);
+                                }
+                            });
+                        }
                         event.stopPropagation();
                     }
                     break;
@@ -208,9 +175,8 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
         addCloseHandler(new CloseHandler<String>() {
             @Override
             public void onClose(CloseEvent<String> event) {
-                setText("");
-                setSelectedObject(null);
-                presenter.textChanged("");
+                reset("");
+                presenter.textSelected("");
                 setFocus(true);
             }
         });
@@ -251,7 +217,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
         this.presenter = presenter;
     }
 
-    private void applyHighlightedItem(MaterialLink link){
+    private void applyHighlightedItem(MaterialLink link) {
         for(int index = 0; index < searchResult.getWidgetCount(); index++) {
             searchResult.getWidget(index).setStyleName("higlighted", false);
         }
@@ -268,36 +234,37 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
             link.setTextColor(Color.BLACK);
             link.setText("No Result...");
             searchResult.add(link);
-            return;
-        }
-        // Populate the search result items
-        for(final SearchObject suggestion : listSearches) {
-            MaterialLink link = new MaterialLink();
-            link.setIconColor(Color.GREY);
-            link.setTextColor(Color.BLACK);
-            if(suggestion.getIcon() != null) {
-                link.setIconType(suggestion.getIcon());
-            }
-            link.setText(suggestion.getKeyword());
-            link.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    selectedObject = suggestion;
-                    if(presenter != null) {
-                        presenter.suggestionSelected(suggestion);
-                    }
+        } else {
+            // Populate the search result items
+            for (final SearchObject suggestion : listSearches) {
+                MaterialLink link = new MaterialLink();
+                link.setIconColor(Color.GREY);
+                link.setTextColor(Color.BLACK);
+                if (suggestion.getIcon() != null) {
+                    link.setIconType(suggestion.getIcon());
                 }
-            });
-            searchResult.add(link);
+                link.setText(suggestion.getKeyword());
+                link.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        selectedObject = suggestion;
+                        if (presenter != null) {
+                            presenter.suggestionSelected(suggestion);
+                        }
+                    }
+                });
+                searchResult.add(link);
+            }
         }
         searchResult.setVisible(true);
     }
 
     // Resets the search result panel
-    private void reset(String keyword){
+    private void reset(String keyword) {
         curSel = -1;
         setText(keyword);
         searchResult.clear();
+        searchResult.setVisible(false);
     }
 
     public int getCurSel() {
@@ -312,13 +279,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
         searchResult.setVisible(false);
     }
 
-    // Resets the search result panel
-    private void resetLinks(String keyword) {
-        curSel = -1;
-        setText(keyword);
-        searchResult.clear();
-    }
-
+/*
     @Override
     protected void onUnload() {
         super.onUnload();
@@ -327,10 +288,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
         setCurSel(-1);
     }
 
-    protected native void locateSearch(String location)/*-{
-        $wnd.window.location.hash = location;
-    }-*/;
-
+*/
     @Override
     public HandlerRegistration addCloseHandler(final CloseHandler<String> handler) {
         return addHandler((CloseHandler<String>) handler::onClose, CloseEvent.getType());
@@ -370,8 +328,29 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
         this.selectedObject = selectedObject;
     }
 
-    public MaterialIcon getIconClose() {
-        return iconClose;
+    public void displaySearchLoading(String message) {
+        searchResult.setVisible(true);
+        searchResult.clear();
+        MaterialLoadingLink materialLoadingLink = new MaterialLoadingLink();
+        materialLoadingLink.setText(message);
+        materialLoadingLink.setTextColor(Color.BLACK);
+        materialLoadingLink.setIconSize(IconSize.SMALL);
+        // TODO - solve problem with display of icon size
+        //materialLoadingLink.setLoading(true);
+        searchResult.add(materialLoadingLink);
+    }
+
+    public void hideListSuggestionsLoading() {
+        searchResult.clear();
+        searchResult.setVisible(false);
+    }
+
+    public void displaySearchError(String message) {
+        MaterialMessage materialMessage = new MaterialMessage();
+        materialMessage.displayErrorMessage(message);
+        searchResult.setVisible(true);
+        searchResult.clear();
+        searchResult.add(materialMessage);
     }
 
 }

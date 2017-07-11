@@ -120,7 +120,7 @@ public class SearchResource implements SearchService {
         for(Category searchCategory : categories) {
             switch(searchCategory) {
                 case products:
-                    rankedSuggestions.addAll(completeProducts(keywords, aoi));
+                    rankedSuggestions.addAll(completeProducts(keywords));
                     break;
                 case companies:
                     rankedSuggestions.addAll(completeCompanies(keywords));
@@ -138,6 +138,10 @@ public class SearchResource implements SearchService {
             suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
         }
         return suggestions;
+    }
+
+    private List<RankedSuggestion> completeProducts(String keywords) {
+        return completeCategory(Category.products, keywords);
     }
 
     private List<RankedSuggestion> completeCompanies(String keywords) {
@@ -165,24 +169,7 @@ public class SearchResource implements SearchService {
         List<Object[]> results = q.getResultList();
         List<RankedSuggestion> suggestions = new ArrayList<RankedSuggestion>();
         for(Object[] result : results) {
-            suggestions.add(new RankedSuggestion((String) result[0], category, category.toString() + "::" + ((Long) result[2]) + "", (double) ((float) result[1])));
-        }
-        return suggestions;
-    }
-
-    private List<RankedSuggestion> completeProducts(String keywords, String aoiWKT) {
-        // change the last word so that it allows for partial match
-        String sqlStatement = "SELECT \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
-                "          FROM product, to_tsquery('" + keywords + "') AS keywords\n" +
-                "          WHERE tsvname @@ keywords\n" +
-                "          ORDER BY rank DESC\n" +
-                "          LIMIT 10;";
-        EntityManager em = EMF.get().createEntityManager();
-        Query q = em.createNativeQuery(sqlStatement);
-        List<Object[]> results = q.getResultList();
-        List<RankedSuggestion> suggestions = new ArrayList<RankedSuggestion>();
-        for(Object[] result : results) {
-            suggestions.add(new RankedSuggestion((String) result[0], Category.products, "product::" + ((Long) result[2]) + "", (double) ((float) result[1])));
+            suggestions.add(new RankedSuggestion((String) result[0], category, "access" + "::" + ((Long) result[2]) + "", (double) ((float) result[1])));
         }
         return suggestions;
     }
@@ -894,7 +881,7 @@ public class SearchResource implements SearchService {
             if (partialMatch) {
                 keywords += ":*";
             }
-            rankedSuggestions.addAll(completeProducts(keywords, null));
+            rankedSuggestions.addAll(completeProducts(keywords));
         } catch (Exception e) {
 
         }

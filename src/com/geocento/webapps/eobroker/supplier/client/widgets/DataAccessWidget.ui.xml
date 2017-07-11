@@ -39,7 +39,10 @@
                     <design:MaterialTextBox placeholder="Your pitch on this data access" addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialTextBox>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
-                    <design:MaterialTextBox placeholder="Provide the uri for accessing the data" addStyleNames="{style.uri}" ui:field="uri"></design:MaterialTextBox>
+                    <design:MaterialTextBox placeholder="Provide the uri for downloading the data file" addStyleNames="{style.uri}" ui:field="uri"></design:MaterialTextBox>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialIntegerBox placeholder="Provide the data size in bytes, leave empty if unknown" addStyleNames="{style.uri}" ui:field="size"></design:MaterialIntegerBox>
                 </design:MaterialColumn>
             </design:MaterialRow>
         </widgets:content>

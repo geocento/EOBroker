@@ -33,7 +33,8 @@ public class ProductDatasetDescriptionDTO {
     List<DatasetAccess> samples;
     List<ProductDatasetDTO> suggestedDatasets;
     DatasetStandard catalogueStandard;
-    private List<DatasetAccessOGC> coverageLayers;
+    List<DatasetAccessOGC> coverageLayers;
+    String termsAndConditions;
 
     public ProductDatasetDescriptionDTO() {
     }
@@ -196,5 +197,13 @@ public class ProductDatasetDescriptionDTO {
 
     public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
         this.coverageLayers = coverageLayers;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

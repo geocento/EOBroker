@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.WMSUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessKML;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
@@ -19,6 +20,8 @@ import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetVisualisationDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceVisualisationDTO;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.History;
@@ -132,23 +135,6 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                 }).call(ServicesUtil.assetsService).getProductServiceVisualisation(productServiceId);
             } catch (RequestException e) {
             }
-/*
-        } else if(dataAccessId != null) {
-            try {
-                REST.withCallback(new MethodCallback<ProductDatasetVisualisationDTO>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, ProductDatasetVisualisationDTO productDatasetVisualisationDTO) {
-                        setProductVisualisation(productDatasetVisualisationDTO, finalDataAccessId);
-                    }
-                }).call(ServicesUtil.assetsService).getDatasetVisualisation(dataAccessId);
-            } catch (RequestException e) {
-            }
-*/
         }
     }
 
@@ -181,6 +167,10 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         visualisationView.setProductService(productServiceVisualisationDTO);
         DatasetAccess datasetAccess = null;
         if(datasetId != null) {
+            datasetAccesses = new ArrayList<DatasetAccess>();
+            if(productServiceVisualisationDTO.getSamples() != null) {
+                datasetAccesses.addAll(productServiceVisualisationDTO.getSamples());
+            }
             datasetAccess = ListUtil.findValue(productServiceVisualisationDTO.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
                 @Override
                 public boolean isValue(DatasetAccess value) {
@@ -267,6 +257,16 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
             }
         });
 
+        handlers.add(visualisationView.getDownloadSample().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                if(datasetAccess != null && datasetAccess.getUri() != null) {
+                    Window.open(datasetAccess.getUri(), "_blank", null);
+                }
+            }
+
+        }));
     }
 
     @Override
@@ -281,6 +281,9 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         this.datasetAccess = datasetAccess;
         visualisationView.selectDataAccess(datasetAccess);
         visualisationView.setDataAccessDescription(datasetAccess.getPitch());
+        visualisationView.displayDownload(datasetAccess.getUri() != null);
+        visualisationView.setDownloadTooltip("Download file" +
+                (datasetAccess.getSize() == null ? "" : " size is " + Utils.displayFileSize(datasetAccess.getSize())));
         visualisationView.setLoadingInformation("Loading...");
         visualisationView.setAdditionalDatasets(ListUtil.filterValues(datasetAccesses, new ListUtil.CheckValue<DatasetAccess>() {
             @Override
@@ -288,28 +291,33 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                 return !value.getId().equals(datasetAccess.getId());
             }
         }));
-        // TODO - load layer information
-        try {
-            REST.withCallback(new MethodCallback<LayerInfoDTO>() {
+        if(datasetAccess instanceof DatasetAccessOGC) {
+            // TODO - load layer information
+            try {
+                REST.withCallback(new MethodCallback<LayerInfoDTO>() {
 
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    visualisationView.hideLoadingInformation();
-                    visualisationView.displayInformationError(exception.getMessage());
-                }
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        visualisationView.hideLoadingInformation();
+                        visualisationView.displayInformationError(exception.getMessage());
+                    }
 
-                @Override
-                public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
-                    VisualisationActivity.this.currentLayer = layerInfoDTO;
-                    visualisationView.hideLoadingInformation();
-                    // add layer to map
-                    visualisationView.setWMSLayer(layerInfoDTO);
-                    visualisationView.displayLayerInfo(layerInfoDTO);
-                    visualisationView.enableGetFeatureInfo(layerInfoDTO.isQueryable());
-                    visualisationView.enableWCS(((DatasetAccessOGC) datasetAccess).getWcsServerUrl() != null);
-                }
-            }).call(ServicesUtil.assetsService).getLayerInfo(datasetAccess.getId());
-        } catch (RequestException e) {
+                    @Override
+                    public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
+                        VisualisationActivity.this.currentLayer = layerInfoDTO;
+                        visualisationView.hideLoadingInformation();
+                        // add layer to map
+                        visualisationView.setWMSLayer(layerInfoDTO);
+                        visualisationView.displayLayerInfo(layerInfoDTO);
+                        visualisationView.enableGetFeatureInfo(layerInfoDTO.isQueryable());
+                        visualisationView.enableWCS(((DatasetAccessOGC) datasetAccess).getWcsServerUrl() != null);
+                    }
+                }).call(ServicesUtil.assetsService).getLayerInfo(datasetAccess.getId());
+            } catch (RequestException e) {
+            }
+        } else if(datasetAccess instanceof DatasetAccessKML) {
+            // donwload file
+
         }
     }
 }

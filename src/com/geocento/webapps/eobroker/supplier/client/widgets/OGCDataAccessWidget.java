@@ -16,6 +16,8 @@ public class OGCDataAccessWidget extends DataAccessWidget {
 
     private MaterialTextBox serverUrl;
 
+    private MaterialTextBox layerName;
+
     private MaterialLink styleNameEditor;
 
     private MaterialTextBox wcsServer;
@@ -35,7 +37,8 @@ public class OGCDataAccessWidget extends DataAccessWidget {
     public OGCDataAccessWidget(DatasetAccessOGC datasetAccess, boolean editableUri, boolean withWCS) {
         super(datasetAccess, editableUri);
         //  rename uri to layer name
-        uri.setPlaceholder("Provide the layer name for this data");
+        uri.setPlaceholder("Provide the link to the original file for this data");
+
         // add server url
         serverUrl = new MaterialTextBox();
         serverUrl.setPlaceholder("The OWS server base WMS URL");
@@ -44,6 +47,16 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         setServerUrl(datasetAccess.getServerUrl());
         serverUrl.setReadOnly(!editableUri);
         serverUrl.setEnabled(editableUri);
+
+        // add server url
+        layerName = new MaterialTextBox();
+        layerName.setPlaceholder("The layer name");
+        layerName.setMarginTop(20);
+        addField(layerName);
+        setLayerName(datasetAccess.getLayerName());
+        layerName.setReadOnly(!editableUri);
+        layerName.setEnabled(editableUri);
+
         // if the uri is not editable it is a sample from the local geoserver
         if(!editableUri) {
             MaterialPanel panel = new MaterialPanel();
@@ -103,6 +116,10 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         this.serverUrl.setText(serverUrl);
     }
 
+    private void setLayerName(String layerName) {
+        this.layerName.setText(layerName);
+    }
+
     private void setStyle(String styleName) {
         styleNameEditor.setText(styleName == null ? "default" : styleName);
     }
@@ -112,6 +129,7 @@ public class OGCDataAccessWidget extends DataAccessWidget {
         // update fields if editable
         if(editableUri) {
             ((DatasetAccessOGC) datasetAccess).setServerUrl(serverUrl.getText());
+            ((DatasetAccessOGC) datasetAccess).setLayerName(layerName.getText());
             ((DatasetAccessOGC) datasetAccess).setWcsServerUrl(wcsServer == null ? null : wcsServer.getText());
             ((DatasetAccessOGC) datasetAccess).setWcsResourceName(wcsResourceName == null ? null : wcsResourceName.getText());
             ((DatasetAccessOGC) datasetAccess).setCorsEnabled(corsEnabled.getValue());

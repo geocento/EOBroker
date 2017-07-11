@@ -167,6 +167,7 @@ public class AssetsResource implements AssetsService {
             productServiceDTO.setDisseminationComment(productService.getDisseminationComment());
             productServiceDTO.setTimeToDelivery(productService.getTimeToDelivery());
             productServiceDTO.setSamples(productService.getSamples());
+            productServiceDTO.setTermsAndConditions(productService.getTermsAndConditions());
             return productServiceDTO;
         } catch (Exception e) {
             throw new RequestException("Error");
@@ -266,6 +267,7 @@ public class AssetsResource implements AssetsService {
             // update the sample access
             List<DatasetAccess> dbSamples = updateSamples(em, productService.getSamples(), productServiceDTO.getSamples());
             productService.setSamples(dbSamples);
+            productService.setTermsAndConditions(productService.getTermsAndConditions());
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + DBHelper.getProductServiceTSV(productService) +
                     ", tsvname = " + DBHelper.getProductServiceNameTSV(productService) + " where id = " + productService.getId() +
@@ -318,7 +320,12 @@ public class AssetsResource implements AssetsService {
                 }
                 dbDatasetAccess.setTitle(datasetAccess.getTitle());
                 dbDatasetAccess.setPitch(datasetAccess.getPitch());
+                // no need for these for coverage layers
+/*
                 dbDatasetAccess.setUri(datasetAccess.getUri());
+                dbDatasetAccess.setSize(datasetAccess.getSize());
+*/
+                dbDatasetAccess.setLayerName(datasetAccess.getLayerName());
                 // now do some data access specific stuff
                 // check if style has changed
                 if (!StringUtils.areStringEqualsOrNull(dbDatasetAccess.getStyleName(), ((DatasetAccessOGC) datasetAccess).getStyleName())) {
@@ -339,7 +346,24 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public void removeProductServices(Long id) throws RequestException {
-
+        // TODO - make sure service is not used elsewhere and remove all samples from the server
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            ProductService productService = em.find(ProductService.class, id);
+            if(productService == null || user.getCompany() != productService.getCompany()) {
+                throw new RequestException("Not authorised");
+            }
+            em.remove(productService);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing service");
+        } finally {
+            em.close();
+        }
     }
 
     private List<PerformanceValue> updatePerformances(EntityManager em, List<PerformanceValue> dbPerformanceValues, List<PerformanceValue> performanceValues) {
@@ -391,6 +415,7 @@ public class AssetsResource implements AssetsService {
                 dbDatasetAccess.setTitle(datasetAccess.getTitle());
                 dbDatasetAccess.setPitch(datasetAccess.getPitch());
                 dbDatasetAccess.setUri(datasetAccess.getUri());
+                dbDatasetAccess.setSize(datasetAccess.getSize());
                 // now do some data access specific stuff
                 if (dbDatasetAccess instanceof DatasetAccessOGC) {
                     DatasetAccessOGC dbDatasetAccessOGC = (DatasetAccessOGC) dbDatasetAccess;
@@ -405,6 +430,7 @@ public class AssetsResource implements AssetsService {
                         }
                     }
                     dbDatasetAccessOGC.setServerUrl(datasetAccessOGC.getServerUrl());
+                    dbDatasetAccessOGC.setLayerName(datasetAccessOGC.getLayerName());
                     dbDatasetAccessOGC.setWcsServerUrl(datasetAccessOGC.getWcsServerUrl());
                     dbDatasetAccessOGC.setWcsResourceName(datasetAccessOGC.getWcsResourceName());
                     dbDatasetAccessOGC.setCorsEnabled(datasetAccessOGC.isCorsEnabled());
@@ -1048,6 +1074,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDTO.setSamples(productDataset.getSamples());
             productDatasetDTO.setDatasetStandard(productDataset.getDatasetStandard());
             productDatasetDTO.setDatasetURL(productDataset.getDatasetURL());
+            productDatasetDTO.setTermsAndConditions(productDataset.getTermsAndConditions());
             return productDatasetDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1150,6 +1177,7 @@ public class AssetsResource implements AssetsService {
                         dbDatasetAccess.setTitle(datasetAccess.getTitle());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
+                        dbDatasetAccess.setSize(datasetAccess.getSize());
                         // now do some data access specific stuff
                         if (dbDatasetAccess instanceof DatasetAccessOGC) {
                             DatasetAccessOGC dbDatasetAccessOGC = (DatasetAccessOGC) dbDatasetAccess;
@@ -1164,6 +1192,7 @@ public class AssetsResource implements AssetsService {
                                 }
                             }
                             dbDatasetAccessOGC.setServerUrl(datasetAccessOGC.getServerUrl());
+                            dbDatasetAccessOGC.setLayerName(datasetAccessOGC.getLayerName());
                             dbDatasetAccessOGC.setWcsServerUrl(datasetAccessOGC.getWcsServerUrl());
                             dbDatasetAccessOGC.setWcsResourceName(datasetAccessOGC.getWcsResourceName());
                             dbDatasetAccessOGC.setCorsEnabled(datasetAccessOGC.isCorsEnabled());
@@ -1178,6 +1207,7 @@ public class AssetsResource implements AssetsService {
             productDataset.setSamples(dbSamples);
             productDataset.setDatasetStandard(productDatasetDTO.getDatasetStandard());
             productDataset.setDatasetURL(productDatasetDTO.getDatasetURL());
+            productDataset.setTermsAndConditions(productDatasetDTO.getTermsAndConditions());
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + DBHelper.getProductDatasetTSV(productDataset) +
                     ", tsvname = " + DBHelper.getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +
@@ -1246,6 +1276,7 @@ public class AssetsResource implements AssetsService {
                     return createProductSoftwareDTO(productSoftware);
                 }
             }));
+            softwareDTO.setTermsAndConditions(software.getTermsAndConditions());
             return softwareDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1264,7 +1295,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Long saveSoftware(SoftwareDTO softwareDTO) throws RequestException {
+    public Long updateSoftware(SoftwareDTO softwareDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -1315,6 +1346,7 @@ public class AssetsResource implements AssetsService {
             software.setProducts(productSoftwares);
             software.setImageUrl(softwareDTO.getImageUrl());
             software.setSoftwareType(softwareDTO.getSoftwareType());
+            software.setTermsAndConditions(softwareDTO.getTermsAndConditions());
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE software SET tsv = " + DBHelper.getSoftwareTSV(software) +
                     ", tsvname = " + DBHelper.getSoftwareNameTSV(software) + " where id = " + software.getId() +
@@ -1332,7 +1364,23 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public void removeSoftware(Long id) throws RequestException {
-
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Software software = em.find(Software.class, id);
+            if(software == null || user.getCompany() != software.getCompany()) {
+                throw new RequestException("Not authorised");
+            }
+            em.remove(software);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing software");
+        } finally {
+            em.close();
+        }
     }
 
     private ProjectDTO createProjectDTO(Project project) {
@@ -1417,7 +1465,7 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public Long saveProject(ProjectDTO projectDTO) throws RequestException {
+    public Long updateProject(ProjectDTO projectDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -1517,7 +1565,23 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public void removeProject(Long id) throws RequestException {
-
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            Project project = em.find(Project.class, id);
+            if(project == null || user.getCompany() != project.getCompany()) {
+                throw new RequestException("Not authorised");
+            }
+            em.remove(project);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing project");
+        } finally {
+            em.close();
+        }
     }
 
     @Override

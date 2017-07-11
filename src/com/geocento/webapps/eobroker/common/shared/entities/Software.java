@@ -19,7 +19,7 @@ public class Software {
     @ManyToOne
     Company company;
 
-    @OneToMany
+    @OneToMany(mappedBy = "software", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<ProductSoftware> products;
 
     @Column(length = 1000)
@@ -42,6 +42,9 @@ public class Software {
 
     @Enumerated(EnumType.STRING)
     SoftwareType softwareType;
+
+    @Column(length = 100000)
+    String termsAndConditions;
 
     public Software() {
     }
@@ -132,5 +135,13 @@ public class Software {
 
     public void setFullDescription(String fullDescription) {
         this.fullDescription = fullDescription;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

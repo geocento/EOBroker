@@ -161,7 +161,7 @@ public class ProjectActivity extends TemplateActivity implements ProjectView.Pre
                             displaySuccess("Project saved");
                             projectDTO.setId(companyId);
                         }
-                    }).call(ServicesUtil.assetsService).saveProject(projectDTO);
+                    }).call(ServicesUtil.assetsService).updateProject(projectDTO);
                 } catch (RequestException e) {
                 }
             }

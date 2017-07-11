@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveSoftware;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveSoftwareHandler;
 import com.geocento.webapps.eobroker.supplier.client.places.SoftwarePlace;
 import com.geocento.webapps.eobroker.supplier.client.places.SoftwaresPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
@@ -46,6 +48,11 @@ public class SoftwaresActivity extends TemplateActivity implements DashboardView
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        loadSoftware();
+    }
+
+    private void loadSoftware() {
         try {
             displayFullLoading("Loading software solutions...");
             REST.withCallback(new MethodCallback<OfferDTO>() {
@@ -70,6 +77,31 @@ public class SoftwaresActivity extends TemplateActivity implements DashboardView
     @Override
     protected void bind() {
         super.bind();
+
+        activityEventBus.addHandler(RemoveSoftware.TYPE, new RemoveSoftwareHandler() {
+            @Override
+            public void onRemoveSoftware(RemoveSoftware event) {
+                if (Window.confirm("Are you sure you want to remove this software?")) {
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                displayError("Could not remove this software");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                displaySuccess("Software solution has been removed");
+                                // reload services
+                                loadSoftware();
+                            }
+                        }).call(ServicesUtil.assetsService).removeSoftware(event.getSoftwareId());
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        });
 
         handlers.add(dashboardView.getAddSoftware().addClickHandler(new ClickHandler() {
             @Override

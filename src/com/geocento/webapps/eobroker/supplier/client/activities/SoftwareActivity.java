@@ -87,6 +87,7 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
         softwareView.setSoftwareType(softwareDTO.getSoftwareType());
         softwareView.setFullDescription(softwareDTO.getFullDescription());
         softwareView.setSelectedProducts(softwareDTO.getProducts());
+        softwareView.setTermsAndConditions(softwareDTO.getTermsAndConditions());
     }
 
     @Override
@@ -102,6 +103,7 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                 softwareDTO.setSoftwareType(softwareView.getSoftwareType());
                 softwareDTO.setFullDescription(softwareView.getFullDescription());
                 softwareDTO.setProducts(softwareView.getSelectedProducts());
+                softwareDTO.setTermsAndConditions(softwareView.getTermsAndConditions());
                 // do some checks
                 try {
                     if (softwareDTO.getName() == null || softwareDTO.getName().length() < 3) {
@@ -152,7 +154,7 @@ public class SoftwareActivity extends TemplateActivity implements SoftwareView.P
                             displaySuccess("Software saved");
                             softwareDTO.setId(companyId);
                         }
-                    }).call(ServicesUtil.assetsService).saveSoftware(softwareDTO);
+                    }).call(ServicesUtil.assetsService).updateSoftware(softwareDTO);
                 } catch (RequestException e) {
                 }
             }

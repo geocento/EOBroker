@@ -4,24 +4,23 @@ import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.supplier.client.utils.DatasetAccessMapper;
 import com.geocento.webapps.eobroker.supplier.client.widgets.DataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.OGCDataAccessWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.PerformanceValueWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -115,6 +114,8 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     MaterialButton addCoverageLayer;
     @UiField
     MaterialLabel coverageLayersMessage;
+    @UiField
+    MaterialRichEditor termsAndConditions;
 
     public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -140,15 +141,22 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
         // quirk to make sure the list box is initialised
         sampleAccessType.setEnabled(true);
 
-        // configure the sample uploader
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
-        sampleUploader.setUrl(uploadUrl);
-
         // Added the progress to card uploader
         sampleUploader.addTotalUploadProgressHandler(event -> {
         });
 
         sampleUploader.addSuccessHandler(event -> {
+            String error = StringUtils.extract(event.getResponse().getBody(), "<error>", "</error>");
+            if(error.length() > 0) {
+                Window.alert(error);
+                return;
+            }
+            String response = StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>");
+
+            DatasetAccessMapper datasetAccessMapper = GWT.create(DatasetAccessMapper.class);
+            DatasetAccess datasetAccess = datasetAccessMapper.read(response);
+            addSample(datasetAccess);
+/*
             String error = StringUtils.extract(event.getResponse().getBody(), "<error>", "</error>");
             if(error.length() > 0) {
                 Window.alert(error);
@@ -176,7 +184,13 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                 datasetAccessOGC.setHostedData(false);
                 addSample(datasetAccessOGC);
             }
+*/
         });
+
+        // configure the sample uploader
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
+        sampleUploader.setUrl(uploadUrl);
+        sampleUploader.setMaxFileSize(200);
 
         sampleUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {
             @Override
@@ -499,7 +513,9 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             uploadSampleComment.setText("Allowed files are shapefiles (zipped), GeoTIFF and documents (PDF, doc, xls...)");
             uploadSampleComment.setTextColor(Color.GREY_DARKEN_1);
             uploadSampleButton.setEnabled(true);
-            sampleUploader.setParameter("resourceId", serviceId + "");
+            // configure the sample uploader
+            final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/?resourceId=" + serviceId;
+            sampleUploader.setUrl(uploadUrl);
         }
     }
 
@@ -528,6 +544,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                 }
             }
         });
+        dataAccessWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
         materialColumn.add(dataAccessWidget);
         updateSamplesMessage();
     }
@@ -594,6 +611,16 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
         AccessType selectedType = AccessType.valueOf(sampleAccessType.getValue());
         addSample(createDataAccess(selectedType, true));
         updateSamplesMessage();
+    }
+
+    @Override
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions.setHTML(termsAndConditions);
+    }
+
+    @Override
+    public String getTermsAndConditions() {
+        return termsAndConditions.getHTML();
     }
 
     @Override

@@ -471,6 +471,7 @@ public class AssetsResource implements AssetsService {
             productServiceDescriptionDTO.setHasFeasibility(productService.getApiUrl() != null);
             productServiceDescriptionDTO.setSelectedAccessTypes(productService.getSelectedAccessTypes());
             productServiceDescriptionDTO.setSamples(productService.getSamples());
+            productServiceDescriptionDTO.setTermsAndConditions(productService.getTermsAndConditions());
             // add suggestions
             // for now make it simple and just add the same product services
             List<ProductService> suggestedServices = new ArrayList<ProductService>(productService.getProduct().getProductServices());
@@ -519,6 +520,7 @@ public class AssetsResource implements AssetsService {
             productDatasetDescriptionDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
             productDatasetDescriptionDTO.setDatasetAccesses(productDataset.getDatasetAccesses());
             productDatasetDescriptionDTO.setSamples(productDataset.getSamples());
+            productDatasetDescriptionDTO.setTermsAndConditions(productDataset.getTermsAndConditions());
             List<ProductDataset> suggestedDatasets = new ArrayList<ProductDataset>(productDataset.getProduct().getProductDatasets());
             suggestedDatasets.remove(productDataset);
             productDatasetDescriptionDTO.setSuggestedDatasets(ListUtil.mutate(suggestedDatasets, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
@@ -595,6 +597,7 @@ public class AssetsResource implements AssetsService {
             {
                 softwareDescriptionDTO.setSuggestedSoftware(new ArrayList<SoftwareDTO>());
             }
+            softwareDescriptionDTO.setTermsAndConditions(software.getTermsAndConditions());
             return softwareDescriptionDTO;
         } finally {
             em.close();

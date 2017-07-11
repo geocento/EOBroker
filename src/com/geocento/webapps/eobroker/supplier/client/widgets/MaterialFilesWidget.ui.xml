@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+    <ui:style>
+
+    </ui:style>
+    <design:MaterialPanel ui:field="panel">
+        <design:MaterialLabel ui:field="label"></design:MaterialLabel>
+        <design:MaterialRow ui:field="listOfFiles"></design:MaterialRow>
+        <widgets:MaterialFileUploader ui:field="uploader"></widgets:MaterialFileUploader>
+    </design:MaterialPanel>
+</ui:UiBinder>

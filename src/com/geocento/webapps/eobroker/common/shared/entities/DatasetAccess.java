@@ -32,6 +32,8 @@ public class DatasetAccess {
     @Column(length = 1000)
     String uri;
 
+    Long size;
+
     boolean hostedData;
 
     public DatasetAccess() {
@@ -75,5 +77,13 @@ public class DatasetAccess {
 
     public void setHostedData(boolean hostedData) {
         this.hostedData = hostedData;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 }

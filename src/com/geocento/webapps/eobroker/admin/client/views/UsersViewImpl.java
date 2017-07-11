@@ -141,7 +141,7 @@ public class UsersViewImpl extends Composite implements UsersView {
         userName.setText(userDescriptionDTO.getName());
         email.setText(userDescriptionDTO.getEmail());
         role.setSelectedValue(userDescriptionDTO.getUserRole().toString());
-        status.setSelectedValue(userDescriptionDTO.getStatus() == null ? null : userDescriptionDTO.getStatus().toString());
+        status.setValue(userDescriptionDTO.getStatus());
         company.setCompany(userDescriptionDTO.getCompanyDTO());
         editUser.open();
     }

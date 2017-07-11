@@ -38,10 +38,10 @@ public class Project {
     @Column(length = 100000)
     String fullDescription;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<ProductProject> products;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<CompanyRole> consortium;
 
     @Temporal(TemporalType.TIMESTAMP)

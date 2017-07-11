@@ -25,11 +25,16 @@
     </ui:style>
     <design:MaterialPanel height="6em" backgroundColor="WHITE" padding="0" margin="0" shadow="1">
         <design:MaterialPanel height="100%" backgroundColor="GREEN" float="LEFT">
+            <design:MaterialTooltip ui:field="tooltip">
+
+            </design:MaterialTooltip>
             <design:MaterialIcon iconSize="LARGE" backgroundColor="GREEN" textColor="WHITE" ui:field="image"/>
         </design:MaterialPanel>
         <design:MaterialPanel height="100%" padding="10">
             <design:MaterialButton float="RIGHT" type="FLOATING" backgroundColor="GREEN" textColor="WHITE" ui:field="action"></design:MaterialButton>
-            <design:MaterialLabel addStyleNames="{style.title}" truncate="true" paddingLeft="10" ui:field="title"></design:MaterialLabel>
+            <design:MaterialBadge ui:field="format"></design:MaterialBadge>
+            <design:MaterialLabel addStyleNames="{style.title}" truncate="true" paddingLeft="10" ui:field="title">
+            </design:MaterialLabel>
             <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" ui:field="pitch"></design:MaterialLabel>
         </design:MaterialPanel>
     </design:MaterialPanel>

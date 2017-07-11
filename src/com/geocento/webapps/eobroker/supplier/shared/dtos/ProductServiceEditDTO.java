@@ -30,6 +30,7 @@ public class ProductServiceEditDTO {
     String geoinformationComment;
     String disseminationComment;
     String timeToDelivery;
+    String termsAndConditions;
 
     public ProductServiceEditDTO() {
     }
@@ -200,5 +201,13 @@ public class ProductServiceEditDTO {
 
     public void setCoverageLayers(List<DatasetAccessOGC> coverageLayers) {
         this.coverageLayers = coverageLayers;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

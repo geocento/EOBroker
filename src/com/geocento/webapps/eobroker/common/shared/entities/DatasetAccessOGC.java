@@ -13,6 +13,8 @@ public class DatasetAccessOGC extends DatasetAccess {
 
     @Column(length = 1000)
     String serverUrl;
+    @Column(length = 1000)
+    String layerName;
     String styleName;
 
     @Column(length = 1000)
@@ -63,5 +65,13 @@ public class DatasetAccessOGC extends DatasetAccess {
 
     public void setCorsEnabled(boolean corsEnabled) {
         this.corsEnabled = corsEnabled;
+    }
+
+    public void setLayerName(String layerName) {
+        this.layerName = layerName;
+    }
+
+    public String getLayerName() {
+        return layerName;
     }
 }

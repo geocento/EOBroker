@@ -3,7 +3,8 @@
              xmlns:m="urn:import:gwt.material.design.client.ui"
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
-             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
+             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material">
 
         <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.TemplateView.Style">
 
@@ -167,7 +168,7 @@
                             </m:MaterialTooltip>
                         </m:MaterialNavSection>
                         <g:HTMLPanel addStyleNames="{style.navbarElements}" ui:field="navbarElements">
-                            <widgets:MaterialSearch layoutPosition="RELATIVE" iconColor="WHITE" backgroundColor="BLUE_GREY" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
+                            <material:MaterialSearch layoutPosition="RELATIVE" iconColor="WHITE" backgroundColor="BLUE_GREY" addStyleNames="{style.textSearch}" placeholder="What are you looking for?" active="true" flex="AUTO" ui:field="textSearch"/>
                         </g:HTMLPanel>
                     </m:MaterialNavBar>
                 </m:MaterialPanel>

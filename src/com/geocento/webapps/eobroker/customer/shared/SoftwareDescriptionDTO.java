@@ -19,8 +19,9 @@ public class SoftwareDescriptionDTO {
     String fullDescription;
     CompanyDTO companyDTO;
     List<ProductSoftwareDTO> products;
-    private SoftwareType softwareType;
-    private List<SoftwareDTO> suggestedSoftware;
+    SoftwareType softwareType;
+    List<SoftwareDTO> suggestedSoftware;
+    String termsAndConditions;
 
     public SoftwareDescriptionDTO() {
     }
@@ -111,5 +112,13 @@ public class SoftwareDescriptionDTO {
 
     public SoftwareType getSoftwareType() {
         return softwareType;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

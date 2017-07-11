@@ -203,6 +203,13 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Terms and conditions" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <material:MaterialRichEditor height="10em" placeholder="Terms and conditions" ui:field="termsAndConditions"/>
+                </design:MaterialPanel>
+                <widgets:MaterialFilesWidget ui:field="tandcsFiles"></widgets:MaterialFilesWidget>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
                 <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
                     <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
                 </g:HTMLPanel>

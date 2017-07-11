@@ -4,13 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessFile;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
-import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.SampleUploadDTO;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -41,23 +37,9 @@ public class DatasetUploadServlet extends HttpServlet {
 
     static private Logger logger = null;
 
-/*
-    private GeoServerRESTReader reader;
-    private GeoServerRESTPublisher publisher;
-*/
-
     public DatasetUploadServlet() {
         logger = Logger.getLogger(DatasetUploadServlet.class);
         logger.info("Starting dataset upload servlet");
-
-/*
-        try {
-            reader = GeoserverUtils.getGeoserverReader();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        publisher = GeoserverUtils.getGeoserverPublisher();
-*/
     }
 
     @Override
@@ -147,14 +129,14 @@ public class DatasetUploadServlet extends HttpServlet {
 
     protected DatasetAccess processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName) throws Exception {
         try {
-            // save file to disk first
-            Long companyId = user.getCompany().getId();
-            String fileDirectory = "./datasets/" + companyId + "/" + resourceId + "/";
-            String filePath =  fileDirectory + resourceName;
             int maxFileSize = ServerUtil.getSettings().getMaxSampleSizeMB() * (1024 * 1024);
             if (out.size() > maxFileSize) {
                 throw new Exception("File is > than " + maxFileSize);
             }
+            // save file to disk first
+            Long companyId = user.getCompany().getId();
+            String fileDirectory = "./datasets/" + companyId + "/" + resourceId + "/";
+            String filePath =  fileDirectory + resourceName;
             // store file
             // TODO - check input and output format and limit output formats to be jpg or png
             String diskDirectory = ServerUtil.getSettings().getDataDirectory() + fileDirectory;
@@ -171,16 +153,15 @@ public class DatasetUploadServlet extends HttpServlet {
             String layerName = null;
             // create response
             DatasetAccess datasetAccess = null;
-            SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
             switch (extension) {
                 case "kml":
-                    // TODO - get KML file and convert to shapefile
-                    // issue is with the styling which needs to be saved as well
+                    DatasetAccessKML datasetAccessKML = new DatasetAccessKML();
+                    datasetAccess = datasetAccessKML;
                     break;
                 case "zip": {
                     layerName = publishShapefile(workspaceName, storeName, file);
                     DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
-                    datasetAccessOGC.setUri(layerName);
+                    datasetAccessOGC.setLayerName(layerName);
                     datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
                     datasetAccessOGC.setCorsEnabled(true);
                     datasetAccessOGC.setStyleName("geometry");
@@ -190,11 +171,7 @@ public class DatasetUploadServlet extends HttpServlet {
                 case "tif": {
                     layerName = publishGeoTiff(workspaceName, storeName, file);
                     DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
-                    // TODO - change to have direct access to full product for download
-/*
-                    datasetAccessOGC.setUri(filePath);
                     datasetAccessOGC.setLayerName(layerName);
-*/
                     datasetAccessOGC.setUri(layerName);
                     datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
                     datasetAccessOGC.setCorsEnabled(true);
@@ -208,15 +185,15 @@ public class DatasetUploadServlet extends HttpServlet {
                 case "csv":
                 case "ppt":
                 case "doc": {
+                    // TODO - change so that it matches the format type
                     DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
-                    datasetAccessFile.setUri(filePath);
-                    // TODO - add file size
-                    //datasetAccessFile.setSize(file.getTotalSpace())
                     datasetAccess = datasetAccessFile;
                 } break;
                 default:
                     throw new Exception("File format '" + extension + "' not supported");
             }
+            datasetAccess.setUri(filePath);
+            datasetAccess.setSize(file.getTotalSpace());
             datasetAccess.setHostedData(false);
             return datasetAccess;
         } catch (Exception e) {

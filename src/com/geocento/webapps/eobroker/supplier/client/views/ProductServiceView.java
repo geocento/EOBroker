@@ -85,6 +85,10 @@ public interface ProductServiceView extends IsWidget {
 
     List<DatasetAccess> getSamples();
 
+    void setTermsAndConditions(String termsAndConditions);
+
+    String getTermsAndConditions();
+
     HasClickHandlers getViewClient();
 
     public interface Presenter {

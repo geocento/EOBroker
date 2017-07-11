@@ -142,6 +142,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         }));
 */
         productDatasetView.setSampleProductDatasetId(productDatasetDTO.getId());
+        productDatasetView.setTermsAndConditions(productDatasetDTO.getTermsAndConditions());
     }
 
     @Override
@@ -180,6 +181,7 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                     productDatasetDTO.setDatasetStandard(null);
                     productDatasetDTO.setDatasetURL(null);
                 }
+                productDatasetDTO.setTermsAndConditions(productDatasetView.getTermsAndConditions());
                 // do some checks
                 try {
                     if (productDatasetDTO.getName() == null || productDatasetDTO.getName().length() < 3) {

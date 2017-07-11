@@ -3,8 +3,10 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
-import com.geocento.webapps.eobroker.supplier.client.events.*;
-import com.geocento.webapps.eobroker.supplier.client.places.*;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveService;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveServiceHandler;
+import com.geocento.webapps.eobroker.supplier.client.places.ProductServicePlace;
+import com.geocento.webapps.eobroker.supplier.client.places.ProductServicesPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.OfferDTO;
@@ -14,7 +16,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -47,6 +48,11 @@ public class ProductServicesActivity extends TemplateActivity implements Dashboa
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        loadServices();
+    }
+
+    private void loadServices() {
         try {
             displayFullLoading("Loading on demand services...");
             REST.withCallback(new MethodCallback<OfferDTO>() {
@@ -76,7 +82,23 @@ public class ProductServicesActivity extends TemplateActivity implements Dashboa
             @Override
             public void onRemoveService(RemoveService event) {
                 if (Window.confirm("Are you sure you want to remove this service?")) {
-                    MaterialToast.fireToast("Not implemented yet");
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                displayError("Could not remove this bespoke service");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                displaySuccess("Bespoke service has been removed");
+                                // reload services
+                                loadServices();
+                            }
+                        }).call(ServicesUtil.assetsService).removeProductServices(event.getServiceId());
+                    } catch (Exception e) {
+
+                    }
                 }
             }
         });

@@ -491,14 +491,15 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add terms and conditions for the service
-        // TODO - add terms and conditions to the service description
-        addSection("Terms and conditions",
-                "No terms and conditions specified",
-                createSubsection("")
-/*
-                new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>")
-*/
-        );
+        if(productServiceDescriptionDTO.getTermsAndConditions() != null) {
+            addSection("Terms and conditions",
+                    null,
+                    new HTML(productServiceDescriptionDTO.getTermsAndConditions()));
+        } else {
+            addSection("Terms and conditions",
+                    "No terms and conditions specified",
+                    createSubsection(""));
+        }
 
         recommendationsPanel.clear();
         recommendationsLabel.setText("You might also be interested in...");
@@ -922,14 +923,15 @@ public class FullViewImpl extends Composite implements FullView {
                     createSubsection(""));
         }
         // add terms and conditions tab panel
-        // TODO - add terms and conditions to the service description
-        addSection("Terms and conditions",
-                "No terms and conditions specified",
-                createSubsection("")
-/*
-                new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>")
-*/
-        );
+        if(productDatasetDescriptionDTO.getTermsAndConditions() != null) {
+            addSection("Terms and conditions",
+                    null,
+                    new HTML(productDatasetDescriptionDTO.getTermsAndConditions()));
+        } else {
+            addSection("Terms and conditions",
+                    "No terms and conditions specified",
+                    createSubsection(""));
+        }
 
         // add recommendations
         recommendationsPanel.clear();
@@ -1004,15 +1006,15 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add terms and conditions tab panel
-        // add terms and conditions for the service
-        // TODO - add terms and conditions to the service description
-        addSection("Terms and conditions",
-                "No terms and conditions specified",
-                createSubsection("")
-/*
-                new HTMLPanel("<p class='" + style.subsection() + "'>No terms and conditions specified</p>")
-*/
-        );
+        if(softwareDescriptionDTO.getTermsAndConditions() != null) {
+            addSection("Terms and conditions",
+                    null,
+                    new HTML(softwareDescriptionDTO.getTermsAndConditions()));
+        } else {
+            addSection("Terms and conditions",
+                    "No terms and conditions specified",
+                    createSubsection(""));
+        }
 
         // add recommendations
         recommendationsPanel.clear();

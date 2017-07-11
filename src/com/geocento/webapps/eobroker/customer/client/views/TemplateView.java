@@ -8,16 +8,18 @@ import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.LogOut;
 import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.customer.client.utils.NotificationHelper;
-import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.place.shared.PlaceChangeEvent;
@@ -29,6 +31,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.client.base.HasHref;
+import gwt.material.design.client.base.SearchObject;
 import gwt.material.design.client.constants.ProgressType;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.jquery.client.api.JQuery;
@@ -65,6 +68,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         void suggestionSelected(Suggestion suggestion);
 
         void textSelected(String text);
+
+        void onFocus();
     }
 
     @UiField
@@ -95,7 +100,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     @UiField
     HTMLPanel navbarElements;
     @UiField
-    MaterialSearch textSearch;
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialSearch textSearch;
     @UiField
     MaterialBadge notificationsBadge;
     @UiField
@@ -178,20 +183,26 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         feedbackCategory.setHref("#" + PlaceHistoryHelper.convertPlace(new FeedbackPlace()));
         //helpCategory.setHref(Customer.getApplicationSettings().getHelpUrl());
 
-        textSearch.setPresenter(new com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch.Presenter() {
+        textSearch.setPresenter(new com.geocento.webapps.eobroker.common.client.widgets.material.MaterialSearch.Presenter() {
             @Override
             public void textChanged(String text) {
                 presenter.textChanged(text);
             }
 
             @Override
-            public void suggestionSelected(Suggestion suggestion) {
-                presenter.suggestionSelected(suggestion);
+            public void suggestionSelected(SearchObject searchObject) {
+                presenter.suggestionSelected(searchObject == null ? null : (Suggestion) searchObject.getO());
             }
 
             @Override
             public void textSelected(String text) {
                 presenter.textSelected(text);
+            }
+        });
+        textSearch.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                presenter.onFocus();
             }
         });
 
@@ -407,9 +418,30 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         userWidget.setUser(loginInfo.getUserName());
     }
 
-    public void displayListSuggestions(List<Suggestion> searchObjects) {
+    public void displayListSuggestionsLoading(String message) {
+        textSearch.displaySearchLoading(message);
+    }
+
+    public void hideListSuggestionsLoading() {
+        textSearch.hideListSuggestionsLoading();
+    }
+
+    public void displayListSuggestionsError(String message) {
+        textSearch.displaySearchError(message);
+    }
+
+    public void displayListSuggestions(List<Suggestion> suggestions) {
         textSearch.setFocus(true);
-        textSearch.displayListSearches(searchObjects);
+        textSearch.displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
+            @Override
+            public SearchObject mutate(Suggestion suggestion) {
+                SearchObject searchObject = new SearchObject();
+                searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
+                searchObject.setKeyword(suggestion.getName());
+                searchObject.setO(suggestion);
+                return searchObject;
+            }
+        }));
     }
 
     public void setSearchText(String text) {

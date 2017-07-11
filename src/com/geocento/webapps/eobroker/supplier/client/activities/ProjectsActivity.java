@@ -4,6 +4,8 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveProject;
+import com.geocento.webapps.eobroker.supplier.client.events.RemoveProjectHandler;
 import com.geocento.webapps.eobroker.supplier.client.places.ProjectPlace;
 import com.geocento.webapps.eobroker.supplier.client.places.ProjectsPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
@@ -49,6 +51,11 @@ public class ProjectsActivity extends TemplateActivity implements DashboardView.
 
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
+
+        loadProjects();
+    }
+
+    private void loadProjects() {
         try {
             displayFullLoading("Loading projects...");
             REST.withCallback(new MethodCallback<OfferDTO>() {
@@ -73,6 +80,31 @@ public class ProjectsActivity extends TemplateActivity implements DashboardView.
     @Override
     protected void bind() {
         super.bind();
+
+        activityEventBus.addHandler(RemoveProject.TYPE, new RemoveProjectHandler() {
+            @Override
+            public void onRemoveProject(RemoveProject event) {
+                if (Window.confirm("Are you sure you want to remove this project?")) {
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                displayError("Could not remove this project");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                displaySuccess("Project has been removed");
+                                // reload services
+                                loadProjects();
+                            }
+                        }).call(ServicesUtil.assetsService).removeProject(event.getProjectId());
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        });
 
         handlers.add(dashboardView.getAddProject().addClickHandler(new ClickHandler() {
             @Override

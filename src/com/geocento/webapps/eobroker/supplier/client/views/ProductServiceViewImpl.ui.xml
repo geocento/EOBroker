@@ -210,6 +210,12 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Terms and conditions" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <material:MaterialRichEditor height="10em" placeholder="Terms and conditions" ui:field="termsAndConditions"/>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
                 <design:MaterialLink addStyleNames="{style.label}" text="API URL" textColor="BLACK" iconType="SETTINGS"/>
                 <design:MaterialTextBox type="URL" ui:field="apiURL"/>
                 <design:MaterialLabel addStyleNames="{style.explanation}" text="Specify the API URL conforming to the product API specifications. Leave empty if you do not wish to support this feature."></design:MaterialLabel>

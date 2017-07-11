@@ -17,7 +17,8 @@ public class SoftwareDTO {
     String email;
     String website;
     String fullDescription;
-    private SoftwareType softwareType;
+    SoftwareType softwareType;
+    String termsAndConditions;
 
     public SoftwareDTO() {
     }
@@ -92,5 +93,13 @@ public class SoftwareDTO {
 
     public SoftwareType getSoftwareType() {
         return softwareType;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

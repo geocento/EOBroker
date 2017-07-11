@@ -16,7 +16,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.addins.client.richeditor.MaterialRichEditor;
 import gwt.material.design.client.ui.*;
 
 import java.util.ArrayList;
@@ -60,6 +59,8 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
     MaterialLink viewClient;
     @UiField
     MaterialListValueBox<SoftwareType> softwareType;
+    @UiField
+    com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor termsAndConditions;
 
     public SoftwareViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -188,6 +189,16 @@ public class SoftwareViewImpl extends Composite implements SoftwareView {
         // reset the values
         product.clearProduct();
         productPitch.setText("");
+    }
+
+    @Override
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions.setHTML(termsAndConditions);
+    }
+
+    @Override
+    public String getTermsAndConditions() {
+        return termsAndConditions.getHTML();
     }
 
     @Override

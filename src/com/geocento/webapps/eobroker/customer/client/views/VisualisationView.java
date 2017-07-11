@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetVisualisationDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceVisualisationDTO;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -57,6 +58,12 @@ public interface VisualisationView extends IsWidget {
     void displayGetFeatureInfoLoading(String message);
 
     void enableWCS(boolean enable);
+
+    HasClickHandlers getDownloadSample();
+
+    void displayDownload(boolean display);
+
+    void setDownloadTooltip(String message);
 
     public interface Presenter {
         void datasetAccessSelected(DatasetAccess datasetAccess);

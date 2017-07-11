@@ -143,6 +143,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         productServiceView.setSampleDataAccess(productServiceDTO.getSamples());
         // needed for the upload of samples on the broker server
         productServiceView.setSampleProductServiceId(productServiceDTO.getId());
+        productServiceView.setTermsAndConditions(productServiceDTO.getTermsAndConditions());
     }
 
     @Override
@@ -175,6 +176,7 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                 productServiceDTO.setDisseminationComment(productServiceView.getDisseminationComment().getText());
                 productServiceDTO.setTimeToDelivery(productServiceView.getDeliveryTime().getText());
                 productServiceDTO.setSamples(productServiceView.getSamples());
+                productServiceDTO.setTermsAndConditions(productServiceView.getTermsAndConditions());
                 // do some checks
                 try {
                     if (productServiceDTO.getName() == null || productServiceDTO.getName().length() < 3) {

@@ -1,16 +1,19 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialSearch;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.customer.client.widgets.MaterialSearch;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
+import gwt.material.design.client.base.SearchObject;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialListValueBox;
 import org.fusesource.restygwt.client.Method;
@@ -59,8 +62,8 @@ public class TestimonialViewImpl extends Composite implements TestimonialView {
             }
 
             @Override
-            public void suggestionSelected(Suggestion suggestion) {
-                presenter.selectSuggestion(suggestion);
+            public void suggestionSelected(SearchObject searchObject) {
+                presenter.selectSuggestion(searchObject == null ? null : (Suggestion) searchObject.getO());
             }
 
             @Override
@@ -88,11 +91,20 @@ public class TestimonialViewImpl extends Composite implements TestimonialView {
                 }
 
                 @Override
-                public void onSuccess(Method method, List<Suggestion> response) {
+                public void onSuccess(Method method, List<Suggestion> suggestions) {
                     // show only if last one to be called
                     if (lastCall == TestimonialViewImpl.this.lastCall) {
                         searchBox.setFocus(true);
-                        searchBox.displayListSearches(response);
+                        searchBox.displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
+                            @Override
+                            public SearchObject mutate(Suggestion suggestion) {
+                                SearchObject searchObject = new SearchObject();
+                                searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
+                                searchObject.setKeyword(suggestion.getName());
+                                searchObject.setO(suggestion);
+                                return searchObject;
+                            }
+                        }));
                     }
                 }
             }).call(ServicesUtil.searchService).complete(text, category.getValue(), null);

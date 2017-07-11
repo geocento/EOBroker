@@ -30,6 +30,7 @@ public class ProductServiceDescriptionDTO {
     List<DatasetAccess> samples;
     List<AccessType> selectedAccessTypes;
     String timeToDelivery;
+    String termsAndConditions;
 
     public ProductServiceDescriptionDTO() {
     }
@@ -192,5 +193,13 @@ public class ProductServiceDescriptionDTO {
 
     public String getTimeToDelivery() {
         return timeToDelivery;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

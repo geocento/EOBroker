@@ -39,6 +39,10 @@ public interface SoftwareView extends IsWidget {
 
     void setSelectedProducts(List<ProductSoftwareDTO> selectedProducts);
 
+    void setTermsAndConditions(String termsAndConditions);
+
+    String getTermsAndConditions();
+
     HasClickHandlers getViewClient();
 
     TemplateView getTemplateView();

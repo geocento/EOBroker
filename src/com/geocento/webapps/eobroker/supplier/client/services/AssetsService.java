@@ -128,7 +128,7 @@ public interface AssetsService extends DirectRestService {
     @POST
     @Path("/assets/software/")
     @Produces("application/json")
-    Long saveSoftware(SoftwareDTO softwareDTO) throws RequestException;
+    Long updateSoftware(SoftwareDTO softwareDTO) throws RequestException;
 
     @DELETE
     @Path("/assets/software/{id}")
@@ -147,7 +147,7 @@ public interface AssetsService extends DirectRestService {
     @POST
     @Path("/assets/project/")
     @Produces("application/json")
-    Long saveProject(ProjectDTO projectDTO) throws RequestException;
+    Long updateProject(ProjectDTO projectDTO) throws RequestException;
 
     @DELETE
     @Path("/assets/project/{id}")

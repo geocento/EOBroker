@@ -93,6 +93,10 @@ public interface ProductDatasetView extends IsWidget {
 
     HasValue<DatasetStandard> getDatasetStandard();
 
+    void setTermsAndConditions(String termsAndConditions);
+
+    String getTermsAndConditions();
+
     public interface Presenter {
         void productChanged();
     }

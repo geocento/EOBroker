@@ -32,6 +32,7 @@ public class NotificationSocket extends BaseNotificationSocket {
         session.setMaxIdleTimeout(30 * 60 * 1000L);
         UserSession userSession = getUserSession();
         if(userSession == null) {
+            sendLoggedOut(session);
             throw new IOException("Not signed in");
         }
         addUserSession(userSession.getUserName(), session);
@@ -102,6 +103,14 @@ public class NotificationSocket extends BaseNotificationSocket {
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(webSocketMessage);
         sendHttpSessionMessage(sessionID, message);
+    }
+
+    private void sendLoggedOut(Session session) throws IOException {
+        WebSocketMessage webSocketMessage = new WebSocketMessage();
+        webSocketMessage.setType(WebSocketMessage.TYPE.logout);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(webSocketMessage);
+        session.getBasicRemote().sendText(message);
     }
 
 }

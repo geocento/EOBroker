@@ -49,6 +49,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         super.start(panel, eventBus);
         templateView = clientFactory.getTemplateView();
         panel.setWidget(templateView);
+        // reset the search text if we are in a non search activity
+        if(!(this instanceof SearchPageActivity)) {
+            setSearchText("", false);
+        }
     }
 
     public void setTemplateView(Widget widget) {
@@ -79,7 +83,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         }
         templateView.setPresenter(this);
         // reset some values
-        templateView.setSearchText(null);
+        //templateView.setSearchText(null);
 
         // set the menu links
         templateView.getProductsCategory().setHref(getSearchCategoryUrl(Category.products));
@@ -193,7 +197,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     @Override
     public void textChanged(String text) {
         // go to search activity by default
-        clientFactory.getPlaceController().goTo(new SearchPagePlace());
+        clientFactory.getPlaceController().goTo(new SearchPagePlace(Utils.generateTokens(SearchPagePlace.TOKENS.text.toString(), text)));
     }
 
     @Override
@@ -202,6 +206,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     @Override
     public void textSelected(String text) {
+    }
+
+    @Override
+    public void onFocus() {
     }
 
     public void setAoI(AoIDTO aoi) {
@@ -234,6 +242,18 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     public void displayListSuggestions(List<Suggestion> suggestions) {
         templateView.displayListSuggestions(suggestions);
+    }
+
+    protected void displayListSuggestionsLoading(String message) {
+        templateView.displayListSuggestionsLoading(message);
+    }
+
+    protected void hideListSuggestionsLoading() {
+        templateView.hideListSuggestionsLoading();
+    }
+
+    protected void displayListSuggestionsError(String message) {
+        templateView.displayListSuggestionsError(message);
     }
 
     public void displaySearchError(String message) {
