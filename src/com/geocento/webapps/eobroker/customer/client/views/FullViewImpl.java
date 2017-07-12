@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.DataAccessUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
@@ -1388,11 +1389,7 @@ public class FullViewImpl extends Composite implements FullView {
             @Override
             public void onClick(ClickEvent event) {
                 if (datasetAccess instanceof DatasetAccessFile) {
-                    String fileUri = datasetAccess.getUri();
-                    if (fileUri.startsWith("./")) {
-                        fileUri = GWT.getHostPageBaseURL() + "uploaded/" + fileUri;
-                    }
-                    Window.open(fileUri, "_blank", null);
+                    Window.open(DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess), "_blank", null);
                 } else if (datasetAccess instanceof DatasetAccessAPP) {
                     Window.open(datasetAccess.getUri(), "_blank", null);
                 } else if (datasetAccess instanceof DatasetAccessOGC) {
@@ -1407,7 +1404,7 @@ public class FullViewImpl extends Composite implements FullView {
                         Window.open(datasetAccess.getUri(), "_blank", null);
                     }
                 } else if (datasetAccess instanceof DatasetAccessAPI) {
-                    Window.alert("TODO - show API end point and redirect to API help page? eg " + datasetAccess.getUri());
+                    Window.open(datasetAccess.getUri(), "_blank", null);
                 }
             }
         });
@@ -1420,11 +1417,7 @@ public class FullViewImpl extends Composite implements FullView {
             @Override
             public void onClick(ClickEvent event) {
                 if (datasetAccess instanceof DatasetAccessFile) {
-                    String fileUri = datasetAccess.getUri();
-                    if (fileUri.startsWith("./")) {
-                        fileUri = GWT.getHostPageBaseURL() + "uploaded/" + fileUri;
-                    }
-                    Window.open(fileUri, "_blank", null);
+                    Window.open(DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess), "_blank", null);
                 } else if (datasetAccess instanceof DatasetAccessAPP) {
                     Window.open(datasetAccess.getUri(), "_blank", null);
                 } else if (datasetAccess instanceof DatasetAccessOGC) {
@@ -1436,7 +1429,7 @@ public class FullViewImpl extends Composite implements FullView {
                                 )));
                     }
                 } else if (datasetAccess instanceof DatasetAccessAPI) {
-                    Window.alert("TODO - show API end point and redirect to API help page? eg " + datasetAccess.getUri());
+                    Window.open(datasetAccess.getUri(), "_blank", null);
                 }
             }
         });

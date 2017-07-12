@@ -98,7 +98,10 @@ public interface ProductDatasetView extends IsWidget {
     String getTermsAndConditions();
 
     public interface Presenter {
+
         void productChanged();
+
+        void viewDataAccess(DatasetAccess datasetAccess);
     }
 
 }

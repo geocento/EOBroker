@@ -207,7 +207,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
         wmsLayer = mapContainer.map.addWMSLayer(layerInfoDTO.getServerUrl(),
                 WMSLayerInfoJSNI.createInfo(layerInfoDTO.getLayerName(), layerInfoDTO.getLayerName()),
-                extentJSNI, layerInfoDTO.getStyleName());
+                extentJSNI, layerInfoDTO.getStyleName(), layerInfoDTO.getVersion());
         mapContainer.map.setExtent(extentJSNI);
         updateOpacity();
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import org.apache.log4j.Logger;
 
@@ -33,6 +34,7 @@ public class SupplierNotificationSocket extends BaseNotificationSocket {
         session.setMaxIdleTimeout(30 * 60 * 1000L);
         UserSession userSession = getUserSession();
         if(userSession == null) {
+            sendLoggedOut(session);
             throw new IOException("Not signed in");
         }
         addUserSession(userSession, session);
@@ -143,6 +145,14 @@ public class SupplierNotificationSocket extends BaseNotificationSocket {
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(supplierWebSocketMessage);
         sendHttpSessionMessage(sessionID, message);
+    }
+
+    private void sendLoggedOut(Session session) throws IOException {
+        WebSocketMessage webSocketMessage = new WebSocketMessage();
+        webSocketMessage.setType(WebSocketMessage.TYPE.logout);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(webSocketMessage);
+        session.getBasicRemote().sendText(message);
     }
 
 }

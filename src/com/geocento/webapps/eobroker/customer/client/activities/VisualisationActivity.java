@@ -283,7 +283,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
         visualisationView.setDataAccessDescription(datasetAccess.getPitch());
         visualisationView.displayDownload(datasetAccess.getUri() != null);
         visualisationView.setDownloadTooltip("Download file" +
-                (datasetAccess.getSize() == null ? "" : " size is " + Utils.displayFileSize(datasetAccess.getSize())));
+                (datasetAccess.getSize() == null ? "" : ", size is " + Utils.displayFileSize(Long.valueOf(datasetAccess.getSize()))));
         visualisationView.setLoadingInformation("Loading...");
         visualisationView.setAdditionalDatasets(ListUtil.filterValues(datasetAccesses, new ListUtil.CheckValue<DatasetAccess>() {
             @Override

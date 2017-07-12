@@ -49,7 +49,7 @@ public class DataAccessWidget extends Composite {
             iconType = IconType.ARCHIVE;
             actionIconType = IconType.INFO;
             tooltip = "Download file" +
-                    (datasetAccess.getSize() == null ? "" : " size is " + Utils.displayFileSize(datasetAccess.getSize()));
+                    (datasetAccess.getSize() == null ? "" : ", size is " + Utils.displayFileSize(Long.valueOf(datasetAccess.getSize())));
         } else if(datasetAccess instanceof DatasetAccessAPP) {
             iconType = IconType.WEB;
             actionIconType = IconType.INFO;
@@ -79,6 +79,9 @@ public class DataAccessWidget extends Composite {
             this.format.setText(format);
             this.format.setTextColor(Color.WHITE);
             this.format.setBackgroundColor(color);
+        }
+        if(tooltip != null) {
+            this.tooltip.setText(tooltip);
         }
     }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
+import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
@@ -36,6 +37,8 @@ public class DatasetUploadServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     static private Logger logger = null;
+
+    static private KeyGenerator keyGenerator = new KeyGenerator(16);
 
     public DatasetUploadServlet() {
         logger = Logger.getLogger(DatasetUploadServlet.class);
@@ -149,38 +152,17 @@ public class DatasetUploadServlet extends HttpServlet {
             // now check extension and publish to geoserver if it is a geospatial file
             String workspaceName = companyId + "_" + resourceId;
             String extension = resourceName.substring(resourceName.lastIndexOf(".") + 1).toLowerCase();
-            String storeName = resourceName.substring(resourceName.lastIndexOf("/") + 1).substring(0, resourceName.lastIndexOf("."));
-            String layerName = null;
             // create response
             DatasetAccess datasetAccess = null;
             switch (extension) {
-                case "kml":
-                    DatasetAccessKML datasetAccessKML = new DatasetAccessKML();
-                    datasetAccess = datasetAccessKML;
-                    break;
                 case "zip": {
-                    layerName = publishShapefile(workspaceName, storeName, file);
-                    DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
-                    datasetAccessOGC.setLayerName(layerName);
-                    datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
-                    datasetAccessOGC.setCorsEnabled(true);
-                    datasetAccessOGC.setStyleName("geometry");
-                    datasetAccess = datasetAccessOGC;
+                    datasetAccess = publishShapefile(workspaceName, file);
                 } break;
                 case "tiff":
                 case "tif": {
-                    layerName = publishGeoTiff(workspaceName, storeName, file);
-                    DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
-                    datasetAccessOGC.setLayerName(layerName);
-                    datasetAccessOGC.setUri(layerName);
-                    datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
-                    datasetAccessOGC.setCorsEnabled(true);
-                    datasetAccessOGC.setStyleName("raster");
-                    // WCS is automatically published
-                    datasetAccessOGC.setWcsServerUrl(ServerUtil.getSettings().getGeoserverOWS());
-                    datasetAccessOGC.setWcsResourceName(layerName.replace(":", "__"));
-                    datasetAccess = datasetAccessOGC;
+                    datasetAccess = publishGeoTiff(workspaceName, file);
                 } break;
+                case "kml":
                 case "pdf":
                 case "csv":
                 case "ppt":
@@ -193,7 +175,7 @@ public class DatasetUploadServlet extends HttpServlet {
                     throw new Exception("File format '" + extension + "' not supported");
             }
             datasetAccess.setUri(filePath);
-            datasetAccess.setSize(file.getTotalSpace());
+            datasetAccess.setSize((int) file.length());
             datasetAccess.setHostedData(false);
             return datasetAccess;
         } catch (Exception e) {
@@ -202,7 +184,7 @@ public class DatasetUploadServlet extends HttpServlet {
         }
     }
 
-    private String publishShapefile(String workspaceName, String storeName, File file) throws Exception {
+    private DatasetAccessOGC publishShapefile(String workspaceName, File file) throws Exception {
         ZipFile zipFile = new ZipFile(file.getPath());
         int folders = 0;
         int shpFiles = 0;
@@ -228,17 +210,29 @@ public class DatasetUploadServlet extends HttpServlet {
             List<File> files = extractShapeFiles(tmpPath, file);
             // for now take the first directory
             for(File shpFile : files) {
-                String fileName = shpFile.getName();
-                layerNames.add(publishShapefile(workspaceName, storeName, fileName.substring(0, fileName.lastIndexOf(".")), shpFile));
+                String resourceName = keyGenerator.CreateKey();
+                layerNames.add(publishShapefile(workspaceName,
+                        resourceName,
+                        shpFile));
             }
             layerName = StringUtils.join(layerNames, ",");
             FileUtils.deleteDirectory(tmpPath);
         } else {
-            String resourceName = zipFile.entries().nextElement().getName();
-            resourceName = resourceName.substring(0, resourceName.lastIndexOf("."));
-            layerName = publishShapefile(workspaceName, storeName, resourceName, file);
+            String resourceName = keyGenerator.CreateKey();
+            layerName = publishShapefile(workspaceName, resourceName, file);
         }
-        return layerName;
+        DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+        datasetAccessOGC.setLayerName(layerName);
+        datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
+        datasetAccessOGC.setCorsEnabled(true);
+        datasetAccessOGC.setStyleName("geometry");
+        return datasetAccessOGC;
+    }
+
+    private String getGeoserverServerUrl(String workspaceName) {
+        String geoserverUrl = ServerUtil.getSettings().getGeoserverOWS();
+        // add the workspace in the path
+        return geoserverUrl.replace("$workspace", workspaceName);
     }
 
     private List<File> extractShapeFiles(File tmpPath, File zipFile) throws Exception {
@@ -340,7 +334,7 @@ public class DatasetUploadServlet extends HttpServlet {
         }
     }
 
-    private String publishShapefile(String workspaceName, String storeName, String resourceName, File file) throws Exception {
+    private String publishShapefile(String workspaceName, String resourceName, File file) throws Exception {
         try {
             GeoServerRESTPublisher publisher = GeoserverUtils.getGeoserverPublisher();
             if (!existsWorkpspace(workspaceName)) {
@@ -349,10 +343,8 @@ public class DatasetUploadServlet extends HttpServlet {
                     throw new Exception("Could not create workspace " + workspaceName);
                 }
             }
-            // make sure we have valid values for storeName and resourceName
-            storeName = makeValid(storeName);
-            resourceName = makeValid(resourceName);
-            boolean published = publisher.publishShp(workspaceName, storeName, resourceName, file);
+            // TODO - check why we need to have different names for storename and layername
+            boolean published = publisher.publishShp(workspaceName, resourceName, resourceName, file);
             if (published) {
                 return workspaceName + ":" + resourceName;
             } else {
@@ -367,7 +359,7 @@ public class DatasetUploadServlet extends HttpServlet {
         return URLEncoder.encode(resourceName.replaceAll(" ", "_"), "UTF-8");
     }
 
-    private String publishGeoTiff(String workspaceName, String storeName, File file) throws Exception {
+    private DatasetAccessOGC publishGeoTiff(String workspaceName, File file) throws Exception {
         try {
             GeoServerRESTPublisher publisher = GeoserverUtils.getGeoserverPublisher();
             if(!existsWorkpspace(workspaceName)) {
@@ -376,9 +368,19 @@ public class DatasetUploadServlet extends HttpServlet {
                     throw new Exception("Could not create workspace " + workspaceName);
                 }
             }
-            boolean pc = publisher.publishGeoTIFF(workspaceName, storeName, file);
+            String resourceName = keyGenerator.CreateKey();
+            boolean pc = publisher.publishGeoTIFF(workspaceName, resourceName, file);
             if (pc) {
-                return workspaceName + ":" + storeName;
+                String layerName = workspaceName + ":" + resourceName;
+                DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
+                datasetAccessOGC.setLayerName(layerName);
+                datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
+                datasetAccessOGC.setCorsEnabled(true);
+                datasetAccessOGC.setStyleName("raster");
+                // WCS is automatically published
+                datasetAccessOGC.setWcsServerUrl(ServerUtil.getSettings().getGeoserverOWS());
+                datasetAccessOGC.setWcsResourceName(layerName.replace(":", "__"));
+                return datasetAccessOGC;
             } else {
                 throw new Exception("Could not publish layer");
             }

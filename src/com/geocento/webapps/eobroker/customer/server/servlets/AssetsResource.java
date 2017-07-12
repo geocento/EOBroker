@@ -1,7 +1,9 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
-import com.geocento.webapps.eobroker.common.server.Utils.*;
+import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
+import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
+import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -27,10 +29,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
@@ -1061,42 +1060,45 @@ public class AssetsResource implements AssetsService {
             // now issue the request to the map server
             DatasetAccessOGC datasetAccessOGC = (DatasetAccessOGC) datasetAccess;
             String serverUrl = datasetAccessOGC.getServerUrl();
+            // manage several layers
+            Set<String> layerNames = new HashSet<String>();
+            String layerName = datasetAccessOGC.getLayerName();
+            // overwrite if it is the internal eobroker server
+            // this is to optimise the call
+            if(!datasetAccessOGC.isHostedData() && layerName.contains(":")) {
+                int index = serverUrl.lastIndexOf("/");
+                String workspace = layerName.substring(0, layerName.indexOf(":"));
+                for(String layerNameValue : layerName.split(",")) {
+                    layerNames.add(layerNameValue.replace(workspace + ":", ""));
+                }
+                // force to 1.1.0 as there are problems with 1.3.0 and multiple layers
+                serverUrl = serverUrl.substring(0, index) + "/" + workspace + serverUrl.substring(index) + "&version=1.1.1";
+            } else {
+                for(String layerNameValue : layerName.split(",")) {
+                    layerNames.add(layerNameValue);
+                }
+            }
+            List<WMSCapabilities.WMSLayer> layers = new ArrayList<WMSCapabilities.WMSLayer>();
             // make WMS query
             WMSCapabilities wmsCapabilities = new WMSCapabilities();
             wmsCapabilities.extractWMSXMLResources(serverUrl + "&service=WMS&request=getCapabilities");
-            String uri = datasetAccessOGC.getUri() + ",";
-            List<WMSCapabilities.WMSLayer> layers = new ArrayList<WMSCapabilities.WMSLayer>();
             for(WMSCapabilities.WMSLayer wmsLayer : wmsCapabilities.getLayersList()) {
-                if(uri.contains(wmsLayer.getLayerName() + ",")) {
+                if(layerNames.contains(wmsLayer.getLayerName())) {
                     layers.add(wmsLayer);
                 }
             }
-/*
-            WMSCapabilities.WMSLayer wmsLayer = ListUtil.findValue(wmsCapabilities.getLayersList(), new ListUtil.CheckValue<WMSCapabilities.WMSLayer>() {
-                @Override
-                public boolean isValue(WMSCapabilities.WMSLayer value) {
-                    return value.getLayerName().contentEquals(datasetAccess.getUri());
-                }
-            });
-            if(wmsLayer == null) {
-                throw new RequestException("Layer does not exist");
-            }
-            LayerInfoDTO layerInfoDTO = new LayerInfoDTO();
-            layerInfoDTO.setName(wmsLayer.getName());
-            layerInfoDTO.setLayerName(wmsLayer.getLayerName());
-            layerInfoDTO.setServerUrl(serverUrl);
-            layerInfoDTO.setCrs(wmsLayer.getSupportedSRS());
-            layerInfoDTO.setExtent(wmsLayer.getBounds());
-            layerInfoDTO.setDescription(wmsLayer.getDescription());
-            layerInfoDTO.setStyleName(datasetAccessOGC.getStyleName());
-*/
             if(layers.size() == 0) {
                 throw new RequestException("Layer does not exist");
             }
             LayerInfoDTO layerInfoDTO = new LayerInfoDTO();
             layerInfoDTO.setName(datasetAccessOGC.getTitle());
-            layerInfoDTO.setLayerName(datasetAccessOGC.getUri());
             layerInfoDTO.setServerUrl(serverUrl);
+            layerInfoDTO.setLayerName(ListUtil.toString(layers, new ListUtil.GetLabel<WMSCapabilities.WMSLayer>() {
+                @Override
+                public String getLabel(WMSCapabilities.WMSLayer value) {
+                    return value.getLayerName();
+                }
+            }, ","));
             layerInfoDTO.setDescription(datasetAccessOGC.getPitch());
             layerInfoDTO.setStyleName(datasetAccessOGC.getStyleName());
             layerInfoDTO.setCrs(layers.get(0).getSupportedSRS());
@@ -1109,6 +1111,7 @@ public class AssetsResource implements AssetsService {
                 bounds.setSouth(Math.min(bounds.getSouth(), layerBounds.getSouth()));
             }
             layerInfoDTO.setExtent(bounds);
+            layerInfoDTO.setVersion(layers.get(0).getVersion());
             layerInfoDTO.setQueryable(layers.get(0).isQueryable());
             return layerInfoDTO;
         } catch (Exception e) {

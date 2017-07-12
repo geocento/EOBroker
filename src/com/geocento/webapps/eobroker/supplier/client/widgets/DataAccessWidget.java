@@ -85,6 +85,15 @@ public class DataAccessWidget extends Composite {
         uri.setText(datasetAccess.getUri());
         uri.setReadOnly(!editableUri);
         uri.setPlaceholder(uriName);
+        boolean hasFile = !(datasetAccess instanceof DatasetAccessAPI || datasetAccess instanceof DatasetAccessAPP);
+        size.setVisible(hasFile);
+        if(hasFile) {
+            uri.setPlaceholder(datasetAccess instanceof DatasetAccessFile ? "The link to download the sample file" : "The link to download the original file for the data, leave empty if not provided");
+            size.setPlaceholder(datasetAccess instanceof DatasetAccessFile ? "The file size in bytes, leave empty if unknown" : "The sample file size in bytes, leave empty if not provided or unknown");
+            if(datasetAccess.getSize() != null) {
+                size.setValue(Integer.valueOf(datasetAccess.getSize()));
+            }
+        }
         panel.setOpen(newDataAccess);
     }
 
@@ -92,7 +101,12 @@ public class DataAccessWidget extends Composite {
         // update values first
         datasetAccess.setTitle(title.getText());
         datasetAccess.setPitch(pitch.getText());
-        datasetAccess.setSize(Long.valueOf(size.getValue()));
+        // required to be able to leave the size empty
+        try {
+            datasetAccess.setSize(size.getValue());
+        } catch (Exception e) {
+            datasetAccess.setSize(null);
+        }
         datasetAccess.setUri(uri.getText());
         return datasetAccess;
     }
@@ -105,6 +119,10 @@ public class DataAccessWidget extends Composite {
 
     public HasClickHandlers getRemove() {
         return remove;
+    }
+
+    public HasClickHandlers getAccessLink() {
+        return type;
     }
 
 }

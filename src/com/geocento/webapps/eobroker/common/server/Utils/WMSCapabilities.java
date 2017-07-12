@@ -208,10 +208,9 @@ public class WMSCapabilities {
 
     public void extractWMSXMLResources(String url) throws Exception {
 		// parse XML response
-/*
-		Document document = XMLUtil.getDocument(stripInvalidXmlCharacters(response));
-*/
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         DocumentBuilder domBuilder = dbf.newDocumentBuilder();
         URL resURL = new URL(url);
         Document document = domBuilder.parse(resURL.openStream());
@@ -267,10 +266,10 @@ public class WMSCapabilities {
             try {
                 Element boundBox = (Element) XMLUtil.getUniqueNode((Element) layerNode, "LatLonBoundingBox");
                 Extent extent = new Extent();
-                extent.setWest(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "minx")));
-                extent.setSouth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "miny")));
-                extent.setEast(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxx")));
-                extent.setNorth(Double.parseDouble(XMLUtil.getUniqueValue(boundBox, "maxy")));
+                extent.setWest(Double.parseDouble(boundBox.getAttribute("minx")));
+                extent.setSouth(Double.parseDouble(boundBox.getAttribute("miny")));
+                extent.setEast(Double.parseDouble(boundBox.getAttribute("maxx")));
+                extent.setNorth(Double.parseDouble(boundBox.getAttribute("maxy")));
                 layer.setBounds(extent);
             } catch (Exception e) {
             }

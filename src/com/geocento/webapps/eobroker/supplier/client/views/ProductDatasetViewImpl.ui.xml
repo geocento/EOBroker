@@ -207,7 +207,7 @@
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <material:MaterialRichEditor height="10em" placeholder="Terms and conditions" ui:field="termsAndConditions"/>
                 </design:MaterialPanel>
-                <widgets:MaterialFilesWidget ui:field="tandcsFiles"></widgets:MaterialFilesWidget>
+                <widgets:MaterialFilesWidget visible="false" ui:field="tandcsFiles"></widgets:MaterialFilesWidget>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <g:HTMLPanel addStyleNames="{style.buttonsPanel}">

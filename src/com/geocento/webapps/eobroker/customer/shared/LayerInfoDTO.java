@@ -19,6 +19,7 @@ public class LayerInfoDTO {
     private String serverUrl;
     private String layerName;
     private String styleName;
+    private String version;
 
     public LayerInfoDTO() {
     }
@@ -101,5 +102,13 @@ public class LayerInfoDTO {
 
     public void setStyleName(String styleName) {
         this.styleName = styleName;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getVersion() {
+        return version;
     }
 }

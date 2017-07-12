@@ -1,9 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.DataAccessUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.TemporalCoverage;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.ProductDatasetPlace;
@@ -217,10 +217,10 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                         }
 
                         @Override
-                        public void onSuccess(Method method, Long companyId) {
+                        public void onSuccess(Method method, Long id) {
                             hideLoading();
                             displaySuccess("Off the shelf data product saved");
-                            productDatasetDTO.setId(companyId);
+                            productDatasetDTO.setId(id);
                         }
                     }).call(ServicesUtil.assetsService).updateProductDataset(productDatasetDTO);
                 } catch (RequestException e) {
@@ -286,5 +286,29 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
             e.printStackTrace();
         }
 */
+    }
+
+    @Override
+    public void viewDataAccess(DatasetAccess datasetAccess) {
+        if(datasetAccess instanceof DatasetAccessOGC) {
+            if(datasetAccess.getId() == null) {
+                Window.alert("Sorry, you need to save your off the shelf product first!");
+                return;
+            }
+            Window.open(GWT.getHostPageBaseURL() + "#visualisation:" +
+                    Utils.generateTokens("productDatasetId", productDatasetDTO.getId() + "",
+                            "dataAccessId", datasetAccess.getId() + ""),
+                            "_visualisation;", null);
+        } else {
+            if(datasetAccess.getUri() == null) {
+                Window.alert("Sorry the URI parameter is not correct");
+                return;
+            }
+            if(datasetAccess instanceof DatasetAccessFile) {
+                Window.open(DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess), "_blank", null);
+            } else {
+                Window.open(datasetAccess.getUri(), "_blank;", null);
+            }
+        }
     }
 }

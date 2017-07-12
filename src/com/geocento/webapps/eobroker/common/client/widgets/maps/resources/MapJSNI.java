@@ -35,6 +35,10 @@ public class MapJSNI extends JavaScriptObject {
     }-*/;
 
     public final native WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent, String styleName) /*-{
+        addWMSLayer(wmsUrl, info, extent, null, null);
+    }-*/;
+
+    public final native WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent, String styleName, String version) /*-{
         var wmsLayer = new $wnd['esri'].layers.WMSLayer(wmsUrl, {
             resourceInfo: {layerInfos: [info], extent: extent},
             visibleLayers: [info.name]
@@ -42,6 +46,9 @@ public class MapJSNI extends JavaScriptObject {
         wmsLayer.spatialReferences[0] = 3857;
         if(styleName) {
             wmsLayer.customLayerParameters = {'styles': styleName};
+        }
+        if(version) {
+            wmsLayer.version = version;
         }
         this.addLayers([wmsLayer]);
         return wmsLayer;

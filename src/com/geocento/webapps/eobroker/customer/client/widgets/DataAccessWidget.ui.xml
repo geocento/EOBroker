@@ -26,9 +26,8 @@
     <design:MaterialPanel height="6em" backgroundColor="WHITE" padding="0" margin="0" shadow="1">
         <design:MaterialPanel height="100%" backgroundColor="GREEN" float="LEFT">
             <design:MaterialTooltip ui:field="tooltip">
-
+                <design:MaterialIcon iconSize="LARGE" backgroundColor="GREEN" textColor="WHITE" ui:field="image"/>
             </design:MaterialTooltip>
-            <design:MaterialIcon iconSize="LARGE" backgroundColor="GREEN" textColor="WHITE" ui:field="image"/>
         </design:MaterialPanel>
         <design:MaterialPanel height="100%" padding="10">
             <design:MaterialButton float="RIGHT" type="FLOATING" backgroundColor="GREEN" textColor="WHITE" ui:field="action"></design:MaterialButton>

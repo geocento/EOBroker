@@ -49,7 +49,6 @@ public interface AssetsService extends DirectRestService {
 
     @PUT
     @Path("/assets/productservices/")
-    @Produces("application/json")
     public Long updateProductService(ProductServiceEditDTO product) throws RequestException;
 
     @DELETE
@@ -93,7 +92,6 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/dataset/")
-    @Produces("application/json")
     Long saveDatasetProvider(DatasetProviderDTO datasetProviderDTO) throws RequestException;
 
     @GET
@@ -108,7 +106,6 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/productdataset/")
-    @Produces("application/json")
     Long updateProductDataset(ProductDatasetDTO productDatasetDTO) throws RequestException;
 
     @DELETE
@@ -127,7 +124,6 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/software/")
-    @Produces("application/json")
     Long updateSoftware(SoftwareDTO softwareDTO) throws RequestException;
 
     @DELETE
@@ -146,7 +142,6 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/project/")
-    @Produces("application/json")
     Long updateProject(ProjectDTO projectDTO) throws RequestException;
 
     @DELETE
@@ -170,7 +165,6 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/ows/styles/")
-    @Produces("application/json")
     public String saveStyle(StyleDTO styleDTO) throws RequestException;
 
     @GET

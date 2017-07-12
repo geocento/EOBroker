@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import org.apache.log4j.Logger;
 
 import javax.websocket.*;
@@ -34,6 +35,7 @@ public class AdminNotificationSocket extends BaseNotificationSocket {
         session.setMaxIdleTimeout(30 * 60 * 1000L);
         UserSession userSession = getUserSession();
         if(userSession == null) {
+            sendLoggedOut(session);
             throw new IOException("Not signed in");
         }
         addUserSession(userSession, session);
@@ -117,4 +119,13 @@ public class AdminNotificationSocket extends BaseNotificationSocket {
         String message = objectMapper.writeValueAsString(adminWebSocketMessage);
         sendHttpSessionMessage(sessionID, message);
     }
+
+    private void sendLoggedOut(Session session) throws IOException {
+        WebSocketMessage webSocketMessage = new WebSocketMessage();
+        webSocketMessage.setType(WebSocketMessage.TYPE.logout);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(webSocketMessage);
+        session.getBasicRemote().sendText(message);
+    }
+
 }

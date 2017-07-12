@@ -438,7 +438,7 @@ public class ContextListener implements ServletContextListener {
                         try {
                             File file = new File(ServerUtil.getSettings().getDataDirectory() + datasetAccess.getUri());
                             if (file.exists()) {
-                                datasetAccess.setSize(file.length());
+                                datasetAccess.setSize((int) file.length());
                             } else {
                                 logger.error("File " + file.getName() + " does not exist on disk");
                             }

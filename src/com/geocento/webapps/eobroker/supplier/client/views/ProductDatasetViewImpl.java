@@ -385,16 +385,27 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     }
 
     private DataAccessWidget createDataAccessWidget(DatasetAccess datasetAccess, boolean editableUri) {
+        DataAccessWidget dataAccessWidget = null;
         if(datasetAccess instanceof DatasetAccessFile) {
-            return new DataAccessWidget(datasetAccess, editableUri);
+            dataAccessWidget = new DataAccessWidget(datasetAccess, editableUri);
         } else if(datasetAccess instanceof DatasetAccessAPP) {
-            return new DataAccessWidget(datasetAccess, editableUri);
+            dataAccessWidget = new DataAccessWidget(datasetAccess, editableUri);
         } else if(datasetAccess instanceof DatasetAccessOGC) {
-            return new OGCDataAccessWidget((DatasetAccessOGC) datasetAccess, editableUri);
+            dataAccessWidget = new OGCDataAccessWidget((DatasetAccessOGC) datasetAccess, editableUri);
         } else if(datasetAccess instanceof DatasetAccessAPI) {
-            return new DataAccessWidget(datasetAccess, editableUri);
+            dataAccessWidget = new DataAccessWidget(datasetAccess, editableUri);
         }
-        return null;
+        if(dataAccessWidget == null) {
+            return null;
+        }
+        dataAccessWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
+        dataAccessWidget.getAccessLink().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.viewDataAccess(datasetAccess);
+            }
+        });
+        return dataAccessWidget;
     }
 
     private void updateDataAccessMessage() {
@@ -439,12 +450,11 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         dataAccessWidget.getRemove().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if(Window.confirm("Are you sure you want to remove this sample?")) {
+                if (Window.confirm("Are you sure you want to remove this sample?")) {
                     samples.remove(materialColumn);
                 }
             }
         });
-        dataAccessWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
         materialColumn.add(dataAccessWidget);
         updateSamplesMessage();
     }
