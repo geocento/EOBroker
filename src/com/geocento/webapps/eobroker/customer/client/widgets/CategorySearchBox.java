@@ -52,6 +52,7 @@ public class CategorySearchBox extends MaterialSearch {
 
             @Override
             public void textSelected(String text) {
+                presenter.selectSuggestion(null);
             }
         });
     }
@@ -74,7 +75,7 @@ public class CategorySearchBox extends MaterialSearch {
 
         String text = getText();
         if(text != null && text.length() > 0) {
-            REST.withCallback(new MethodCallback<List<Suggestion>>() {
+            fetchSuggestions(text, new MethodCallback<List<Suggestion>>() {
 
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -98,8 +99,37 @@ public class CategorySearchBox extends MaterialSearch {
                         }));
                     }
                 }
-            }).call(ServicesUtil.searchService).complete(text, category, null);
+            });
         }
+    }
+
+    // default version
+    protected void fetchSuggestions(String text, MethodCallback<List<Suggestion>> methodCallback) {
+        REST.withCallback(new MethodCallback<List<Suggestion>>() {
+
+            @Override
+            public void onFailure(Method method, Throwable exception) {
+
+            }
+
+            @Override
+            public void onSuccess(Method method, List<Suggestion> suggestions) {
+                // show only if last one to be called
+                if (lastCall == CategorySearchBox.this.lastCall) {
+                    setFocus(true);
+                    displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
+                        @Override
+                        public SearchObject mutate(Suggestion suggestion) {
+                            SearchObject searchObject = new SearchObject();
+                            searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
+                            searchObject.setKeyword(suggestion.getName());
+                            searchObject.setO(suggestion);
+                            return searchObject;
+                        }
+                    }));
+                }
+            }
+        }).call(ServicesUtil.searchService).complete(text, category, null);
     }
 
 }

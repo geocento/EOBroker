@@ -2,17 +2,16 @@ package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.shared.entities.REGISTRATION_STATUS;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialTextArea;
-import gwt.material.design.client.ui.MaterialTextBox;
-import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.ui.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -45,6 +44,10 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     TemplateView template;
     @UiField
     MaterialButton validate;
+    @UiField
+    MaterialSwitch supplier;
+    @UiField
+    MaterialListValueBox<REGISTRATION_STATUS> status;
 
     public CompanyViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -52,6 +55,9 @@ public class CompanyViewImpl extends Composite implements CompanyView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        for(REGISTRATION_STATUS status : REGISTRATION_STATUS.values()) {
+            this.status.addItem(status);
+        }
     }
 
     @Override
@@ -75,13 +81,23 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     }
 
     @Override
+    public HasValue<Boolean> getSupplier() {
+        return supplier;
+    }
+
+    @Override
+    public HasValue<REGISTRATION_STATUS> getStatus() {
+        return status;
+    }
+
+    @Override
     public HasText getEmail() {
         return email;
     }
 
     @Override
     public void displayValidate(boolean display) {
-        validate.setVisible(display);
+        validate.setVisible(false); //display);
     }
 
     @Override

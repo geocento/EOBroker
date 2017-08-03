@@ -205,11 +205,13 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/company/create")
+    @Produces("application/json")
     @Consumes("application/json")
     CompanyDTO createCompany(CreateCompanyDTO createCompanyDTO) throws RequestException;
 
     @POST
     @Path("/assets/user/create")
+    @Produces("application/json")
     @Consumes("application/json")
     void createUser(CreateUserDTO createUserDTO) throws RequestException;
 }

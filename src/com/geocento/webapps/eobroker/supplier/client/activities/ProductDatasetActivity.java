@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.supplier.client.places.ProductDatasetPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.ProductDatasetView;
@@ -18,6 +19,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
@@ -75,26 +77,30 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
         }
         if(datasetId != null) {
             // load dataset
-            try {
-                displayFullLoading("Loading off the shelf data information");
-                REST.withCallback(new MethodCallback<ProductDatasetDTO>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        hideFullLoading();
-                        Window.alert("Failed to load off the shelf data information");
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, ProductDatasetDTO response) {
-                        hideFullLoading();
-                        setProductDataset(response);
-                    }
-                }).call(ServicesUtil.assetsService).getProductDataset(datasetId);
-            } catch (RequestException e) {
-            }
+            loadDataset(datasetId);
         } else {
             ProductDatasetDTO company = new ProductDatasetDTO();
             setProductDataset(company);
+        }
+    }
+
+    private void loadDataset(Long datasetId) {
+        try {
+            displayFullLoading("Loading off the shelf data information");
+            REST.withCallback(new MethodCallback<ProductDatasetDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideFullLoading();
+                    Window.alert("Failed to load off the shelf data information");
+                }
+
+                @Override
+                public void onSuccess(Method method, ProductDatasetDTO response) {
+                    hideFullLoading();
+                    setProductDataset(response);
+                }
+            }).call(ServicesUtil.assetsService).getProductDataset(datasetId);
+        } catch (RequestException e) {
         }
     }
 
@@ -220,7 +226,9 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
                         public void onSuccess(Method method, Long id) {
                             hideLoading();
                             displaySuccess("Off the shelf data product saved");
-                            productDatasetDTO.setId(id);
+                            // reload product dataset
+                            loadDataset(id);
+                            History.newItem(PlaceHistoryHelper.convertPlace(new ProductDatasetPlace(Utils.generateTokens(ProductDatasetPlace.TOKENS.id.toString(), id + ""))));
                         }
                     }).call(ServicesUtil.assetsService).updateProductDataset(productDatasetDTO);
                 } catch (RequestException e) {

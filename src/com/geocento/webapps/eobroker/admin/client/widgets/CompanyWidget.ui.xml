@@ -24,6 +24,9 @@
             <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="WHITE">
+            <design:MaterialTooltip text="This company is registered as a supplier company">
+                <design:MaterialIcon float="RIGHT" iconColor="YELLOW" iconType="STAR" ui:field="supplier"></design:MaterialIcon>
+            </design:MaterialTooltip>
             <design:MaterialLabel truncate="true" fontSize="1.4em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>

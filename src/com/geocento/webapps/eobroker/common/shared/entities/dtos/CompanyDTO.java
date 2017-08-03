@@ -26,6 +26,7 @@ public class CompanyDTO {
     boolean following;
     int followers;
     REGISTRATION_STATUS status;
+    private boolean supplier;
 
     public CompanyDTO() {
     }
@@ -148,5 +149,13 @@ public class CompanyDTO {
 
     public REGISTRATION_STATUS getStatus() {
         return status;
+    }
+
+    public boolean isSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(boolean supplier) {
+        this.supplier = supplier;
     }
 }

@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingButton;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor;
 import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
@@ -90,7 +91,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     @UiField
     MaterialLabel uploadSampleComment;
     @UiField
-    MaterialButton uploadSampleButton;
+    MaterialLoadingButton uploadSampleButton;
     @UiField
     MaterialPanel performances;
     @UiField
@@ -170,7 +171,17 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
         sampleUploader.addTotalUploadProgressHandler(event -> {
         });
 
+        sampleUploader.addAddedFileHandler(event -> {
+            uploadSampleButton.setLoading(true);
+        });
+        sampleUploader.addErrorHandler(event -> {
+            uploadSampleButton.setLoading(false);
+        });
+        sampleUploader.addCancelHandler(event -> {
+            uploadSampleButton.setLoading(false);
+        });
         sampleUploader.addSuccessHandler(event -> {
+            uploadSampleButton.setLoading(false);
             String error = StringUtils.extract(event.getResponse().getBody(), "<error>", "</error>");
             if(error.length() > 0) {
                 Window.alert(error);

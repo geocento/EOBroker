@@ -504,7 +504,8 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<ProductDTO> findProducts(String text) {
+    public List<ProductDTO> findProducts(String textFilter) {
+/*
         // check if last character is a space
         boolean partialMatch = !text.endsWith(" ");
         text.trim();
@@ -517,6 +518,8 @@ public class AssetsResource implements AssetsService {
         if(partialMatch) {
             keywords += ":*";
         }
+*/
+        String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
         String sqlStatement = "SELECT id, \"name\", imageurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
                 "          FROM product, to_tsquery('" + keywords + "') AS keywords\n" +
@@ -538,7 +541,8 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<CompanyDTO> findCompanies(String text) {
+    public List<CompanyDTO> findCompanies(String textFilter) {
+/*
         // check if last character is a space
         boolean partialMatch = !text.endsWith(" ");
         text.trim();
@@ -551,6 +555,8 @@ public class AssetsResource implements AssetsService {
         if(partialMatch) {
             keywords += ":*";
         }
+*/
+        String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
         String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
                 "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +

@@ -18,7 +18,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
-import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.google.gwt.http.client.RequestException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.FileAppender;
@@ -219,7 +218,9 @@ public class AssetsResource implements AssetsService {
             if (company == null) {
                 throw new RequestException("Unknown company");
             }
-            return CompanyHelper.createFullCompanyDTO(company);
+            CompanyDTO companyDTO = CompanyHelper.createFullCompanyDTO(company);
+            companyDTO.setStatus(company.getStatus());
+            return companyDTO;
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -261,6 +262,7 @@ public class AssetsResource implements AssetsService {
                 public CompanyDTO mutate(Company company) {
                     CompanyDTO companyDTO = CompanyHelper.createCompanyDTO(company);
                     companyDTO.setStatus(company.getStatus());
+                    companyDTO.setSupplier(company.isSupplier());
                     return companyDTO;
                 }
             });
@@ -309,6 +311,7 @@ public class AssetsResource implements AssetsService {
     }
 */
 
+    // TODO - replace with specific CompanyDTO
     @Override
     public Long saveCompany(CompanyDTO companyDTO) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
@@ -325,6 +328,8 @@ public class AssetsResource implements AssetsService {
                 }
             }
             dbCompany.setName(companyDTO.getName());
+            dbCompany.setSupplier(companyDTO.isSupplier());
+            dbCompany.setStatus(companyDTO.getStatus());
             dbCompany.setDescription(companyDTO.getDescription());
             dbCompany.setWebsite(companyDTO.getWebsite());
             dbCompany.setIconURL(companyDTO.getIconURL());
@@ -335,7 +340,9 @@ public class AssetsResource implements AssetsService {
                 // if new company create workspace
                 GeoserverUtils.getGeoserverPublisher().createWorkspace(dbCompany.getId() + "");
             } else {
+/*
                 em.merge(dbCompany);
+*/
             }
             // update the keyphrases
             Query query = em.createNativeQuery("UPDATE company SET tsv = " + DBHelper.getCompanyTSV(dbCompany) +
@@ -383,6 +390,29 @@ public class AssetsResource implements AssetsService {
                 em.getTransaction().rollback();
             }
             throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeCompany(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Company company = em.find(Company.class, id);
+            if(company == null) {
+                throw new Exception("Company with ID " + id + " does not exist");
+            }
+            em.remove(company);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Error removing company, reason is " + e.getMessage());
         } finally {
             em.close();
         }
@@ -794,6 +824,29 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public void removeUser(String userName) throws RequestException {
+        UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            if(user == null) {
+                throw new Exception("User with user name " + userName + " does not exist");
+            }
+            em.remove(user);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Error removing user, reason is " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ApplicationSettings getSettings() throws RequestException {
         return ServerUtil.getSettings();
     }
@@ -854,7 +907,8 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<CompanyDTO> findCompanies(String text) {
+    public List<CompanyDTO> findCompanies(String textFilter) {
+/*
         // check if last character is a space
         boolean partialMatch = !text.endsWith(" ");
         text.trim();
@@ -867,6 +921,8 @@ public class AssetsResource implements AssetsService {
         if(partialMatch) {
             keywords += ":*";
         }
+*/
+        String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
         String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
                 "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +

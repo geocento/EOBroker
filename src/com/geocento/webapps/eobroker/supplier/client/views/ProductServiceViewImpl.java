@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingButton;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -89,7 +90,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     @UiField
     MaterialRow dataAccess;
     @UiField
-    MaterialButton uploadSampleButton;
+    MaterialLoadingButton uploadSampleButton;
     @UiField
     MaterialLabel uploadSampleTitle;
     @UiField
@@ -145,7 +146,17 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
         sampleUploader.addTotalUploadProgressHandler(event -> {
         });
 
+        sampleUploader.addAddedFileHandler(event -> {
+            uploadSampleButton.setLoading(true);
+        });
+        sampleUploader.addErrorHandler(event -> {
+            uploadSampleButton.setLoading(false);
+        });
+        sampleUploader.addCancelHandler(event -> {
+            uploadSampleButton.setLoading(false);
+        });
         sampleUploader.addSuccessHandler(event -> {
+            uploadSampleButton.setLoading(false);
             String error = StringUtils.extract(event.getResponse().getBody(), "<error>", "</error>");
             if(error.length() > 0) {
                 Window.alert(error);
@@ -156,35 +167,6 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             DatasetAccessMapper datasetAccessMapper = GWT.create(DatasetAccessMapper.class);
             DatasetAccess datasetAccess = datasetAccessMapper.read(response);
             addSample(datasetAccess);
-/*
-            String error = StringUtils.extract(event.getResponse().getBody(), "<error>", "</error>");
-            if(error.length() > 0) {
-                Window.alert(error);
-                return;
-            }
-            String response = StringUtils.extract(event.getResponse().getBody(), "<value>", "</value>");
-            JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
-            SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
-            sampleUploadDTO.setFileUri(sampleUploadDTOJson.containsKey("fileUri") ? sampleUploadDTOJson.get("fileUri").isString().stringValue() : null);
-            sampleUploadDTO.setLayerName(sampleUploadDTOJson.containsKey("layerName") ? sampleUploadDTOJson.get("layerName").isString().stringValue() : null);
-            sampleUploadDTO.setServer(sampleUploadDTOJson.containsKey("server") ? sampleUploadDTOJson.get("server").isString().stringValue() : null);
-            if(sampleUploadDTO.getFileUri() != null) {
-                DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
-                datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
-                datasetAccessFile.setTitle("Sample file");
-                datasetAccessFile.setHostedData(false);
-                addSample(datasetAccessFile);
-            }
-            if(sampleUploadDTO.getLayerName() != null) {
-                DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
-                // TODO - change to use the geoserver address
-                datasetAccessOGC.setServerUrl(sampleUploadDTO.getServer());
-                datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
-                datasetAccessOGC.setTitle("Sample data available as OGC service");
-                datasetAccessOGC.setHostedData(false);
-                addSample(datasetAccessOGC);
-            }
-*/
         });
 
         // configure the sample uploader
@@ -542,6 +524,12 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
                     samples.remove(materialColumn);
                     updateSamplesMessage();
                 }
+            }
+        });
+        dataAccessWidget.getAccessLink().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.viewDataAccess(datasetAccess);
             }
         });
         dataAccessWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);

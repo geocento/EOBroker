@@ -7,6 +7,8 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.RequestAccessView;
 import com.geocento.webapps.eobroker.customer.shared.CreateCompanyDTO;
 import com.geocento.webapps.eobroker.customer.shared.CreateUserDTO;
+import com.geocento.webapps.eobroker.customer.shared.utils.CompanyHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.UserHelper;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -53,8 +55,10 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                     createCompanyDTO.setDescription(requestAccessView.getCompanyDescription().getText());
                     createCompanyDTO.setAddress(requestAccessView.getCompanyAddress().getText());
                     createCompanyDTO.setCountryCode(requestAccessView.getCompanyCountryCode());
+                    // check values first
                     // save company
                     try {
+                        CompanyHelper.checkCompanyValues(createCompanyDTO);
                         requestAccessView.displayLoading("Creating company...");
                         REST.withCallback(new MethodCallback<CompanyDTO>() {
                             @Override
@@ -70,6 +74,7 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                             }
                         }).call(ServicesUtil.assetsService).createCompany(createCompanyDTO);
                     } catch (Exception e) {
+                        requestAccessView.displayCompanyCreationError(e.getMessage());
                     }
                 } else {
                     createUser(companyDTO);
@@ -91,6 +96,7 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                 createUserDTO.setPhoneNumber(phoneNumber);
                 createUserDTO.setCompanyId(companyDTO.getId());
                 try {
+                    UserHelper.checkUserValues(createUserDTO);
                     requestAccessView.displayLoading("Saving user");
                     REST.withCallback(new MethodCallback<Void>() {
                         @Override
@@ -107,6 +113,7 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                         }
                     }).call(ServicesUtil.assetsService).createUser(createUserDTO);
                 } catch (Exception e) {
+                    requestAccessView.displayUserCreationError(e.getMessage());
                 }
             }
 

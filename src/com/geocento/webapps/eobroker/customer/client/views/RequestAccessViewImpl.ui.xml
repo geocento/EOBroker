@@ -60,7 +60,7 @@
                         <design:MaterialTextBox type="EMAIL" placeholder="Your email address" ui:field="email"/>
                         <design:MaterialTextBox type="TEXT" placeholder="Your phone number" ui:field="phoneNumber"/>
                         <design:MaterialLabel text="Please select a company" addStyleNames="{style.section}"></design:MaterialLabel>
-                        <widgets:CategorySearchBox category="companies" placeholder="Type in name of company" addStyleNames="{style.searchBox}" ui:field="company"></widgets:CategorySearchBox>
+                        <widgets:CompanySearchBox placeholder="Type in name of company" addStyleNames="{style.searchBox}" ui:field="company"></widgets:CompanySearchBox>
                         <design:MaterialLink text="Or register a new one" ui:field="createNewCompany"></design:MaterialLink>
                         <design:MaterialPanel visible="false" ui:field="companyRegistration">
                             <design:MaterialTextBox type="TEXT" placeholder="Company name" ui:field="companyName"/>

@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.admin.client.activities;
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
 import com.geocento.webapps.eobroker.admin.client.events.EditUser;
 import com.geocento.webapps.eobroker.admin.client.events.EditUserHandler;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveUser;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveUserHandler;
 import com.geocento.webapps.eobroker.admin.client.places.UsersPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.UsersView;
@@ -163,6 +165,33 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
                 }
             }
         }));
+
+        activityEventBus.addHandler(RemoveUser.TYPE, new RemoveUserHandler() {
+            @Override
+            public void onRemoveUser(RemoveUser event) {
+                try {
+                    UserDescriptionDTO userDescriptionDTO = event.getUserDescriptionDTO();
+                    if(Window.confirm("Are you sure you want to remove this user " + userDescriptionDTO.getName() + "?")) {
+                        displayLoading("Removing user");
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                hideLoading();
+                                displayError(exception.getMessage());
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                hideLoading();
+                                displaySuccess("User " + userDescriptionDTO.getName() + " has been removed!");
+                                loadUsers();
+                            }
+                        }).call(ServicesUtil.assetsService).removeUser(userDescriptionDTO.getName());
+                    }
+                } catch (RequestException e) {
+                }
+            }
+        });
     }
 
     private void loadUsers() {

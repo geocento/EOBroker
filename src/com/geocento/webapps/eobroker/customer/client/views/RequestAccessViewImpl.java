@@ -76,19 +76,16 @@ public class RequestAccessViewImpl extends Composite implements RequestAccessVie
 
         company.setPresenter(suggestion -> {
             // create shallow company
-            boolean changed = false;
             if(suggestion == null) {
-                changed = companyDTO != null;
                 companyDTO = null;
             } else {
                 CompanyDTO companyDTO = new CompanyDTO();
                 companyDTO.setName(suggestion.getName());
-                companyDTO.setId(Long.parseLong(suggestion.getUri().replace("companies::", "")));
-                changed = RequestAccessViewImpl.this.companyDTO == null || !RequestAccessViewImpl.this.companyDTO.getId().equals(companyDTO.getId());
+                companyDTO.setId(Long.parseLong(suggestion.getUri().split("::")[1]));
                 RequestAccessViewImpl.this.companyDTO = companyDTO;
                 displayCompanyRegistration(false);
             }
-            company.setText(companyDTO.getName());
+            //company.setText(companyDTO.getName());
         });
 
         displayCompanyRegistration(false);

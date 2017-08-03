@@ -201,7 +201,7 @@
                                     <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
                                         <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to server</design:MaterialLabel>
                                         <design:MaterialLabel textColor="GREY" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
-                                        <design:MaterialButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></design:MaterialButton>
+                                        <widgets:MaterialLoadingButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></widgets:MaterialLoadingButton>
                                     </design:MaterialCardContent>
                                 </design:MaterialCard>
                             </widgets:MaterialFileUploader>

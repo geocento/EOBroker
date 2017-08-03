@@ -132,6 +132,7 @@ public class ContextListener implements ServletContextListener {
                             em.getTransaction().begin();
                             // get list of administrator users
                             TypedQuery<String> adminQuery = em.createQuery("select u.email from users u where u.role = :role", String.class);
+                            adminQuery.setParameter("role", User.USER_ROLE.administrator);
                             List<String> adminEmails = adminQuery.getResultList();
                             // now send emails
                             MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.ADMIN);
@@ -142,13 +143,13 @@ public class ContextListener implements ServletContextListener {
                                     notification.setSent(true);
                                     return ListUtil.toList(new String[]{
                                             notification.getMessage(), ", on " + timeFormat.format(notification.getCreationDate()),
-                                            "<a href='" + ServerUtil.getSettings().getWebsiteUrl() + "#notifications:id=" + notification.getId() +
+                                            "<a href='" + ServerUtil.getSettings().getAdminWebsiteUrl() + "#notifications:id=" + notification.getId() +
                                                     "'>View</a>"
                                     });
                                 }
                             }));
                             mailContent.addAction("view all notifications", null, ServerUtil.getSettings().getAdminWebsiteUrl() + "#notifications:");
-                            mailContent.sendEmail(StringUtils.join(adminEmails, ","), "New notifications on EO Broker", false);
+                            mailContent.sendEmail(StringUtils.join(adminEmails, ";"), "New notifications on EO Broker", false);
                             em.getTransaction().commit();
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
@@ -218,7 +219,11 @@ public class ContextListener implements ServletContextListener {
                             supplierUsersQuery.setParameter("company", company);
                             supplierUsersQuery.setParameter("role", User.USER_ROLE.supplier);
                             for(User user : supplierUsersQuery.getResultList()) {
-                                mailContent.sendEmail(user.getEmail(), "New notifications on EO Broker", false);
+                                try {
+                                    mailContent.sendEmail(user.getEmail(), "New notifications on EO Broker", false);
+                                } catch (Exception e) {
+                                    logger.error("Problem sending email to user " + user.getUsername() + " error is " + e.getMessage(), e);
+                                }
                             }
                             // update notification
                             for(SupplierNotification notification : companyNotifications) {
@@ -421,8 +426,8 @@ public class ContextListener implements ServletContextListener {
                 if (datasetAccessOGCs.size() > 0) {
                     em.getTransaction().begin();
                     for (DatasetAccessOGC datasetAccessOGC : datasetAccessOGCs) {
-                        datasetAccessOGC.setUri(null);
                         datasetAccessOGC.setLayerName(datasetAccessOGC.getUri());
+                        datasetAccessOGC.setUri(null);
                     }
                     em.getTransaction().commit();
                 }
@@ -449,6 +454,28 @@ public class ContextListener implements ServletContextListener {
                     em.getTransaction().commit();
                 }
             }
+/*
+            {
+                // look for local datasets access without file size set
+                TypedQuery<Company> query = em.createQuery("select c from Company c where c.status = :status OR c.supplier = :supplier", Company.class);
+                query.setParameter("status", REGISTRATION_STATUS.PENDING);
+                query.setParameter("supplier", false);
+                List<Company> companies = query.getResultList();
+                if (companies.size() > 0) {
+                    em.getTransaction().begin();
+                    for (Company company : companies) {
+                        if(company.getDatasets().size() > 0 ||
+                                company.getServices().size() > 0 ||
+                                company.getSoftware().size() > 0 ||
+                                company.getProjects().size() > 0) {
+                            company.setStatus(REGISTRATION_STATUS.APPROVED);
+                            company.setSupplier(true);
+                        }
+                    }
+                    em.getTransaction().commit();
+                }
+            }
+*/
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

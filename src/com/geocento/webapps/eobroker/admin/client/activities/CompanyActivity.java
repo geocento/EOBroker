@@ -76,10 +76,13 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
         this.company = company;
         companyView.setTitleLine(company.getId() == null ? "Create company" : "Edit company");
         companyView.getName().setText(company.getName());
+        companyView.getSupplier().setValue(company.isSupplier());
+        companyView.getStatus().setValue(company.getStatus());
         boolean isValidated = company.getStatus() == REGISTRATION_STATUS.APPROVED;
         companyView.displayValidate(!isValidated);
         companyView.setIconUrl(company.getIconURL());
         companyView.getDescription().setText(company.getDescription());
+        companyView.setFullDescription(company.getFullDescription());
         companyView.getWebsite().setText(company.getWebsite());
     }
 
@@ -113,8 +116,11 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
             @Override
             public void onClick(ClickEvent event) {
                 company.setName(companyView.getName().getText());
+                company.setSupplier(companyView.getSupplier().getValue());
+                company.setStatus(companyView.getStatus().getValue());
                 company.setIconURL(companyView.getIconUrl());
                 company.setDescription(companyView.getDescription().getText());
+                company.setFullDescription(companyView.getFullDescription());
                 company.setWebsite(companyView.getWebsite().getText());
                 companyView.setLoading("Saving company...");
                 try {

@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.XMLUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
@@ -11,6 +12,10 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.recommendation.SelectionRule;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityRequest;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
+import com.geocento.webapps.eobroker.common.shared.feasibility.Parameter;
+import com.geocento.webapps.eobroker.common.shared.feasibility.UserInformation;
 import com.geocento.webapps.eobroker.common.shared.imageapi.SearchRequest;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
@@ -20,10 +25,6 @@ import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityRequest;
-import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
-import com.geocento.webapps.eobroker.common.shared.feasibility.Parameter;
-import com.geocento.webapps.eobroker.common.shared.feasibility.UserInformation;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gson.*;
 import com.google.gwt.http.client.RequestException;
@@ -53,6 +54,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Path("/")
@@ -96,12 +98,19 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<Suggestion> complete(String text, Category category, String aoi) {
+        return completeGeneric(text, category,
+                category == Category.companies ?
+                        "          AND supplier = '1' AND status = 'APPROVED'" : ""
+                , aoi);
+    }
+
+    public List<Suggestion> completeGeneric(String text, Category category, String additionalStatement, String aoi) {
         ArrayList<Suggestion> suggestions = new ArrayList<Suggestion>();
         // check if last character is a space
         boolean partialMatch = !text.endsWith(" ");
         text.trim();
         // break down text into sub words
-        String[] words = text.split(" ");
+        String[] words = text.split("\\s+");
         String keywords = StringUtils.join(words, " | ");
         if(partialMatch) {
             keywords += ":*";
@@ -114,18 +123,11 @@ public class SearchResource implements SearchService {
         if(category != null) {
             categories.add(category);
         } else {
-            categories.addAll(Arrays.asList(Category.values()));
+            categories.addAll(Arrays.asList(new Category[] {Category.companies, Category.products}));
         }
         ArrayList<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
         for(Category searchCategory : categories) {
-            switch(searchCategory) {
-                case products:
-                    rankedSuggestions.addAll(completeProducts(keywords));
-                    break;
-                case companies:
-                    rankedSuggestions.addAll(completeCompanies(keywords));
-                    break;
-            }
+            rankedSuggestions.addAll(completeCategory(searchCategory, keywords, additionalStatement));
         }
         // now sort and filter
         Collections.sort(rankedSuggestions, new Comparator<RankedSuggestion>() {
@@ -140,15 +142,12 @@ public class SearchResource implements SearchService {
         return suggestions;
     }
 
-    private List<RankedSuggestion> completeProducts(String keywords) {
-        return completeCategory(Category.products, keywords);
+    @Override
+    public List<Suggestion> completeAllCompanies(String text, String aoi) {
+        return completeGeneric(text, Category.companies, null, aoi);
     }
 
-    private List<RankedSuggestion> completeCompanies(String keywords) {
-        return completeCategory(Category.companies, keywords);
-    }
-
-    private List<RankedSuggestion> completeCategory(Category category, String keywords) {
+    private List<RankedSuggestion> completeCategory(Category category, String keywords, String additionalStatement) {
         // change the last word so that it allows for partial match
         String categoryTable = null;
         switch(category) {
@@ -162,6 +161,7 @@ public class SearchResource implements SearchService {
         String sqlStatement = "SELECT \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
                 "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
                 "          WHERE tsvname @@ keywords\n" +
+                (additionalStatement != null ? additionalStatement : "") +
                 "          ORDER BY rank DESC\n" +
                 "          LIMIT 10;";
         EntityManager em = EMF.get().createEntityManager();
@@ -264,8 +264,9 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<Offer> getMatchingOffer(String text, Category category, Long aoiId) throws RequestException {
+    public List<Offer> getMatchingOffer(String textFilter, Category category, Long aoiId) throws RequestException {
         ArrayList<RankedOffer> offers = new ArrayList<RankedOffer>();
+/*
         // check if last character is a space
         boolean partialMatch = !text.endsWith(" ");
         text.trim();
@@ -275,6 +276,8 @@ public class SearchResource implements SearchService {
         if(partialMatch) {
             keywords += ":*";
         }
+*/
+        String keywords = DBHelper.generateKeywords(textFilter);
         EntityManager em = EMF.get().createEntityManager();
         try {
             // change the last word so that it allows for partial match
@@ -366,15 +369,18 @@ public class SearchResource implements SearchService {
         List<DatasetProvider> datasetProviders = null;
         EntityManager em = EMF.get().createEntityManager();
         if(textFilter != null) {
+/*
             // check if last character is a space
             boolean partialMatch = !textFilter.endsWith(" ");
             textFilter.trim();
             // break down text into sub words
-            String[] words = textFilter.split(" ");
+            String[] words = textFilter.split("\\s+");
             String keywords = StringUtils.join(words, " | ");
             if (partialMatch) {
                 keywords += ":*";
             }
+*/
+            String keywords = DBHelper.generateKeywords(textFilter);
             // change the last word so that it allows for partial match
             String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
                     "          FROM datasetprovider, to_tsquery('" + keywords + "') AS keywords\n" +
@@ -451,15 +457,7 @@ public class SearchResource implements SearchService {
     private List<Long> getFilteredIds(EntityManager em, String tableName, String textFilter, Integer start, Integer limit, String additionalStatement) {
         String sqlStatement = "";
         if(textFilter != null && textFilter.length() > 0) {
-            // check if last character is a space
-            boolean partialMatch = !textFilter.endsWith(" ");
-            textFilter.trim();
-            // break down text into sub words
-            String[] words = textFilter.split(" ");
-            String keywords = StringUtils.join(words, " | ");
-            if (partialMatch) {
-                keywords += ":*";
-            }
+            String keywords = DBHelper.generateKeywords(textFilter);
             // change the last word so that it allows for partial match
             sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
                     "          FROM " + tableName + ", to_tsquery('" + keywords + "') AS keywords\n" +
@@ -862,6 +860,7 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<Suggestion> completeSensors(String sensors) {
+/*
         ArrayList<Suggestion> suggestions = new ArrayList<Suggestion>();
         ArrayList<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
         // start working on sensors options
@@ -896,6 +895,8 @@ public class SearchResource implements SearchService {
             suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
         }
         return suggestions;
+*/
+        return null;
     }
 
     @Override
@@ -903,6 +904,8 @@ public class SearchResource implements SearchService {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         List<String> additionalStatements = new ArrayList<String>();
+        additionalStatements.add("supplier = '1'");
+        additionalStatements.add("status = 'APPROVED'");
         if(companySize != null) {
             additionalStatements.add("companysize = '" + companySize.toString() + "'");
         }
@@ -1075,10 +1078,14 @@ public class SearchResource implements SearchService {
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
             connection.setUseCaches(false);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Content-Length", payload.length() + "");
+            // check whether we have some user password in the URL
+            if(targetURL.getUserInfo() != null) {
+                String encoded = Base64.getEncoder().encodeToString(targetURL.getUserInfo().getBytes(StandardCharsets.UTF_8));
+                connection.setRequestProperty("Authorization", "Basic "+encoded);
+            }
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
             wr.writeBytes(payload);
             wr.flush();

@@ -241,7 +241,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 // create shallow product
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setName(suggestion.getName());
-                productDTO.setId(Long.parseLong(suggestion.getUri().replace("product::", "")));
+                productDTO.setId(Long.parseLong(suggestion.getUri().split("::")[1]));
                 changed = SearchPageViewImpl.this.productDTO == null || !SearchPageViewImpl.this.productDTO.getId().equals(productDTO.getId());
                 SearchPageViewImpl.this.productDTO = productDTO;
             }
@@ -258,7 +258,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             } else {
                 CompanyDTO companyDTO = new CompanyDTO();
                 companyDTO.setName(suggestion.getName());
-                companyDTO.setId(Long.parseLong(suggestion.getUri().replace("companies::", "")));
+                companyDTO.setId(Long.parseLong(suggestion.getUri().split("::")[1]));
                 changed = SearchPageViewImpl.this.companyDTO == null || !SearchPageViewImpl.this.companyDTO.getId().equals(companyDTO.getId());
                 SearchPageViewImpl.this.companyDTO = companyDTO;
             }

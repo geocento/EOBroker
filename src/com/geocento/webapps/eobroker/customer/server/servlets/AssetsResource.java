@@ -19,7 +19,8 @@ import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
+import com.geocento.webapps.eobroker.customer.shared.UserHelper;
+import com.geocento.webapps.eobroker.customer.shared.utils.*;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -1470,6 +1471,7 @@ public class AssetsResource implements AssetsService {
     public CompanyDTO createCompany(CreateCompanyDTO createCompanyDTO) throws RequestException {
         EntityManager em = EMF.get().createEntityManager();
         try {
+            com.geocento.webapps.eobroker.customer.shared.utils.CompanyHelper.checkCompanyValues(createCompanyDTO);
             em.getTransaction().begin();
             // TODO - check a few values
             Company company = new Company();
@@ -1507,6 +1509,20 @@ public class AssetsResource implements AssetsService {
     public void createUser(CreateUserDTO createUserDTO) throws RequestException {
         EntityManager em = EMF.get().createEntityManager();
         try {
+            try {
+                com.geocento.webapps.eobroker.customer.shared.utils.UserHelper.checkUserValues(createUserDTO);
+            } catch (Exception e) {
+                throw new RequestException(e.getMessage());
+            }
+            if(em.find(User.class, createUserDTO.getUserName()) != null) {
+                throw new RequestException("User name is already taken");
+            }
+            TypedQuery<User> query = em.createQuery("select u from users u WHERE u.email = :email", User.class);
+            query.setParameter("email", createUserDTO.getEmail());
+            List<User> results = query.getResultList();
+            if(results != null && results.size() > 0) {
+                throw new RequestException("Email address is already used");
+            }
             em.getTransaction().begin();
             // TODO - check a few values
             User user = new User();
@@ -1528,7 +1544,9 @@ public class AssetsResource implements AssetsService {
             }
 */
             em.persist(user);
+            em.getTransaction().commit();
             // add notification
+            em.getTransaction().begin();
             try {
                 NotificationHelper.notifyAdmin(em, AdminNotification.TYPE.USER, "New user '" + user.getUsername() + "' has registered, please validate", user.getUsername());
             } catch (Exception e) {
@@ -1540,7 +1558,7 @@ public class AssetsResource implements AssetsService {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new RequestException("Server error");
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
         } finally {
             em.close();
         }

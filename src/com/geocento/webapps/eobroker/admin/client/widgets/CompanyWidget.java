@@ -14,6 +14,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 
@@ -37,11 +38,14 @@ public class CompanyWidget extends Composite {
     MaterialLink edit;
     @UiField
     MaterialLink remove;
+    @UiField
+    MaterialIcon supplier;
 
     public CompanyWidget(final CompanyDTO companyDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
         image.setImageUrl(companyDTO.getIconURL());
         title.setText(companyDTO.getName());
+        supplier.setVisible(companyDTO.isSupplier());
         description.setText(companyDTO.getDescription());
         edit.setHref("#" + PlaceHistoryHelper.convertPlace(new CompanyPlace(companyDTO.getId())));
         remove.addClickHandler(new ClickHandler() {

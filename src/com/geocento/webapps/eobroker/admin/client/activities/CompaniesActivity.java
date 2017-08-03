@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveCompany;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveCompanyHandler;
 import com.geocento.webapps.eobroker.admin.client.places.CompaniesPlace;
 import com.geocento.webapps.eobroker.admin.client.places.CompanyPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
@@ -65,6 +67,33 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
                 clientFactory.getPlaceController().goTo(new CompanyPlace());
             }
         }));
+
+        activityEventBus.addHandler(RemoveCompany.TYPE, new RemoveCompanyHandler() {
+            @Override
+            public void onRemoveCompany(RemoveCompany event) {
+                try {
+                    CompanyDTO companyDTO = event.getCompanyDTO();
+                    if(Window.confirm("Are you sure you want to remove the company " + companyDTO.getName() + "?")) {
+                        displayLoading("Removing company");
+                        REST.withCallback(new MethodCallback<Void>() {
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                hideLoading();
+                                displayError(exception.getMessage());
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void response) {
+                                hideLoading();
+                                displaySuccess("Company " + companyDTO.getName() + " has been removed!");
+                                loadCompanies();
+                            }
+                        }).call(ServicesUtil.assetsService).removeCompany(companyDTO.getId());
+                    }
+                } catch (RequestException e) {
+                }
+            }
+        });
     }
 
     private void loadCompanies() {

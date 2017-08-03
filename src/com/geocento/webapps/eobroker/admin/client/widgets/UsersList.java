@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.admin.client.widgets;
 
 import com.geocento.webapps.eobroker.admin.client.Admin;
 import com.geocento.webapps.eobroker.admin.client.events.EditUser;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveUser;
 import com.geocento.webapps.eobroker.admin.shared.dtos.UserDescriptionDTO;
 import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingCellTable;
 import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
@@ -84,6 +85,21 @@ public class UsersList extends AsyncPagingCellTable<UserDescriptionDTO> {
             @Override
             public void update(int index, final UserDescriptionDTO userDescriptionDTO, String value) {
                 Admin.clientFactory.getEventBus().fireEvent(new EditUser(userDescriptionDTO));
+            }
+        });
+
+        Column<UserDescriptionDTO, String> deleteColumn = new Column<UserDescriptionDTO, String>(new ButtonCell()) {
+            @Override
+            public String getValue(UserDescriptionDTO object) {
+                return "DELETE";
+            }
+        };
+        addColumn(deleteColumn, "Action", "100px");
+        deleteColumn.setFieldUpdater(new FieldUpdater<UserDescriptionDTO, String>() {
+
+            @Override
+            public void update(int index, final UserDescriptionDTO userDescriptionDTO, String value) {
+                Admin.clientFactory.getEventBus().fireEvent(new RemoveUser(userDescriptionDTO));
             }
         });
 

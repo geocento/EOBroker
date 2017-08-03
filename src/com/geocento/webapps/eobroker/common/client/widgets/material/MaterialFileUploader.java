@@ -621,4 +621,5 @@ public class MaterialFileUploader extends MaterialWidget implements HasFileUploa
     public MaterialUploadPreview getUploadPreview() {
         return uploadPreview;
     }
+
 }

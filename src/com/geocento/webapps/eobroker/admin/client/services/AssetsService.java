@@ -74,6 +74,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/companies/status/")
     void approveCompany(Long id) throws RequestException;
 
+    @DELETE
+    @Path("/assets/companies/{id}")
+    void removeCompany(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/newsitem/")
     @Produces("application/json")
@@ -139,6 +143,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/users/")
     @Consumes("application/json")
     void createUser(UserDescriptionDTO userDescriptionDTO) throws RequestException;
+
+    @DELETE
+    @Path("/users/{userName}")
+    void removeUser(@PathParam("userName") String userName) throws RequestException;
 
     @GET
     @Path("/settings/")

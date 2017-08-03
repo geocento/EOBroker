@@ -24,6 +24,11 @@ public interface SearchService extends DirectRestService {
     public List<Suggestion> complete(@QueryParam("text") String text, @QueryParam("category") Category category, @QueryParam("aoi") String aoi);
 
     @GET
+    @Path("/search/complete/allcompanies")
+    @Produces("application/json")
+    public List<Suggestion> completeAllCompanies(@QueryParam("text") String text, @QueryParam("aoi") String aoi);
+
+    @GET
     @Path("/search/offer")
     @Produces("application/json")
     List<Offer> getMatchingOffer(@QueryParam("text") String text, @QueryParam("category") Category category, @QueryParam("aoi") Long aoiId) throws RequestException;
@@ -105,4 +110,5 @@ public interface SearchService extends DirectRestService {
     @Path("/search/opensearch/description")
     @Produces("application/json")
     OSDescriptionResponse getOSDescriptionResponse(String requestUrl) throws Exception;
+
 }

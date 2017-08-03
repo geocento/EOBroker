@@ -1,7 +1,11 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.DataAccessUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessFile;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
@@ -79,33 +83,37 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
         }
 
         if(serviceId != null) {
-            displayFullLoading("Loading on demand service...");
-            productServiceView.setTitleLine("Edit your on demand service details and settings");
-            try {
-                REST.withCallback(new MethodCallback<ProductServiceEditDTO>() {
-
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        hideFullLoading();
-                        Window.alert("Problem loading on demand service");
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, ProductServiceEditDTO productServiceDTO) {
-                        hideFullLoading();
-                        setService(productServiceDTO);
-                    }
-
-                }).call(ServicesUtil.assetsService).getProductService(serviceId);
-            } catch (RequestException e) {
-                e.printStackTrace();
-            }
+            loadService(serviceId);
         } else {
             productServiceView.setTitleLine("Create new service");
             ProductServiceEditDTO productServiceDTO = new ProductServiceEditDTO();
             setService(productServiceDTO);
         }
 
+    }
+
+    private void loadService(Long serviceId) {
+        displayFullLoading("Loading bespoke service...");
+        productServiceView.setTitleLine("Edit your bespoke service details and settings");
+        try {
+            REST.withCallback(new MethodCallback<ProductServiceEditDTO>() {
+
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideFullLoading();
+                    Window.alert("Problem loading bespoke service");
+                }
+
+                @Override
+                public void onSuccess(Method method, ProductServiceEditDTO productServiceDTO) {
+                    hideFullLoading();
+                    setService(productServiceDTO);
+                }
+
+            }).call(ServicesUtil.assetsService).getProductService(serviceId);
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setService(final ProductServiceEditDTO productServiceDTO) {
@@ -209,11 +217,11 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
                         }
 
                         @Override
-                        public void onSuccess(Method method, Long productId) {
+                        public void onSuccess(Method method, Long serviceId) {
                             hideLoading();
                             displaySuccess("Product service saved");
-                            productServiceDTO.setId(productId);
-                            History.newItem(PlaceHistoryHelper.convertPlace(new ProductServicePlace(Utils.generateTokens(ProductServicePlace.TOKENS.service.toString(), productId.toString()))));
+                            loadService(serviceId);
+                            History.newItem(PlaceHistoryHelper.convertPlace(new ProductServicePlace(Utils.generateTokens(ProductServicePlace.TOKENS.service.toString(), serviceId.toString()))));
                         }
 
                     }).call(ServicesUtil.assetsService).updateProductService(productServiceDTO);
@@ -256,6 +264,30 @@ public class ProductServiceActivity extends TemplateActivity implements ProductS
             }).call(ServicesUtil.assetsService).getProductGeoinformation(selectedProduct.getId());
         } catch (RequestException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void viewDataAccess(DatasetAccess datasetAccess) {
+        if(datasetAccess instanceof DatasetAccessOGC) {
+            if(datasetAccess.getId() == null) {
+                Window.alert("Sorry, you need to save your bespoke service first!");
+                return;
+            }
+            Window.open(GWT.getHostPageBaseURL() + "#visualisation:" +
+                            Utils.generateTokens("productServiceId", productServiceDTO.getId() + "",
+                                    "dataAccessId", datasetAccess.getId() + ""),
+                    "_visualisation;", null);
+        } else {
+            if(datasetAccess.getUri() == null) {
+                Window.alert("Sorry the URI parameter is not correct");
+                return;
+            }
+            if(datasetAccess instanceof DatasetAccessFile) {
+                Window.open(DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess), "_blank", null);
+            } else {
+                Window.open(datasetAccess.getUri(), "_blank;", null);
+            }
         }
     }
 }

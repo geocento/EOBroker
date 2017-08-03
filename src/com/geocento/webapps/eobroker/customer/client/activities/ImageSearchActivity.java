@@ -257,7 +257,7 @@ public class ImageSearchActivity extends TemplateActivity implements ImageSearch
             if(selectedSuggestion.getCategory() == Category.imagery) {
                 searchQuery.setSensors(selectedSuggestion.getName());
             } else {
-                searchQuery.setProduct(Long.parseLong(selectedSuggestion.getUri().replace("product::", "")));
+                searchQuery.setProduct(Long.parseLong(selectedSuggestion.getUri().replace("access::", "")));
             }
         } else {
             searchQuery.setSensors(sensors);

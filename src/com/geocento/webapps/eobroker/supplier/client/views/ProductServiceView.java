@@ -92,7 +92,10 @@ public interface ProductServiceView extends IsWidget {
     HasClickHandlers getViewClient();
 
     public interface Presenter {
+
         void productChanged();
+
+        void viewDataAccess(DatasetAccess datasetAccess);
     }
 
 }

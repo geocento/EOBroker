@@ -39,7 +39,6 @@
 
         .userIcon {
             display: inline-block;
-        !important;
             vertical-align: middle;
             cursor: pointer;
         }
