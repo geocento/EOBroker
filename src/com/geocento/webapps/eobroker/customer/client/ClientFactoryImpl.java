@@ -57,6 +57,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private NotificationsView notificationsView = null;
 
+    private CompanyView companyView = null;
+
     private RequestAccessView requestAccessView = null;
 
     private TemplateView templateView = null;
@@ -250,6 +252,14 @@ public class ClientFactoryImpl implements ClientFactory {
             requestAccessView = new RequestAccessViewImpl(this);
         }
         return requestAccessView;
+    }
+
+    @Override
+    public CompanyView getCompanyView() {
+        if(companyView == null) {
+            companyView = new CompanyViewImpl(this);
+        }
+        return companyView;
     }
 }
 

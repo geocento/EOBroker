@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +53,14 @@ public class BaseNotificationSocket {
                 return;
             }
             sessions.remove(session);
+        }
+    }
+
+    protected void handleError(Throwable t) {
+        if(t instanceof SocketTimeoutException) {
+            logger.error(t.getMessage());
+        } else {
+            logger.error(t.getMessage(), t);
         }
     }
 

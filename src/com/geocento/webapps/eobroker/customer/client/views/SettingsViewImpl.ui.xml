@@ -2,14 +2,85 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style>
         .formPanel {
             width: 960px;
             margin: 0px auto;
         }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 2.4em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+
+        .image {
+            cursor: pointer;
+        }
+
+        .title {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .buttonsPanel {
+            margin-top: 30px;
+            padding: 20px 0px;
+            border-top: 1px solid gray;
+        }
+
+        .subtitle {
+            display: block;
+            margin: 20px 0px;
+        }
+
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.formPanel}">
-        <design:MaterialTitle title="TODO"></design:MaterialTitle>
+        <design:MaterialTitle title="User profile"></design:MaterialTitle>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <widgets:MaterialImageUploader imageWidth="100" imageHeight="150" ui:field="iconUrl"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Full name" iconType="PERM_IDENTITY" ui:field="fullName"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Your company" iconType="BUSINESS" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialCard backgroundColor="BLUE_GREY" axis="HORIZONTAL">
+                    <design:MaterialCardImage backgroundColor="WHITE">
+                        <widgets:MaterialImageLoading addStyleNames="{style.image}" width="200px" ui:field="companyImage"></widgets:MaterialImageLoading>
+                    </design:MaterialCardImage>
+                    <design:MaterialCardContent textColor="WHITE" padding="10">
+                        <design:MaterialLabel fontSize="1.2em" truncate="true" addStyleNames="{style.title}" ui:field="companyName"/>
+                        <design:MaterialLabel addStyleNames="{style.description}" ui:field="companyDescription"></design:MaterialLabel>
+                    </design:MaterialCardContent>
+                    <design:MaterialCardAction padding="10">
+                        <design:MaterialAnchorButton float="RIGHT" text="EDIT" ui:field="editCompany"></design:MaterialAnchorButton>
+                    </design:MaterialCardAction>
+                </design:MaterialCard>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SAVE" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+        <design:MaterialTitle title="Notification settings"></design:MaterialTitle>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLabel text="TODO - add notification parameters"></design:MaterialLabel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
     </g:HTMLPanel>
 </ui:UiBinder>

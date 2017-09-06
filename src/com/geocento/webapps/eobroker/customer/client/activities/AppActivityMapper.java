@@ -49,6 +49,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new FeedbackActivity((FeedbackPlace) place, clientFactory);
         } else if(place instanceof SettingsPlace) {
             return new SettingsActivity((SettingsPlace) place, clientFactory);
+        } else if(place instanceof CompanyPlace) {
+            return new CompanyActivity((CompanyPlace) place, clientFactory);
         } else if(place instanceof TestimonialsPlace) {
             return new TestimonialsActivity((TestimonialsPlace) place, clientFactory);
         } else if(place instanceof TestimonialPlace) {

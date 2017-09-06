@@ -53,7 +53,7 @@ public class SettingsActivity extends TemplateActivity implements SettingsView.P
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideLoading();
-                    displayError(exception.getMessage());
+                    displayError(method.getResponse().getText());
                 }
 
                 @Override

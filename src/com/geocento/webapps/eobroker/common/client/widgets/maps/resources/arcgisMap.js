@@ -37,7 +37,7 @@ var arcgisMap = function(callback) {
 /*
         urlUtils.addProxyRule({
             urlPrefix: "192.168.92.100:8088",
-            proxyUrl: "/proxy.jsp"
+            proxyUrl: "/proxy.jsp_"
         });
 */
 

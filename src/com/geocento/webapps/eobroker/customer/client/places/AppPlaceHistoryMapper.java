@@ -19,6 +19,7 @@ import com.google.gwt.place.shared.WithTokenizers;
         ConversationPlace.Tokenizer.class,
         FeedbackPlace.Tokenizer.class,
         SettingsPlace.Tokenizer.class,
+        CompanyPlace.Tokenizer.class,
         TestimonialsPlace.Tokenizer.class,
         TestimonialPlace.Tokenizer.class,
         NotificationsPlace.Tokenizer.class,

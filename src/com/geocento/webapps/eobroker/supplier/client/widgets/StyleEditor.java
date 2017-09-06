@@ -9,7 +9,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.http.client.RequestException;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -95,7 +94,7 @@ public class StyleEditor {
                 REST.withCallback(new MethodCallback<String>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        Window.alert(exception instanceof RequestException ? exception.getMessage() : "Could not save style");
+                        Window.alert("Could not save style, reason is " + method.getResponse().getText());
                     }
 
                     @Override

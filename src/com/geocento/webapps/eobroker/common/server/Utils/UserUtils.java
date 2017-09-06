@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 
 import javax.persistence.EntityManager;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public class UserUtils {
         user.setRole(role);
         user.setPermissions(permissions);
         user.setCompany(company);
+        user.setCreationDate(new Date());
         return user;
     }
 

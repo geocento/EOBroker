@@ -111,7 +111,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                     @Override
                     public void onFailure(Method method, Throwable exception) {
                         hideLoading();
-                        displayError(exception.getMessage());
+                        displayError(method.getResponse().getText());
                     }
 
                     @Override

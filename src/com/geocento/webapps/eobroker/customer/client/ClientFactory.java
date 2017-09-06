@@ -58,4 +58,6 @@ public interface ClientFactory {
     NotificationsView getNotificationsView();
 
     RequestAccessView getRequestAccessView();
+
+    CompanyView getCompanyView();
 }

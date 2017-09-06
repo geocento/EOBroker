@@ -149,7 +149,7 @@ public class ContextListener implements ServletContextListener {
                                 }
                             }));
                             mailContent.addAction("view all notifications", null, ServerUtil.getSettings().getAdminWebsiteUrl() + "#notifications:");
-                            mailContent.sendEmail(StringUtils.join(adminEmails, ";"), "New notifications on EO Broker", false);
+                            mailContent.sendEmail(StringUtils.join(adminEmails, ","), "New notifications on EO Broker", false);
                             em.getTransaction().commit();
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
@@ -454,28 +454,30 @@ public class ContextListener implements ServletContextListener {
                     em.getTransaction().commit();
                 }
             }
-/*
             {
-                // look for local datasets access without file size set
-                TypedQuery<Company> query = em.createQuery("select c from Company c where c.status = :status OR c.supplier = :supplier", Company.class);
-                query.setParameter("status", REGISTRATION_STATUS.PENDING);
-                query.setParameter("supplier", false);
-                List<Company> companies = query.getResultList();
-                if (companies.size() > 0) {
+                // check all users have a settings
+                TypedQuery<User> query = em.createQuery("select u from users u where u.customerSettings is NULL", User.class);
+                List<User> users = query.getResultList();
+                if (users.size() > 0) {
                     em.getTransaction().begin();
-                    for (Company company : companies) {
-                        if(company.getDatasets().size() > 0 ||
-                                company.getServices().size() > 0 ||
-                                company.getSoftware().size() > 0 ||
-                                company.getProjects().size() > 0) {
-                            company.setStatus(REGISTRATION_STATUS.APPROVED);
-                            company.setSupplier(true);
-                        }
+                    for (User user : users) {
+                        user.setCustomerSettings(new CustomerSettings());
                     }
                     em.getTransaction().commit();
                 }
             }
-*/
+            {
+                // check all users have a creation date
+                TypedQuery<User> query = em.createQuery("select u from users u where u.creationDate is NULL", User.class);
+                List<User> users = query.getResultList();
+                if (users.size() > 0) {
+                    em.getTransaction().begin();
+                    for (User user : users) {
+                        user.setCreationDate(user.getLastLoggedIn() == null ? new Date() : user.getLastLoggedIn());
+                    }
+                    em.getTransaction().commit();
+                }
+            }
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

@@ -85,6 +85,9 @@ public class Company {
     @Temporal(TemporalType.TIMESTAMP)
     Date lastNotificationCheck;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Company> affiliates;
+
     public Company() {
     }
 
@@ -270,5 +273,13 @@ public class Company {
 
     public void setLastNotificationCheck(Date lastNotificationCheck) {
         this.lastNotificationCheck = lastNotificationCheck;
+    }
+
+    public List<Company> getAffiliates() {
+        return affiliates;
+    }
+
+    public void setAffiliates(List<Company> affiliates) {
+        this.affiliates = affiliates;
     }
 }

@@ -563,6 +563,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         additionalFieldsPanel.setVisible(formElements.size() > 0);
         for(FormElement formElement : formElements) {
             ElementEditor editor = FormHelper.createEditor(formElement);
+            // reset all values
+            editor.resetValue();
             editor.addStyleName(style.editor());
             MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
             materialColumn.add(editor);

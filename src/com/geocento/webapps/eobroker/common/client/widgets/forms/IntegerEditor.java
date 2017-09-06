@@ -53,7 +53,7 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
 
     @Override
     public void setFormElementValue(String value) {
-        setValue(Integer.valueOf(value));
+        setValue(value == null ? null : Integer.valueOf(value));
     }
 
     public void setValue(Integer value) {

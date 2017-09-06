@@ -13,6 +13,7 @@ import java.util.List;
 public class ChoiceFormElement extends FormElement {
 
     boolean multiple;
+    boolean hasNone;
 
     @ElementCollection
     List<String> choices;
@@ -26,6 +27,14 @@ public class ChoiceFormElement extends FormElement {
 
     public void setMultiple(boolean multiple) {
         this.multiple = multiple;
+    }
+
+    public boolean isHasNone() {
+        return hasNone;
+    }
+
+    public void setHasNone(boolean hasNone) {
+        this.hasNone = hasNone;
     }
 
     public List<String> getChoices() {

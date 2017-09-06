@@ -578,7 +578,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideListSuggestionsLoading();
-                    displayListSuggestionsError(exception.getMessage());
+                    displayListSuggestionsError(method.getResponse().getText());
                 }
 
                 @Override

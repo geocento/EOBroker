@@ -34,6 +34,8 @@ public class MaterialImageUploader extends Composite {
     MaterialProgress iconProgress;
     @UiField
     com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader imageUploader;
+    @UiField
+    MaterialLabel comment;
 
     public MaterialImageUploader() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -79,10 +81,16 @@ public class MaterialImageUploader extends Composite {
     public void setImageWidth(int width) {
         imageUploader.setParameter("width", width + "");
         iconPreview.setWidth(width + "px");
+        updateComment();
     }
 
     public void setImageHeight(int height) {
         imageUploader.setParameter("height", height + "");
         iconPreview.setHeight(height + "px");
+        updateComment();
+    }
+
+    private void updateComment() {
+        comment.setText("Upload image " + imageUploader.getParameter("width") + "px by " + imageUploader.getParameter("height") + " px");
     }
 }

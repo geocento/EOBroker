@@ -46,6 +46,11 @@ public interface AssetsService extends DirectRestService {
                                          @QueryParam("orderby") String orderBy,
                                          @QueryParam("filter") String filter) throws RequestException;
 
+    @DELETE
+    @Path("/assets/products/{id}")
+    @Produces("application/json")
+    public void removeProduct(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/companies/{id}")
     @Produces("application/json")

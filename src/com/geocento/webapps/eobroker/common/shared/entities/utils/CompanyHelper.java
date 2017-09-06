@@ -8,11 +8,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
  */
 public class CompanyHelper {
 
-    public static CompanyDTO createCompanyDTO(Company company) {
-        if(company == null) {
-            return null;
-        }
-        CompanyDTO companyDTO = new CompanyDTO();
+    public static void populateCompanyDTO(CompanyDTO companyDTO, Company company, boolean full) {
         companyDTO.setId(company.getId());
         companyDTO.setIconURL(company.getIconURL());
         companyDTO.setName(company.getName());
@@ -20,17 +16,32 @@ public class CompanyHelper {
         companyDTO.setContactEmail(company.getContactEmail());
         companyDTO.setWebsite(company.getWebsite());
         companyDTO.setFollowers(company.getFollowers() == null ? 0 : company.getFollowers().intValue());
+        companyDTO.setSupplier(company.isSupplier());
+        if(full) {
+            companyDTO.setFullDescription(company.getFullDescription());
+            companyDTO.setStartedIn(company.getStartedIn());
+            companyDTO.setAddress(company.getAddress());
+            companyDTO.setCountryCode(company.getCountryCode());
+            companyDTO.setAwards(company.getAwards());
+        }
+    }
+
+    public static CompanyDTO createCompanyDTO(Company company) {
+        if(company == null) {
+            return null;
+        }
+        CompanyDTO companyDTO = new CompanyDTO();
+        populateCompanyDTO(companyDTO, company, false);
         return companyDTO;
     }
 
     public static CompanyDTO createFullCompanyDTO(Company company) {
-        CompanyDTO companyDTO = createCompanyDTO(company);
-        companyDTO.setSupplier(company.isSupplier());
-        companyDTO.setFullDescription(company.getFullDescription());
-        companyDTO.setStartedIn(company.getStartedIn());
-        companyDTO.setAddress(company.getAddress());
-        companyDTO.setCountryCode(company.getCountryCode());
-        companyDTO.setAwards(company.getAwards());
+        if(company == null) {
+            return null;
+        }
+        CompanyDTO companyDTO = new CompanyDTO();
+        populateCompanyDTO(companyDTO, company, true);
         return companyDTO;
     }
+
 }

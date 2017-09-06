@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveProduct;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveProductHandler;
 import com.geocento.webapps.eobroker.admin.client.places.ProductPlace;
 import com.geocento.webapps.eobroker.admin.client.places.ProductsPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
@@ -43,6 +45,7 @@ public class ProductsActivity extends TemplateActivity implements ProductsView.P
         productsView = clientFactory.getProductsView();
         productsView.setPresenter(this);
         panel.setWidget(productsView.asWidget());
+        setTemplateView(productsView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -90,10 +93,42 @@ public class ProductsActivity extends TemplateActivity implements ProductsView.P
                 clientFactory.getPlaceController().goTo(new ProductPlace());
             }
         }));
+
+        activityEventBus.addHandler(RemoveProduct.TYPE, new RemoveProductHandler() {
+            @Override
+            public void onRemoveProduct(RemoveProduct event) {
+                if(!Window.confirm("Are you sure you want to remove this product?")) {
+                    return;
+                }
+                try {
+                    displayLoading("Removing product...");
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            hideLoading();
+                            displayError("Problem removing product, reason is " + method.getResponse().getText());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void response) {
+                            hideLoading();
+                            displaySuccess("Product has been removed");
+                            reloadProducts();
+                        }
+                    }).call(ServicesUtil.assetsService).removeProduct(event.getId());
+                } catch (RequestException e) {
+                }
+            }
+        });
     }
 
     @Override
     public void loadMore() {
+        loadProducts();
+    }
+
+    private void reloadProducts() {
+        start = 0;
         loadProducts();
     }
 

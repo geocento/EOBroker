@@ -38,6 +38,7 @@ public class ProductActivity extends TemplateActivity implements ProductView.Pre
         productView = clientFactory.getProductView();
         productView.setPresenter(this);
         panel.setWidget(productView.asWidget());
+        setTemplateView(productView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

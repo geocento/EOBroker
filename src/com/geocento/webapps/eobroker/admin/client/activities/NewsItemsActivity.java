@@ -43,6 +43,7 @@ public class NewsItemsActivity extends TemplateActivity implements NewsItemsView
         newsItemsView = clientFactory.getNewsItemsView();
         newsItemsView.setPresenter(this);
         panel.setWidget(newsItemsView.asWidget());
+        setTemplateView(newsItemsView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

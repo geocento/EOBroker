@@ -182,7 +182,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 hideLoading();
-                                displayError(exception.getMessage());
+                                displayError(method.getResponse().getText());
                             }
 
                             @Override
@@ -211,7 +211,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideLoading();
-                    displayError(exception.getMessage());
+                    displayError(method.getResponse().getText());
                 }
 
                 @Override

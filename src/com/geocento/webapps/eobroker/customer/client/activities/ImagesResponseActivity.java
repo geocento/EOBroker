@@ -113,7 +113,7 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 hideLoading();
-                                displayError(exception.getMessage());
+                                displayError(method.getResponse().getText());
                             }
 
                             @Override
@@ -138,7 +138,7 @@ public class ImagesResponseActivity extends TemplateActivity implements ImagesRe
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             hideLoading();
-                            displayError(exception.getMessage());
+                            displayError(method.getResponse().getText());
                         }
 
                         @Override

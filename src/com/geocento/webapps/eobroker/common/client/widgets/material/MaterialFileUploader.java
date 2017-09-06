@@ -68,6 +68,10 @@ public class MaterialFileUploader extends MaterialWidget implements HasFileUploa
         parameters.put(name, value);
     }
 
+    public String getParameter(String name) {
+        return parameters.get(name);
+    }
+
     private void addFormParameters(JavaScriptObject formData) {
         for(String name : parameters.keySet()) {
             addFormParameter(formData, name, parameters.get(name));

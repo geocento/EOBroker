@@ -41,6 +41,9 @@ public class User {
     Company company;
 
     @Temporal(TemporalType.TIMESTAMP)
+    Date creationDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
     Date lastLoggedIn;
 
     @OneToOne
@@ -54,6 +57,9 @@ public class User {
 
     @Temporal(TemporalType.TIMESTAMP)
     Date lastNotificationCheck;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    CustomerSettings customerSettings;
 
     public User() {
     }
@@ -160,5 +166,21 @@ public class User {
 
     public void setLastNotificationCheck(Date lastNotificationCheck) {
         this.lastNotificationCheck = lastNotificationCheck;
+    }
+
+    public CustomerSettings getCustomerSettings() {
+        return customerSettings;
+    }
+
+    public void setCustomerSettings(CustomerSettings customerSettings) {
+        this.customerSettings = customerSettings;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

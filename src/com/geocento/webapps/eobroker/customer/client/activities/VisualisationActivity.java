@@ -110,7 +110,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                 REST.withCallback(new MethodCallback<ProductDatasetVisualisationDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        Window.alert(exception.getMessage());
+                        Window.alert(method.getResponse().getText());
                     }
 
                     @Override
@@ -125,7 +125,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                 REST.withCallback(new MethodCallback<ProductServiceVisualisationDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        Window.alert(exception.getMessage());
+                        Window.alert(method.getResponse().getText());
                     }
 
                     @Override
@@ -214,7 +214,6 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                                 @Override
                                 public void onFailure(Throwable caught) {
                                     if(current == latest) {
-                                        //visualisationView.displayMapInfoContent(event.getMapPoint(), "Layer feature information", "Error querying layer...");
                                         visualisationView.displayGetFeatureInfoContent("Error querying layer...");
                                     }
                                 }
@@ -299,7 +298,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                     @Override
                     public void onFailure(Method method, Throwable exception) {
                         visualisationView.hideLoadingInformation();
-                        visualisationView.displayInformationError(exception.getMessage());
+                        visualisationView.displayInformationError(method.getResponse().getText());
                     }
 
                     @Override

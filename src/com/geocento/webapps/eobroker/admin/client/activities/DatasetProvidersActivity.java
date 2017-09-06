@@ -38,6 +38,7 @@ public class DatasetProvidersActivity extends TemplateActivity implements Datase
         datasetprovidersView = clientFactory.getDatasetProvidersView();
         datasetprovidersView.setPresenter(this);
         panel.setWidget(datasetprovidersView.asWidget());
+        setTemplateView(datasetprovidersView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

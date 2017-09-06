@@ -79,7 +79,7 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 hideLoading();
-                                displayError(exception.getMessage());
+                                displayError(method.getResponse().getText());
                             }
 
                             @Override

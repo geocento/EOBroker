@@ -984,6 +984,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public CompanyDTO getCompany(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -995,6 +996,96 @@ public class AssetsResource implements AssetsService {
             }
             return CompanyHelper.createFullCompanyDTO(company);
         } catch (Exception e) {
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public CustomerCompanyDTO getUserCompany() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            Company company = user.getCompany();
+            if (company == null) {
+                throw new RequestException("Company does not exist");
+            }
+            CustomerCompanyDTO customerCompanyDTO = new CustomerCompanyDTO();
+            CompanyHelper.populateCompanyDTO(customerCompanyDTO, company, true);
+            customerCompanyDTO.setAffiliates(ListUtil.mutate(company.getAffiliates(), new ListUtil.Mutate<Company, CompanyDTO>() {
+                @Override
+                public CompanyDTO mutate(Company company) {
+                    return CompanyHelper.createCompanyDTO(company);
+                }
+            }));
+            TypedQuery<User> query = em.createQuery("select u from users u where u.company = :company", User.class);
+            query.setParameter("company", company);
+            customerCompanyDTO.setUsers(ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<User, UserDTO>() {
+                @Override
+                public UserDTO mutate(User user) {
+                    UserDTO userDTO = UserHelper.createUserDTO(user);
+                    // no need to pass the company
+                    userDTO.setCompanyDTO(null);
+                    return userDTO;
+                }
+            }));
+            return customerCompanyDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void updateUserCompany(CustomerCompanyDTO companyDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(companyDTO == null || companyDTO.getId() == null) {
+            throw new RequestException("Invalid company");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            Company company = user.getCompany();
+            if (company == null) {
+                throw new RequestException("Company does not exist");
+            }
+            if(!company.getId().equals(companyDTO.getId())) {
+                throw new RequestException("Not allowed to change the company");
+            }
+            em.getTransaction().begin();
+            company.setName(companyDTO.getName());
+            company.setStartedIn(companyDTO.getStartedIn());
+            company.setCompanySize(companyDTO.getCompanySize());
+            company.setAddress(companyDTO.getAddress());
+            company.setCountryCode(companyDTO.getCountryCode());
+            company.setContactEmail(companyDTO.getContactEmail());
+            company.setDescription(companyDTO.getDescription());
+            company.setFullDescription(companyDTO.getFullDescription());
+            company.setIconURL(companyDTO.getIconURL());
+            company.setWebsite(companyDTO.getWebsite());
+            if(companyDTO.getAffiliates() != null && companyDTO.getAffiliates().size() > 0) {
+                TypedQuery<Company> query = em.createQuery("select c from Company c where c.id in :companies", Company.class);
+                query.setParameter("companies", ListUtil.mutate(companyDTO.getAffiliates(), new ListUtil.Mutate<CompanyDTO, Long>() {
+                    @Override
+                    public Long mutate(CompanyDTO companyDTO) {
+                        return companyDTO.getId();
+                    }
+                }));
+                List<Company> companies = query.getResultList();
+                company.setAffiliates(companies);
+            } else {
+                company.setAffiliates(new ArrayList<Company>());
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
             throw new RequestException("Server error");
         } finally {
             em.close();
@@ -1537,6 +1628,7 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Missing company");
             }
             user.setCompany(dbCompany);
+            user.setCreationDate(new Date());
 /*
             // TODO - manage companies which are not suppliers!
             if(dbCompany.isSupplier()) {
@@ -1559,6 +1651,51 @@ public class AssetsResource implements AssetsService {
                 em.getTransaction().rollback();
             }
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public SettingsDTO getUserSettings() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            SettingsDTO settingsDTO = new SettingsDTO();
+            Company company = user.getCompany();
+            CustomerSettings customerSettings = user.getCustomerSettings();
+            settingsDTO.setUserIconUrl(user.getUserIcon());
+            settingsDTO.setFullName(user.getFullName());
+            settingsDTO.setEmail(user.getEmail());
+            settingsDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(company));
+            return settingsDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error loading settings");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void saveUserSettings(SettingsDTO settingsDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            CustomerSettings customerSettings = user.getCustomerSettings();
+            user.setUserIcon(settingsDTO.getUserIconUrl());
+            user.setFullName(settingsDTO.getFullName());
+            user.setEmail(settingsDTO.getEmail());
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error updating settings");
         } finally {
             em.close();
         }

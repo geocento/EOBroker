@@ -40,7 +40,7 @@ public class BooleanEditor extends ElementEditor<BooleanFormElement> {
 
     @Override
     public void setFormElementValue(String value) {
-        setValue(Boolean.valueOf(value));
+        setValue(value == null ? null : Boolean.valueOf(value));
     }
 
     @Override

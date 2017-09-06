@@ -139,7 +139,7 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 hideLoading();
-                                displayError(exception.getMessage());
+                                displayError(method.getResponse().getText());
                             }
 
                             @Override
@@ -164,7 +164,7 @@ public class ImageryResponseActivity extends TemplateActivity implements Imagery
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             hideLoading();
-                            displayError(exception.getMessage());
+                            displayError(method.getResponse().getText());
                         }
 
                         @Override

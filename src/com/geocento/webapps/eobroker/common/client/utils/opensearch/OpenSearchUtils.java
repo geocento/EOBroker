@@ -68,7 +68,7 @@ public class OpenSearchUtils {
         if(stopParameter != null) {
             requestedParameters.put(stopParameter.getName(), fmt.format(stopDate));
         }
-        Parameter geometryParameter = getSupportedParameterType(supportedParameters, "", "geometry");
+        Parameter geometryParameter = getSupportedParameterType(supportedParameters, "geo", "geometry");
         if(geometryParameter != null) {
             requestedParameters.put(geometryParameter.getName(), wktGeometry);
         } else {
@@ -231,6 +231,7 @@ public class OpenSearchUtils {
         url.setIndexOffset(indexOffset == null ? 1 : Integer.parseInt(indexOffset));
         url.setParameters(getSupportedParameters(url.getTemplate()));
         // look for extra information on parameters
+        // TODO - add information such as minInclusive, maxInclusive, etc... http://www.opensearch.org/Specifications/OpenSearch/Extensions/Parameter/1.0/Draft_2
         NodeList parameterNodes = ((Element) urlNode).getElementsByTagName("Parameter");
         if(parameterNodes != null && parameterNodes.getLength() > 0) {
             for(int parameterIndex = 0; parameterIndex < parameterNodes.getLength(); parameterIndex++) {
@@ -247,19 +248,65 @@ public class OpenSearchUtils {
                     // look for additional information
                     String title = ((Element) parameterNode).getAttribute("title");
                     parameter.setTitle(title);
+                    // set to string by default
+                    parameter.setFieldType("string");
                     String pattern = ((Element) parameterNode).getAttribute("pattern");
                     if(pattern != null) {
-                        parameter.setFieldType("string");
                         parameter.setPattern(pattern);
                     }
-                    NodeList optionNodes = ((Element) urlNode).getElementsByTagName("Option");
+                    // if it has a min and max inclusive and it is not a time field the it is a numerical value
+                    String minInclusive = ((Element) parameterNode).getAttribute("minInclusive");
+                    String maxInclusive = ((Element) parameterNode).getAttribute("maxInclusive");
+                    if(minInclusive != null || maxInclusive != null) {
+                        // TODO - check the values are integers or double or date...
+                        // check type first
+                        String valueType = null;
+                        if(minInclusive != null) {
+                            valueType = getValueType(minInclusive);
+                        } else {
+                            valueType = getValueType(maxInclusive);
+                        }
+                        parameter.setFieldType(valueType);
+                        if(minInclusive != null) {
+                            parameter.setMinValue(getValue(minInclusive));
+                        }
+                        if(maxInclusive != null) {
+                            parameter.setMaxValue(getValue(maxInclusive));
+                        }
+                    }
+
+                    NodeList optionNodes = ((Element) parameterNode).getElementsByTagName("Option");
                     if (optionNodes != null && optionNodes.getLength() > 0) {
-                        //String optionName =
+                        List<String> options = new ArrayList<String>();
+                        for(int index = 0; index < optionNodes.getLength(); index++) {
+                            options.add(((Element) optionNodes.item(index)).getAttribute("value"));
+                        }
+                        parameter.setFieldType("options");
+                        parameter.setOptions(options);
                     }
                 }
             }
         }
         return url;
+    }
+
+    private static Double getValue(String minInclusive) {
+        try {
+            return new Double(Integer.parseInt(minInclusive));
+        } catch (NumberFormatException e1) {
+            try {
+                return Double.parseDouble(minInclusive);
+            } catch (NumberFormatException e2) {
+                try {
+                    return new Double(fmt.parse(minInclusive).getTime());
+                } catch (IllegalArgumentException e3) {
+
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 
     public static List<Parameter> getSupportedParameters(String urlTemplate) {
@@ -287,6 +334,28 @@ public class OpenSearchUtils {
             parameters.add(parameter);
         }
         return parameters;
+    }
+
+    private static String getValueType(String minInclusive) {
+        try {
+            Integer.parseInt(minInclusive);
+            return "integer";
+        } catch (NumberFormatException e1) {
+            try {
+                Double.parseDouble(minInclusive);
+                return "double";
+            } catch (NumberFormatException e2) {
+                try {
+                    fmt.parse(minInclusive).getTime();
+                    return "date";
+                } catch (IllegalArgumentException e3) {
+
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 
     private String maybeProxyRequest(String requestURL) {

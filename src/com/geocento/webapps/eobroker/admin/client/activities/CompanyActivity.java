@@ -39,6 +39,7 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
         companyView = clientFactory.getCompanyView();
         companyView.setPresenter(this);
         panel.setWidget(companyView.asWidget());
+        setTemplateView(companyView.getTemplateView());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -97,7 +98,7 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                     REST.withCallback(new MethodCallback<Void>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            companyView.setLoadingError("Error validating company, reason is " + exception.getMessage());
+                            companyView.setLoadingError("Error validating company, reason is " + method.getResponse().getText());
                         }
 
                         @Override

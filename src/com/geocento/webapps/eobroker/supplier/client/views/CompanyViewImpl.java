@@ -33,6 +33,7 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     }
 
     private static CompanyViewUiBinder ourUiBinder = GWT.create(CompanyViewUiBinder.class);
+
     @UiField
     MaterialTextBox name;
     @UiField

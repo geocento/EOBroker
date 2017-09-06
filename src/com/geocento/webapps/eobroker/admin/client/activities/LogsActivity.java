@@ -55,7 +55,7 @@ public class LogsActivity extends TemplateActivity implements LogsView.Presenter
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideLoading();
-                    displayError(exception.getMessage());
+                    displayError(method.getResponse().getText());
                 }
 
                 @Override

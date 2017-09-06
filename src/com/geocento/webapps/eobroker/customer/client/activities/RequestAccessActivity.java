@@ -64,7 +64,7 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 requestAccessView.hideLoading();
-                                requestAccessView.displayCompanyCreationError("Company could not be created, reason is " + exception.getMessage());
+                                requestAccessView.displayCompanyCreationError("Company could not be created, reason is " + method.getResponse().getText());
                             }
 
                             @Override
@@ -102,7 +102,7 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             requestAccessView.hideLoading();
-                            requestAccessView.displayUserCreationError("User could not be created, reason is " + exception.getMessage());
+                            requestAccessView.displayUserCreationError("User could not be created, reason is " + method.getResponse().getText());
                         }
 
                         @Override

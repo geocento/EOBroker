@@ -48,7 +48,7 @@ public class DateEditor extends ElementEditor<DateFormElement> {
 
     @Override
     public void setFormElementValue(String value) {
-        setValue(new Date(Long.valueOf(value)));
+        setValue(value == null ? null : new Date(Long.valueOf(value)));
     }
 
     public void setValue(Date value) {

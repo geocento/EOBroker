@@ -29,6 +29,9 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
         if(values == null) {
             return;
         }
+        if(choiceFormElement.isHasNone()) {
+            listBox.addItem("");
+        }
         for(String value : values) {
             listBox.addItem(value);
         }
@@ -45,6 +48,9 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
         if(values.length == 0) {
             throw new Exception("At least one selection is required");
         }
+        if(values[0].length() == 0) {
+            return null;
+        }
         FormElementValue formElementValue = new FormElementValue();
         formElementValue.setValue(StringUtils.join(values, ","));
         formElementValue.setName(formElement.getName());
@@ -54,7 +60,7 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
 
     @Override
     public void setFormElementValue(String value) {
-        setValue(value.split(","));
+        setValue(value != null ? value.split(",") : null);
     }
 
     @Override

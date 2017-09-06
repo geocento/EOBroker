@@ -207,6 +207,28 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public void removeProduct(Long id) throws RequestException {
+        UserUtils.verifyUserAdmin(request);
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Product product = em.find(Product.class, id);
+            if(product == null) {
+                throw new RequestException("Unknown product");
+            }
+            em.remove(product);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public CompanyDTO getCompany(Long id) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();
@@ -592,9 +614,6 @@ public class AssetsResource implements AssetsService {
             if(feedback == null) {
                 throw new RequestException("No feedback with this id");
             }
-            if(feedback.getCustomer() != user) {
-                throw new RequestException("Not allowed");
-            }
             Message message = new Message();
             message.setFrom(user);
             message.setMessage(text);
@@ -782,6 +801,7 @@ public class AssetsResource implements AssetsService {
             // create new user
             dbUser = new User();
             dbUser.setUsername(userDescriptionDTO.getName());
+            dbUser.setCreationDate(new Date());
             // if password not provided generate random password
             String password = userDescriptionDTO.getPassword();
             if(password == null) {

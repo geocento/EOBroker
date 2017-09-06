@@ -65,7 +65,7 @@ public class NotificationSocket extends BaseNotificationSocket {
 
     @OnError
     public void onError(Throwable t) {
-        logger.error(t.getMessage(), t);
+        handleError(t);
     }
 
     @OnClose

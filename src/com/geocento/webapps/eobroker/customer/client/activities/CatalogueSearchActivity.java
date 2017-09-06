@@ -3,9 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.*;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.CatalogueSearchPlace;
@@ -166,15 +164,45 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                                             switch (parameter.getFieldType()) {
                                                 case "integer": {
                                                     IntegerFormElement integerFormElement = new IntegerFormElement();
+                                                    if(parameter.getMinValue() != null) {
+                                                        integerFormElement.setMin(parameter.getMinValue().intValue());
+                                                    }
+                                                    if(parameter.getMaxValue() != null) {
+                                                        integerFormElement.setMax(parameter.getMaxValue().intValue());
+                                                    }
                                                     formElement = integerFormElement;
-                                                }
-                                                break;
+                                                } break;
+                                                case "double": {
+                                                    DoubleFormElement doubleFormElement = new DoubleFormElement();
+                                                    if(parameter.getMinValue() != null) {
+                                                        doubleFormElement.setMin(parameter.getMinValue());
+                                                    }
+                                                    if(parameter.getMaxValue() != null) {
+                                                        doubleFormElement.setMax(parameter.getMaxValue());
+                                                    }
+                                                    formElement = doubleFormElement;
+                                                } break;
+                                                case "date": {
+                                                    DateFormElement dateFormElement = new DateFormElement();
+                                                    if(parameter.getMinValue() != null) {
+                                                        dateFormElement.setMinDate(new Date(parameter.getMinValue().intValue()));
+                                                    }
+                                                    if(parameter.getMaxValue() != null) {
+                                                        dateFormElement.setMaxDate(new Date(parameter.getMaxValue().intValue()));
+                                                    }
+                                                    formElement = dateFormElement;
+                                                } break;
                                                 case "string": {
                                                     TextFormElement textFormElement = new TextFormElement();
                                                     textFormElement.setPattern(parameter.getPattern());
                                                     formElement = textFormElement;
-                                                }
-                                                break;
+                                                } break;
+                                                case "options": {
+                                                    ChoiceFormElement choiceFormElement = new ChoiceFormElement();
+                                                    choiceFormElement.setHasNone(parameter.isOptional());
+                                                    choiceFormElement.setChoices(parameter.getOptions());
+                                                    formElement = choiceFormElement;
+                                                } break;
                                                 default:
                                                     break;
                                             }

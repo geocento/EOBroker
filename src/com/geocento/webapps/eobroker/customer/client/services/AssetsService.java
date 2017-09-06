@@ -74,6 +74,16 @@ public interface AssetsService extends DirectRestService {
     CompanyDTO getCompany(@PathParam("id") Long companyId) throws RequestException;
 
     @GET
+    @Path("/assets/company/")
+    @Produces("application/json")
+    CustomerCompanyDTO getUserCompany() throws RequestException;
+
+    @PUT
+    @Path("/assets/company/")
+    @Produces("application/json")
+    void updateUserCompany(CustomerCompanyDTO companyDTO) throws RequestException;
+
+    @GET
     @Path("/assets/productservices/description/{id}")
     @Produces("application/json")
     ProductServiceDescriptionDTO getProductServiceDescription(@PathParam("id") Long productServiceId) throws RequestException;
@@ -211,7 +221,16 @@ public interface AssetsService extends DirectRestService {
 
     @POST
     @Path("/assets/user/create")
-    @Produces("application/json")
     @Consumes("application/json")
     void createUser(CreateUserDTO createUserDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/user/settings")
+    @Produces("application/json")
+    SettingsDTO getUserSettings() throws RequestException;
+
+    @POST
+    @Path("/assets/user/settings")
+    @Consumes("application/json")
+    void saveUserSettings(SettingsDTO settingsDTO) throws RequestException;
 }

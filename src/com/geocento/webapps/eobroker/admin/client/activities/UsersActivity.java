@@ -111,7 +111,7 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
                     REST.withCallback(new MethodCallback<Void>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            Window.alert("Error saving user, reason is " + exception.getMessage());
+                            Window.alert("Error saving user, reason is " + method.getResponse().getText());
                             usersView.setUsersLoading(false);
                         }
 
@@ -151,7 +151,7 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
                     REST.withCallback(new MethodCallback<Void>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            Window.alert("Error saving user, reason is " + exception.getMessage());
+                            Window.alert("Error saving user, reason is " + method.getResponse().getText());
                             usersView.setUsersLoading(false);
                         }
 
@@ -177,7 +177,7 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
                             @Override
                             public void onFailure(Method method, Throwable exception) {
                                 hideLoading();
-                                displayError(exception.getMessage());
+                                displayError(method.getResponse().getText());
                             }
 
                             @Override

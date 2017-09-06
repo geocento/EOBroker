@@ -133,7 +133,7 @@ public class FeedbackActivity extends TemplateActivity implements FeedbackView.P
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideLoading();
-                    displayError(exception.getMessage());
+                    displayError(method.getResponse().getText());
                 }
 
                 @Override

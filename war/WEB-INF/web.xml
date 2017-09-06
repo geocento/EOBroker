@@ -152,7 +152,7 @@
 
     <error-page>
         <error-code>500</error-code>
-        <location>/pages/PageError.html</location>
+        <location>/pages/pageError.jsp</location>
     </error-page>
 
 </web-app>

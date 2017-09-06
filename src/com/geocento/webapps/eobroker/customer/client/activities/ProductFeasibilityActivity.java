@@ -132,7 +132,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError(exception.getMessage());
+                    displayError(method.getResponse().getText());
                 }
 
                 @Override
@@ -212,7 +212,7 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             productFeasibilityView.hideLoadingResults();
-                            productFeasibilityView.displayResultsError(exception.getMessage());
+                            productFeasibilityView.displayResultsError(method.getResponse().getText());
                         }
 
                         @Override

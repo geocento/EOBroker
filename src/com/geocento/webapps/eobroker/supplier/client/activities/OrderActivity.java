@@ -153,7 +153,7 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             hideLoading();
-                            displayError(exception.getMessage());
+                            displayError(method.getResponse().getText());
                         }
 
                         @Override
@@ -179,7 +179,7 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             hideLoading();
-                            displayError(exception.getMessage());
+                            displayError(method.getResponse().getText());
                         }
 
                         @Override

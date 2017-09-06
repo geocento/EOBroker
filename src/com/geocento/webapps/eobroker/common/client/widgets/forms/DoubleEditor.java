@@ -53,7 +53,7 @@ public class DoubleEditor extends ElementEditor<DoubleFormElement> {
 
     @Override
     public void setFormElementValue(String value) {
-        setValue(Double.valueOf(value));
+        setValue(value == null ? null : Double.valueOf(value));
     }
 
     public void setValue(Double value) {

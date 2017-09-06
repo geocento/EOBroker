@@ -1,0 +1,158 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:c="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.customer.client.views"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.customer.client.widgets"
+        >
+    <ui:style>
+        .panel header {
+
+        }
+
+        .panel main, .panel footer {
+        }
+
+        .panel main {
+            min-height: 80%;
+            max-width: 960px;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+
+        .mainPanel {
+            position: fixed;
+            top: 64px;
+            bottom: 0px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .navBrand {
+            color: grey;
+            padding-left: 20px;
+            font-size: 1.4em;
+        }
+
+        .logoImage {
+            display: block;
+        }
+
+        .section {
+            margin: 7px 0;
+            text-align: center;
+            line-height: 50px;
+            font-size: 28px;
+            color: grey;
+        }
+
+        .services {
+            margin: 20px 0px;
+        }
+
+        .buttonsPanel {
+            padding: 20px 0px;
+        }
+
+        .subtitle {
+            display: block;
+            margin: 20px 0px;
+        }
+
+        .sectionPanel {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid grey;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin: 20px 0px;
+        }
+
+        .searchBox {
+            margin-bottom: 20px;
+            background: white;
+        }
+        .searchBox, .searchBox i {
+            height: 54px !important;
+            line-height: 54px !important;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
+    <design:MaterialPanel paddingLeft="20">
+        <design:MaterialPanel>
+            <design:MaterialTooltip text="Visible or not in customer application">
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTooltip text="View in client application">
+                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+            </design:MaterialTooltip>
+            <design:MaterialTitle title="Edit your company's profile" ui:field="title"></design:MaterialTitle>
+        </design:MaterialPanel>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <material:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></material:MaterialRichEditor>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Founded in" iconType="ACCESS_TIME" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialDatePicker autoClose="true" placeholder="Date of the incorporation of the company" dateSelectionType="YEAR_MONTH_DAY" ui:field="startedIn"></design:MaterialDatePicker>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Address" iconType="LOCATION_CITY" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialTextArea placeholder="The postal address of your company" ui:field="address"/>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <c:CountryEditor placeholder="Country" ui:field="country"></c:CountryEditor>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialListBox placeholder="Company size" ui:field="companySize"></design:MaterialListBox>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Employees registered on the EO broker" textColor="BLACK" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialPanel ui:field="companyUsers"></design:MaterialPanel>
+                    <design:MaterialPanel>
+                        <c:MaterialLoadingButton text="Invite a colleague" ui:field="inviteColleagues"></c:MaterialLoadingButton>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Affiliates" textColor="BLACK" iconType="STAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialLabel addStyleNames="{style.message}" ui:field="affiliatesMessage"></design:MaterialLabel>
+                    <design:MaterialRow ui:field="affiliates"></design:MaterialRow>
+                    <design:MaterialPanel>
+                        <widgets:CategorySearchBox placeholder="Type in name of company" category="companies" addStyleNames="{style.searchBox}" ui:field="searchBox"></widgets:CategorySearchBox>
+                        <design:MaterialPanel>
+                            <c:MaterialLoadingButton text="Add affiliate" ui:field="addAffiliate"></c:MaterialLoadingButton>
+                        </design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
+                    <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
+                </g:HTMLPanel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+    </design:MaterialPanel>
+</ui:UiBinder>
