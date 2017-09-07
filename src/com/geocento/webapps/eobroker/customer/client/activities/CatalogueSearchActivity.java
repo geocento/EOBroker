@@ -1,9 +1,11 @@
 package com.geocento.webapps.eobroker.customer.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.*;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.CatalogueSearchPlace;
@@ -11,6 +13,8 @@ import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.CatalogueSearchView;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
+import com.geocento.webapps.eobroker.customer.shared.requests.OTSProductRequestDTO;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -132,7 +136,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
 
                     @Override
                     public void onSuccess(Method method, ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
-                        hideLoading();
+                        hideFullLoading();
                         CatalogueSearchActivity.this.productDatasetCatalogueDTO = productDatasetCatalogueDTO;
                         catalogueSearchView.setProductDatasetCatalogDTO(productDatasetCatalogueDTO);
                         // now load the description
@@ -207,6 +211,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                                                     break;
                                             }
                                             if (formElement != null) {
+                                                formElement.setFormid(parameter.getNamespace() + ":" + parameter.getName());
                                                 formElement.setName(parameter.getName());
                                                 formElement.setDescription(parameter.getTitle());
                                                 formElements.add(formElement);
@@ -289,6 +294,73 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
 
             @Override
             public void onClick(ClickEvent event) {
+                // create a product request
+                List<Record> records = catalogueSearchView.getSelectedRecord();
+                catalogueSearchView.displayRequestForQuotation("Request selected products", "You have selected " + records.size() + " products. Click on submit to send the request for quotation to the supplier.");
+            }
+        }));
+
+        handlers.add(catalogueSearchView.getSubmitRequestButton().addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                try {
+                    // create a product request
+                    String aoiWKT = currentAoI.getWktGeometry();
+                    List<FormElementValue> values = catalogueSearchView.getExtraParameters();
+                    if(query != null) {
+                        FormElementValue value = new FormElementValue();
+                        value.setFormid("query");
+                        value.setName("query");
+                        value.setValue(query);
+                    }
+                    if(startDate != null) {
+                        FormElementValue value = new FormElementValue();
+                        value.setFormid("start");
+                        value.setName("start");
+                        value.setValue(DateUtil.displaySimpleUTCDate(startDate));
+                    }
+                    if(stopDate != null) {
+                        FormElementValue value = new FormElementValue();
+                        value.setFormid("stop");
+                        value.setName("stop");
+                        value.setValue(DateUtil.displaySimpleUTCDate(stopDate));
+                    }
+                    String requestName = catalogueSearchView.getRequestName().getText();
+                    String comments = catalogueSearchView.getRequestComment().getText();
+                    List<Record> records = catalogueSearchView.getSelectedRecord();
+                    OTSProductRequestDTO otsProductRequest = new OTSProductRequestDTO();
+                    otsProductRequest.setProductDatasetID(productDatasetCatalogueDTO.getId());
+                    otsProductRequest.setAoIWKT(aoiWKT);
+                    otsProductRequest.setFormValues(values);
+                    otsProductRequest.setName(requestName);
+                    otsProductRequest.setComments(comments);
+                    otsProductRequest.setSelection(ListUtil.toString(records, new ListUtil.GetLabel<Record>() {
+                        @Override
+                        public String getLabel(Record value) {
+                            return value.getId();
+                        }
+                    }, "#;-"));
+                    // submit the request
+                    catalogueSearchView.hideRequestQuotation();
+                    displayFullLoading("Submitting request...");
+                    REST.withCallback(new MethodCallback<RequestDTO>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            hideFullLoading();
+                            displayError(method.getResponse().getText());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, RequestDTO requestDTO) {
+                            hideFullLoading();
+                            displaySuccess("Your request has been submitted");
+                        }
+                    }).call(ServicesUtil.requestsService).submitOTSProductRequest(otsProductRequest);
+                } catch (Exception e) {
+                    displayError(e.getMessage());
+                }
+
             }
         }));
 
@@ -326,8 +398,13 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         // check standard used
         switch (productDatasetCatalogueDTO.getDatasetStandard()) {
             case OpenSearch:
+                // get extra parameters
                 try {
-                    openSearchUtils.getRecords(start, count, currentAoI.getWktGeometry(), startDate, stopDate, query, new AsyncCallback<SearchResponse>() {
+                    HashMap<String, String> extraParameters = new HashMap<String, String>();
+                    for(FormElementValue formElementValue : catalogueSearchView.getExtraParameters()) {
+                        extraParameters.put(formElementValue.getFormid(), formElementValue.getValue());
+                    }
+                    openSearchUtils.getRecords(start, count, currentAoI.getWktGeometry(), startDate, stopDate, query, extraParameters, new AsyncCallback<SearchResponse>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -338,7 +415,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                         @Override
                         public void onSuccess(SearchResponse result) {
                             catalogueSearchView.hideLoadingResults();
-                            catalogueSearchView.displayQueryResponse(result);
+                            catalogueSearchView.displayQueryResponse(result, productDatasetCatalogueDTO.isOrderable());
                         }
                     });
                 } catch (Exception e) {
@@ -347,9 +424,6 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                 }
                 break;
         }
-    }
-
-    private void searchOpenSearch(OpenSearchDescription openSearchDescription, String wktGeometry, Date startDate, Date stopDate, String query) throws Exception {
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public interface CatalogueSearchView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayQueryResponse(SearchResponse records);
+    void displayQueryResponse(SearchResponse records, boolean isOrderable);
 
     void displayStartDate(Date date);
 
@@ -44,6 +45,16 @@ public interface CatalogueSearchView extends IsWidget {
 
     HasClickHandlers getQuoteButton();
 
+    HasClickHandlers getSubmitRequestButton();
+
+    HasText getRequestName();
+
+    HasText getRequestComment();
+
+    void displayRequestForQuotation(String title, String description);
+
+    void hideRequestQuotation();
+
     List<Record> getSelectedRecord();
 
     void clearRecordsSelection();
@@ -55,6 +66,8 @@ public interface CatalogueSearchView extends IsWidget {
     void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO);
 
     void setParameters(List<FormElement> formElements);
+
+    List<com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue> getExtraParameters() throws Exception;
 
     public interface Presenter {
 

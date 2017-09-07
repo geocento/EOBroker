@@ -4,8 +4,10 @@ import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.places.CatalogueSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -40,6 +42,10 @@ public class ProductDatasetWidget extends Composite {
     MaterialImageLoading imagePanel;
     @UiField
     MaterialLink info;
+    @UiField
+    MaterialLink explore;
+    @UiField
+    MaterialLink samples;
 
     public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -56,6 +62,16 @@ public class ProductDatasetWidget extends Composite {
         companyLogo.add(logoImage);
         companyLogo.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + productDatasetDTO.getCompany().getId())));
         info.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productdatasetid.toString() + "=" + productDatasetDTO.getId())));
+
+        explore.setVisible(productDatasetDTO.isHasExplore());
+        if(productDatasetDTO.isHasExplore()) {
+            explore.setHref("#" + PlaceHistoryHelper.convertPlace(new CatalogueSearchPlace(CatalogueSearchPlace.TOKENS.productId.toString() + "=" + productDatasetDTO.getId())));
+        }
+
+        samples.setVisible(productDatasetDTO.isHasSamples());
+        if(productDatasetDTO.isHasSamples()) {
+            samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(VisualisationPlace.TOKENS.productDatasetId.toString() + "=" + productDatasetDTO.getId())));
+        }
     }
 
 }

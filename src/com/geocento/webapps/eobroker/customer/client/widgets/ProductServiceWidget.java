@@ -6,6 +6,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
+import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -36,6 +38,10 @@ public class ProductServiceWidget extends Composite {
     MaterialImageLoading imagePanel;
     @UiField
     MaterialLink info;
+    @UiField
+    MaterialLink explore;
+    @UiField
+    MaterialLink samples;
 
     public ProductServiceWidget(ProductServiceDTO productServiceDTO) {
 
@@ -53,6 +59,16 @@ public class ProductServiceWidget extends Composite {
         shortDescription.setText(productServiceDTO.getDescription());
         companyLogo.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + productServiceDTO.getCompanyId())));
         info.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(FullViewPlace.TOKENS.productserviceid.toString() + "=" + productServiceDTO.getId())));
+
+        explore.setVisible(productServiceDTO.isHasFeasibility());
+        if(productServiceDTO.isHasFeasibility()) {
+            explore.setHref("#" + PlaceHistoryHelper.convertPlace(new ProductFeasibilityPlace(ProductFeasibilityPlace.TOKENS.productservice.toString() + "=" + productServiceDTO.getId())));
+        }
+
+        samples.setVisible(productServiceDTO.isHasSamples());
+        if(productServiceDTO.isHasSamples()) {
+            samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(VisualisationPlace.TOKENS.productServiceId.toString() + "=" + productServiceDTO.getId())));
+        }
     }
 
 }

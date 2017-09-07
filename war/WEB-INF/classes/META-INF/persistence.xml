@@ -35,6 +35,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.DoubleFormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.IntegerFormElement</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.OTSProductRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceSupplierRequest</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification</class>

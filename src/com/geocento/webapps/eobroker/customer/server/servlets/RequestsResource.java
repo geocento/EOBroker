@@ -63,6 +63,7 @@ public class RequestsResource implements RequestsService {
             }));
             return requestDTOs;
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new RequestException("Issue when accessing list of requests");
         } finally {
             em.close();
@@ -111,6 +112,13 @@ public class RequestsResource implements RequestsService {
             requestDTO.setDescription("Request for product '" + productServiceRequest.getProduct().getName() + "'" +
                             (severalCompanies ? (" (" + productServiceRequest.getSupplierRequests().size() + " companies)") :
                                     " (company '" + productServiceRequest.getSupplierRequests().get(0).getProductService().getCompany().getName() + "')")
+            );
+        } else if(request instanceof OTSProductRequest) {
+            requestDTO.setType(RequestDTO.TYPE.otsproduct);
+            OTSProductRequest otsProductRequest = (OTSProductRequest) request;
+            requestDTO.setDescription("Request for off the shelf product '" + otsProductRequest.getProductDataset().getName() +
+                            "' from company '" + otsProductRequest.getProductDataset().getCompany().getName() + "' - " +
+                            otsProductRequest.getSelection().split("#;-").length + " products selected"
             );
         }
         return requestDTO;
@@ -297,6 +305,65 @@ public class RequestsResource implements RequestsService {
             }
             logger.error(e.getMessage(), e);
             throw new RequestException("Could not submit product request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public RequestDTO submitOTSProductRequest(OTSProductRequestDTO otsProductRequestDTO) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(otsProductRequestDTO == null) {
+            throw new RequestException("Off the shelf product request cannot be null");
+        }
+        Long productDatasetId = otsProductRequestDTO.getProductDatasetID();
+        if(productDatasetId == null) {
+            throw new RequestException("Product dataset id is required");
+        }
+        String selection = otsProductRequestDTO.getSelection();
+        if(selection == null || selection.length() == 0) {
+            throw new RequestException("Selection is required");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // get user
+            User user = em.find(User.class, userName);
+            // find product
+            ProductDataset productDataset = em.find(ProductDataset.class, productDatasetId);
+            if (productDataset == null) {
+                throw new RequestException("Could not find product dataset");
+            }
+            em.getTransaction().begin();
+            // store the request
+            OTSProductRequest dbOTSProductRequest = new OTSProductRequest();
+            dbOTSProductRequest.setId(keyGenerator.CreateKey());
+            dbOTSProductRequest.setCustomer(user);
+            dbOTSProductRequest.setCreationDate(new Date());
+            dbOTSProductRequest.setProductDataset(productDataset);
+            dbOTSProductRequest.setAoIWKT(otsProductRequestDTO.getAoIWKT());
+            dbOTSProductRequest.setSelection(selection);
+            dbOTSProductRequest.setFormValues(otsProductRequestDTO.getFormValues());
+            dbOTSProductRequest.setName(otsProductRequestDTO.getName());
+            dbOTSProductRequest.setComments(otsProductRequestDTO.getComments());
+            dbOTSProductRequest.setStatus(Request.STATUS.submitted);
+            dbOTSProductRequest.setLastModifiedDate(dbOTSProductRequest.getCreationDate());
+            em.persist(dbOTSProductRequest);
+            em.getTransaction().commit();
+            // notify the supplier
+            try {
+                NotificationHelper.notifySupplier(em, productDataset.getCompany(), SupplierNotification.TYPE.OTSPRODUCTREQUEST,
+                        "New request from user '" + user.getUsername() + "' for off the shelf product '" + productDataset.getName() + "' ",
+                        dbOTSProductRequest.getId());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            return createRequestDTO(dbOTSProductRequest);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Could not submit off the shelf product request, server error");
         } finally {
             em.close();
         }

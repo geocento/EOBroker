@@ -14,6 +14,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.Subro
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
@@ -24,6 +25,7 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -33,6 +35,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.*;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -114,6 +117,18 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     SimplePanel pagerPanel;
     @UiField
     MaterialSideProfile sideProfile;
+    @UiField
+    MaterialModal requestQuotation;
+    @UiField
+    MaterialButton submitRequest;
+    @UiField
+    MaterialTextBox requestName;
+    @UiField
+    MaterialTextBox requestComment;
+    @UiField
+    MaterialTitle requestQuotationTitle;
+    @UiField
+    ScrollPanel parametersPanel;
 
     private Presenter presenter;
 
@@ -174,6 +189,9 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         additionalFieldsPanel.addCloseHandler(event -> updateAdditionalFieldsMessage());
         updateAdditionalFieldsMessage();
 
+        // add to document
+        RootPanel.get().add(requestQuotation);
+
         Window.addResizeHandler(this);
     }
 
@@ -181,6 +199,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         boolean isOpen = additionalFieldsPanel.isOpen();
         additionalFieldsLabel.setText(isOpen ? "Hide additional fields" : "See additional fields");
         additionalFieldsLabel.setIconType(isOpen ? IconType.ARROW_DOWNWARD : IconType.ARROW_FORWARD);
+        onResize(null);
     }
 
     @Override
@@ -203,7 +222,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         tab.selectTab("results");
         loadingResults.setText(message);
         showLoadingResults(true);
-        onResize(null);
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                onResize(null);
+            }
+        });
     }
 
     private void showLoadingResults(boolean display) {
@@ -215,7 +239,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     public void hideLoadingResults() {
         tab.selectTab("results");
         showLoadingResults(false);
-        onResize(null);
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                onResize(null);
+            }
+        });
     }
 
     private void createResultsTable() {
@@ -386,16 +415,19 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
-    public void displayQueryResponse(SearchResponse searchResponse) {
+    public void displayQueryResponse(SearchResponse searchResponse, boolean isOrderable) {
         resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
         recordsList.updateRowCount(searchResponse.getTotalRecords(), true);
+        //resultsTable.setPageStart(searchResponse.getStart());
+        resultsTable.setPageSize(searchResponse.getLimit());
         List<Record> records = searchResponse.getRecords();
-        recordsList.updateRowData(searchResponse.getStart(), records);
+        //resultsTable.setRowData(records);
+        recordsList.updateRowData(searchResponse.getLimit() * (int) (Math.round(searchResponse.getStart() / searchResponse.getLimit())), records);
         boolean hasResults = searchResponse.getTotalRecords() > 0;
         resultsPanel.setVisible(hasResults);
         resultsMessage.setVisible(!hasResults);
         resultsMessage.setText(hasResults ? "Found " + searchResponse.getTotalRecords() + " results" : "No results found...");
-        submitForQuote.setVisible(hasResults);
+        submitForQuote.setVisible(isOrderable && hasResults);
         // refresh map
         refreshMap();
     }
@@ -510,6 +542,38 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
+    public HasClickHandlers getSubmitRequestButton() {
+        return submitRequest;
+    }
+
+    @Override
+    public HasText getRequestName() {
+        return requestName;
+    }
+
+    @Override
+    public HasText getRequestComment() {
+        return requestComment;
+    }
+
+    @Override
+    public void displayRequestForQuotation(String title, String description) {
+        requestQuotationTitle.setTitle(title);
+        requestQuotationTitle.setDescription(description);
+        requestQuotation.open();
+    }
+
+    @UiHandler("cancel")
+    void cancelSubmit(ClickEvent clickEvent) {
+        hideRequestQuotation();
+    }
+
+    @Override
+    public void hideRequestQuotation() {
+        requestQuotation.close();
+    }
+
+    @Override
     public List<Record> getSelectedRecord() {
         return new ArrayList<Record>(selectedRecord);
     }
@@ -579,6 +643,23 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
+    public List<FormElementValue> getExtraParameters() throws Exception {
+        List<FormElementValue> values = new ArrayList<FormElementValue>();
+        for(Widget widget : additionalFields.getChildrenList()) {
+            if(widget instanceof MaterialColumn) {
+                widget = ((MaterialColumn) widget).getChildrenList().get(0);
+                if(widget instanceof ElementEditor) {
+                    FormElementValue formElementValue = ((ElementEditor) widget).getFormElementValue();
+                    if(formElementValue != null && formElementValue.getValue() != null && formElementValue.getValue().length() > 0) {
+                        values.add(formElementValue);
+                    }
+                }
+            }
+        }
+        return values;
+    }
+
+    @Override
     public Widget asWidget() {
         return this;
     }
@@ -588,6 +669,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         searchPanel.onResize();
         if(mapContainer.map != null) {
             mapContainer.map.resize();
+        }
+        if(parametersPanel.isVisible() && parametersPanel.getAbsoluteTop() > 0) {
+            int maxHeight = Window.getClientHeight() - parametersPanel.getAbsoluteTop() - 80;
+            if(maxHeight > 0) {
+                parametersPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
+            }
         }
     }
 

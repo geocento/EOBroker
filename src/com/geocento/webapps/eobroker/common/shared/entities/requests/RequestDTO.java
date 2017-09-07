@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class RequestDTO {
 
-    public static enum TYPE {image, imageservice, imageprocessing, product}
+    public static enum TYPE {image, imageservice, imageprocessing, otsproduct, product}
 
     String id;
     Request.STATUS status;

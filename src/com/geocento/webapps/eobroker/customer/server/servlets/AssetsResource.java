@@ -559,12 +559,7 @@ public class AssetsResource implements AssetsService {
             productDatasetCatalogueDTO.setProduct(ProductHelper.createProductDTO(productDataset.getProduct()));
             productDatasetCatalogueDTO.setDatasetStandard(productDataset.getDatasetStandard());
             productDatasetCatalogueDTO.setDatasetURL(productDataset.getDatasetURL());
-            // query the catalogue to get the catalogue information
-            // TODO - do in a separate call?
-            switch (productDataset.getDatasetStandard()) {
-                case OpenSearch:
-                    break;
-            }
+            productDatasetCatalogueDTO.setOrderable(productDataset.getServiceType() == ServiceType.commercial);
             return productDatasetCatalogueDTO;
         } finally {
             em.close();

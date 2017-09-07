@@ -43,6 +43,8 @@ public interface OrderView extends IsWidget {
 
     String getResponse();
 
+    void displayOTSProductRequest(OTSProductRequestDTO otsProductRequestDTO);
+
     public interface Presenter {
     }
 

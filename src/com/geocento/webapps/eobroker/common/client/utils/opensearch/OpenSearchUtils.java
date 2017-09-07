@@ -46,7 +46,7 @@ public class OpenSearchUtils {
         this.isCORS = isCORS;
     }
 
-    public void getRecords(int start, int count, String wktGeometry, Date startDate, Date stopDate, String query, AsyncCallback<SearchResponse> callback) throws Exception {
+    public void getRecords(int start, int count, String wktGeometry, Date startDate, Date stopDate, String query, HashMap<String, String> extraParameters, AsyncCallback<SearchResponse> callback) throws Exception {
         // find the suitable URL
         String selectedFormat = selectedUrl.getType();
         String datasetURL = selectedUrl.getTemplate();
@@ -103,6 +103,9 @@ public class OpenSearchUtils {
         List<String> requestedValues = new ArrayList<String>();
         for(String parameterName : requestedParameters.keySet()) {
             requestedValues.add(parameterName + "=" + requestedParameters.get(parameterName));
+        }
+        for(String parameterName : extraParameters.keySet()) {
+            requestedValues.add(parameterName + "=" + extraParameters.get(parameterName));
         }
         requestURL += "?" + URL.encodeQueryString(com.geocento.webapps.eobroker.common.client.utils.StringUtils.join(requestedValues, "&"));
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, maybeProxyRequest(requestURL));

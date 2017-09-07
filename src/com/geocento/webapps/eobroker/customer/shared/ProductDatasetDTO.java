@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.customer.shared;
 
-import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
 /**
@@ -18,9 +17,9 @@ public class ProductDatasetDTO extends Offer {
     String extent;
     String email;
     String website;
-    String apiUrl;
-    String sampleWmsUrl;
-    DatasetStandard supportedCatalogueInterface;
+    boolean commercial;
+    boolean hasExplore;
+    boolean hasSamples;
 
     public ProductDatasetDTO() {
     }
@@ -105,27 +104,27 @@ public class ProductDatasetDTO extends Offer {
         this.extent = extent;
     }
 
-    public String getApiUrl() {
-        return apiUrl;
+    public boolean isHasExplore() {
+        return hasExplore;
     }
 
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
+    public void setHasExplore(boolean hasExplore) {
+        this.hasExplore = hasExplore;
     }
 
-    public String getSampleWmsUrl() {
-        return sampleWmsUrl;
+    public boolean isCommercial() {
+        return commercial;
     }
 
-    public void setSampleWmsUrl(String sampleWmsUrl) {
-        this.sampleWmsUrl = sampleWmsUrl;
+    public void setCommercial(boolean commercial) {
+        this.commercial = commercial;
     }
 
-    public DatasetStandard getSupportedCatalogueInterface() {
-        return supportedCatalogueInterface;
+    public boolean isHasSamples() {
+        return hasSamples;
     }
 
-    public void setSupportedCatalogueInterface(DatasetStandard supportedCatalogueInterface) {
-        this.supportedCatalogueInterface = supportedCatalogueInterface;
+    public void setHasSamples(boolean hasSamples) {
+        this.hasSamples = hasSamples;
     }
 }

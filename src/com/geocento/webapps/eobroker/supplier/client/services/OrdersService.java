@@ -16,6 +16,11 @@ public interface OrdersService extends DirectRestService {
     public ProductServiceSupplierRequestDTO getProductRequest(@PathParam("id") String id) throws RequestException;
 
     @GET
+    @Path("/requests/otsproduct/{id}")
+    @Produces("application/json")
+    public OTSProductRequestDTO getOTSProductRequest(@PathParam("id") String id) throws RequestException;
+
+    @GET
     @Path("/requests/imagery/{id}")
     @Produces("application/json")
     ImageryServiceRequestDTO getImageryRequest(@PathParam("id") String id) throws RequestException;
@@ -56,4 +61,5 @@ public interface OrdersService extends DirectRestService {
     List<ConversationDTO> listConversations(@QueryParam("start") int start,
                                             @QueryParam("limit") int limit,
                                             @QueryParam("userName") String userName) throws RequestException;
+
 }

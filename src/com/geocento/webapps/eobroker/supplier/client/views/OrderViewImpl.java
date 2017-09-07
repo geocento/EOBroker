@@ -1,10 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
-import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
-import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
-import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.ArcGISMap;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
@@ -71,7 +68,7 @@ public class OrderViewImpl extends Composite implements OrderView {
     @UiField
     MaterialLabel description;
     @UiField
-    MaterialLabel userName;
+    MaterialLabelIcon userName;
     @UiField
     ExpandPanel descriptionPanel;
     @UiField
@@ -80,6 +77,8 @@ public class OrderViewImpl extends Composite implements OrderView {
     MaterialButton status;
     @UiField
     MaterialLabel messagesComment;
+    @UiField
+    MaterialTooltip userTooltip;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -159,7 +158,9 @@ public class OrderViewImpl extends Composite implements OrderView {
 
     @Override
     public void displayUser(UserDTO customer) {
-        userName.setText("From user '" + customer.getName() + "'");
+        userName.setText(customer.getFullName() == null ? customer.getName() : customer.getFullName());
+        userName.setImageUrl(customer.getIconUrl());
+        userTooltip.setText("from company " + customer.getCompanyDTO().getName());
     }
 
     @Override
@@ -198,6 +199,32 @@ public class OrderViewImpl extends Composite implements OrderView {
         displayAoI(AoIUtil.fromWKT(productServiceSupplierRequestDTO.getAoIWKT()));
         displayResponse(productServiceSupplierRequestDTO.getSupplierResponse());
         displayMessages(productServiceSupplierRequestDTO.getMessages());
+    }
+
+    @Override
+    public void displayOTSProductRequest(OTSProductRequestDTO otsProductRequestDTO) {
+        ProductDatasetDTO productDatasetDTO = otsProductRequestDTO.getProductDataset();
+        displayTitle("Request for off the shelf products '" + productDatasetDTO.getName() + "'");
+        image.setImageUrl(productDatasetDTO.getImageUrl());
+        displayDescription("Request ID '" + otsProductRequestDTO.getId() +
+                "' requested on " + DateUtils.formatDateTime(otsProductRequestDTO.getCreationTime()));
+        displayUser(otsProductRequestDTO.getCustomer());
+        // TODO - change to take into account request status
+        status.setText("Submitted");
+        this.requestDescription.clear();
+        addRequestValue("Customer comment", otsProductRequestDTO.getComments());
+        addRequestValue("Products ID selection", otsProductRequestDTO.getSelection());
+        if(otsProductRequestDTO.getFormValues().size() == 0) {
+            this.requestDescription.add(new HTMLPanel("<p>No search parameters provided</p>"));
+        } else {
+            this.requestDescription.add(new HTMLPanel("<p>Initial search parameters</p>"));
+            for (FormElementValue formElementValue : otsProductRequestDTO.getFormValues()) {
+                addRequestValue(formElementValue.getName(), formElementValue.getValue());
+            }
+        }
+        displayAoI(AoIUtil.fromWKT(otsProductRequestDTO.getAoIWKT()));
+        displayResponse(otsProductRequestDTO.getSupplierResponse());
+        displayMessages(otsProductRequestDTO.getMessages());
     }
 
     @Override

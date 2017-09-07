@@ -2,10 +2,7 @@ package com.geocento.webapps.eobroker.supplier.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
-import com.geocento.webapps.eobroker.common.shared.entities.Company;
-import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
-import com.geocento.webapps.eobroker.common.shared.entities.Message;
-import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
@@ -24,9 +21,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Path("/")
 public class OrdersResource implements OrdersService {
@@ -83,6 +78,50 @@ public class OrdersResource implements OrdersService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public OTSProductRequestDTO getOTSProductRequest(String id) throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            final User user = em.find(User.class, logUserName);
+            OTSProductRequest otsProductRequest = em.find(OTSProductRequest.class, id);
+            if(otsProductRequest == null) {
+                throw new RequestException("Unknown off the shelf product request");
+            }
+            OTSProductRequestDTO otsProductRequestDTO = new OTSProductRequestDTO();
+            otsProductRequestDTO.setId(otsProductRequest.getId());
+            otsProductRequestDTO.setProductDataset(createProductDatasetDTO(otsProductRequest.getProductDataset()));
+            otsProductRequestDTO.setAoIWKT(otsProductRequest.getAoIWKT());
+            otsProductRequestDTO.setCustomer(UserHelper.createUserDTO(otsProductRequest.getCustomer()));
+            otsProductRequestDTO.setFormValues(otsProductRequest.getFormValues());
+            otsProductRequestDTO.setSelection(otsProductRequest.getSelection());
+            otsProductRequestDTO.setComments(otsProductRequest.getComments());
+            otsProductRequestDTO.setUserDTO(UserHelper.createUserDTO(otsProductRequest.getCustomer()));
+            otsProductRequestDTO.setSupplierResponse(otsProductRequest.getResponse());
+            otsProductRequestDTO.setMessages(MessageHelper.convertToDTO(otsProductRequest.getMessages()));
+            otsProductRequestDTO.setCreationTime(otsProductRequest.getCreationDate());
+            return otsProductRequestDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductDatasetDTO createProductDatasetDTO(ProductDataset productDataset) {
+        ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+        productDatasetDTO.setId(productDataset.getId());
+        productDatasetDTO.setName(productDataset.getName());
+        productDatasetDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetDTO.setDescription(productDataset.getDescription());
+        productDatasetDTO.setCompany(com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        return productDatasetDTO;
     }
 
     @Override
@@ -206,6 +245,7 @@ public class OrdersResource implements OrdersService {
             // get user
             User user = em.find(User.class, userName);
             Company company = user.getCompany();
+/*
             {
                 TypedQuery<ImagesRequest> query = em.createQuery("select i from ImagesRequest i where i.imageService.company = :company", ImagesRequest.class);
                 query.setParameter("company", company);
@@ -228,6 +268,7 @@ public class OrdersResource implements OrdersService {
                     }
                 }));
             }
+*/
             {
                 TypedQuery<ProductServiceSupplierRequest> productFormQuery = em.createQuery("select p from ProductServiceSupplierRequest p where p.productService.company = :company", ProductServiceSupplierRequest.class);
                 productFormQuery.setParameter("company", company);
@@ -239,6 +280,25 @@ public class OrdersResource implements OrdersService {
                     }
                 }));
             }
+            {
+                TypedQuery<OTSProductRequest> otsProductFormQuery = em.createQuery("select o from OTSProductRequest o where o.productDataset.company = :company", OTSProductRequest.class);
+                otsProductFormQuery.setParameter("company", company);
+                List<OTSProductRequest> productServiceRequests = otsProductFormQuery.getResultList();
+                requestDTOs.addAll(ListUtil.mutate(productServiceRequests, new ListUtil.Mutate<OTSProductRequest, RequestDTO>() {
+                    @Override
+                    public RequestDTO mutate(OTSProductRequest otsProductRequest) {
+                        return createRequestDTO(otsProductRequest);
+                    }
+                }));
+            }
+            Collections.sort(requestDTOs, new Comparator<RequestDTO>() {
+                @Override
+                public int compare(RequestDTO o1, RequestDTO o2) {
+                    return o1.getCreationTime() == null ? 1 :
+                            o2.getCreationTime() == null ? -1 :
+                                    o1.getCreationTime().compareTo(o2.getCreationTime());
+                }
+            });
             return requestDTOs;
         } catch (Exception e) {
             throw new RequestException("Issue when accessing list of requests");
@@ -399,6 +459,14 @@ public class OrdersResource implements OrdersService {
         return requestDTO;
     }
 
+    private RequestDTO createRequestDTO(OTSProductRequest otsProductRequest) {
+        RequestDTO requestDTO = new RequestDTO();
+        requestDTO.setId(otsProductRequest.getId());
+        requestDTO.setType(RequestDTO.TYPE.otsproduct);
+        requestDTO.setDescription("User '" + otsProductRequest.getCustomer().getUsername() + "' - Request for off the shelf product '" + otsProductRequest.getProductDataset().getName() + "'");
+        requestDTO.setCreationTime(otsProductRequest.getCreationDate());
+        return requestDTO;
+    }
 
     @Override
     public ConversationDTO getConversation(String id) throws RequestException {

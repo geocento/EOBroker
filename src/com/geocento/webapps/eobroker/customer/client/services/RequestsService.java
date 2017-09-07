@@ -3,10 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.services;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.requests.ImageryResponseDTO;
-import com.geocento.webapps.eobroker.customer.shared.requests.ImagesServiceResponseDTO;
-import com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO;
-import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceResponseDTO;
+import com.geocento.webapps.eobroker.customer.shared.requests.*;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
@@ -37,6 +34,11 @@ public interface RequestsService extends DirectRestService {
     @Path("/requests/product/")
     @Produces("application/json")
     RequestDTO submitProductRequest(ProductServiceRequestDTO productServiceRequestDTO) throws RequestException;
+
+    @POST
+    @Path("/requests/otsproduct/")
+    @Produces("application/json")
+    RequestDTO submitOTSProductRequest(OTSProductRequestDTO otsProductRequestDTO) throws RequestException;
 
     @POST
     @Path("/requests/images/")
@@ -112,5 +114,4 @@ public interface RequestsService extends DirectRestService {
     @Path("/assets/feedback/")
     @Produces("application/json")
     List<FeedbackDTO> listFeedbacks() throws RequestException;
-
 }

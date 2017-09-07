@@ -24,7 +24,7 @@
         .queryPanel {
             height: 100%;
             overflow-x: hidden;
-            overflow-y: auto;
+            overflow-y: hidden;
             line-height: normal !important;
         }
 
@@ -38,7 +38,8 @@
 
         .queryButton {
             text-align: center;
-            padding: 10px;
+            padding: 20px 10px 10px;
+            background: #eeeeee;
         }
 
         .mapPanel {
@@ -104,6 +105,15 @@
             margin: 10px;
         }
 
+        .title h4 {
+            margin-top: 10px !important;
+        }
+
+        .parametersPanel {
+            height: 100%;
+            overflow: hidden;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -132,25 +142,29 @@
                         </m:MaterialTab>
                     </m:MaterialPanel>
                     <m:MaterialRow padding="0" margin="0" addStyleNames="{style.queryPanel}, {resCommon.style.slimScrollbar}" ui:field="queryPanel">
-                        <m:MaterialColumn m:id="query" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
-                            <m:MaterialRow marginTop="20">
-                                <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker textColor="BLACK" autoClose="true" selectionType="YEAR_MONTH_DAY" ui:field="startDate" placeholder="Start Date" />
-                                </m:MaterialColumn>
-                                <m:MaterialColumn grid="s6">
-                                    <m:MaterialDatePicker textColor="BLACK" autoClose="true" selectionType="YEAR_MONTH_DAY" ui:field="stopDate" placeholder="Stop Date" />
-                                </m:MaterialColumn>
-                                <m:MaterialColumn grid="s12">
-                                    <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>
-                                </m:MaterialColumn>
-                            </m:MaterialRow>
-                            <g:DisclosurePanel open="false" ui:field="additionalFieldsPanel">
-                                <g:customHeader>
-                                    <m:MaterialLink iconSize="TINY" text="" ui:field="additionalFieldsLabel"></m:MaterialLink>
-                                </g:customHeader>
-                                <m:MaterialRow ui:field="additionalFields">
-                                </m:MaterialRow>
-                            </g:DisclosurePanel>
+                        <m:MaterialColumn m:id="query" padding="0" margin="0" grid="s12" fontSize="0.8em" backgroundColor="WHITE">
+                            <g:ScrollPanel addStyleNames="{style.parametersPanel}, {resCommon.style.slimScrollbar}" ui:field="parametersPanel">
+                                <m:MaterialPanel paddingLeft="10" paddingRight="10">
+                                    <m:MaterialRow padding="0" margin="0">
+                                        <m:MaterialColumn grid="s12">
+                                            <m:MaterialTextBox placeholder="Type your query..." textColor="BLACK" ui:field="query"></m:MaterialTextBox>
+                                        </m:MaterialColumn>
+                                        <m:MaterialColumn grid="s6">
+                                            <m:MaterialDatePicker textColor="BLACK" autoClose="true" selectionType="YEAR_MONTH_DAY" ui:field="startDate" placeholder="Start Date" />
+                                        </m:MaterialColumn>
+                                        <m:MaterialColumn grid="s6">
+                                            <m:MaterialDatePicker textColor="BLACK" autoClose="true" selectionType="YEAR_MONTH_DAY" ui:field="stopDate" placeholder="Stop Date" />
+                                        </m:MaterialColumn>
+                                    </m:MaterialRow>
+                                    <g:DisclosurePanel open="false" ui:field="additionalFieldsPanel">
+                                        <g:customHeader>
+                                            <m:MaterialLink iconSize="TINY" text="" ui:field="additionalFieldsLabel"></m:MaterialLink>
+                                        </g:customHeader>
+                                        <m:MaterialRow ui:field="additionalFields">
+                                        </m:MaterialRow>
+                                    </g:DisclosurePanel>
+                                </m:MaterialPanel>
+                            </g:ScrollPanel>
                             <m:MaterialRow addStyleNames="{style.queryButton}">
                                 <m:MaterialColumn grid="s12">
                                     <m:MaterialButton text="Search" type="FLAT" textAlign="CENTER" backgroundColor="BLUE" textColor="WHITE" ui:field="update"/>
@@ -179,5 +193,26 @@
             </g:HTMLPanel>
         </g:center>
         </g:DockLayoutPanel>
+        <m:MaterialModal type="DEFAULT" dismissible="false" inDuration="500" outDuration="500" ui:field="requestQuotation">
+            <m:MaterialModalContent>
+                <m:MaterialTitle title="" addStyleNames="{style.title}" ui:field="requestQuotationTitle"></m:MaterialTitle>
+                <m:MaterialRow>
+                    <m:MaterialColumn grid="s12">
+                        <m:MaterialTextBox placeholder="Name for request (optional)" ui:field="requestName"></m:MaterialTextBox>
+                    </m:MaterialColumn>
+                    <m:MaterialColumn grid="s12">
+                        <m:MaterialTextBox placeholder="Add comments (optional)" ui:field="requestComment"></m:MaterialTextBox>
+                    </m:MaterialColumn>
+                </m:MaterialRow>
+                <m:MaterialRow>
+                    <m:MaterialColumn grid="s6" textAlign="LEFT">
+                        <m:MaterialButton text="Submit" backgroundColor="BROWN" textColor="WHITE" textAlign="CENTER" ui:field="submitRequest"></m:MaterialButton>
+                    </m:MaterialColumn>
+                    <m:MaterialColumn grid="s6" textAlign="RIGHT">
+                        <m:MaterialButton text="Cancel" backgroundColor="GREY" textColor="WHITE" textAlign="CENTER" ui:field="cancel"></m:MaterialButton>
+                    </m:MaterialColumn>
+                </m:MaterialRow>
+            </m:MaterialModalContent>
+        </m:MaterialModal>
     </m:MaterialPanel>
 </ui:UiBinder>

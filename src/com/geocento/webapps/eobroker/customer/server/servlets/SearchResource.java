@@ -259,6 +259,7 @@ public class SearchResource implements SearchService {
         productServiceDTO.setCompanyName(productService.getCompany().getName());
         productServiceDTO.setCompanyId(productService.getCompany().getId());
         productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
+        productServiceDTO.setHasSamples(productService.getSamples() != null && productService.getSamples().size() > 0);
         productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
         return productServiceDTO;
     }
@@ -362,6 +363,9 @@ public class SearchResource implements SearchService {
         productDatasetDTO.setImageUrl(productDataset.getImageUrl());
         productDatasetDTO.setDescription(productDataset.getDescription());
         productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        productDatasetDTO.setHasExplore(productDataset.getDatasetStandard() != null);
+        productDatasetDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
+        productDatasetDTO.setHasSamples(productDataset.getSamples() != null && productDataset.getSamples().size() > 0);
         return productDatasetDTO;
     }
 

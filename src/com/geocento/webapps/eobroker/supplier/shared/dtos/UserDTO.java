@@ -8,6 +8,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 public class UserDTO {
 
     String name;
+    String fullName;
+    String iconUrl;
     CompanyDTO companyDTO;
 
     public UserDTO() {
@@ -27,5 +29,21 @@ public class UserDTO {
 
     public void setCompanyDTO(CompanyDTO companyDTO) {
         this.companyDTO = companyDTO;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

@@ -58,7 +58,7 @@
         }
 
         .userName {
-
+            display: inline-block;
         }
 
     </ui:style>
@@ -71,10 +71,15 @@
                 <design:MaterialColumn grid="s12 m8 l8">
                     <design:MaterialPanel>
                         <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
-                        <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
                     </design:MaterialPanel>
                     <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                    <design:MaterialLabel addStyleNames="{style.userName}" ui:field="userName"></design:MaterialLabel>
+                    <g:HTMLPanel>
+                        <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
+                        <span>From user</span>
+                        <design:MaterialTooltip ui:field="userTooltip">
+                            <widgets:MaterialLabelIcon imageHeight="30px" addStyleNames="{style.userName}" ui:field="userName"></widgets:MaterialLabelIcon>
+                        </design:MaterialTooltip>
+                    </g:HTMLPanel>
                     <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
                         <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
                     </design:MaterialPanel>

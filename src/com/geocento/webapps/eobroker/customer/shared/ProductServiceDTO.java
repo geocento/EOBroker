@@ -14,6 +14,7 @@ public class ProductServiceDTO extends Offer {
     String companyName;
     String companyLogo;
     boolean hasFeasibility;
+    private boolean hasSamples;
 
     public ProductServiceDTO() {
     }
@@ -88,5 +89,13 @@ public class ProductServiceDTO extends Offer {
 
     public void setHasFeasibility(boolean hasFeasibility) {
         this.hasFeasibility = hasFeasibility;
+    }
+
+    public boolean isHasSamples() {
+        return hasSamples;
+    }
+
+    public void setHasSamples(boolean hasSamples) {
+        this.hasSamples = hasSamples;
     }
 }

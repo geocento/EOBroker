@@ -2,9 +2,6 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-
-import java.util.List;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -18,11 +15,10 @@ public class ProductDatasetCatalogueDTO {
     String name;
     String description;
     String extent;
+    boolean orderable;
     // catalogue values
     DatasetStandard datasetStandard;
     String datasetURL;
-    String catalogueDescription;
-    List<FormElement> queriableFields;
 
     public ProductDatasetCatalogueDTO() {
     }
@@ -99,19 +95,11 @@ public class ProductDatasetCatalogueDTO {
         this.datasetURL = datasetURL;
     }
 
-    public String getCatalogueDescription() {
-        return catalogueDescription;
+    public boolean isOrderable() {
+        return orderable;
     }
 
-    public void setCatalogueDescription(String catalogueDescription) {
-        this.catalogueDescription = catalogueDescription;
-    }
-
-    public List<FormElement> getQueriableFields() {
-        return queriableFields;
-    }
-
-    public void setQueriableFields(List<FormElement> queriableFields) {
-        this.queriableFields = queriableFields;
+    public void setOrderable(boolean orderable) {
+        this.orderable = orderable;
     }
 }

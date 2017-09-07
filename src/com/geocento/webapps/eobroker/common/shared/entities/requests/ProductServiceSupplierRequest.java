@@ -17,6 +17,10 @@ public class ProductServiceSupplierRequest {
     @GeneratedValue
     Long id;
 
+    // TODO - add a status for archiving the request and storing the information, eg in case the service is removed...
+    @Enumerated(EnumType.STRING)
+    Request.STATUS status;
+
     @ManyToOne
     ProductService productService;
 
@@ -30,7 +34,7 @@ public class ProductServiceSupplierRequest {
     List<Message> messages;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date lastModifiedDate;
+    Date lastModifiedDate;
 
     public ProductServiceSupplierRequest() {
     }
@@ -41,6 +45,14 @@ public class ProductServiceSupplierRequest {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Request.STATUS getStatus() {
+        return status;
+    }
+
+    public void setStatus(Request.STATUS status) {
+        this.status = status;
     }
 
     public ProductService getProductService() {

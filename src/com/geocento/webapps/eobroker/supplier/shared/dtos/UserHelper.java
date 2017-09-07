@@ -10,6 +10,8 @@ public class UserHelper {
     static public UserDTO createUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setName(user.getUsername());
+        userDTO.setIconUrl(user.getUserIcon());
+        userDTO.setFullName(user.getFullName());
         userDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(user.getCompany()));
         return userDTO;
     }

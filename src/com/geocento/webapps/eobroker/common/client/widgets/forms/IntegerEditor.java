@@ -13,6 +13,8 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
 
     private final MaterialIntegerBox integerBox;
 
+    private boolean isNull = false;
+
     public IntegerEditor() {
         integerBox = new MaterialIntegerBox();
         add(integerBox);
@@ -37,15 +39,17 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
 
     @Override
     public FormElementValue getFormElementValue() throws Exception {
-        Integer value = integerBox.getValue();
-        if(formElement.getMin() != null && value < formElement.getMin()) {
-            throw new Exception("Minimum value is " + formElement.getMin());
-        }
-        if(formElement.getMax() != null && value > formElement.getMax()) {
-            throw new Exception("Maximum value is " + formElement.getMax());
+        Integer value = isNull ? null : integerBox.getValue();
+        if(value != null) {
+            if (formElement.getMin() != null && value < formElement.getMin()) {
+                throw new Exception("Minimum value is " + formElement.getMin());
+            }
+            if (formElement.getMax() != null && value > formElement.getMax()) {
+                throw new Exception("Maximum value is " + formElement.getMax());
+            }
         }
         FormElementValue formElementValue = new FormElementValue();
-        formElementValue.setValue(value + "");
+        formElementValue.setValue(isNull ? null : value + "");
         formElementValue.setName(formElement.getName());
         formElementValue.setFormid(formElement.getFormid());
         return formElementValue;
@@ -57,6 +61,7 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
     }
 
     public void setValue(Integer value) {
+        isNull = value == null;
         integerBox.setValue(value);
     }
 

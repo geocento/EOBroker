@@ -63,12 +63,14 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             templateView.displaySignedIn(true);
             LoginInfo loginInfo = Customer.getLoginInfo();
             templateView.setUser(loginInfo);
+/*
             // load notifications and orders
             if(userRequests == null) {
                 loadUserOrders();
             } else {
                 templateView.setRequests(userRequests);
             }
+*/
             if(userNotifications == null) {
                 loadUserNotifications();
             } else {
@@ -165,12 +167,14 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
             }
         });
 
+/*
         activityEventBus.addHandler(RequestCreated.TYPE, new ImageOrderCreatedHandler() {
             @Override
             public void onImageOrderCreated(RequestCreated event) {
                 loadUserOrders();
             }
         });
+*/
 
         activityEventBus.addHandler(NotificationEvent.TYPE, new NotificationEventHandler() {
             @Override

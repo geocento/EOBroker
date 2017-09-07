@@ -1,10 +1,13 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.ImageryResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.places.ImagesResponsePlace;
+import com.geocento.webapps.eobroker.customer.client.places.OTSProductResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.places.ProductResponsePlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -59,9 +62,14 @@ public class RequestWidget extends Composite {
                 content.setBackgroundColor(Color.GREEN);
                 break;
             case product:
-                title.setText("Request for product");
-                content.setBackgroundColor(Color.BLUE_GREY);
+                title.setText("Request for service");
+                content.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
                 place = new ProductResponsePlace(ProductResponsePlace.TOKENS.id.toString() + "=" + requestDTO.getId());
+                break;
+            case otsproduct:
+                title.setText("Request for OTS product");
+                content.setBackgroundColor(CategoryUtils.getColor(Category.productdatasets));
+                place = new OTSProductResponsePlace(OTSProductResponsePlace.TOKENS.id.toString() + "=" + requestDTO.getId());
                 break;
         }
         description.setText(requestDTO.getDescription());

@@ -16,7 +16,7 @@ public class ProductServiceRequest extends Request {
     Product product;
 
     @Column(length = 10000)
-    private String aoIWKT;
+    String aoIWKT;
 
     @ElementCollection
     List<FormElementValue> formValues;

@@ -1,11 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
-import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
-import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
-import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceResponseDTO;
-import com.geocento.webapps.eobroker.customer.shared.requests.ProductServiceSupplierResponseDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.MessageEvent;
@@ -97,6 +93,22 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                             orderView.displayProductRequest(productServiceSupplierRequestDTO);
                         }
                     }).call(ServicesUtil.ordersService).getProductRequest(orderId);
+                    break;
+                case otsproduct:
+                    REST.withCallback(new MethodCallback<OTSProductRequestDTO>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            hideFullLoading();
+                            Window.alert("Problem loading request");
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, OTSProductRequestDTO otsProductRequestDTO) {
+                            hideFullLoading();
+                            request = otsProductRequestDTO;
+                            orderView.displayOTSProductRequest(otsProductRequestDTO);
+                        }
+                    }).call(ServicesUtil.ordersService).getOTSProductRequest(orderId);
                     break;
                 case imageservice:
                     REST.withCallback(new MethodCallback<ImageryServiceRequestDTO>() {

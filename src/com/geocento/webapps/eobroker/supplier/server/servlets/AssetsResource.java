@@ -11,6 +11,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceRequest;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceSupplierRequest;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.feasibility.BarChartStatistics;
@@ -274,20 +276,21 @@ public class AssetsResource implements AssetsService {
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
-            // fail silently
-            try {
-                em.getTransaction().begin();
-                // add event for company and for product
-                if(newService) {
+            // send notifications
+            if(newService) {
+                // fail silently
+                try {
+                    em.getTransaction().begin();
+                    // add event for company and for product
                     EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(), Category.productservices, Event.TYPE.OFFER, "New service available for product " + product.getName(), productService.getId() + "");
                     EventHelper.createAndPropagateProductEvent(em, product, user.getCompany(), Category.productservices, Event.TYPE.OFFER, "New service available for product " + product.getName(), productService.getId() + "");
+                    em.getTransaction().commit();
+                } catch (Exception e) {
+                    if (em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
+                    logger.error(e.getMessage(), e);
                 }
-                em.getTransaction().commit();
-            } catch (Exception e) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                logger.error(e.getMessage(), e);
             }
             return productService.getId();
         } catch (Exception e) {
@@ -356,8 +359,39 @@ public class AssetsResource implements AssetsService {
             if(productService == null || user.getCompany() != productService.getCompany()) {
                 throw new RequestException("Not authorised");
             }
+            // check where the product service is being used first
+            // look for requests
+            TypedQuery<ProductServiceSupplierRequest> query = em.createQuery("select p from ProductServiceSupplierRequest p where p.productService = :service", ProductServiceSupplierRequest.class);
+            query.setParameter("service", productService);
+            // loop through requests and remove
+            for(ProductServiceSupplierRequest productServiceSupplierRequest : query.getResultList()) {
+                em.remove(productServiceSupplierRequest);
+                // check if the request has more supplier requests
+                ProductServiceRequest productServiceRequest = productServiceSupplierRequest.getProductServiceRequest();
+                productServiceRequest.getSupplierRequests().remove(productServiceSupplierRequest);
+                if(productServiceRequest.getSupplierRequests().size() == 0) {
+                    em.remove(productServiceRequest);
+                }
+            }
+            // TODO - remove the samples?
             em.remove(productService);
             em.getTransaction().commit();
+            // notify user
+            // fail silently
+            try {
+                em.getTransaction().begin();
+                // add event for company and for product
+                EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(), Category.productservices, Event.TYPE.OFFER,
+                        "Product service has been discontinued " + productService.getName(), null);
+                EventHelper.createAndPropagateProductEvent(em, productService.getProduct(), user.getCompany(), Category.productservices, Event.TYPE.OFFER,
+                        "Product service has been discontinued " + productService.getName(), null);
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                logger.error(e.getMessage(), e);
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing service");
@@ -1094,11 +1128,12 @@ public class AssetsResource implements AssetsService {
     public Long updateProductDataset(final ProductDatasetDTO productDatasetDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
+        boolean newDataset = productDatasetDTO.getId() == null;
         try {
             em.getTransaction().begin();
             User user = em.find(User.class, userName);
             ProductDataset productDataset = null;
-            if(productDatasetDTO.getId() == null) {
+            if(newDataset) {
                 productDataset = new ProductDataset();
                 productDataset.setCompany(user.getCompany());
                 em.persist(productDataset);
@@ -1220,6 +1255,23 @@ public class AssetsResource implements AssetsService {
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
+            if(newDataset) {
+                // fail silently
+                try {
+                    em.getTransaction().begin();
+                    // add event for company and for product
+                    EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(), Category.productdatasets, Event.TYPE.OFFER,
+                            "New off the shelf data available for product " + product.getName(), productDataset.getId() + "");
+                    EventHelper.createAndPropagateProductEvent(em, product, user.getCompany(), Category.productdatasets, Event.TYPE.OFFER,
+                            "New off the shelf data available for product " + product.getName(), productDataset.getId() + "");
+                    em.getTransaction().commit();
+                } catch (Exception e) {
+                    if (em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
+                    logger.error(e.getMessage(), e);
+                }
+            }
             return productDataset.getId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1304,11 +1356,12 @@ public class AssetsResource implements AssetsService {
     public Long updateSoftware(SoftwareDTO softwareDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
+        boolean newSoftware = softwareDTO.getId() == null;
         try {
             em.getTransaction().begin();
             User user = em.find(User.class, userName);
             Software software = null;
-            if(softwareDTO.getId() == null) {
+            if(newSoftware) {
                 software = new Software();
                 software.setCompany(user.getCompany());
                 em.persist(software);
@@ -1359,6 +1412,28 @@ public class AssetsResource implements AssetsService {
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
+            // add notifications
+            if(newSoftware) {
+                // fail silently
+                try {
+                    em.getTransaction().begin();
+                    // add event for company and for product
+                    EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(),
+                            Category.software, Event.TYPE.OFFER,
+                            "New software available", software.getId() + "");
+                    for(ProductSoftware productSoftware : software.getProducts()) {
+                        EventHelper.createAndPropagateProductEvent(em, productSoftware.getProduct(), user.getCompany(),
+                                Category.software, Event.TYPE.OFFER,
+                                "New software available for product " + productSoftware.getProduct().getName(), software.getId() + "");
+                    }
+                    em.getTransaction().commit();
+                } catch (Exception e) {
+                    if (em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
+                    logger.error(e.getMessage(), e);
+                }
+            }
             return software.getId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1474,11 +1549,12 @@ public class AssetsResource implements AssetsService {
     public Long updateProject(ProjectDTO projectDTO) throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
+        boolean newProject = projectDTO.getId() == null;
         try {
             em.getTransaction().begin();
             User user = em.find(User.class, userName);
             Project project = null;
-            if(projectDTO.getId() == null) {
+            if(newProject) {
                 project = new Project();
                 project.setCompany(user.getCompany());
                 em.persist(project);
@@ -1560,6 +1636,28 @@ public class AssetsResource implements AssetsService {
                     ";");
             query.executeUpdate();
             em.getTransaction().commit();
+            // add notifications
+            if(newProject) {
+                // fail silently
+                try {
+                    em.getTransaction().begin();
+                    // add event for company and for product
+                    EventHelper.createAndPropagateCompanyEvent(em, user.getCompany(),
+                            Category.project, Event.TYPE.OFFER,
+                            "New project " + project.getName() + " created", project.getId() + "");
+                    for(ProductProject productProject : project.getProducts()) {
+                        EventHelper.createAndPropagateProductEvent(em, productProject.getProduct(), user.getCompany(),
+                                Category.project, Event.TYPE.OFFER,
+                                "New project " + project.getName() + " created", project.getId() + "");
+                    }
+                    em.getTransaction().commit();
+                } catch (Exception e) {
+                    if (em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
+                    logger.error(e.getMessage(), e);
+                }
+            }
             return project.getId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

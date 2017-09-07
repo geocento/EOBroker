@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.places.OrderPlace;
@@ -51,7 +53,11 @@ public class RequestWidget extends Composite {
                 break;
             case product:
                 title.setText("Request for product");
-                content.setBackgroundColor(Color.BLUE_GREY);
+                content.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
+                break;
+            case otsproduct:
+                title.setText("Request for off the shelf product");
+                content.setBackgroundColor(CategoryUtils.getColor(Category.productdatasets));
                 break;
         }
         description.setText(requestDTO.getDescription());
