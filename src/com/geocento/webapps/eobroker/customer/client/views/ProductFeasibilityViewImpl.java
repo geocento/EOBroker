@@ -17,6 +17,7 @@ import com.geocento.webapps.eobroker.common.shared.feasibility.*;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
@@ -430,6 +431,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         servicesLink.setText(productServiceFeasibilityDTO.getName());
+        servicesLink.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+                FullViewPlace.TOKENS.productserviceid.toString(), productServiceFeasibilityDTO.getId() + ""
+        ))));
         serviceImage.setUrl(productServiceFeasibilityDTO.getImageURL());
         supplier.setText(productServiceFeasibilityDTO.getCompany().getName());
         supplier.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(

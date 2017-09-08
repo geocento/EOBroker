@@ -8,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class ProductResponsePlace extends EOBrokerPlace {
 
-    public enum TOKENS {id, responseid};
+    public enum TOKENS {id, responseid, otsresponseid};
 
     public ProductResponsePlace() {
     }

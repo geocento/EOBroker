@@ -259,9 +259,20 @@ public class SearchResource implements SearchService {
         productServiceDTO.setCompanyName(productService.getCompany().getName());
         productServiceDTO.setCompanyId(productService.getCompany().getId());
         productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-        productServiceDTO.setHasSamples(productService.getSamples() != null && productService.getSamples().size() > 0);
+        productServiceDTO.setHasSamples(hasWMSSamples(productService.getSamples()));
         productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
         return productServiceDTO;
+    }
+
+    private boolean hasWMSSamples(List<DatasetAccess> samples) {
+        if(samples != null && samples.size() > 0) {
+            for(DatasetAccess datasetAccess : samples) {
+                if(datasetAccess instanceof DatasetAccessOGC) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -365,7 +376,7 @@ public class SearchResource implements SearchService {
         productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
         productDatasetDTO.setHasExplore(productDataset.getDatasetStandard() != null);
         productDatasetDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
-        productDatasetDTO.setHasSamples(productDataset.getSamples() != null && productDataset.getSamples().size() > 0);
+        productDatasetDTO.setHasSamples(hasWMSSamples(productDataset.getSamples()));
         return productDatasetDTO;
     }
 
@@ -547,10 +558,10 @@ public class SearchResource implements SearchService {
         if(aoiId != null) {
             AoI aoi = em.find(AoI.class, aoiId);
             if(aoi != null) {
-                additionalStatements.add("ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'");
+                additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't')");
             }
         } else if(aoiWKT != null) {
-            additionalStatements.add("ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't'");
+            additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
         }
         if(companyId != null) {
             additionalStatements.add("company_id = " + companyId);
@@ -598,10 +609,10 @@ public class SearchResource implements SearchService {
         if(aoiId != null) {
             AoI aoi = em.find(AoI.class, aoiId);
             if(aoi != null) {
-                additionalStatements.add("ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't'");
+                additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't')");
             }
         } else if(aoiWKT != null) {
-            additionalStatements.add("ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't'");
+            additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
         }
         if(serviceType != null) {
             additionalStatements.add("servicetype = '" + serviceType.toString() + "'");

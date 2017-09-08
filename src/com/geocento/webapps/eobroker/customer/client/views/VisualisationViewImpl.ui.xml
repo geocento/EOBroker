@@ -88,7 +88,7 @@
                         <design:MaterialPanel>
                             <design:MaterialImage float="LEFT" ui:field="image"></design:MaterialImage>
                             <design:MaterialPanel marginLeft="70" marginTop="10">
-                                <design:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></design:MaterialLabel>
+                                <design:MaterialLink text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></design:MaterialLink>
                                 <design:MaterialPanel marginTop="5">
                                     <design:MaterialChip fontSize="0.8em" ui:field="supplier"></design:MaterialChip>
                                     <design:MaterialChip visible="false" ui:field="resource"></design:MaterialChip>
@@ -106,7 +106,7 @@
                                 </design:MaterialTooltip>
                                 <design:MaterialLabel truncate="true" marginRight="30" ui:field="selectedDataset"></design:MaterialLabel>
                             </design:MaterialPanel>
-                            <design:MaterialLabel ui:field="description"></design:MaterialLabel>
+                            <widgets:MorePanel ui:field="description"></widgets:MorePanel>
                             <design:MaterialLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></design:MaterialLink>
                             <design:MaterialLabel addStyleNames="{style.layer}">Layer parameters</design:MaterialLabel>
                             <design:MaterialRow>

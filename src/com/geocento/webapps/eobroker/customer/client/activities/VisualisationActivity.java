@@ -140,15 +140,17 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
 
     private void setProductDatasetVisualisation(ProductDatasetVisualisationDTO productDatasetVisualisationDTO, final Long datasetId) {
         visualisationView.setProductDataset(productDatasetVisualisationDTO);
+        // configure the list of datasets
+        datasetAccesses = new ArrayList<DatasetAccess>();
+        if(productDatasetVisualisationDTO.getDatasetAccess() != null) {
+            datasetAccesses.addAll(productDatasetVisualisationDTO.getDatasetAccess());
+        }
+        if(productDatasetVisualisationDTO.getSamples() != null) {
+            datasetAccesses.addAll(productDatasetVisualisationDTO.getSamples());
+        }
+        // select a dataset
         DatasetAccess datasetAccess = null;
         if(datasetId != null) {
-            datasetAccesses = new ArrayList<DatasetAccess>();
-            if(productDatasetVisualisationDTO.getDatasetAccess() != null) {
-                datasetAccesses.addAll(productDatasetVisualisationDTO.getDatasetAccess());
-            }
-            if(productDatasetVisualisationDTO.getSamples() != null) {
-                datasetAccesses.addAll(productDatasetVisualisationDTO.getSamples());
-            }
             datasetAccess = ListUtil.findValue(datasetAccesses, new ListUtil.CheckValue<DatasetAccess>() {
                 @Override
                 public boolean isValue(DatasetAccess value) {
@@ -165,12 +167,14 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
 
     private void setProductServiceVisualisation(ProductServiceVisualisationDTO productServiceVisualisationDTO, final Long datasetId) {
         visualisationView.setProductService(productServiceVisualisationDTO);
+        // configure the list of datasets
+        datasetAccesses = new ArrayList<DatasetAccess>();
+        if(productServiceVisualisationDTO.getSamples() != null) {
+            datasetAccesses.addAll(productServiceVisualisationDTO.getSamples());
+        }
+        // select a dataset
         DatasetAccess datasetAccess = null;
         if(datasetId != null) {
-            datasetAccesses = new ArrayList<DatasetAccess>();
-            if(productServiceVisualisationDTO.getSamples() != null) {
-                datasetAccesses.addAll(productServiceVisualisationDTO.getSamples());
-            }
             datasetAccess = ListUtil.findValue(productServiceVisualisationDTO.getSamples(), new ListUtil.CheckValue<DatasetAccess>() {
                 @Override
                 public boolean isValue(DatasetAccess value) {
@@ -309,7 +313,8 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                         visualisationView.setWMSLayer(layerInfoDTO);
                         visualisationView.displayLayerInfo(layerInfoDTO);
                         visualisationView.enableGetFeatureInfo(layerInfoDTO.isQueryable());
-                        visualisationView.enableWCS(((DatasetAccessOGC) datasetAccess).getWcsServerUrl() != null);
+                        String wcsServerUrl = ((DatasetAccessOGC) datasetAccess).getWcsServerUrl();
+                        visualisationView.enableWCS(wcsServerUrl != null && wcsServerUrl.length() > 0);
                     }
                 }).call(ServicesUtil.assetsService).getLayerInfo(datasetAccess.getId());
             } catch (RequestException e) {

@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
+import com.geocento.webapps.eobroker.common.client.widgets.MorePanel;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.Extent;
@@ -11,6 +12,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.events.GetFeatureInfo;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.VisualisationMapContainer;
 import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
@@ -63,9 +65,9 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @UiField
     MaterialImage image;
     @UiField
-    MaterialLabel name;
-    @UiField
-    MaterialLabel description;
+    MaterialLink name;
+    @UiField(provided = true)
+    MorePanel description;
     @UiField
     MaterialLink addToFavourites;
     @UiField
@@ -112,6 +114,8 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     public VisualisationViewImpl(ClientFactoryImpl clientFactory) {
 
         this.clientFactory = clientFactory;
+
+        description = new MorePanel(100);
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -242,6 +246,9 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     public void setProductService(ProductServiceVisualisationDTO productServiceVisualisationDTO) {
         image.setUrl(productServiceVisualisationDTO.getServiceImage());
         name.setText(productServiceVisualisationDTO.getName());
+        name.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+                FullViewPlace.TOKENS.productserviceid.toString(), productServiceVisualisationDTO.getId() + ""
+        ))));
         setCompany(productServiceVisualisationDTO.getCompany());
         setProduct(productServiceVisualisationDTO.getProduct());
         moreDatasets.setText("More layers from this service...");
@@ -277,6 +284,9 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     public void setProductDataset(ProductDatasetVisualisationDTO productDatasetVisualisationDTO) {
         image.setUrl(productDatasetVisualisationDTO.getImageUrl());
         name.setText(productDatasetVisualisationDTO.getName());
+        name.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+                FullViewPlace.TOKENS.productdatasetid.toString(), productDatasetVisualisationDTO.getId() + ""
+        ))));
         setCompany(productDatasetVisualisationDTO.getCompany());
         setProduct(productDatasetVisualisationDTO.getProduct());
         moreDatasets.setText("More layers from this product...");
@@ -327,7 +337,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     @Override
     public void setDataAccessDescription(String pitch) {
-        description.setText(pitch);
+        description.setContent(new MaterialLabel(pitch));
     }
 
     @Override

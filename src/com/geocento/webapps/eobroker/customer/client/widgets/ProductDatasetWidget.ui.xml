@@ -40,7 +40,8 @@
         }
 
         .iconLink {
-            margin-right: 5px !important;
+            margin-right: 0px !important;
+            margin-left: 5px !important;
         }
 
         .iconLink > i {
@@ -65,7 +66,7 @@
         <design:MaterialCardAction addStyleNames="{style.actions}" padding="10" ui:field="action">
             <design:MaterialLink text="INFO" textColor="WHITE" ui:field="info"></design:MaterialLink>
             <design:MaterialTooltip text="Explore dataset in new window">
-                <design:MaterialLink iconType="EXPLORE" textColor="WHITE" float="RIGHT" addStyleNames="{style.iconLink}" ui:field="explore"></design:MaterialLink>
+                <design:MaterialLink iconType="SEARCH" textColor="WHITE" float="RIGHT" addStyleNames="{style.iconLink}" ui:field="explore"></design:MaterialLink>
             </design:MaterialTooltip>
             <design:MaterialTooltip text="Explore product samples in new window">
                 <design:MaterialLink text="" iconType="VIEW_LIST" textColor="WHITE" float="RIGHT" addStyleNames="{style.iconLink}" ui:field="samples"></design:MaterialLink>

@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.styles.MyDataGridResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.SearchResponse;
 import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
@@ -16,6 +17,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
@@ -96,7 +99,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     @UiField
     MaterialRow additionalFields;
     @UiField
-    MaterialLabel name;
+    MaterialLink name;
     @UiField
     MaterialChip supplier;
     @UiField
@@ -613,6 +616,9 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     public void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
         image.setUrl(productDatasetCatalogueDTO.getImageUrl());
         name.setText(productDatasetCatalogueDTO.getName());
+        name.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+                FullViewPlace.TOKENS.productserviceid.toString(), productDatasetCatalogueDTO.getId() + ""
+        ))));
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
         Scheduler.get().scheduleDeferred(() -> {

@@ -125,7 +125,7 @@
                         <sideprofile:MaterialSideProfile backgroundColor="BLUE" textColor="WHITE" ui:field="sideProfile">
                             <m:MaterialImage float="LEFT" margin="0" ui:field="image"></m:MaterialImage>
                             <m:MaterialPanel marginLeft="70" marginTop="0">
-                                <m:MaterialLabel text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></m:MaterialLabel>
+                                <m:MaterialLink text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></m:MaterialLink>
                                 <m:MaterialPanel marginTop="5">
                                     <m:MaterialChip fontSize="0.8em" ui:field="supplier"></m:MaterialChip>
                                     <widgetsc:MaterialLabelIcon addStyleNames="{style.protocol}" ui:field="protocol"></widgetsc:MaterialLabelIcon>
