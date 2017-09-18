@@ -1,0 +1,43 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+        >
+    <ui:style>
+
+        .title {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 3.6em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 3;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+
+        .stars > i {
+            margin-right: 5px !important;
+        }
+
+        .image {
+            cursor: pointer;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
+    <design:MaterialCard backgroundColor="BROWN" axis="HORIZONTAL">
+        <design:MaterialCardImage>
+            <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="imagePanel"></widgets:MaterialImageLoading>
+        </design:MaterialCardImage>
+        <design:MaterialCardContent textColor="WHITE" padding="10">
+            <design:MaterialLabel fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"/>
+            <design:MaterialLabel addStyleNames="{style.description}" ui:field="pitchDescription"></design:MaterialLabel>
+        </design:MaterialCardContent>
+    </design:MaterialCard>
+</ui:UiBinder>

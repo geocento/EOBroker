@@ -37,7 +37,9 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
     @UiField
     MaterialButton login;
     @UiField
-    MaterialLink requestAccess;
+    MaterialAnchorButton requestAccess;
+    @UiField
+    MaterialLink passwordReset;
 
     public LoginPageViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -84,5 +86,10 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
     @Override
     public HasClickHandlers getRequestAccess() {
         return requestAccess;
+    }
+
+    @Override
+    public HasClickHandlers getPasswordReset() {
+        return passwordReset;
     }
 }

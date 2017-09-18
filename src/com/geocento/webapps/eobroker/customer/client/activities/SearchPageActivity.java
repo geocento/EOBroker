@@ -573,23 +573,27 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
         if(text != null && text.length() > 0) {
             displayListSuggestionsLoading("Searching...");
-            REST.withCallback(new MethodCallback<List<Suggestion>>() {
+            try {
+                REST.withCallback(new MethodCallback<List<Suggestion>>() {
 
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    hideListSuggestionsLoading();
-                    displayListSuggestionsError(method.getResponse().getText());
-                }
-
-                @Override
-                public void onSuccess(Method method, List<Suggestion> response) {
-                    // show only if last one to be called
-                    if (lastCall == SearchPageActivity.this.lastCall) {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
                         hideListSuggestionsLoading();
-                        displayListSuggestions(response);
+                        displayListSuggestionsError(method.getResponse().getText());
                     }
-                }
-            }).call(ServicesUtil.searchService).complete(text, category, toWkt(currentAoI));
+
+                    @Override
+                    public void onSuccess(Method method, List<Suggestion> response) {
+                        // show only if last one to be called
+                        if (lastCall == SearchPageActivity.this.lastCall) {
+                            hideListSuggestionsLoading();
+                            displayListSuggestions(response);
+                        }
+                    }
+                }).call(ServicesUtil.searchService).complete(text, category, toWkt(currentAoI));
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
         } else {
 /*
             // TODO - move to the server side
@@ -616,6 +620,43 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             parameters = "";
         }
         EOBrokerPlace searchPlace = null;
+        Category suggestionCategory = suggestion.getCategory();
+        switch(action) {
+            case "access": {
+                FullViewPlace.TOKENS token = null;
+                switch (suggestionCategory) {
+                    case products:
+                        token = FullViewPlace.TOKENS.productid;
+                        break;
+                    case companies:
+                        token = FullViewPlace.TOKENS.companyid;
+                        break;
+                    case productdatasets:
+                        token = FullViewPlace.TOKENS.productdatasetid;
+                        break;
+                    case productservices:
+                        token = FullViewPlace.TOKENS.productserviceid;
+                        break;
+                    case software:
+                        token = FullViewPlace.TOKENS.softwareid;
+                        break;
+                    case project:
+                        token = FullViewPlace.TOKENS.projectid;
+                        break;
+                    default:
+                        token = null;
+                }
+                if(token != null) {
+                    searchPlace = new FullViewPlace(token.toString() + "=" + parameters);
+                }
+            } break;
+            case "browse": {
+                searchPlace = new SearchPagePlace(SearchPagePlace.TOKENS.category.toString() + "=" + suggestionCategory.toString());
+            } break;
+            default:
+                // TODO - find something to do
+        }
+/*
         switch (suggestion.getCategory()) {
             case products: {
                 String token = "";
@@ -642,24 +683,24 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
                 } else if (action.contentEquals("browse")) {
                     token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.companies.toString();
-                    if (category != null) {
-                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-                    }
                     searchPlace = new SearchPagePlace(token);
                 } else {
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
                     if (category != null) {
                         token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
                     }
+*/
 /*
                     if (currentAoI != null) {
                         token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
                     }
-*/
+*//*
+
                     searchPlace = new SearchPagePlace(token);
                 }
             } break;
         }
+*/
         if (searchPlace != null) {
             clientFactory.getPlaceController().goTo(searchPlace);
         } else {

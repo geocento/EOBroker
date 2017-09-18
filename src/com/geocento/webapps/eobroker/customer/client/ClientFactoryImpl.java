@@ -23,6 +23,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private LoginPageView loginPageView = null;
 
+    private ResetPasswordView resetPasswordView = null;
+
     private ImageSearchView imageSearchView = null;
 
     private CatalogueSearchView catalogueSearchView = null;
@@ -260,6 +262,14 @@ public class ClientFactoryImpl implements ClientFactory {
             companyView = new CompanyViewImpl(this);
         }
         return companyView;
+    }
+
+    @Override
+    public ResetPasswordView getResetPasswordView() {
+        if(resetPasswordView == null) {
+            resetPasswordView = new ResetPasswordViewImpl(this);
+        }
+        return resetPasswordView;
     }
 }
 

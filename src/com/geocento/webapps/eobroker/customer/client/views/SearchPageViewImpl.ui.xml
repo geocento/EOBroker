@@ -161,7 +161,7 @@
     <g:HTMLPanel addStyleNames="{style.resultsPanel}">
         <design:MaterialCollapsible shadow="0" addStyleNames="{style.filtersPanel}" ui:field="filtersContainer">
             <design:MaterialCollapsibleItem ui:field="filtersPanel">
-                <design:MaterialCollapsibleHeader addStyleNames="{style.filtersPanel}" backgroundColor="TRANSPARENT">
+                <design:MaterialCollapsibleHeader addStyleNames="{style.filtersPanel}" backgroundColor="TRANSPARENT" ui:field="filtersHeader">
                     <design:MaterialLink text="Filter title" fontSize="1.2em" textColor="BLACK" ui:field="filterTitle"/>
                     <design:MaterialLink float="RIGHT" circle="true" waves="DEFAULT" iconType="ARROW_DROP_DOWN" iconColor="BLUE_GREY" iconPosition="RIGHT" textColor="BLUE_GREY" text="Show filters" ui:field="showFilters"></design:MaterialLink>
                 </design:MaterialCollapsibleHeader>

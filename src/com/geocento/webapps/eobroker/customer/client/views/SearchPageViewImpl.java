@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
+import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
@@ -30,13 +31,15 @@ import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
-import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.jquery.client.api.Functions;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -141,6 +144,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialLink showFilters;
     @UiField
     MaterialCollapsibleItem filtersPanel;
+    @UiField
+    MaterialCollapsibleHeader filtersHeader;
 
     private ProductDTO productDTO;
     private CompanyDTO companyDTO;
@@ -182,7 +187,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             for (Sector sector : sortedValues) {
                 sectorFilter.addItem(sector, sector.getName());
             }
-            sectorFilter.addValueChangeHandler(event -> presenter.filtersChanged());
+            sectorFilter.addValueChangeHandler(event -> filtersChanged());
         }
         {
             List<Thematic> sortedValues = ListUtil.toList(Thematic.values());
@@ -191,7 +196,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             for (Thematic thematic : sortedValues) {
                 thematicFilter.addItem(thematic, thematic.getName());
             }
-            thematicFilter.addValueChangeHandler(event -> presenter.filtersChanged());
+            thematicFilter.addValueChangeHandler(event -> filtersChanged());
         }
         // company filters
         {
@@ -199,39 +204,39 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             for (String name : companySize.keySet()) {
                 companySizeFilter.addTypedItem(companySize.get(name), name);
             }
-            companySizeFilter.addValueChangeHandler(event -> {presenter.filtersChanged();});
+            companySizeFilter.addValueChangeHandler(event -> {filtersChanged();});
         }
         {
             for (String name : companyAge.keySet()) {
                 companyAgeFilter.addItem(companyAge.get(name), name);
             }
             companyAgeFilter.addValueChangeHandler(event -> {
-                presenter.filtersChanged();
+                filtersChanged();
             });
         }
         {
             companyCountryFilter.insertItem("", "All", 0);
             companyCountryFilter.setSelectedIndex(0);
-            companyCountryFilter.addValueChangeHandler(event -> {presenter.filtersChanged();});
+            companyCountryFilter.addValueChangeHandler(event -> {filtersChanged();});
         }
         // product datasets filters
         productCommercialFilter.addNullItem("All");
         for (ServiceType name : ServiceType.values()) {
             productCommercialFilter.addTypedItem(name, name.getName());
         }
-        productCommercialFilter.addClickHandler(event -> presenter.filtersChanged());
+        productCommercialFilter.addValueChangeHandler(event -> filtersChanged());
         // software filters
         softwareCommercialFilter.addNullItem("All");
         for (SoftwareType name : SoftwareType.values()) {
             softwareCommercialFilter.addTypedItem(name, name.getName());
         }
-        softwareCommercialFilter.addValueChangeHandler(event -> {presenter.filtersChanged();});
+        softwareCommercialFilter.addValueChangeHandler(event -> {filtersChanged();});
 
         // add handlers on filters
-        filterByAoI.addValueChangeHandler(event -> presenter.filtersChanged());
-        filterByTimeFrame.addValueChangeHandler(event -> presenter.filtersChanged());
-        start.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) presenter.filtersChanged();});
-        stop.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) presenter.filtersChanged();});
+        filterByAoI.addValueChangeHandler(event -> filtersChanged());
+        filterByTimeFrame.addValueChangeHandler(event -> filtersChanged());
+        start.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) filtersChanged();});
+        stop.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) filtersChanged();});
         productFilter.setPresenter(suggestion -> {
             boolean changed = false;
             if(suggestion == null) {
@@ -246,7 +251,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 SearchPageViewImpl.this.productDTO = productDTO;
             }
             if(changed) {
-                presenter.filtersChanged();
+                filtersChanged();
             }
         });
         companyFilter.setPresenter(suggestion -> {
@@ -264,21 +269,81 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             }
             // make sure values have changed
             if(changed) {
-                presenter.filtersChanged();
+                filtersChanged();
             }
         });
 
         // TODO - not the right method to detect a change in active maybe replace by another widget
-        filtersContainer.addClearActiveHandler(event -> updateShowFilter());
+        filtersHeader.addClickHandler(event -> updateShowFilter());
         updateShowFilter();
 
         onResize(null);
     }
 
+    private void filtersChanged() {
+        updateShowFilter();
+        presenter.filtersChanged();
+    }
+
     private void updateShowFilter() {
-        boolean isActive = filtersPanel.isActive();
-        showFilters.setText(isActive ? "Hide filters" : "Show filters");
+        // TODO - replace with better method
+        boolean isActive = filtersPanel.isActive(); //!filtersPanel.getBody().getElement().getStyle().getDisplay().contentEquals(com.google.gwt.dom.client.Style.Display.NONE.toString());
+        int activeFilters = 0;
+        if(isFilterVisible(areaOfInterest) && getFilterByAoI().getValue()) {
+            activeFilters++;
+        }
+        if(isFilterVisible(sectorFilter) && getSectorFilter() != null && getSectorFilter() != Sector.all) {
+            activeFilters++;
+        }
+        if(isFilterVisible(thematicFilter) && getThematicFilter() != null && getThematicFilter() != Thematic.all) {
+            activeFilters++;
+        }
+        if(isFilterVisible(companySizeFilter) && getCompanySizeFilter() != null) {
+            activeFilters++;
+        }
+        if(isFilterVisible(companyAgeFilter) && getCompanyAgeFilter() != 0) {
+            activeFilters++;
+        }
+        if(isFilterVisible(companyCountryFilter) && getCompanyCountryFilter() != null) {
+            activeFilters++;
+        }
+        if(isFilterVisible(productCommercialFilter) && getProductServiceType() != null) {
+            activeFilters++;
+        }
+        if(isFilterVisible(softwareCommercialFilter) && getSoftwareType() != null) {
+            activeFilters++;
+        }
+        if(isFilterVisible(companyFilter) && getCompanySelection() != null) {
+            activeFilters++;
+        }
+        if(isFilterVisible(productFilter) && getProductSelection() != null) {
+            activeFilters++;
+        }
+        if(isFilterVisible(timeFrame) && getTimeFrameFilterActivated().getValue()) {
+            activeFilters++;
+        }
+        showFilters.setText(isActive ? "Hide filters" : ("" +
+                (activeFilters == 0 ? "no active filters" : ("" + activeFilters + " active filter" + (activeFilters > 1 ? "s" : ""))))
+        );
         showFilters.setIconType(isActive ? IconType.ARROW_DROP_UP : IconType.ARROW_DROP_DOWN);
+    }
+
+    private boolean isFilterVisible(Widget filterWidget) {
+        // check if widget parents includes filter panel
+        return WidgetUtil.findParent(filterWidget, widget -> widget == filters) != null;
+        //return WidgetUtil.findChild(filters, widget -> widget == filterWidget) != null;
+/*
+        for(Widget widget : filters.getChildrenList()) {
+            if(widget instanceof MaterialColumn) {
+                for(Widget columnWidget : ((MaterialColumn) widget).getChildrenList()) {
+                    if(columnWidget == filterWidget) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+*/
     }
 
     private void addCategoryTooltip(MaterialLink materialLink, String message) {
@@ -359,7 +424,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     public void setMatchingProducts(List<ProductDTO> productDTOs, String moreUrl) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
-        addTitle(productRow, "Products", style.productTitle(), moreUrl);
+        addTitle(productRow, "Product categories", style.productTitle(), moreUrl);
         if(productDTOs != null && productDTOs.size() > 0) {
             for (ProductDTO productDTO : productDTOs) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
@@ -555,6 +620,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                     break;
             }
         }
+        updateShowFilter();
     }
 
     @Override

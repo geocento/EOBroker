@@ -68,6 +68,8 @@ public class UsersViewImpl extends Composite implements UsersView {
     MaterialButton create;
     @UiField
     MaterialListValueBox<REGISTRATION_STATUS> status;
+    @UiField
+    MaterialTextBox password;
 
     private Presenter presenter;
 
@@ -143,6 +145,7 @@ public class UsersViewImpl extends Composite implements UsersView {
         role.setSelectedValue(userDescriptionDTO.getUserRole().toString());
         status.setValue(userDescriptionDTO.getStatus());
         company.setCompany(userDescriptionDTO.getCompanyDTO());
+        password.setText("");
         editUser.open();
     }
 
@@ -164,6 +167,11 @@ public class UsersViewImpl extends Composite implements UsersView {
     @Override
     public String getUserEmail() {
         return email.getText();
+    }
+
+    @Override
+    public String getUserPassword() {
+        return password.getText();
     }
 
     @Override

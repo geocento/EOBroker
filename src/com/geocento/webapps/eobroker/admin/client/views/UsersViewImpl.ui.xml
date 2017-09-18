@@ -61,7 +61,10 @@
                     <design:MaterialColumn grid="s12 m6 l6">
                         <design:MaterialListValueBox placeholder="User status" ui:field="status"></design:MaterialListValueBox>
                     </design:MaterialColumn>
-                    <design:MaterialColumn grid="s12 m12 l12">
+                    <design:MaterialColumn grid="s12 m6 l6">
+                        <design:MaterialTextBox placeholder="Password, leave blank if unchanged" ui:field="password"></design:MaterialTextBox>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m6 l6">
                         <widgets:CompanyTextBox addStyleNames="{style.company}" ui:field="company"></widgets:CompanyTextBox>
                     </design:MaterialColumn>
                 </design:MaterialRow>

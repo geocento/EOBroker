@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.shared.Offer;
+import com.google.gwt.http.client.RequestException;
 import gwt.material.design.client.base.SearchObject;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -79,7 +80,7 @@ public class CategorySearchBox extends MaterialSearch {
 
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-
+                    displaySearchError(method.getResponse().getText());
                 }
 
                 @Override
@@ -105,31 +106,35 @@ public class CategorySearchBox extends MaterialSearch {
 
     // default version
     protected void fetchSuggestions(String text, MethodCallback<List<Suggestion>> methodCallback) {
-        REST.withCallback(new MethodCallback<List<Suggestion>>() {
+        try {
+            REST.withCallback(new MethodCallback<List<Suggestion>>() {
 
-            @Override
-            public void onFailure(Method method, Throwable exception) {
-
-            }
-
-            @Override
-            public void onSuccess(Method method, List<Suggestion> suggestions) {
-                // show only if last one to be called
-                if (lastCall == CategorySearchBox.this.lastCall) {
-                    setFocus(true);
-                    displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
-                        @Override
-                        public SearchObject mutate(Suggestion suggestion) {
-                            SearchObject searchObject = new SearchObject();
-                            searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
-                            searchObject.setKeyword(suggestion.getName());
-                            searchObject.setO(suggestion);
-                            return searchObject;
-                        }
-                    }));
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                     displaySearchError(method.getResponse().getText());
                 }
-            }
-        }).call(ServicesUtil.searchService).complete(text, category, null);
+
+                @Override
+                public void onSuccess(Method method, List<Suggestion> suggestions) {
+                    // show only if last one to be called
+                    if (lastCall == CategorySearchBox.this.lastCall) {
+                        setFocus(true);
+                        displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
+                            @Override
+                            public SearchObject mutate(Suggestion suggestion) {
+                                SearchObject searchObject = new SearchObject();
+                                searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
+                                searchObject.setKeyword(suggestion.getName());
+                                searchObject.setO(suggestion);
+                                return searchObject;
+                            }
+                        }));
+                    }
+                }
+            }).call(ServicesUtil.searchService).complete(text, category, null);
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
     }
 
 }

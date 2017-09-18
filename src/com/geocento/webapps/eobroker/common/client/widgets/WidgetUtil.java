@@ -69,4 +69,29 @@ public class WidgetUtil {
         return findParent(parent, checkValue);
     }
 
+    /**
+     *
+     * Scans children tree until it finds a widget matching the check value condition
+     *
+     * @param parentWidget
+     * @param checkValue
+     * @return
+     */
+    public static Widget findChild(HasWidgets parentWidget, CheckValue checkValue) {
+        Iterator<Widget> iterator = parentWidget.iterator();
+        while(iterator.hasNext()) {
+            Widget widget = iterator.next();
+            if(checkValue.isValue(widget)) {
+                return widget;
+            }
+            if(widget instanceof HasWidgets) {
+                Widget childWidget = findChild((HasWidgets) widget, checkValue);
+                if(childWidget != null) {
+                    return childWidget;
+                }
+            }
+        }
+        return null;
+    }
+
 }

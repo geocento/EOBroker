@@ -60,4 +60,6 @@ public interface ClientFactory {
     RequestAccessView getRequestAccessView();
 
     CompanyView getCompanyView();
+
+    ResetPasswordView getResetPasswordView();
 }

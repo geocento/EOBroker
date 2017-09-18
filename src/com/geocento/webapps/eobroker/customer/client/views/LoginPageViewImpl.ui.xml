@@ -33,13 +33,18 @@
                     <design:MaterialImage addStyleNames="{style.imgProfile} z-depth-1" ui:field="logo"/>
                     <design:MaterialTextBox type="TEXT" placeholder="User name" ui:field="userName"/>
                     <design:MaterialTextBox type="PASSWORD" placeholder="Password" ui:field="password"/>
-                    <design:MaterialButton backgroundColor="BLUE" waves="LIGHT" text="Log In" width="100%" ui:field="login"/>
+                    <design:MaterialPanel paddingTop="10">
+                        <design:MaterialButton backgroundColor="BLUE" waves="LIGHT" text="Log In" width="100%" ui:field="login"/>
+                    </design:MaterialPanel>
+                    <design:MaterialPanel paddingTop="10">
+                        <design:MaterialAnchorButton backgroundColor="BLUE_LIGHTEN_2" waves="LIGHT" text="Request Access" width="100%" ui:field="requestAccess"/>
+                    </design:MaterialPanel>
                     <design:MaterialRow addStyleNames="{style.rowAction}">
                         <design:MaterialColumn grid="s12 m12 l6">
                             <design:MaterialCheckBox text="Keep me logged in" ui:field="keepLoggedIn"/>
                         </design:MaterialColumn>
                         <design:MaterialColumn textAlign="RIGHT" grid="s12 m12 l6">
-                            <design:MaterialLink text="Request access" ui:field="requestAccess"/>
+                            <design:MaterialLink text="Forgot password?" ui:field="passwordReset"/>
                         </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>

@@ -30,13 +30,13 @@ public class MapJSNI extends JavaScriptObject {
         this.setZoom(zoom);
     }-*/;
 
-    public final native WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent) /*-{
-        addWMSLayer(wmsUrl, info, extent, null);
-    }-*/;
+    public final WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent) {
+        return addWMSLayer(wmsUrl, info, extent, null);
+    };
 
-    public final native WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent, String styleName) /*-{
-        addWMSLayer(wmsUrl, info, extent, null, null);
-    }-*/;
+    public final WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent, String styleName) {
+        return addWMSLayer(wmsUrl, info, extent, null, null);
+    };
 
     public final native WMSLayerJSNI addWMSLayer(String wmsUrl, WMSLayerInfoJSNI info, ExtentJSNI extent, String styleName, String version) /*-{
         var wmsLayer = new $wnd['esri'].layers.WMSLayer(wmsUrl, {

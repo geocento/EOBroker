@@ -754,6 +754,11 @@ public class AssetsResource implements AssetsService {
             dbUser.setStatus(userDescriptionDTO.getStatus());
             dbUser.setRole(userDescriptionDTO.getUserRole());
             dbUser.setEmail(userDescriptionDTO.getEmail());
+            String password = userDescriptionDTO.getPassword();
+            if(password != null && password.length() > 0) {
+                logger.trace("Changed password for user " + userName);
+                dbUser.setPassword(com.geocento.webapps.eobroker.common.server.Utils.UserUtils.createPasswordHash(password));
+            }
             em.getTransaction().commit();
             boolean statusChanged = previousStatus != userDescriptionDTO.getStatus();
             if(statusChanged) {

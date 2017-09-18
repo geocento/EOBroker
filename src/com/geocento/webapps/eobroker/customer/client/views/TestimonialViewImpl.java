@@ -10,6 +10,7 @@ import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
@@ -83,31 +84,35 @@ public class TestimonialViewImpl extends Composite implements TestimonialView {
 
         String text = searchBox.getText();
         if(text != null && text.length() > 0) {
-            REST.withCallback(new MethodCallback<List<Suggestion>>() {
+            try {
+                REST.withCallback(new MethodCallback<List<Suggestion>>() {
 
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-
-                }
-
-                @Override
-                public void onSuccess(Method method, List<Suggestion> suggestions) {
-                    // show only if last one to be called
-                    if (lastCall == TestimonialViewImpl.this.lastCall) {
-                        searchBox.setFocus(true);
-                        searchBox.displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
-                            @Override
-                            public SearchObject mutate(Suggestion suggestion) {
-                                SearchObject searchObject = new SearchObject();
-                                searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
-                                searchObject.setKeyword(suggestion.getName());
-                                searchObject.setO(suggestion);
-                                return searchObject;
-                            }
-                        }));
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        searchBox.displaySearchError(method.getResponse().getText());
                     }
-                }
-            }).call(ServicesUtil.searchService).complete(text, category.getValue(), null);
+
+                    @Override
+                    public void onSuccess(Method method, List<Suggestion> suggestions) {
+                        // show only if last one to be called
+                        if (lastCall == TestimonialViewImpl.this.lastCall) {
+                            searchBox.setFocus(true);
+                            searchBox.displayListSearches(ListUtil.mutate(suggestions, new ListUtil.Mutate<Suggestion, SearchObject>() {
+                                @Override
+                                public SearchObject mutate(Suggestion suggestion) {
+                                    SearchObject searchObject = new SearchObject();
+                                    searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
+                                    searchObject.setKeyword(suggestion.getName());
+                                    searchObject.setO(suggestion);
+                                    return searchObject;
+                                }
+                            }));
+                        }
+                    }
+                }).call(ServicesUtil.searchService).complete(text, category.getValue(), null);
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -25,6 +25,8 @@ public interface LoginPageView extends IsWidget {
 
     HasClickHandlers getRequestAccess();
 
+    HasClickHandlers getPasswordReset();
+
     public interface Presenter {
     }
 

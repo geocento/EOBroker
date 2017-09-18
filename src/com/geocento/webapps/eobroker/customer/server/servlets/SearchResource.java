@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
+import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.server.Utils.XMLUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.parsers.SensorQuery;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
@@ -97,11 +98,15 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<Suggestion> complete(String text, Category category, String aoi) {
-        return completeGeneric(text, category,
-                category == Category.companies ?
-                        "          AND supplier = '1' AND status = 'APPROVED'" : ""
-                , aoi);
+    public List<Suggestion> complete(String text, Category category, String aoi) throws RequestException {
+        try {
+            return completeGeneric(text, category,
+                    category == Category.companies ?
+                            "          AND supplier = '1' AND status = 'APPROVED'" : ""
+                    , aoi);
+        } catch (Exception e) {
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
+        }
     }
 
     public List<Suggestion> completeGeneric(String text, Category category, String additionalStatement, String aoi) {
@@ -156,6 +161,18 @@ public class SearchResource implements SearchService {
                 break;
             case companies:
                 categoryTable = "company";
+                break;
+            case productdatasets:
+                categoryTable = "productdataset";
+                break;
+            case productservices:
+                categoryTable = "productservice";
+                break;
+            case software:
+                categoryTable = "software";
+                break;
+            case project:
+                categoryTable = "project";
                 break;
         }
         String sqlStatement = "SELECT \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
@@ -846,6 +863,7 @@ public class SearchResource implements SearchService {
                 UserInformation userInformation = new UserInformation();
                 userInformation.setUserName(userName);
                 userInformation.setUserCompany(user.getCompany() == null ? null : user.getCompany().getName());
+                feasibilityRequest.setId(new KeyGenerator(10).CreateKey());
                 feasibilityRequest.setUserInformation(userInformation);
                 feasibilityRequest.setAoiWKT(aoiWKT);
                 feasibilityRequest.setStart(start);
@@ -1097,8 +1115,9 @@ public class SearchResource implements SearchService {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Content-Length", payload.length() + "");
             // check whether we have some user password in the URL
-            if(targetURL.getUserInfo() != null) {
-                String encoded = Base64.getEncoder().encodeToString(targetURL.getUserInfo().getBytes(StandardCharsets.UTF_8));
+            String userInfo = targetURL.getUserInfo();
+            if(userInfo != null && userInfo.length() > 0) {
+                String encoded = Base64.getEncoder().encodeToString(userInfo.getBytes(StandardCharsets.UTF_8));
                 connection.setRequestProperty("Authorization", "Basic "+encoded);
             }
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());

@@ -93,6 +93,7 @@ public class UsersActivity extends TemplateActivity implements UsersView.Present
                 userDescriptionDTO.setEmail(usersView.getUserEmail());
                 userDescriptionDTO.setStatus(usersView.getUserStatus());
                 userDescriptionDTO.setUserRole(usersView.getUserRole());
+                userDescriptionDTO.setPassword(usersView.getUserPassword());
                 userDescriptionDTO.setCompanyDTO(usersView.getUserCompany());
                 try {
                     if(userDescriptionDTO.getName().length() < 5) {

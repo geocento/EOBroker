@@ -989,15 +989,12 @@ public class FullViewImpl extends Composite implements FullView {
             if (productsCovered == null || productsCovered.size() == 0) {
                 addColumnLine(new MaterialLabel("No products..."));
             } else {
+                MaterialRow materialRow = new MaterialRow();
+                productsPanel.add(materialRow);
                 for(ProductSoftwareDTO productSoftwareDTO : productsCovered) {
-                    MaterialRow materialRow = new MaterialRow();
-                    productsPanel.add(materialRow);
-                    MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
-                    ProductWidget productWidget = new ProductWidget(productSoftwareDTO.getProduct());
-                    materialColumn.add(productWidget);
-                    materialRow.add(materialColumn);
-                    materialColumn = new MaterialColumn(6, 8, 9);
-                    materialColumn.add(new HTML("<h4>Pitch</h4><p>" + productSoftwareDTO.getPitch() + "</p>"));
+                    MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
+                    ProductSoftwareWidget productSoftwareWidget = new ProductSoftwareWidget(productSoftwareDTO);
+                    materialColumn.add(productSoftwareWidget);
                     materialRow.add(materialColumn);
                 }
             }

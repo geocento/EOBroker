@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.Date;
 import java.util.List;
 
@@ -46,4 +47,18 @@ public class UserUtils {
         }
     }
 
+    public static User findUserByNameOrEmail(EntityManager em, String userName) {
+        if(userName.contains("@")) {
+            TypedQuery<User> query = em.createQuery("select u from users u WHERE u.email = :email", User.class);
+            query.setParameter("email", userName);
+            List<User> results = query.getResultList();
+            if(results == null || results.size() == 0) {
+                return null;
+            } else {
+                return results.get(0);
+            }
+        } else {
+            return em.find(User.class, userName);
+        }
+    }
 }

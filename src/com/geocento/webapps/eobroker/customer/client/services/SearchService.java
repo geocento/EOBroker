@@ -21,7 +21,7 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/complete")
     @Produces("application/json")
-    public List<Suggestion> complete(@QueryParam("text") String text, @QueryParam("category") Category category, @QueryParam("aoi") String aoi);
+    public List<Suggestion> complete(@QueryParam("text") String text, @QueryParam("category") Category category, @QueryParam("aoi") String aoi) throws RequestException;
 
     @GET
     @Path("/search/complete/allcompanies")

@@ -11,6 +11,7 @@
         <!-- Entities -->
         <class>com.geocento.webapps.eobroker.common.shared.entities.Company</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.User</class>
+        <class>com.geocento.webapps.eobroker.customer.server.entities.UserResetToken</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Product</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductService</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.ProductDataset</class>

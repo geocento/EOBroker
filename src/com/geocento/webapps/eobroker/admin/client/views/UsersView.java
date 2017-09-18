@@ -34,6 +34,8 @@ public interface UsersView extends IsWidget {
 
     String getUserEmail();
 
+    String getUserPassword();
+
     User.USER_ROLE getUserRole();
 
     REGISTRATION_STATUS getUserStatus();

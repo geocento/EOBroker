@@ -11,7 +11,7 @@
     </context-param>
     <context-param>
         <param-name>org.eclipse.jetty.servlet.SessionIdPathParameterName</param-name>
-        <param-value>xsessionid</param-value>
+        <param-value>eobrokerid</param-value>
     </context-param>
     <context-param>
         <param-name>org.eclipse.jetty.servlet.SessionPath</param-name>
