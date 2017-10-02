@@ -22,6 +22,8 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -146,6 +148,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialCollapsibleItem filtersPanel;
     @UiField
     MaterialCollapsibleHeader filtersHeader;
+    @UiField
+    MaterialSwitch filterByAffiliates;
+    @UiField
+    MaterialPanel companyFilterPanel;
 
     private ProductDTO productDTO;
     private CompanyDTO companyDTO;
@@ -277,7 +283,23 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         filtersHeader.addClickHandler(event -> updateShowFilter());
         updateShowFilter();
 
+        filterByAffiliates.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                updateCompanySearchBox();
+                filtersChanged();
+            }
+        });
+        filterByAffiliates.setValue(false);
+        updateCompanySearchBox();
+
         onResize(null);
+    }
+
+    private void updateCompanySearchBox() {
+        boolean withAffiliates = getFilterByAffiliates().getValue();
+        companyFilter.setVisible(!withAffiliates);
+        filterByAffiliates.setOnLabel(withAffiliates ? "Only results from affiliated companies" : "");
     }
 
     private void filtersChanged() {
@@ -313,7 +335,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         if(isFilterVisible(softwareCommercialFilter) && getSoftwareType() != null) {
             activeFilters++;
         }
-        if(isFilterVisible(companyFilter) && getCompanySelection() != null) {
+        if(isFilterVisible(companyFilterPanel) && (getCompanySelection() != null || getFilterByAffiliates().getValue())) {
             activeFilters++;
         }
         if(isFilterVisible(productFilter) && getProductSelection() != null) {
@@ -812,7 +834,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         materialPanel.add(timeFrame);
         materialPanel.add(productCommercialFilter);
         materialPanel.add(productFilter);
-        materialPanel.add(companyFilter);
+        materialPanel.add(companyFilterPanel);
     }
 
     private void displayProductServicesFilters() {
@@ -821,15 +843,19 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         addFilter(materialPanel, "s12 m12 l6");
         //materialPanel.add(timeFrame);
         materialPanel.add(productFilter);
-        materialPanel.add(companyFilter);
+        materialPanel.add(companyFilterPanel);
     }
 
     private void displaySoftwareFilters() {
-        addFilter(softwareCommercialFilter, "s12 m6 l4");
+        addFilter(softwareCommercialFilter, "s12 m6 l12");
+        addFilter(productFilter, "s12 m12 l6");
+        addFilter(companyFilterPanel, "s12 m12 l6");
     }
 
     private void displayProjectFilters() {
-        addFilter(timeFrame, "s12 m6 l4");
+        addFilter(timeFrame, "s12 m6 l12");
+        addFilter(productFilter, "s12 m12 l6");
+        addFilter(companyFilterPanel, "s12 m12 l6");
     }
 
     private void displayCompaniesFilters() {
@@ -931,6 +957,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     public void setCompanySelection(CompanyDTO companyDTO) {
         this.companyDTO = companyDTO;
         companyFilter.setValue(companyDTO == null ? "" : companyDTO.getName());
+    }
+
+    @Override
+    public HasValue<Boolean> getFilterByAffiliates() {
+        return filterByAffiliates;
     }
 
     @Override

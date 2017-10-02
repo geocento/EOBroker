@@ -59,6 +59,8 @@ public interface CompanyView extends IsWidget {
 
     HasClickHandlers getViewClient();
 
+    void setEditable(boolean editable);
+
     public interface Presenter {
     }
 

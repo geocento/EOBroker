@@ -61,6 +61,12 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     CustomerSettings customerSettings;
 
+    @OneToMany
+    List<DatasetAccessOGC> savedLayers;
+
+    @OneToMany
+    List<DatasetAccessOGC> selectedLayers;
+
     public User() {
     }
 
@@ -166,6 +172,22 @@ public class User {
 
     public void setLastNotificationCheck(Date lastNotificationCheck) {
         this.lastNotificationCheck = lastNotificationCheck;
+    }
+
+    public List<DatasetAccessOGC> getSavedLayers() {
+        return savedLayers;
+    }
+
+    public List<DatasetAccessOGC> getSelectedLayers() {
+        return selectedLayers;
+    }
+
+    public void setSelectedLayers(List<DatasetAccessOGC> selectedLayers) {
+        this.selectedLayers = selectedLayers;
+    }
+
+    public void setSavedLayers(List<DatasetAccessOGC> savedLayers) {
+        this.savedLayers = savedLayers;
     }
 
     public CustomerSettings getCustomerSettings() {

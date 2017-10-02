@@ -93,4 +93,9 @@ public class MaterialImageUploader extends Composite {
     private void updateComment() {
         comment.setText("Upload image " + imageUploader.getParameter("width") + "px by " + imageUploader.getParameter("height") + " px");
     }
+
+    public void setEnabled(boolean editable) {
+        imageUploader.setEnabled(editable);
+    }
+
 }

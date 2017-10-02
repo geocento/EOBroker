@@ -85,7 +85,7 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         companyName.setText(companyDTO.getName());
         companyDescription.setText(companyDTO.getDescription());
         // cannot edit if supplier needs to go to the supplier application instead
-        editCompany.setVisible(!companyDTO.isSupplier());
+        //editCompany.setVisible(!companyDTO.isSupplier());
     }
 
     @Override

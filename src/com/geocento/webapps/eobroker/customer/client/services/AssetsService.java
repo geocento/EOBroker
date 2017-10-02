@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.ImageService;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -233,4 +234,20 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/user/settings")
     @Consumes("application/json")
     void saveUserSettings(SettingsDTO settingsDTO) throws RequestException;
+
+    @GET
+    @Path("/assets/user/layers")
+    @Produces("application/json")
+    List<DatasetAccessOGC> getSelectedLayers() throws RequestException;
+
+    @POST
+    @Path("/assets/user/layers")
+    @Produces("application/json")
+    void addSelectedLayer(DatasetAccessOGC datasetAccessOGC) throws RequestException;
+
+    @DELETE
+    @Path("/assets/user/layers/{id}")
+    @Produces("application/json")
+    void removeSelectedLayer(@PathParam("id") Long layerId) throws RequestException;
+
 }

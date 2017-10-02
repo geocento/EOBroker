@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.NOTIFICATION_DELAY;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.*;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;

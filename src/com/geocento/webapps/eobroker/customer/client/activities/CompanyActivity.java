@@ -75,6 +75,7 @@ public class CompanyActivity extends TemplateActivity implements CompanyView.Pre
                     companyView.setCompanySize(companyDTO.getCompanySize());
                     companyView.setAffiliates(companyDTO.getAffiliates());
                     companyView.setUsers(companyDTO.getUsers());
+                    companyView.setEditable(!companyDTO.isSupplier());
                 }
 
             }).call(ServicesUtil.assetsService).getUserCompany();

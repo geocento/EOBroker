@@ -68,11 +68,35 @@
             font-size: 1.6em;
         }
 
+        .sectionPanel {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid grey;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin: 20px 0px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView link="settings" ui:field="template">
         <design:MaterialTitle title="Application Settings"></design:MaterialTitle>
+
         <forms:FormCreator addStyleNames="{style.services}" ui:field="formCreator"></forms:FormCreator>
+
+        <design:MaterialLabel margin="20" textColor="BLACK" text="Add application layers"></design:MaterialLabel>
+        <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+            <design:MaterialLabel addStyleNames="{style.message}" ui:field="applicationLayersMessage"></design:MaterialLabel>
+            <design:MaterialPanel ui:field="applicationLayers">
+            </design:MaterialPanel>
+            <design:MaterialPanel>
+                <design:MaterialButton text="Add layer" ui:field="addApplicationLayer"></design:MaterialButton>
+            </design:MaterialPanel>
+            <design:MaterialLabel margin="20" textColor="BLACK" text="These layers are provided to all users as background context layers"></design:MaterialLabel>
+        </design:MaterialPanel>
+
         <g:HTMLPanel>
             <design:MaterialButton text="Submit" ui:field="submit"/>
         </g:HTMLPanel>

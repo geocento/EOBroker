@@ -37,7 +37,7 @@
             <design:MaterialPanel ui:field="basemapToggle"></design:MaterialPanel>
         </design:MaterialPanel>
         <design:MaterialButton visible="false" activates="layers" layoutPosition="ABSOLUTE" top="30" right="20" type="FLOATING" waves="LIGHT" backgroundColor="WHITE" iconType="LAYERS" iconSize="SMALL" iconColor="BLACK" addStyleNames="{style.fabButton}" ui:field="layers"/>
-        <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%" height="50%">
+        <design:MaterialDropDown activator="layers" constrainWidth="false" belowOrigin="true" width="50%" height="50%" ui:field="layerDropDown">
             <design:MaterialPanel ui:field="listLayers"></design:MaterialPanel>
         </design:MaterialDropDown>
         <design:MaterialPanel layoutPosition="ABSOLUTE" bottom="30" right="60" ui:field="buttonsPanel">

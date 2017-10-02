@@ -1,18 +1,26 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.admin.client.widgets.OGCDataAccessWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormCreator;
 import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialPanel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +51,12 @@ public class SettingsViewImpl extends Composite implements SettingsView {
     MaterialButton submit;
     @UiField
     FormCreator formCreator;
+    @UiField
+    MaterialLabel applicationLayersMessage;
+    @UiField
+    MaterialPanel applicationLayers;
+    @UiField
+    MaterialButton addApplicationLayer;
 
     private ApplicationSettings settings;
 
@@ -90,6 +104,8 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         formCreator.addTextEditor(settings.getSupplierWebsiteUrl(), "Supplier Website URL", "The supplier website URL, used for links in emails", 5, 100);
         formCreator.addTextEditor(settings.getAdminWebsiteUrl(), "Admin Website URL", "The admin website URL, used for links in emails", 5, 100);
         formCreator.addIntegerEditor(settings.getNotificationDelay(), "Notification delay in minutes", "The notification delay for sending emails, expressed in minutes");
+
+        setApplicationLayers(settings.getBaseLayers());
     }
 
     @Override
@@ -123,7 +139,55 @@ public class SettingsViewImpl extends Composite implements SettingsView {
         settings.setAdminWebsiteUrl(String.valueOf(values.get(index++).getValue()));
         settings.setNotificationDelay(Integer.valueOf(values.get(index++).getValue()));
 
+        settings.setBaseLayers(getApplicationLayers());
+
         return settings;
+    }
+
+    private void setApplicationLayers(List<DatasetAccessOGC> applicationLayers) {
+        this.applicationLayers.clear();
+        if(applicationLayers != null && applicationLayers.size() > 0) {
+            for(DatasetAccessOGC coverageLayer : applicationLayers) {
+                addCoverageLayer(coverageLayer);
+            }
+        }
+        updateApplicationLayersMessage();
+    }
+
+    private void addCoverageLayer(DatasetAccessOGC coverageLayer) {
+        OGCDataAccessWidget ogcDataAccessWidget = new OGCDataAccessWidget(coverageLayer);
+        ogcDataAccessWidget.getElement().getStyle().setMarginBottom(10, com.google.gwt.dom.client.Style.Unit.PX);
+        this.applicationLayers.add(ogcDataAccessWidget);
+        ogcDataAccessWidget.getRemove().addClickHandler(event -> {
+            if(Window.confirm("Are you sure you want to remove this layer?")) {
+                this.applicationLayers.remove(ogcDataAccessWidget);
+                updateApplicationLayersMessage();
+            }
+        });
+        updateApplicationLayersMessage();
+    }
+
+    private void updateApplicationLayersMessage() {
+        List<DatasetAccessOGC> coverageLayers = getApplicationLayers();
+        applicationLayersMessage.setText(coverageLayers.size() == 0 ? "No layer, add a layer using the button below" :
+                coverageLayers.size() + " layers provided, add more using the button below");
+    }
+
+    private List<DatasetAccessOGC> getApplicationLayers() {
+        List<DatasetAccessOGC> coverageLayers = new ArrayList<DatasetAccessOGC>();
+        for(int index = 0; index < this.applicationLayers.getWidgetCount(); index++) {
+            Widget widget = this.applicationLayers.getWidget(index);
+            if(widget instanceof OGCDataAccessWidget) {
+                OGCDataAccessWidget ogcDataAccessWidget = (OGCDataAccessWidget) widget;
+                coverageLayers.add((DatasetAccessOGC) ogcDataAccessWidget.getDatasetAccess());
+            }
+        }
+        return coverageLayers;
+    }
+
+    @UiHandler("addApplicationLayer")
+    void addCoverageLayer(ClickEvent clickEvent) {
+        addCoverageLayer(new DatasetAccessOGC());
     }
 
     @Override

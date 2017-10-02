@@ -225,7 +225,7 @@ public class SearchResource implements SearchService {
         }
         // now search for services
         {
-            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null, null, null);
+            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null, false, null, null);
             boolean more = productServiceDTOs.size() > 4;
             if (more) {
                 productServiceDTOs = productServiceDTOs.subList(0, 4);
@@ -235,7 +235,7 @@ public class SearchResource implements SearchService {
         }
         // now search for datasets
         {
-            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, null, null, null, null, null, null, null);
+            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, null, null, null, null, null, false, null, null);
             boolean more = productDatasetDTOs.size() > 4;
             if (more) {
                 productDatasetDTOs = productDatasetDTOs.subList(0, 4);
@@ -245,7 +245,7 @@ public class SearchResource implements SearchService {
         }
         // now search for software
         {
-            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, null, null);
+            List<SoftwareDTO> softwareDTOs = listSoftware(text, 0, 5, null, null, false, null, null);
             boolean more = softwareDTOs.size() > 4;
             if (more) {
                 softwareDTOs = softwareDTOs.subList(0, 4);
@@ -255,7 +255,7 @@ public class SearchResource implements SearchService {
         }
         // now search for projects
         {
-            List<ProjectDTO> projectDTOs = listProjects(text, 0, 5, null);
+            List<ProjectDTO> projectDTOs = listProjects(text, 0, 5, null, null, null, false, null, null);
             boolean more = projectDTOs.size() > 4;
             if (more) {
                 projectDTOs = projectDTOs.subList(0, 4);
@@ -487,18 +487,23 @@ public class SearchResource implements SearchService {
     }
 
     private List<Long> getFilteredIds(EntityManager em, String tableName, String textFilter, Integer start, Integer limit, String additionalStatement) {
+        return getFilteredIds(em, tableName, textFilter, start, limit, additionalStatement, null);
+    }
+    private List<Long> getFilteredIds(EntityManager em, String tableName, String textFilter, Integer start, Integer limit, String additionalStatement, String joinStatement) {
         String sqlStatement = "";
         if(textFilter != null && textFilter.length() > 0) {
             String keywords = DBHelper.generateKeywords(textFilter);
             // change the last word so that it allows for partial match
             sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
                     "          FROM " + tableName + ", to_tsquery('" + keywords + "') AS keywords\n" +
+                    (joinStatement == null ? "" : " " + joinStatement) +
                     "          WHERE tsv @@ keywords\n" +
                     (additionalStatement == null ? "" : (" AND " + additionalStatement)) +
                     "          ORDER BY rank DESC;";
         } else {
             sqlStatement = "SELECT id, 'dummy'\n" +
                     "          FROM " + tableName +
+                    (joinStatement == null ? "" : " " + joinStatement) +
                     (additionalStatement == null ? "" : (" WHERE " + additionalStatement)) +
                     " ORDER BY name ASC";
 /*
@@ -567,7 +572,7 @@ public class SearchResource implements SearchService {
     @Override
     public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
-                                                       Long companyId, Long productId) throws RequestException {
+                                                       boolean affiliatesOnly, Long companyId, Long productId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<ProductService> productServices = null;
         EntityManager em = EMF.get().createEntityManager();
@@ -580,9 +585,7 @@ public class SearchResource implements SearchService {
         } else if(aoiWKT != null) {
             additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
         }
-        if(companyId != null) {
-            additionalStatements.add("company_id = " + companyId);
-        }
+        addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
         if(productId != null) {
             additionalStatements.add("product_id = " + productId);
         }
@@ -618,7 +621,7 @@ public class SearchResource implements SearchService {
     public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
                                                        ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame,
-                                                       Long companyId, Long productId) throws RequestException {
+                                                       boolean affiliatesOnly, Long companyId, Long productId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
@@ -646,9 +649,7 @@ public class SearchResource implements SearchService {
         } else if(stopTimeFrame != null) {
             additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ")");
         }
-        if(companyId != null) {
-            additionalStatements.add("company_id = " + companyId);
-        }
+        addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
         if(productId != null) {
             additionalStatements.add("product_id = " + productId);
         }
@@ -680,8 +681,33 @@ public class SearchResource implements SearchService {
         });
     }
 
+    private void addAffiliatesStatement(EntityManager em, List<String> additionalStatements, String userName, boolean affiliatesOnly, Long companyId) throws RequestException {
+        if(affiliatesOnly) {
+            String companyIds = getAffiliatesIds(em, userName);
+            additionalStatements.add("company_id IN (" + companyIds + ")");
+        } else if(companyId != null) {
+            additionalStatements.add("company_id = " + companyId);
+        }
+    }
+
+    private String getAffiliatesIds(EntityManager em, String userName) throws RequestException {
+        User user = em.find(User.class, userName);
+        List<Company> companies = user.getCompany().getAffiliates();
+        if(companies.size() == 0) {
+            throw new RequestException("No affiliate company defined for your company");
+        }
+        String companyIds = ListUtil.toString(companies, new ListUtil.GetLabel<Company>() {
+            @Override
+            public String getLabel(Company value) {
+                return value.getId() + "";
+            }
+        }, ",");
+        return companyIds;
+    }
+
     @Override
-    public List<SoftwareDTO> listSoftware(String textFilter, Integer start, Integer limit, Long aoiId, SoftwareType softwareType) throws RequestException {
+    public List<SoftwareDTO> listSoftware(String textFilter, Integer start, Integer limit, Long aoiId, SoftwareType softwareType,
+                                          boolean affiliatesOnly, Long companyId, Long productId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<Software> softwares = null;
         EntityManager em = EMF.get().createEntityManager();
@@ -689,8 +715,16 @@ public class SearchResource implements SearchService {
         if(softwareType != null) {
             additionalStatements.add("softwaretype = '" + softwareType.toString() + "'");
         }
+        addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
+        String joinStatement = null;
+        if(productId != null) {
+            joinStatement = "left join software_productsoftware p on p.software_id = id ";
+            // search for productsoftware with the matching products
+            additionalStatements.add("p.products_id IN ( select id from productsoftware  where product_id  = " + productId + ")");
+        }
         List<Long> softwareIds = getFilteredIds(em, "software", textFilter, start, limit,
-                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
+                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "),
+                joinStatement);
         if(softwareIds.size() > 0) {
             TypedQuery<Software> softwareQuery = em.createQuery("select p from Software p where p.id IN :softwareIds", Software.class);
             softwareQuery.setParameter("softwareIds", softwareIds);
@@ -738,11 +772,43 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ProjectDTO> listProjects(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+    public List<ProjectDTO> listProjects(String textFilter, Integer start, Integer limit, Long aoiId,
+                                         Date startDate, Date stopDate,
+                                         boolean affiliatesOnly, Long companyId, Long productId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<Project> projects = null;
         EntityManager em = EMF.get().createEntityManager();
-        List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit, null);
+        List<String> additionalStatements = new ArrayList<String>();
+        List<String> joinStatements = new ArrayList<String>();
+        // project time frame
+        if(startDate != null && stopDate != null) {
+            additionalStatements.add("startdate < to_timestamp(" + stopDate + ") AND " +
+                    "(stopdate is null OR stopdate > to_timestamp(" + startDate + "))");
+        } else if(startDate != null) {
+            additionalStatements.add("(stopdate is null OR stopdate > to_timestamp(" + startDate + "))");
+        } else if(stopDate != null) {
+            additionalStatements.add("startdate < to_timestamp(" + stopDate + ")");
+        }
+        // companies filter
+        if(affiliatesOnly) {
+            joinStatements.add("left join companyrole c on c.project_id = id ");
+            String companyIds = getAffiliatesIds(em, userName);
+            additionalStatements.add("c.company_id  IN (" + companyIds + ")");
+        } else if(companyId != null) {
+            joinStatements.add("left join companyrole c on c.project_id = id ");
+            // search for company role with the matching company
+            additionalStatements.add("c.company_id  = " + companyId);
+        }
+        if(productId != null) {
+            joinStatements.add("left join productsoftware p on p.project_id = id ");
+            // search for productsoftware with the matching products
+            additionalStatements.add("p.product_id  = " + productId);
+        }
+        List<Long> projectIds = getFilteredIds(em, "project", textFilter, start, limit,
+                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "),
+                joinStatements.size() == 0 ? null : StringUtils.join(joinStatements, " ")
+        );
+
         if(projectIds.size() > 0) {
             TypedQuery<Project> projectQuery = em.createQuery("select p from Project p where p.id IN :projectIds", Project.class);
             projectQuery.setParameter("projectIds", projectIds);

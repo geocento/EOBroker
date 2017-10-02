@@ -416,11 +416,13 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
         ProductDTO product = searchPageView.getProductSelection();
         CompanyDTO company = searchPageView.getCompanySelection();
+        boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
         String searchHash = generateSearchHash("productservices" + text, start, limit,
                 null,
                 filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
                 null,
                 null, null,
+                affiliatesOnly,
                 company != null ? company.getId() : null,
                 product != null ? product.getId() : null);
         if(!previousSearch.contentEquals(searchHash)) {
@@ -441,6 +443,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 }).call(ServicesUtil.searchService).listProductServices(text, start, limit,
                         null,
                         filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
+                        affiliatesOnly,
                         company != null ? company.getId() : null,
                         product != null ? product.getId() : null
                 );
@@ -457,6 +460,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         ServiceType serviceType = searchPageView.getProductServiceType();
         ProductDTO product = searchPageView.getProductSelection();
         CompanyDTO company = searchPageView.getCompanySelection();
+        boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
         searchPageView.displayLoadingResults("Loading data...");
         try {
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
@@ -476,6 +480,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
                     serviceType,
                     startTimeFrame == null ? null : startTimeFrame.getTime() / 1000, stopTimeFrame == null ? null : stopTimeFrame.getTime() / 1000,
+                    affiliatesOnly,
                     company != null ? company.getId() : null,
                     product != null ? product.getId() : null
             );
@@ -483,7 +488,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         }
     }
 
-    private String generateSearchHash(String text, int start, int limit, Long aoiId, String aoiWKT, ServiceType serviceType, Long startTime, Long stopTime, Long companyId, Long productId) {
+    private String generateSearchHash(String text, int start, int limit, Long aoiId, String aoiWKT, ServiceType serviceType, Long startTime, Long stopTime, boolean affiliatesOnly, Long companyId, Long productId) {
         return StringUtils.join(new String[] {text, start + "", limit + "", aoiId + "", aoiWKT, serviceType + "", startTime + "", stopTime + "", companyId + "", productId + ""}, "_");
     }
 
@@ -491,6 +496,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         try {
             searchPageView.displayLoadingResults("Loading software...");
             boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+            ProductDTO product = searchPageView.getProductSelection();
+            CompanyDTO company = searchPageView.getCompanySelection();
+            boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
             REST.withCallback(new MethodCallback<List<SoftwareDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -504,7 +512,10 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     searchPageView.addSoftware(softwareDTOs, start, softwareDTOs != null && softwareDTOs.size() != 0 && softwareDTOs.size() % limit == 0, text);
                 }
             }).call(ServicesUtil.searchService).listSoftware(text, start, limit, filterByAoI ? currentAoI.getId() : null,
-                    searchPageView.getSoftwareType());
+                    searchPageView.getSoftwareType(),
+                    affiliatesOnly,
+                    company != null ? company.getId() : null,
+                    product != null ? product.getId() : null);
         } catch (RequestException e) {
         }
     }
@@ -513,6 +524,11 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         try {
             searchPageView.displayLoadingResults("Loading projects...");
             boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+            Date startTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStartTimeFrameFilter().getValue() : null;
+            Date stopTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStopTimeFrameFilter().getValue() : null;
+            ProductDTO product = searchPageView.getProductSelection();
+            CompanyDTO company = searchPageView.getCompanySelection();
+            boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
             REST.withCallback(new MethodCallback<List<ProjectDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
@@ -525,7 +541,12 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     // add all results to the interface
                     searchPageView.addProjects(projectDTOs, start, projectDTOs != null && projectDTOs.size() != 0 && projectDTOs.size() % limit == 0, text);
                 }
-            }).call(ServicesUtil.searchService).listProjects(text, start, limit, filterByAoI ? currentAoI.getId() : null);
+            }).call(ServicesUtil.searchService).listProjects(text, start, limit, filterByAoI ? currentAoI.getId() : null,
+                    startTimeFrame,
+                    stopTimeFrame,
+                    affiliatesOnly,
+                    company != null ? company.getId() : null,
+                    product != null ? product.getId() : null);
         } catch (RequestException e) {
         }
     }

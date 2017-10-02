@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+    </ui:style>
+    <design:MaterialPanel ui:field="panel">
+        <design:MaterialCheckBox ui:field="layerSelection"/>
+    </design:MaterialPanel>
+</ui:UiBinder>

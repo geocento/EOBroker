@@ -155,6 +155,10 @@
             margin-top: 25px;
         }
 
+        .companyFilterPanel {
+            white-space: nowrap;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -174,8 +178,13 @@
                         <widgetsc:CountryEditor placeholder="Country of incorporation" addStyleNames="{style.option}" ui:field="companyCountryFilter"></widgetsc:CountryEditor>
                         <material:MaterialListValueBox placeholder="Data type" addStyleNames="{style.option}" ui:field="productCommercialFilter"></material:MaterialListValueBox>
                         <material:MaterialListValueBox placeholder="Software type" addStyleNames="{style.option}" ui:field="softwareCommercialFilter"></material:MaterialListValueBox>
-                        <widgets:CategorySearchBox category="companies" placeholder="Type in name of company" addStyleNames="{style.searchBox}" ui:field="companyFilter"></widgets:CategorySearchBox>
-                        <widgets:CategorySearchBox category="products" placeholder="Type in name of product category" addStyleNames="{style.searchBox}" ui:field="productFilter"></widgets:CategorySearchBox>
+                        <design:MaterialPanel display="FLEX" lineHeight="54" ui:field="companyFilterPanel">
+                            <design:MaterialTooltip text="Only show results from affiliate companies">
+                                <design:MaterialSwitch ui:field="filterByAffiliates"></design:MaterialSwitch>
+                            </design:MaterialTooltip>
+                            <widgets:CategorySearchBox category="companies" placeholder="Type in name of company" addStyleNames="{style.searchBox}" flex="AUTO" marginTop="0" ui:field="companyFilter"></widgets:CategorySearchBox>
+                        </design:MaterialPanel>
+                        <widgets:CategorySearchBox category="products" placeholder="Type in name of product category" addStyleNames="{style.searchBox}" marginTop="0" ui:field="productFilter"></widgets:CategorySearchBox>
                         <g:HTMLPanel ui:field="timeFrame">
 <!--
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByTimeFrame">Filter by period of interest</design:MaterialCheckBox>
@@ -194,6 +203,11 @@
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
                             <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="250px" layer="false" basemapVisible="false" ui:field="mapContainer"></cmaps:MapContainer>
                         </g:HTMLPanel>
+<!--
+                        <design:MaterialTooltip text="Only show results from affiliate companies">
+                            <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAffiliates">affiliates only</design:MaterialCheckBox>
+                        </design:MaterialTooltip>
+-->
                     </design:MaterialRow>
                 </design:MaterialCollapsibleBody>
             </design:MaterialCollapsibleItem>

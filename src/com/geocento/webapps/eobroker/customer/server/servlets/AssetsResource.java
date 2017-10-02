@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
+import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -1692,6 +1693,64 @@ public class AssetsResource implements AssetsService {
             logger.error(e.getMessage(), e);
             throw new RequestException("Error updating settings");
         } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<DatasetAccessOGC> getSelectedLayers() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            return user.getSelectedLayers();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error getting user selected layers");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void addSelectedLayer(DatasetAccessOGC datasetAccessOGC) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            user.getSelectedLayers().add(datasetAccessOGC);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeSelectedLayer(Long layerId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            List<DatasetAccessOGC> selectedLayers = user.getSelectedLayers();
+            DatasetAccessOGC selectedLayer = ListUtil.findValue(selectedLayers, new ListUtil.CheckValue<DatasetAccessOGC>() {
+                @Override
+                public boolean isValue(DatasetAccessOGC value) {
+                    return value.getId().equals(layerId);
+                }
+            });
+            selectedLayers.remove(selectedLayer);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
             em.close();
         }
     }

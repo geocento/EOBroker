@@ -1,8 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by thomas on 13/03/2017.
@@ -63,6 +62,9 @@ public class ApplicationSettings {
     String supplierWebsiteUrl;
     @Column(length = 10000)
     String adminWebsiteUrl;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<DatasetAccessOGC> baseLayers;
 
     public ApplicationSettings() {
         id = 1L;
@@ -266,5 +268,13 @@ public class ApplicationSettings {
 
     public void setAdminWebsiteUrl(String adminWebsiteUrl) {
         this.adminWebsiteUrl = adminWebsiteUrl;
+    }
+
+    public List<DatasetAccessOGC> getBaseLayers() {
+        return baseLayers;
+    }
+
+    public void setBaseLayers(List<DatasetAccessOGC> baseLayers) {
+        this.baseLayers = baseLayers;
     }
 }

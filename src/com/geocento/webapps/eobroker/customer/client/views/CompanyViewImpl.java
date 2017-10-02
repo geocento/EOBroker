@@ -306,4 +306,20 @@ public class CompanyViewImpl extends Composite implements CompanyView {
         return viewClient;
     }
 
+    @Override
+    public void setEditable(boolean editable) {
+        name.setEnabled(editable);
+        email.setEnabled(editable);
+        description.setEnabled(editable);
+        fullDescription.setEnabled(editable);
+        imageUploader.setEnabled(editable);
+        website.setEnabled(editable);
+        title.setEnabled(editable);
+        country.setEnabled(editable);
+        companySize.setEnabled(editable);
+        address.setEnabled(editable);
+        startedIn.setEnabled(editable);
+        companyUsers.setEnabled(editable);
+    }
+
 }

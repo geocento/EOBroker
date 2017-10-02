@@ -6,7 +6,6 @@ import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.customer.shared.Offer;
 import com.google.gwt.http.client.RequestException;
 import gwt.material.design.client.base.SearchObject;
 import org.fusesource.restygwt.client.Method;
@@ -29,8 +28,6 @@ public class CategorySearchBox extends MaterialSearch {
     private Presenter presenter;
 
     private Category category;
-
-    private Offer offer;
 
     private long lastCall = 0;
 

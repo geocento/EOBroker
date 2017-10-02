@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client;
 
+import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
 import com.geocento.webapps.eobroker.supplier.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.AppPlaceHistoryMapper;
@@ -16,6 +17,7 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.EventBus;
@@ -61,6 +63,10 @@ public class Supplier implements EntryPoint {
             public Place filter(Place place) {
                 // sign in is required for any page
                 if(loginInfo == null) {
+                    return new LoginPagePlace(place);
+                }
+                if(loginInfo.getUserRole() != User.USER_ROLE.supplier) {
+                    Window.alert("You are not registered as a supplier");
                     return new LoginPagePlace(place);
                 }
                 return place;

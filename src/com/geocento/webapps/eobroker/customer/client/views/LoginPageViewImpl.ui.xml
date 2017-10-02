@@ -3,27 +3,36 @@
              xmlns:design="urn:import:gwt.material.design.client.ui"
         >
     <ui:style>
-        .panel{
+        .panel {
             background: url("http://2.bp.blogspot.com/-x4D3EPELYRU/VMHu52a4qUI/AAAAAAAAHek/EmnIgqTtu_U/s0/fon116%2B2160x1920.png");
             background-size: 100%;
             padding: 0px !important;
             padding-top: 20% !important;
         }
-        .fieldPanel{
+
+        .fieldPanel {
             background: white;
             padding: 6%;
         }
-        .imgProfile{
+
+        .imgProfile {
             margin-top: -120px;
             width: 40%;
             margin-left: 30%;
             border: 5px solid #fff;
         }
-        .rowAction{
+
+        .rowAction {
             margin-top: 20px;
         }
-        .login_demo{
+
+        .login_demo {
             padding: 5%;
+        }
+
+        .rowBelow {
+            line-height: 2em;
+            vertical-align: middle;
         }
     </ui:style>
     <design:MaterialRow backgroundColor="GREY_LIGHTEN_4" addStyleNames="{style.login_demo}">
@@ -36,15 +45,16 @@
                     <design:MaterialPanel paddingTop="10">
                         <design:MaterialButton backgroundColor="BLUE" waves="LIGHT" text="Log In" width="100%" ui:field="login"/>
                     </design:MaterialPanel>
-                    <design:MaterialPanel paddingTop="10">
-                        <design:MaterialAnchorButton backgroundColor="BLUE_LIGHTEN_2" waves="LIGHT" text="Request Access" width="100%" ui:field="requestAccess"/>
-                    </design:MaterialPanel>
                     <design:MaterialRow addStyleNames="{style.rowAction}">
                         <design:MaterialColumn grid="s12 m12 l6">
                             <design:MaterialCheckBox text="Keep me logged in" ui:field="keepLoggedIn"/>
                         </design:MaterialColumn>
                         <design:MaterialColumn textAlign="RIGHT" grid="s12 m12 l6">
                             <design:MaterialLink text="Forgot password?" ui:field="passwordReset"/>
+                        </design:MaterialColumn>
+                        <design:MaterialColumn addStyleNames="{style.rowBelow}" grid="s12 m12 l12">
+                            <design:MaterialLabel text="Not registered yet?" display="INLINE_BLOCK" paddingRight="10"></design:MaterialLabel>
+                            <design:MaterialLink text="request access" ui:field="requestAccess"/>
                         </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>

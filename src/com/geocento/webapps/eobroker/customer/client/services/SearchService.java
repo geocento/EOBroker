@@ -7,13 +7,14 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSDescripti
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryRequest;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
 
 import javax.ws.rs.*;
+import java.util.Date;
 import java.util.List;
 
 public interface SearchService extends DirectRestService {
@@ -74,7 +75,7 @@ public interface SearchService extends DirectRestService {
     @Produces("application/json")
     public List<ProductServiceDTO> listProductServices(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit,
                                                        @QueryParam("aoiId") Long aoiId, @QueryParam("aoiIdWKT") String aoiWKT,
-                                                       @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId
+                                                       @QueryParam("affiliatesOnly") boolean affiliatesOnly, @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId
                                                        ) throws RequestException;
 
     @GET
@@ -83,18 +84,21 @@ public interface SearchService extends DirectRestService {
     public List<ProductDatasetDTO> listProductDatasets(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit,
                                                        @QueryParam("aoiId") Long aoiId, @QueryParam("aoiIdWKT") String aoiWKT,
                                                        @QueryParam("serviceType") ServiceType serviceType, @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame,
-                                                       @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId
+                                                       @QueryParam("affiliatesOnly") boolean affiliatesOnly, @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId
     ) throws RequestException;
 
     @GET
     @Path("/search/software")
     @Produces("application/json")
-    public List<SoftwareDTO> listSoftware(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("type") SoftwareType softwareType) throws RequestException;
+    public List<SoftwareDTO> listSoftware(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("type") SoftwareType softwareType,
+                                          @QueryParam("affiliatesOnly") boolean affiliatesOnly, @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId) throws RequestException;
 
     @GET
     @Path("/search/projects")
     @Produces("application/json")
-    public List<ProjectDTO> listProjects(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
+    public List<ProjectDTO> listProjects(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId,
+                                         @QueryParam("startDate") Date startDate, @QueryParam("stopDate") Date stopDate,
+                                         @QueryParam("affiliatesOnly") boolean affiliatesOnly, @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId) throws RequestException;
 
     @GET
     @Path("/search/companies")

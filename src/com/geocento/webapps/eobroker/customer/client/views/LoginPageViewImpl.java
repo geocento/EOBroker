@@ -37,7 +37,7 @@ public class LoginPageViewImpl extends Composite implements LoginPageView {
     @UiField
     MaterialButton login;
     @UiField
-    MaterialAnchorButton requestAccess;
+    MaterialLink requestAccess;
     @UiField
     MaterialLink passwordReset;
 

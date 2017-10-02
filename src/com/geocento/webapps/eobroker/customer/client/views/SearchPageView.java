@@ -94,6 +94,8 @@ public interface SearchPageView extends IsWidget {
 
     void setCompanySelection(CompanyDTO companyDTO);
 
+    HasValue<Boolean> getFilterByAffiliates();
+
     void enableAoiFilter(boolean aoiId);
 
     public interface Presenter {

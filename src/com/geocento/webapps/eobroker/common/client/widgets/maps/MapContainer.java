@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.client.widgets.maps;
 
+import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
@@ -10,6 +11,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -69,9 +72,10 @@ public class MapContainer extends Composite {
     @UiField
     protected MaterialAnchorButton selectButton;
     @UiField
-    MaterialPanel listLayers;
-    @UiField
+    protected
     MaterialButton layers;
+    @UiField
+    MaterialPanel listLayers;
     @UiField
     HTMLPanel searchPanel;
     @UiField
@@ -80,6 +84,8 @@ public class MapContainer extends Composite {
     MaterialPanel basemapToggle;
     @UiField
     MaterialPanel basemapTogglePanel;
+    @UiField
+    MaterialDropDown layerDropDown;
 
     private Presenter presenter;
 
@@ -173,6 +179,13 @@ public class MapContainer extends Composite {
             }
         });
 
+        layerDropDown.addSelectionHandler(new SelectionHandler<Widget>() {
+            @Override
+            public void onSelection(SelectionEvent<Widget> event) {
+                listLayers.clear();
+                listLayers.add(new LoadingWidget("Loading layers..."));
+            }
+        });
     }
 
     public void setPresenter(Presenter presenter) {

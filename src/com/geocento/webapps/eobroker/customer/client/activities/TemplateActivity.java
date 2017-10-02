@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
@@ -14,6 +15,8 @@ import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.TemplateView;
+import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
@@ -38,7 +41,10 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     private TemplateView templateView;
 
     protected Category category = null;
+
     static protected AoIDTO currentAoI = null;
+
+    static protected List<LayerInfoDTO> userLayers;
 
     public TemplateActivity(ClientFactory clientFactory) {
         super(clientFactory);
