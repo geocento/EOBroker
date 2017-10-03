@@ -45,7 +45,7 @@
                     <design:MaterialTextBox placeholder="The layer name, leave blank if the whole server is discoverable" addStyleNames="{style.pitch}" ui:field="layerName"></design:MaterialTextBox>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
-                    <design:MaterialCheckBox addStyleNames="{style.pitch}" ui:field="corsEnabled"></design:MaterialCheckBox>
+                    <design:MaterialCheckBox addStyleNames="{style.pitch}" text="CORS enabled" ui:field="corsEnabled"></design:MaterialCheckBox>
                 </design:MaterialColumn>
             </design:MaterialRow>
         </widgets:content>

@@ -31,6 +31,12 @@ public interface VisualisationView extends IsWidget {
 
     void setAdditionalDatasets(List<DatasetAccess> datasetAccesses);
 
+    HasClickHandlers getAddToFavourites();
+
+    void setAddToFavouritesLoading(boolean loading);
+
+    void setAddedToFavourites(boolean added);
+
     void selectDataAccess(DatasetAccess datasetAccess);
 
     void setDataAccessDescription(String pitch);

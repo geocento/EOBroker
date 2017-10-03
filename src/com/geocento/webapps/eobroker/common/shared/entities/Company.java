@@ -88,6 +88,9 @@ public class Company {
     @ManyToMany(fetch = FetchType.LAZY)
     List<Company> affiliates;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<DatasetAccessOGC> savedLayers;
+
     public Company() {
     }
 
@@ -281,5 +284,13 @@ public class Company {
 
     public void setAffiliates(List<Company> affiliates) {
         this.affiliates = affiliates;
+    }
+
+    public List<DatasetAccessOGC> getSavedLayers() {
+        return savedLayers;
+    }
+
+    public void setSavedLayers(List<DatasetAccessOGC> savedLayers) {
+        this.savedLayers = savedLayers;
     }
 }

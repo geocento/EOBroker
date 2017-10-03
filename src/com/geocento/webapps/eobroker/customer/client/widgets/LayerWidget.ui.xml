@@ -1,9 +1,15 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+             xmlns:design="urn:import:gwt.material.design.client.ui">
     <ui:style>
 
     </ui:style>
     <design:MaterialPanel ui:field="panel">
         <design:MaterialCheckBox ui:field="layerSelection"/>
+        <design:MaterialPanel float="RIGHT">
+            <design:MaterialIcon iconType="EXPLORE" ui:field="extent"></design:MaterialIcon>
+            <design:MaterialPreLoader size="SMALL" ui:field="loader">
+                <design:MaterialSpinner color="BLUE_ONLY"/>
+            </design:MaterialPreLoader>
+        </design:MaterialPanel>
     </design:MaterialPanel>
 </ui:UiBinder>

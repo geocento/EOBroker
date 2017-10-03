@@ -107,7 +107,7 @@
                                 <design:MaterialLabel truncate="true" marginRight="30" ui:field="selectedDataset"></design:MaterialLabel>
                             </design:MaterialPanel>
                             <widgets:MorePanel ui:field="description"></widgets:MorePanel>
-                            <design:MaterialLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></design:MaterialLink>
+                            <widgets:MaterialLoadingLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></widgets:MaterialLoadingLink>
                             <design:MaterialLabel addStyleNames="{style.layer}">Layer parameters</design:MaterialLabel>
                             <design:MaterialRow>
                                 <design:MaterialColumn grid="s12">

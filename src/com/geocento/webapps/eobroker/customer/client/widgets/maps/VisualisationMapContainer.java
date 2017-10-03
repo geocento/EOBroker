@@ -9,7 +9,7 @@ import gwt.material.design.client.ui.MaterialButton;
 /**
  * Created by thomas on 17/11/2016.
  */
-public class VisualisationMapContainer extends com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer {
+public class VisualisationMapContainer extends MapContainer {
 
     private MaterialButton wcsSelectButton;
 

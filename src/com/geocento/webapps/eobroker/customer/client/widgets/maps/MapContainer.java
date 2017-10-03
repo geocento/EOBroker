@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.widgets.maps;
 
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
+import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.ExtentJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.MapJSNI;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.WMSLayerInfoJSNI;
@@ -12,18 +13,21 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.LayerWidget;
 import com.geocento.webapps.eobroker.customer.client.widgets.SelectAoI;
+import com.geocento.webapps.eobroker.customer.client.widgets.SelectLayers;
 import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.ui.*;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +41,18 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
     private Presenter presenter;
 
     private final MaterialButton saveButton;
+
+    private MaterialButton addLayerButton;
+    private final MaterialDropDown layersList;
+
+    static class LayerSettings {
+        DatasetAccessOGC datasetAccessOGC;
+        LayerInfoDTO layerInfoDTO;
+        WMSLayerJSNI layer;
+        boolean activated;
+        int transparency;
+    }
+    private List<LayerSettings> selectedLayers;
 
     public MapContainer() {
         // add select and save buttons
@@ -112,6 +128,30 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
             }
         });
 
+        addLayerButton = new MaterialButton();
+        addLayerButton.getElement().getStyle().setProperty("maxWidth", "30%");
+        addLayerButton.setTruncate(true);
+        addLayerButton.setActivates("layersList");
+        addLayerButton.setBackgroundColor(Color.WHITE);
+        addLayerButton.setTextColor(Color.BLACK);
+        addLayerButton.setIconType(IconType.LAYERS);
+        addLayerButton.setIconSize(IconSize.SMALL);
+        addLayerButton.setIconColor(Color.BLACK);
+        addLayerButton.setType(ButtonType.FLOATING);
+        addLayerButton.setMarginRight(10);
+        addLayerButton.addStyleName(style.fabButton());
+        MaterialTooltip materialTooltip = new MaterialTooltip(addLayerButton);
+        materialTooltip.setText("Select map layers");
+        materialTooltip.setPosition(Position.TOP);
+        addControl(addLayerButton, Position.BOTTOM, Position.LEFT);
+        layersList = new MaterialDropDown();
+        layersList.setPadding(5);
+        layersList.setBackgroundColor(Color.WHITE);
+        layersList.setActivator("layersList");
+        layersList.setConstrainWidth(false);
+        layersList.add(new LoadingWidget("Loading layers..."));
+        // disable by default
+        setLayersEnabled(false);
     }
 
     private void saveAoI() {
@@ -136,94 +176,179 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
         }
     }
 
-    public void enableLayers() {
-        MaterialButton layerName = new MaterialButton();
-        layerName.getElement().getStyle().setProperty("maxWidth", "30%");
-        layerName.setTruncate(true);
-        layerName.setActivates("layersList");
-        layerName.setBackgroundColor(Color.WHITE);
-        layerName.setText("No layer selected");
-        layerName.setTextColor(Color.BLACK);
-        layerName.setIconType(IconType.LAYERS);
-        layerName.setIconSize(IconSize.SMALL);
-        layerName.setIconPosition(IconPosition.RIGHT);
-        layerName.setIconColor(Color.BLACK);
-        addControl(layerName, Position.TOP, Position.RIGHT);
-        MaterialDropDown layersList = new MaterialDropDown();
-        layersList.setPadding(5);
-        layersList.setBackgroundColor(Color.WHITE);
-        layersList.setActivator("layersList");
-        layersList.add(new LoadingWidget("Loading layers..."));
-        try {
-            REST.withCallback(new MethodCallback<List<DatasetAccessOGC>>() {
+    public void setLayersEnabled(boolean enabled) {
+        addLayerButton.setVisible(enabled);
+        if(enabled) {
+            loadSelectedLayers();
+        }
+    }
 
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    layersList.clear();
-                    MaterialMessage materialMessage = new MaterialMessage();
-                    materialMessage.displayErrorMessage("Could not load selected layers...");
-                    layersList.add(materialMessage);
-                }
+    private void loadSelectedLayers() {
+        // check if we have selected layers
+        if(selectedLayers == null) {
+            try {
+                REST.withCallback(new MethodCallback<List<DatasetAccessOGC>>() {
 
-                @Override
-                public void onSuccess(Method method, List<DatasetAccessOGC> selectedLayers) {
-                    layersList.clear();
-                    if(selectedLayers != null && selectedLayers.size() > 0) {
-                        for (DatasetAccessOGC selectedLayer : selectedLayers) {
-                            LayerWidget layerWidget = new LayerWidget(selectedLayer);
-                            layersList.add(layerWidget);
-                            layerWidget.getSelection().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-                                public WMSLayerJSNI layer;
-
-                                @Override
-                                public void onValueChange(ValueChangeEvent<Boolean> event) {
-                                    layerWidget.setLoading(true);
-                                    try {
-                                        REST.withCallback(new MethodCallback<LayerInfoDTO>() {
-
-                                            @Override
-                                            public void onFailure(Method method, Throwable exception) {
-                                                layerWidget.setLoading(false);
-                                                MaterialToast.fireToast("Could not load layer...");
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
-                                                layerWidget.setLoading(false);
-                                                Extent extent = layerInfoDTO.getExtent();
-                                                ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
-                                                layer = map.addWMSLayer(layerInfoDTO.getServerUrl(),
-                                                        WMSLayerInfoJSNI.createInfo(layerInfoDTO.getLayerName(), layerInfoDTO.getLayerName()),
-                                                        extentJSNI, layerInfoDTO.getStyleName());
-                                                //map.setExtent(extentJSNI);
-                                            }
-                                        }).call(ServicesUtil.assetsService).getLayerInfo(selectedLayer.getId());
-                                    } catch (RequestException e) {
-                                    }
-
-                                }
-                            });
-                        }
-                    } else {
-                        MaterialLabel materialLabel = new MaterialLabel("No layers selected...");
-                        materialLabel.setMarginTop(10);
-                        materialLabel.setMarginBottom(20);
-                        layersList.add(materialLabel);
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        layersList.clear();
+                        MaterialMessage materialMessage = new MaterialMessage();
+                        materialMessage.displayErrorMessage("Could not load selected layers...");
+                        layersList.add(materialMessage);
                     }
-                    MaterialAnchorButton addNewLayerButton = new MaterialAnchorButton("Add new layer");
-                    addNewLayerButton.addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent event) {
 
-                        }
-                    });
-                    layersList.add(addNewLayerButton);
-                }
-            }).call(ServicesUtil.assetsService).getSelectedLayers();
-        } catch (Exception e) {
+                    @Override
+                    public void onSuccess(Method method, List<DatasetAccessOGC> selectedLayers) {
+                        setSelectedLayers(selectedLayers);
+                    }
+                }).call(ServicesUtil.assetsService).getSelectedLayers();
+            } catch (Exception e) {
+            }
+        } else {
+
         }
         addWidget(layersList);
+    }
+
+    private void setSelectedLayers(List<DatasetAccessOGC> selectedLayers) {
+
+        this.selectedLayers = new ArrayList<LayerSettings>();
+        for(DatasetAccessOGC datasetAccessOGC : selectedLayers) {
+            LayerSettings layerSettings = new LayerSettings();
+            layerSettings.datasetAccessOGC = datasetAccessOGC;
+            this.selectedLayers.add(layerSettings);
+        }
+        updateLayersDisplay();
+    }
+
+    private void updateLayersDisplay() {
+        layersList.clear();
+        if (this.selectedLayers.size() > 0) {
+            for (LayerSettings layerSettings : this.selectedLayers) {
+                addLayerWidget(layerSettings);
+            }
+            addLayerButton.setText("(" + this.selectedLayers.size() + ")");
+        } else {
+            MaterialLabel materialLabel = new MaterialLabel("No layers selected...");
+            materialLabel.setMarginTop(10);
+            materialLabel.setMarginBottom(20);
+            layersList.add(materialLabel);
+            addLayerButton.setText("");
+        }
+        MaterialLink addNewLayerButton = new MaterialLink("Add new layer");
+        addNewLayerButton.setIconType(IconType.PLUS_ONE);
+        addNewLayerButton.setBackgroundColor(Color.WHITE);
+        addNewLayerButton.setTextColor(Color.GREY);
+        addNewLayerButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // open the layer selection window
+                SelectLayers.getInstance().display(new SelectLayers.Presenter() {
+                    @Override
+                    public void layerSelected(DatasetAccessOGC layer) {
+                        try {
+                            REST.withCallback(new MethodCallback<Void>() {
+
+                                @Override
+                                public void onFailure(Method method, Throwable exception) {
+                                    MaterialToast.fireToast("Could not add selected layer...");
+                                }
+
+                                @Override
+                                public void onSuccess(Method method, Void result) {
+                                    LayerSettings layerSettings = new LayerSettings();
+                                    layerSettings.datasetAccessOGC = layer;
+                                    addLayerWidget(layerSettings);
+                                }
+                            }).call(ServicesUtil.assetsService).addSelectedLayer(layer.getId());
+                        } catch (RequestException e) {
+                        }
+                    }
+                });
+            }
+        });
+        layersList.add(addNewLayerButton);
+        updateLayersMapDisplay();
+    }
+
+    private void addLayerWidget(LayerSettings layerSettings) {
+        LayerWidget layerWidget = new LayerWidget(layerSettings.datasetAccessOGC);
+        layerWidget.getSelection().setValue(layerSettings.activated);
+        layersList.add(layerWidget);
+        layerWidget.getSelectionHandler().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                layerSettings.activated = event.getValue();
+                updateLayersMapDisplay();
+            }
+        });
+        layerWidget.getExtentButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Extent extent = layerSettings.layerInfoDTO.getExtent();
+                ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
+                map.setExtent(extentJSNI);
+            }
+        });
+    }
+
+    private void updateLayersMapDisplay() {
+        // update map and widget display based on layer settings values
+        for(LayerSettings layerSettings : selectedLayers) {
+            if(layerSettings.activated) {
+                if (layerSettings.layerInfoDTO == null) {
+                    // find layer widget
+                    LayerWidget layerWidget = (LayerWidget) WidgetUtil.findChild(layersList, new WidgetUtil.CheckValue() {
+                        @Override
+                        public boolean isValue(Widget widget) {
+                            return widget instanceof LayerWidget && ((LayerWidget) widget).getDatasetAccessOGC() == layerSettings.datasetAccessOGC;
+                        }
+                    });
+                    try {
+                        REST.withCallback(new MethodCallback<LayerInfoDTO>() {
+
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                layerWidget.setLoading(false);
+                                MaterialToast.fireToast("Could not load layer...");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
+                                layerWidget.setLoading(false);
+                                layerSettings.layerInfoDTO = layerInfoDTO;
+                                addLayer(layerSettings);
+                            }
+                        }).call(ServicesUtil.assetsService).getLayerInfo(layerSettings.datasetAccessOGC.getId());
+                    } catch (RequestException e) {
+                    }
+                } else {
+                    addLayer(layerSettings);
+                }
+            } else {
+                removeLayer(layerSettings);
+            }
+        }
+    }
+
+    private void removeLayer(LayerSettings layerSettings) {
+        if(layerSettings.layer != null) {
+            map.removeWMSLayer(layerSettings.layer);
+            layerSettings.layer = null;
+        }
+    }
+
+    private void addLayer(LayerSettings layerSettings) {
+        LayerInfoDTO layerInfoDTO = layerSettings.layerInfoDTO;
+        if(layerSettings.layer == null) {
+            Extent extent = layerInfoDTO.getExtent();
+            ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
+            WMSLayerJSNI layer = map.addWMSLayer(layerInfoDTO.getServerUrl(),
+                    WMSLayerInfoJSNI.createInfo(layerInfoDTO.getLayerName(), layerInfoDTO.getLayerName()),
+                    extentJSNI, layerInfoDTO.getStyleName());
+            layerSettings.layer = layer;
+        }
     }
 
     public void setPresenter(final Presenter presenter) {

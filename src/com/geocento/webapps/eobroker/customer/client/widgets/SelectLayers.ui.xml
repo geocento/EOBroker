@@ -1,0 +1,38 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+        >
+    <ui:style>
+
+        .title h4 {
+            margin: 10px !important;
+        }
+
+    </ui:style>
+    <design:MaterialModal dismissible="true" inDuration="500" outDuration="500">
+        <design:MaterialModalContent>
+            <design:MaterialTitle title="Choose a layer" addStyleNames="{style.title}" ui:field="title"></design:MaterialTitle>
+            <design:MaterialTab backgroundColor="TEAL_LIGHTEN_2" ui:field="tab">
+                <design:MaterialTabItem waves="YELLOW" grid="s6">
+                    <design:MaterialLink text="Saved Layers" href="#saved" textColor="WHITE"></design:MaterialLink>
+                </design:MaterialTabItem>
+                <design:MaterialTabItem waves="YELLOW" grid="s6">
+                    <design:MaterialLink text="Company Layers" href="#company" textColor="WHITE"></design:MaterialLink>
+                </design:MaterialTabItem>
+                <design:MaterialTabItem waves="YELLOW" grid="s6">
+                    <design:MaterialLink text="Broker Layers" href="#broker" textColor="WHITE"></design:MaterialLink>
+                </design:MaterialTabItem>
+            </design:MaterialTab>
+            <design:MaterialRow>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialPanel design:id="saved" padding="10" ui:field="savedLayers"></design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialPanel design:id="company" padding="10" ui:field="companyLayers"></design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12">
+                    <design:MaterialPanel design:id="broker" padding="10" ui:field="brokerLayers"></design:MaterialPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+        </design:MaterialModalContent>
+    </design:MaterialModal>
+</ui:UiBinder>

@@ -270,6 +270,32 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
             }
 
         }));
+
+        handlers.add(visualisationView.getAddToFavourites().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // TODO - check if added
+                visualisationView.setAddToFavouritesLoading(true);
+                try {
+                    REST.withCallback(new MethodCallback<Void>() {
+
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            visualisationView.setAddToFavouritesLoading(false);
+                            displaySuccess("Could not add layers to your saved layers");
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void result) {
+                            visualisationView.setAddToFavouritesLoading(false);
+                            displaySuccess("Layer added to your saved layers");
+                            visualisationView.setAddedToFavourites(true);
+                        }
+                    }).call(ServicesUtil.assetsService).addSavedLayer(datasetAccess.getId());
+                } catch (RequestException e) {
+                }
+            }
+        }));
     }
 
     @Override

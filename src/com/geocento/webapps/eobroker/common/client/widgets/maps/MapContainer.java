@@ -3,12 +3,10 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
-import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -45,6 +43,7 @@ public class MapContainer extends Composite {
     }
 
     @UiField
+    protected
     Style style;
 
     @UiField
@@ -79,7 +78,7 @@ public class MapContainer extends Composite {
     @UiField
     HTMLPanel searchPanel;
     @UiField
-    MaterialPanel buttonsPanel;
+    MaterialPanel buttonsRightPanel;
     @UiField
     MaterialPanel basemapToggle;
     @UiField
@@ -193,7 +192,7 @@ public class MapContainer extends Composite {
     }
 
     public void setButtonMargin(int height) {
-        for(MaterialWidget widget : new MaterialWidget[] {addButton, buttonsPanel}) {
+        for(MaterialWidget widget : new MaterialWidget[] {addButton, buttonsRightPanel}) {
             widget.setBottom(height);
         }
     }
@@ -351,7 +350,7 @@ public class MapContainer extends Composite {
         MaterialTooltip materialTooltip = new MaterialTooltip(materialButton);
         materialTooltip.setText(message);
         materialTooltip.setPosition(Position.TOP);
-        buttonsPanel.insert(materialButton, 0);
+        buttonsRightPanel.insert(materialButton, 0);
     }
 
     protected void addFABButton(MaterialAnchorButton materialButton, String tooltipMessage) {

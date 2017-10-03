@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingLink;
 import com.geocento.webapps.eobroker.common.client.widgets.MorePanel;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
@@ -33,6 +34,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
+import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 
@@ -69,7 +71,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @UiField(provided = true)
     MorePanel description;
     @UiField
-    MaterialLink addToFavourites;
+    MaterialLoadingLink addToFavourites;
     @UiField
     MaterialLabel selectedDataset;
     @UiField
@@ -302,6 +304,22 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
                 addDatasetAccess(datasetAccess);
             }
         }
+    }
+
+    @Override
+    public HasClickHandlers getAddToFavourites() {
+        return addToFavourites;
+    }
+
+    @Override
+    public void setAddToFavouritesLoading(boolean loading) {
+        addToFavourites.setLoading(loading);
+    }
+
+    @Override
+    public void setAddedToFavourites(boolean added) {
+        addToFavourites.setIconColor(added ? Color.YELLOW : Color.WHITE);
+        addToFavourites.setText(added ? "added to saved layers" : "add to saved layers");
     }
 
     private void addDatasetAccess(final DatasetAccess datasetAccess) {

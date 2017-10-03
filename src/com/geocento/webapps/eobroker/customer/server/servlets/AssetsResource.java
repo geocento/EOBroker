@@ -1,10 +1,10 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
-import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -20,8 +20,7 @@ import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.UserHelper;
-import com.geocento.webapps.eobroker.customer.shared.utils.*;
+import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
@@ -64,8 +63,7 @@ public class AssetsResource implements AssetsService {
                 }
             });
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error loading product datasets");
+            throw handleException(em, e, "Error loading product datasets");
         } finally {
             em.close();
         }
@@ -101,11 +99,7 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().commit();
             return createAoIDTO(dbAoI);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+            throw handleException(em, e, "Error saving AoI");
         } finally {
             em.close();
         }
@@ -119,8 +113,7 @@ public class AssetsResource implements AssetsService {
             User user = em.find(User.class, userName);
             return user.getLatestAoI() == null ? null : createAoIDTO(user.getLatestAoI());
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+            throw handleException(em, e, "Error saving AoI");
         } finally {
             em.close();
         }
@@ -136,11 +129,7 @@ public class AssetsResource implements AssetsService {
             user.setLatestAoI(null);
             em.getTransaction().commit();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error removing the latest AoI");
+            throw handleException(em, e, "Error removing the latest AoI");
         } finally {
             em.close();
         }
@@ -175,11 +164,7 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().commit();
             return createAoIDTO(dbAoI);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+            throw handleException(em, e, "Error saving AoI");
         } finally {
             em.close();
         }
@@ -207,11 +192,7 @@ public class AssetsResource implements AssetsService {
             dbAoI.setName(name);
             em.getTransaction().commit();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+            throw handleException(em, e, "Error saving AoI");
         } finally {
             em.close();
         }
@@ -236,11 +217,7 @@ public class AssetsResource implements AssetsService {
             em.remove(dbAoI);
             em.getTransaction().commit();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error saving AoI");
+            throw handleException(em, e, "Error saving AoI");
         } finally {
             em.close();
         }
@@ -248,6 +225,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductDTO getProduct(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -258,6 +236,8 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Product does not exist");
             }
             return ProductHelper.createProductDTO(product);
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -265,6 +245,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductFeasibilityDTO getProductFeasibility(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -296,6 +277,8 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             return productFeasibilityDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -303,6 +286,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductFormDTO getProductForm(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -340,6 +324,8 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             return productFormDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -437,6 +423,8 @@ public class AssetsResource implements AssetsService {
                 productDescriptionDTO.setSuggestedProducts(new ArrayList<ProductDTO>());
             }
             return productDescriptionDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -444,6 +432,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductServiceDescriptionDTO getProductServiceDescription(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -485,7 +474,7 @@ public class AssetsResource implements AssetsService {
             }));
             return productServiceDescriptionDTO;
         } catch (Exception e) {
-            throw new RequestException("Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -493,6 +482,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductDatasetDescriptionDTO getProductDatasetDescription(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -532,6 +522,8 @@ public class AssetsResource implements AssetsService {
             }));
             productDatasetDescriptionDTO.setCatalogueStandard(productDataset.getDatasetStandard());
             return productDatasetDescriptionDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -539,6 +531,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductDatasetCatalogueDTO getProductDatasetCatalogueDTO(Long productDatasetId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(productDatasetId == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -562,6 +555,8 @@ public class AssetsResource implements AssetsService {
             productDatasetCatalogueDTO.setDatasetURL(productDataset.getDatasetURL());
             productDatasetCatalogueDTO.setOrderable(productDataset.getServiceType() == ServiceType.commercial);
             return productDatasetCatalogueDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -569,6 +564,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public SoftwareDescriptionDTO getSoftwareDescription(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -595,6 +591,8 @@ public class AssetsResource implements AssetsService {
             }
             softwareDescriptionDTO.setTermsAndConditions(software.getTermsAndConditions());
             return softwareDescriptionDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -602,6 +600,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProjectDescriptionDTO getProjectDescription(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -642,6 +641,8 @@ public class AssetsResource implements AssetsService {
                 projectDescriptionDTO.setSuggestedProjects(new ArrayList<ProjectDTO>());
             }
             return projectDescriptionDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -649,6 +650,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductDatasetVisualisationDTO getProductDatasetVisualisation(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -659,6 +661,8 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Product dataset does not exist");
             }
             return convertToProductDatasetVisualisationDTO(productDataset);
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -666,6 +670,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductDatasetVisualisationDTO getDatasetVisualisation(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -684,8 +689,7 @@ public class AssetsResource implements AssetsService {
             ProductDataset productDataset = productDatasets.get(0);
             return convertToProductDatasetVisualisationDTO(productDataset);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error when retrieving dataset access");
+            throw handleException(em, e, "Error when retrieving dataset access");
         } finally {
             em.close();
         }
@@ -716,6 +720,7 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public ProductServiceVisualisationDTO getProductServiceVisualisation(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
@@ -726,6 +731,8 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Product service does not exist");
             }
             return convertToProductServiceVisualisationDTO(productService);
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -780,7 +787,8 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<Offer> getRecommendations() {
+    public List<Offer> getRecommendations() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
         List<RankedOffer> offers = new ArrayList<RankedOffer>();
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -854,6 +862,8 @@ public class AssetsResource implements AssetsService {
                     return object.getOffer();
                 }
             });
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -926,7 +936,7 @@ public class AssetsResource implements AssetsService {
             }));
             return companyDescriptionDTO;
         } catch (Exception e) {
-            throw new RequestException("Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -992,7 +1002,7 @@ public class AssetsResource implements AssetsService {
             }
             return CompanyHelper.createFullCompanyDTO(company);
         } catch (Exception e) {
-            throw new RequestException("Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -1029,8 +1039,7 @@ public class AssetsResource implements AssetsService {
             }));
             return customerCompanyDTO;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -1078,11 +1087,7 @@ public class AssetsResource implements AssetsService {
             }
             em.getTransaction().commit();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -1105,11 +1110,7 @@ public class AssetsResource implements AssetsService {
                 }
             });
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error loading notifications");
+            throw handleException(em, e, "Error loading notifications");
         } finally {
             em.close();
         }
@@ -1126,8 +1127,7 @@ public class AssetsResource implements AssetsService {
             }
             return NotificationHelper.createNotificationDTO(notification);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading notification");
+            throw handleException(em, e, "Error loading notification");
         } finally {
             em.close();
         }
@@ -1203,8 +1203,7 @@ public class AssetsResource implements AssetsService {
             layerInfoDTO.setQueryable(layers.get(0).isQueryable());
             return layerInfoDTO;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading wms layer info");
+            throw handleException(em, e, "Error loading wms layer info");
         } finally {
             em.close();
         }
@@ -1253,11 +1252,7 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().commit();
             return followers;
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error updating following");
+            throw handleException(em, e, "Error updating following");
         } finally {
             em.close();
         }
@@ -1318,11 +1313,7 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().commit();
             return followers;
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error updating following");
+            throw handleException(em, e, "Error updating following");
         } finally {
             em.close();
         }
@@ -1373,8 +1364,7 @@ public class AssetsResource implements AssetsService {
                 }
             });
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error loading notifications");
+            throw handleException(em, e, "Error loading notifications");
         } finally {
             em.close();
         }
@@ -1397,11 +1387,7 @@ public class AssetsResource implements AssetsService {
                 return testimonialDTO;
             });
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error loading testimonials");
+            throw handleException(em, e, "Error loading testimonials");
         } finally {
             em.close();
         }
@@ -1423,11 +1409,7 @@ public class AssetsResource implements AssetsService {
             testimonialDTO.setTestimonial(testimonial.getTestimonial());
             return testimonialDTO;
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error loading notifications");
+            throw handleException(em, e, "Error loading notifications");
         } finally {
             em.close();
         }
@@ -1464,11 +1446,7 @@ public class AssetsResource implements AssetsService {
             }            // add notification
             return testimonial.getId();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error creating testimonial");
+            throw handleException(em, e, "Error creating testimonial");
         } finally {
             em.close();
         }
@@ -1493,11 +1471,7 @@ public class AssetsResource implements AssetsService {
             testimonial.setCreationDate(new Date());
             em.getTransaction().commit();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error updating testimonial");
+            throw handleException(em, e, "Error updating testimonial");
         } finally {
             em.close();
         }
@@ -1519,11 +1493,7 @@ public class AssetsResource implements AssetsService {
             em.remove(testimonial);
             em.getTransaction().commit();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error updating testimonial");
+            throw handleException(em, e, "Error updating testimonial");
         } finally {
             em.close();
         }
@@ -1549,6 +1519,8 @@ public class AssetsResource implements AssetsService {
             productServiceFormDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
             productServiceFormDTO.setFormFields(productService.getProduct().getFormFields());
             return productServiceFormDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -1582,11 +1554,7 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().commit();
             return CompanyHelper.createCompanyDTO(company);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException("Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -1642,11 +1610,7 @@ public class AssetsResource implements AssetsService {
             }
             em.getTransaction().commit();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
+            throw handleException(em, e);
         } finally {
             em.close();
         }
@@ -1667,8 +1631,7 @@ public class AssetsResource implements AssetsService {
             settingsDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(company));
             return settingsDTO;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error loading settings");
+            throw handleException(em, e, "Error loading settings");
         } finally {
             em.close();
         }
@@ -1687,11 +1650,7 @@ public class AssetsResource implements AssetsService {
             user.setEmail(settingsDTO.getEmail());
             em.getTransaction().commit();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error updating settings");
+            throw handleException(em, e, "Error updating settings");
         } finally {
             em.close();
         }
@@ -1705,27 +1664,28 @@ public class AssetsResource implements AssetsService {
             User user = em.find(User.class, userName);
             return user.getSelectedLayers();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RequestException("Error getting user selected layers");
+            throw handleException(em, e, "Error getting user selected layers");
         } finally {
             em.close();
         }
     }
 
     @Override
-    public void addSelectedLayer(DatasetAccessOGC datasetAccessOGC) throws RequestException {
+    public void addSelectedLayer(Long layerId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
             em.getTransaction().begin();
             User user = em.find(User.class, userName);
+            DatasetAccessOGC datasetAccessOGC = em.find(DatasetAccessOGC.class, layerId);
+            if(datasetAccessOGC == null) {
+                throw new RequestException("Layer with id " + layerId + " does not exist");
+            }
             user.getSelectedLayers().add(datasetAccessOGC);
             em.getTransaction().commit();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
+            throw handleException(em, e);
+        } finally {
             em.close();
         }
     }
@@ -1747,11 +1707,145 @@ public class AssetsResource implements AssetsService {
             selectedLayers.remove(selectedLayer);
             em.getTransaction().commit();
         } catch (Exception e) {
-            if(em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            logger.error(e.getMessage(), e);
+            throw handleException(em, e);
+        } finally {
             em.close();
+        }
+    }
+
+    @Override
+    public List<DatasetAccessOGC> getCompanySavedLayers() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            return user.getCompany().getSavedLayers();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+/*
+    @Override
+    public void addCompanySavedLayer(DatasetAccessOGC datasetAccessOGC) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            if(datasetAccessOGC.getId() != null) {
+
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeCompanyLayer(Long layerId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            List<DatasetAccessOGC> selectedLayers = user.getSelectedLayers();
+            DatasetAccessOGC selectedLayer = ListUtil.findValue(selectedLayers, new ListUtil.CheckValue<DatasetAccessOGC>() {
+                @Override
+                public boolean isValue(DatasetAccessOGC value) {
+                    return value.getId().equals(layerId);
+                }
+            });
+            selectedLayers.remove(selectedLayer);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+*/
+
+    @Override
+    public List<DatasetAccessOGC> getApplicationLayers() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        return ServerUtil.getSettings().getBaseLayers();
+    }
+
+    @Override
+    public List<DatasetAccessOGC> getSavedLayers() throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            return user.getSavedLayers();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void addSavedLayer(Long layerId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            DatasetAccessOGC datasetAccessOGC = em.find(DatasetAccessOGC.class, layerId);
+            if(datasetAccessOGC == null) {
+                throw new RequestException("Layer with id " + layerId + " does not exist");
+            }
+            user.getSavedLayers().add(datasetAccessOGC);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeSavedLayer(Long layerId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            List<DatasetAccessOGC> savedLayers = user.getSavedLayers();
+            DatasetAccessOGC savedLayer = ListUtil.findValue(savedLayers, new ListUtil.CheckValue<DatasetAccessOGC>() {
+                @Override
+                public boolean isValue(DatasetAccessOGC value) {
+                    return value.getId().equals(layerId);
+                }
+            });
+            savedLayers.remove(savedLayer);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    private RequestException handleException(EntityManager em, Exception e) {
+        return handleException(em, e, "Server side error");
+    }
+
+    private RequestException handleException(EntityManager em, Exception e, String message) {
+        if(em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        logger.error(e.getMessage(), e);
+        if(e instanceof RequestException) {
+            return (RequestException) e;
+        } else {
+            return new RequestException(message);
         }
     }
 

@@ -142,7 +142,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/recommendations")
     @Produces("application/json")
-    List<Offer> getRecommendations();
+    List<Offer> getRecommendations() throws RequestException;
 
     @GET
     @Path("/assets/notifications/")
@@ -236,18 +236,55 @@ public interface AssetsService extends DirectRestService {
     void saveUserSettings(SettingsDTO settingsDTO) throws RequestException;
 
     @GET
-    @Path("/assets/user/layers")
+    @Path("/assets/user/layers/selected")
     @Produces("application/json")
     List<DatasetAccessOGC> getSelectedLayers() throws RequestException;
 
     @POST
-    @Path("/assets/user/layers")
-    @Produces("application/json")
-    void addSelectedLayer(DatasetAccessOGC datasetAccessOGC) throws RequestException;
+    @Path("/assets/user/layers/selected/{id}")
+    @Consumes("application/json")
+    void addSelectedLayer(@PathParam("id") Long layerId) throws RequestException;
 
     @DELETE
-    @Path("/assets/user/layers/{id}")
-    @Produces("application/json")
+    @Path("/assets/user/layers/selected/{id}")
+    @Consumes("application/json")
     void removeSelectedLayer(@PathParam("id") Long layerId) throws RequestException;
+
+    @GET
+    @Path("/assets/user/layers/company/saved")
+    @Produces("application/json")
+    List<DatasetAccessOGC> getCompanySavedLayers() throws RequestException;
+
+/*
+    @POST
+    @Path("/assets/user/layers/company/saved")
+    @Consumes("application/json")
+    void addCompanySavedLayer(DatasetAccessOGC datasetAccessOGC) throws RequestException;
+
+    @DELETE
+    @Path("/assets/user/layers/company/{id}")
+    @Consumes("application/json")
+    void removeCompanyLayer(@PathParam("id") Long layerId) throws RequestException;
+*/
+
+    @GET
+    @Path("/assets/user/layers/application")
+    @Produces("application/json")
+    List<DatasetAccessOGC> getApplicationLayers() throws RequestException;
+
+    @GET
+    @Path("/assets/user/layers/saved")
+    @Produces("application/json")
+    List<DatasetAccessOGC> getSavedLayers() throws RequestException;
+
+    @POST
+    @Path("/assets/user/layers/saved")
+    @Produces("application/json")
+    void addSavedLayer(@PathParam("id") Long layerId) throws RequestException;
+
+    @DELETE
+    @Path("/assets/user/layers/saved/{id}")
+    @Produces("application/json")
+    void removeSavedLayer(@PathParam("id") Long layerId) throws RequestException;
 
 }
