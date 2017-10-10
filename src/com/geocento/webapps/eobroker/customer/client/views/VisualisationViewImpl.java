@@ -104,6 +104,8 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     MaterialLink download;
     @UiField
     MaterialTooltip downloadTip;
+    @UiField
+    MaterialLink zoomExtent;
 
     private Presenter presenter;
 
@@ -245,6 +247,11 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     }
 
     @Override
+    public HasClickHandlers getZoomExtent() {
+        return zoomExtent;
+    }
+
+    @Override
     public void setProductService(ProductServiceVisualisationDTO productServiceVisualisationDTO) {
         image.setUrl(productServiceVisualisationDTO.getServiceImage());
         name.setText(productServiceVisualisationDTO.getName());
@@ -318,7 +325,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
 
     @Override
     public void setAddedToFavourites(boolean added) {
-        addToFavourites.setIconColor(added ? Color.YELLOW : Color.WHITE);
+        addToFavourites.setIconColor(added ? Color.YELLOW : Color.BLUE);
         addToFavourites.setText(added ? "added to saved layers" : "add to saved layers");
     }
 
@@ -404,6 +411,12 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
     @Override
     public void setDownloadTooltip(String message) {
         downloadTip.setText(message);
+    }
+
+    @Override
+    public void setMapBounds(Extent extent) {
+        ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
+        mapContainer.map.setExtent(extentJSNI);
     }
 
     @Override

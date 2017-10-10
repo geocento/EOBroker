@@ -20,6 +20,7 @@ public class LayerInfoDTO {
     private String layerName;
     private String styleName;
     private String version;
+    boolean savedLayer;
 
     public LayerInfoDTO() {
     }
@@ -110,5 +111,13 @@ public class LayerInfoDTO {
 
     public String getVersion() {
         return version;
+    }
+
+    public boolean isSavedLayer() {
+        return savedLayer;
+    }
+
+    public void setSavedLayer(boolean savedLayer) {
+        this.savedLayer = savedLayer;
     }
 }

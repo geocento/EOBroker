@@ -175,15 +175,22 @@
                             </design:MaterialCard>
                         </design:MaterialColumn>
                         <design:MaterialColumn>
-                            <material:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="sampleUploader">
-                                <design:MaterialCard padding="20">
-                                    <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
-                                        <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to the EO Broker samples server</design:MaterialLabel>
-                                        <design:MaterialLabel textColor="GREY" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
-                                        <c:MaterialLoadingButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></c:MaterialLoadingButton>
-                                    </design:MaterialCardContent>
-                                </design:MaterialCard>
-                            </material:MaterialFileUploader>
+                            <design:MaterialCard padding="20">
+                                <design:MaterialCardContent width="250px" layoutPosition="RELATIVE">
+                                    <material:MaterialFileUploader marginLeft="20" width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="sampleUploader">
+                                        <design:MaterialPanel>
+                                            <design:MaterialLabel marginBottom="20" ui:field="uploadSampleTitle">Or upload file to the EO Broker samples server</design:MaterialLabel>
+                                            <design:MaterialLabel textColor="GREY" fontSize="0.9em" marginBottom="20" ui:field="uploadSampleComment"></design:MaterialLabel>
+                                            <c:MaterialLoadingButton backgroundColor="PINK" size="LARGE" type="FLOATING" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></c:MaterialLoadingButton>
+                                        </design:MaterialPanel>
+                                    </material:MaterialFileUploader>
+                                    <design:MaterialPanel paddingTop="20">
+                                        <design:MaterialTooltip text="Tick if you want the data to be published in the map server as well, only valid for shapefile and tiff files">
+                                            <design:MaterialCheckBox text="Publish in map" ui:field="publishToMap"></design:MaterialCheckBox>
+                                        </design:MaterialTooltip>
+                                    </design:MaterialPanel>
+                                </design:MaterialCardContent>
+                            </design:MaterialCard>
                         </design:MaterialColumn>
                     </design:MaterialRow>
                 </design:MaterialPanel>

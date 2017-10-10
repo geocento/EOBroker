@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.PointJSNI;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetVisualisationDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceVisualisationDTO;
@@ -49,6 +50,8 @@ public interface VisualisationView extends IsWidget {
 
     void displayInformationError(String message);
 
+    HasClickHandlers getZoomExtent();
+
     void setProductService(ProductServiceVisualisationDTO productServiceVisualisationDTO);
 
     void enableGetFeatureInfo(boolean queryable);
@@ -70,6 +73,8 @@ public interface VisualisationView extends IsWidget {
     void displayDownload(boolean display);
 
     void setDownloadTooltip(String message);
+
+    void setMapBounds(Extent extent);
 
     public interface Presenter {
         void datasetAccessSelected(DatasetAccess datasetAccess);

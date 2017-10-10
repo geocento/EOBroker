@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client;
 
 import com.geocento.webapps.eobroker.common.shared.entities.User;
-import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
 import com.geocento.webapps.eobroker.supplier.client.activities.AppActivityMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.AppPlaceHistoryMapper;
 import com.geocento.webapps.eobroker.supplier.client.places.LoginPagePlace;
@@ -30,11 +29,6 @@ import org.fusesource.restygwt.client.REST;
  * Entry point classes define <code>onModuleLoad()</code>
  */
 public class Supplier implements EntryPoint {
-
-    // log-in session ID cookie duration
-    public static long DURATION = 7 * 24 * 3600;
-
-    static private String cookieSession = "XSESSIONID";
 
     private static LoginInfo loginInfo;
 
@@ -65,7 +59,7 @@ public class Supplier implements EntryPoint {
                 if(loginInfo == null) {
                     return new LoginPagePlace(place);
                 }
-                if(loginInfo.getUserRole() != User.USER_ROLE.supplier) {
+                if(loginInfo.getUserRole() != User.USER_ROLE.supplier && loginInfo.getUserRole() != User.USER_ROLE.administrator) {
                     Window.alert("You are not registered as a supplier");
                     return new LoginPagePlace(place);
                 }

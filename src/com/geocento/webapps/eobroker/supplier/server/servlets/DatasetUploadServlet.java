@@ -51,6 +51,7 @@ public class DatasetUploadServlet extends HttpServlet {
             String logUserName = UserUtils.verifyUserSupplier(request);
             // resource id for storing
             Long resourceId = null;
+            boolean publish = false;
             InputStream filecontent = null;
             String saveFile = null;
             List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
@@ -62,6 +63,9 @@ public class DatasetUploadServlet extends HttpServlet {
                     String fieldValue = item.getString();
                     if(fieldName.equalsIgnoreCase("resourceId")) {
                         resourceId = Long.parseLong(fieldValue);
+                    }
+                    if(fieldName.equalsIgnoreCase("publish")) {
+                        publish = Boolean.parseBoolean(fieldValue);
                     }
                 } else {
                     // Process form file field (input type="file").
@@ -88,6 +92,14 @@ public class DatasetUploadServlet extends HttpServlet {
             if(resourceId == null) {
                 throw new Exception("Resource id missing");
             }
+            parameterValue = request.getParameter("publish");
+            if(parameterValue != null) {
+                try {
+                    publish = Boolean.parseBoolean(parameterValue);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
             System.out.println("Reading file content");
             // Process the input stream
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -101,7 +113,7 @@ public class DatasetUploadServlet extends HttpServlet {
             try {
                 final User user = em.find(User.class, logUserName);
                 System.out.println("Processing resource");
-                DatasetAccess dataAccess = processAndStoreResource(out, user, resourceId, saveFile);
+                DatasetAccess dataAccess = processAndStoreResource(out, user, resourceId, saveFile, publish);
                 response.setStatus(200);
                 response.setContentType("text/html");
                 PrintWriter writer = response.getWriter();
@@ -130,7 +142,7 @@ public class DatasetUploadServlet extends HttpServlet {
         writer.close();
     }
 
-    protected DatasetAccess processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName) throws Exception {
+    protected DatasetAccess processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName, boolean publish) throws Exception {
         try {
             int maxFileSize = ServerUtil.getSettings().getMaxSampleSizeMB() * (1024 * 1024);
             if (out.size() > maxFileSize) {
@@ -154,25 +166,40 @@ public class DatasetUploadServlet extends HttpServlet {
             String extension = resourceName.substring(resourceName.lastIndexOf(".") + 1).toLowerCase();
             // create response
             DatasetAccess datasetAccess = null;
-            switch (extension) {
-                case "zip": {
-                    datasetAccess = publishShapefile(workspaceName, file);
-                } break;
-                case "tiff":
-                case "tif": {
-                    datasetAccess = publishGeoTiff(workspaceName, file);
-                } break;
-                case "kml":
-                case "pdf":
-                case "csv":
-                case "ppt":
-                case "doc": {
-                    // TODO - change so that it matches the format type
-                    DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
-                    datasetAccess = datasetAccessFile;
-                } break;
-                default:
-                    throw new Exception("File format '" + extension + "' not supported");
+            if(publish) {
+                switch (extension) {
+                    case "zip": {
+                        datasetAccess = publishShapefile(workspaceName, file);
+                    } break;
+                    case "tiff":
+                    case "tif": {
+                        datasetAccess = publishGeoTiff(workspaceName, file);
+                    } break;
+                    default:
+                        throw new Exception("File format '" + extension + "' not supported for publishing");
+                }
+            } else {
+                switch (extension) {
+                    case "zip":
+                    case "gz":
+                    case "tar":
+                    case "gif":
+                    case "jpg":
+                    case "jpeg":
+                    case "tiff":
+                    case "tif":
+                    case "png":
+                    case "kml":
+                    case "pdf":
+                    case "csv":
+                    case "ppt":
+                    case "doc": {
+                        DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
+                        datasetAccess = datasetAccessFile;
+                    } break;
+                    default:
+                        throw new Exception("File format '" + extension + "' not supported");
+                }
             }
             datasetAccess.setUri(filePath);
             datasetAccess.setSize((int) file.length());

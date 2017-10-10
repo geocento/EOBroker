@@ -128,6 +128,8 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
     MaterialFilesWidget tandcsFiles;
     @UiField
     MaterialRichEditor termsAndConditions;
+    @UiField
+    MaterialCheckBox publishToMap;
 
     private Presenter presenter;
 
@@ -173,6 +175,7 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
 
         sampleUploader.addAddedFileHandler(event -> {
             uploadSampleButton.setLoading(true);
+            sampleUploader.setParameter("publish", publishToMap.getValue() + "");
         });
         sampleUploader.addErrorHandler(event -> {
             uploadSampleButton.setLoading(false);

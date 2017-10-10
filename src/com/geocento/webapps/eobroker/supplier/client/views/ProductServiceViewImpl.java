@@ -1,10 +1,10 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingButton;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialRichEditor;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -117,6 +117,8 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
     MaterialLabel coverageLayersMessage;
     @UiField
     MaterialRichEditor termsAndConditions;
+    @UiField
+    MaterialCheckBox publishToMap;
 
     public ProductServiceViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -148,6 +150,7 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
 
         sampleUploader.addAddedFileHandler(event -> {
             uploadSampleButton.setLoading(true);
+            sampleUploader.setParameter("publish", publishToMap.getValue() + "");
         });
         sampleUploader.addErrorHandler(event -> {
             uploadSampleButton.setLoading(false);

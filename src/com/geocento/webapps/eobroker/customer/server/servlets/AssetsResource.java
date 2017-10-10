@@ -1138,6 +1138,7 @@ public class AssetsResource implements AssetsService {
         String userName = UserUtils.verifyUser(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
+            User user = em.find(User.class, userName);
             final DatasetAccess datasetAccess = em.find(DatasetAccess.class, id);
             if(datasetAccess == null) {
                 throw new RequestException("Dataset not found");
@@ -1201,6 +1202,12 @@ public class AssetsResource implements AssetsService {
             layerInfoDTO.setExtent(bounds);
             layerInfoDTO.setVersion(layers.get(0).getVersion());
             layerInfoDTO.setQueryable(layers.get(0).isQueryable());
+            layerInfoDTO.setSavedLayer(ListUtil.findValue(user.getSavedLayers(), new ListUtil.CheckValue<DatasetAccessOGC>() {
+                @Override
+                public boolean isValue(DatasetAccessOGC value) {
+                    return id.equals(value.getId());
+                }
+            }) != null);
             return layerInfoDTO;
         } catch (Exception e) {
             throw handleException(em, e, "Error loading wms layer info");
@@ -1681,6 +1688,9 @@ public class AssetsResource implements AssetsService {
             if(datasetAccessOGC == null) {
                 throw new RequestException("Layer with id " + layerId + " does not exist");
             }
+            if(user.getSelectedLayers().contains(datasetAccessOGC)) {
+                return;
+            }
             user.getSelectedLayers().add(datasetAccessOGC);
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -1800,6 +1810,9 @@ public class AssetsResource implements AssetsService {
             DatasetAccessOGC datasetAccessOGC = em.find(DatasetAccessOGC.class, layerId);
             if(datasetAccessOGC == null) {
                 throw new RequestException("Layer with id " + layerId + " does not exist");
+            }
+            if(user.getSavedLayers().contains(datasetAccessOGC)) {
+                return;
             }
             user.getSavedLayers().add(datasetAccessOGC);
             em.getTransaction().commit();

@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.styles.MyCellTableResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
@@ -19,7 +20,6 @@ import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
-import com.geocento.webapps.eobroker.customer.client.widgets.FeasibilityHeader;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
@@ -40,14 +40,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.*;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
 import gwt.material.design.client.constants.Color;
-import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 
 import java.util.*;
@@ -138,6 +136,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialCollapsibleItem statisticsPanel;
     @UiField
     ChartPanel chartPanel;
+    @UiField
+    MaterialCollapsibleItem coveragePanel;
 
     private Presenter presenter;
 
@@ -155,6 +155,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     private HashMap<ProductCandidate, FeatureRendering> renderedFeatures = new HashMap<ProductCandidate, FeatureRendering>();
+
+    private HashMap<WMSStatistics, Boolean> layerStatistics = new HashMap<WMSStatistics, Boolean>();
+    private HashMap<WMSStatistics, WMSLayerJSNI> layerStatisticsDisplay = new HashMap<WMSStatistics, WMSLayerJSNI>();
 
     private ProductCandidate outlinedRecord;
 
@@ -318,6 +321,20 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                         arcgisMap.createFillSymbol("#0000ff", 2, "rgba(0,0,0,0.2)"));
             }
         }
+        // now refresh the map layers
+        for(WMSStatistics wmsStatistics : layerStatistics.keySet()) {
+            WMSLayerJSNI displayLayer = layerStatisticsDisplay.get(wmsStatistics);
+            if(layerStatistics.get(wmsStatistics)) {
+                if(displayLayer == null) {
+                    layerStatisticsDisplay.put(wmsStatistics, mapContainer.map.addWMSLayer(wmsStatistics.getBaseUrl(), wmsStatistics.getLayerName()));
+                }
+            } else {
+                if(displayLayer != null) {
+                    mapContainer.map.removeWMSLayer(displayLayer);
+                    layerStatisticsDisplay.remove(wmsStatistics);
+                }
+            }
+        }
     }
 
     private void outlineRecord(ProductCandidate productCandidate) {
@@ -479,6 +496,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void displayResponse(final FeasibilityResponse response) {
+        selectedFeatures.clear();
+
         Color color = Color.RED;
         String text = "Unknown";
         if (response.getFeasible() == FEASIBILITY.NONE) {
@@ -497,17 +516,22 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         // set the coverage features values
         coverageFeaturesList.getList().clear();
-        boolean hasProductCandidates = response.getProductCandidates() != null && response.getProductCandidates().size() > 0;
+        List<ProductCandidate> productCandidates = response.getProductCandidates();
+        boolean hasProductCandidates = productCandidates != null && productCandidates.size() > 0;
         if(hasProductCandidates) {
-            coverageFeaturesList.getList().addAll(response.getProductCandidates());
+            coverageFeaturesList.getList().addAll(productCandidates);
         }
         resultsTable.setVisible(hasProductCandidates);
-        coverageFeaturesValue.setText(response.getProductCandidates() == null ? "" : response.getProductCandidates().size() + "");
+        coverageFeaturesValue.setText(!hasProductCandidates ? "" : productCandidates.size() + "");
         messageCandidates.setText(hasProductCandidates ? "List of possible products" : "No product available");
         pagerPanel.setVisible(hasProductCandidates && response.getProductCandidates().size() > resultsTable.getPageSize());
         refreshMap();
 
         feasibilityPanel.expand();
+        if(hasProductCandidates) {
+            coveragePanel.expand();
+            selectedFeatures.add(productCandidates.get(0));
+        }
 
         resultsTab.setEnabled(true);
 
@@ -520,7 +544,23 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                     // make sure the panel is expanded to get the right width
                     // check available stats
                     for (Statistics statistics : response.getStatistics()) {
-                        chartPanel.addStatistics(statistics);
+                        // TODO - add to map instead?
+                        if(statistics instanceof WMSStatistics) {
+                            layerStatistics.put((WMSStatistics) statistics, false);
+                            MaterialPanel materialPanel = new MaterialPanel();
+                            MaterialCheckBox materialCheckBox = new MaterialCheckBox(statistics.getName());
+                            materialCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+                                @Override
+                                public void onValueChange(ValueChangeEvent<Boolean> event) {
+                                    layerStatistics.put((WMSStatistics) statistics, event.getValue());
+                                    refreshMap();
+                                }
+                            });
+                            materialPanel.add(materialCheckBox);
+                            chartPanel.add(materialPanel);
+                        } else {
+                            chartPanel.addStatistics(statistics);
+                        }
                     }
                     //chartPanel.setWidth();
                     chartPanel.onResize(null);
@@ -540,7 +580,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void clearResults() {
-
+        selectedFeatures.clear();
+        layerStatisticsDisplay.clear();
+        refreshMap();
     }
 
     @Override

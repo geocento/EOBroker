@@ -748,6 +748,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 case productservices:
                 case productdatasets:
                 case software:
+                case project:
                     // go to general search results page
                     String token = "";
                     token += SearchPagePlace.TOKENS.text.toString() + "=" + text;

@@ -61,9 +61,11 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     CustomerSettings customerSettings;
 
+    @JoinTable(name = "user_savedLayers")
     @OneToMany
     List<DatasetAccessOGC> savedLayers;
 
+    @JoinTable(name = "user_selectedLayers")
     @OneToMany
     List<DatasetAccessOGC> selectedLayers;
 

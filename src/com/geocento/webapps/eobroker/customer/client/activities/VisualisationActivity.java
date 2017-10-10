@@ -265,33 +265,67 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
             @Override
             public void onClick(ClickEvent event) {
                 if(datasetAccess != null && datasetAccess.getUri() != null) {
-                    Window.open(datasetAccess.getUri(), "_blank", null);
+                    if(datasetAccess.isHostedData()) {
+                        Window.open(datasetAccess.getUri(), "_blank", null);
+                    } else {
+                        Window.open("./customer/api/download-data/download/" + datasetAccess.getId(), "_blank", null);
+                    }
                 }
             }
 
+        }));
+
+        handlers.add(visualisationView.getZoomExtent().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if(currentLayer != null && currentLayer.getExtent() != null) {
+                    visualisationView.setMapBounds(currentLayer.getExtent());
+                }
+            }
         }));
 
         handlers.add(visualisationView.getAddToFavourites().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 // TODO - check if added
+                boolean addedToFavourites = currentLayer.isSavedLayer();
                 visualisationView.setAddToFavouritesLoading(true);
                 try {
-                    REST.withCallback(new MethodCallback<Void>() {
+                    if(addedToFavourites) {
+                        REST.withCallback(new MethodCallback<Void>() {
 
-                        @Override
-                        public void onFailure(Method method, Throwable exception) {
-                            visualisationView.setAddToFavouritesLoading(false);
-                            displaySuccess("Could not add layers to your saved layers");
-                        }
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                visualisationView.setAddToFavouritesLoading(false);
+                                displayError("Could not remove layer from your saved layers");
+                            }
 
-                        @Override
-                        public void onSuccess(Method method, Void result) {
-                            visualisationView.setAddToFavouritesLoading(false);
-                            displaySuccess("Layer added to your saved layers");
-                            visualisationView.setAddedToFavourites(true);
-                        }
-                    }).call(ServicesUtil.assetsService).addSavedLayer(datasetAccess.getId());
+                            @Override
+                            public void onSuccess(Method method, Void result) {
+                                visualisationView.setAddToFavouritesLoading(false);
+                                displaySuccess("Layer removed from your saved layers");
+                                currentLayer.setSavedLayer(false);
+                                visualisationView.setAddedToFavourites(false);
+                            }
+                        }).call(ServicesUtil.assetsService).removeSavedLayer(datasetAccess.getId());
+                    } else {
+                        REST.withCallback(new MethodCallback<Void>() {
+
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                visualisationView.setAddToFavouritesLoading(false);
+                                displayError("Could not add layers to your saved layers");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void result) {
+                                visualisationView.setAddToFavouritesLoading(false);
+                                displaySuccess("Layer added to your saved layers");
+                                currentLayer.setSavedLayer(true);
+                                visualisationView.setAddedToFavourites(true);
+                            }
+                        }).call(ServicesUtil.assetsService).addSavedLayer(datasetAccess.getId());
+                    }
                 } catch (RequestException e) {
                 }
             }
@@ -335,6 +369,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
                     public void onSuccess(Method method, LayerInfoDTO layerInfoDTO) {
                         VisualisationActivity.this.currentLayer = layerInfoDTO;
                         visualisationView.hideLoadingInformation();
+                        visualisationView.setAddedToFavourites(layerInfoDTO.isSavedLayer());
                         // add layer to map
                         visualisationView.setWMSLayer(layerInfoDTO);
                         visualisationView.displayLayerInfo(layerInfoDTO);

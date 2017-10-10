@@ -43,7 +43,7 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
     private final MaterialButton saveButton;
 
     private MaterialButton addLayerButton;
-    private final MaterialDropDown layersList;
+    private final MaterialPanel layersList;
 
     static class LayerSettings {
         DatasetAccessOGC datasetAccessOGC;
@@ -128,8 +128,8 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
             }
         });
 
+        MaterialPanel addLayerPanel = new MaterialPanel();
         addLayerButton = new MaterialButton();
-        addLayerButton.getElement().getStyle().setProperty("maxWidth", "30%");
         addLayerButton.setTruncate(true);
         addLayerButton.setActivates("layersList");
         addLayerButton.setBackgroundColor(Color.WHITE);
@@ -143,13 +143,52 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
         MaterialTooltip materialTooltip = new MaterialTooltip(addLayerButton);
         materialTooltip.setText("Select map layers");
         materialTooltip.setPosition(Position.TOP);
-        addControl(addLayerButton, Position.BOTTOM, Position.LEFT);
-        layersList = new MaterialDropDown();
-        layersList.setPadding(5);
-        layersList.setBackgroundColor(Color.WHITE);
-        layersList.setActivator("layersList");
-        layersList.setConstrainWidth(false);
+        addLayerPanel.add(addLayerButton);
+        addLayerPanel.setPaddingBottom(10);
+        addLayerPanel.setPaddingLeft(10);
+        addControl(addLayerPanel, Position.BOTTOM, Position.LEFT);
+        MaterialDropDown layersListPanel = new MaterialDropDown();
+        layersListPanel.setPadding(5);
+        layersListPanel.setBackgroundColor(Color.WHITE);
+        layersListPanel.setActivator("layersList");
+        layersListPanel.setConstrainWidth(false);
+        layersList = new MaterialPanel();
+        layersListPanel.add(layersList);
         layersList.add(new LoadingWidget("Loading layers..."));
+        MaterialLink addNewLayerButton = new MaterialLink("Add new layer");
+        addNewLayerButton.setIconType(IconType.PLUS_ONE);
+        addNewLayerButton.setBackgroundColor(Color.WHITE);
+        addNewLayerButton.setTextColor(Color.GREY);
+        addNewLayerButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                // open the layer selection window
+                SelectLayers.getInstance().display(new SelectLayers.Presenter() {
+                    @Override
+                    public void layerSelected(DatasetAccessOGC layer) {
+                        try {
+                            REST.withCallback(new MethodCallback<Void>() {
+
+                                @Override
+                                public void onFailure(Method method, Throwable exception) {
+                                    MaterialToast.fireToast("Could not add selected layer...");
+                                }
+
+                                @Override
+                                public void onSuccess(Method method, Void result) {
+                                    LayerSettings layerSettings = new LayerSettings();
+                                    layerSettings.datasetAccessOGC = layer;
+                                    addLayerWidget(layerSettings);
+                                }
+                            }).call(ServicesUtil.assetsService).addSelectedLayer(layer.getId());
+                        } catch (RequestException e) {
+                        }
+                    }
+                });
+            }
+        });
+        layersListPanel.add(addNewLayerButton);
+        addWidget(layersListPanel);
         // disable by default
         setLayersEnabled(false);
     }
@@ -205,9 +244,8 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
             } catch (Exception e) {
             }
         } else {
-
+            updateLayersDisplay();
         }
-        addWidget(layersList);
     }
 
     private void setSelectedLayers(List<DatasetAccessOGC> selectedLayers) {
@@ -235,39 +273,6 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
             layersList.add(materialLabel);
             addLayerButton.setText("");
         }
-        MaterialLink addNewLayerButton = new MaterialLink("Add new layer");
-        addNewLayerButton.setIconType(IconType.PLUS_ONE);
-        addNewLayerButton.setBackgroundColor(Color.WHITE);
-        addNewLayerButton.setTextColor(Color.GREY);
-        addNewLayerButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                // open the layer selection window
-                SelectLayers.getInstance().display(new SelectLayers.Presenter() {
-                    @Override
-                    public void layerSelected(DatasetAccessOGC layer) {
-                        try {
-                            REST.withCallback(new MethodCallback<Void>() {
-
-                                @Override
-                                public void onFailure(Method method, Throwable exception) {
-                                    MaterialToast.fireToast("Could not add selected layer...");
-                                }
-
-                                @Override
-                                public void onSuccess(Method method, Void result) {
-                                    LayerSettings layerSettings = new LayerSettings();
-                                    layerSettings.datasetAccessOGC = layer;
-                                    addLayerWidget(layerSettings);
-                                }
-                            }).call(ServicesUtil.assetsService).addSelectedLayer(layer.getId());
-                        } catch (RequestException e) {
-                        }
-                    }
-                });
-            }
-        });
-        layersList.add(addNewLayerButton);
         updateLayersMapDisplay();
     }
 
@@ -296,15 +301,17 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
     private void updateLayersMapDisplay() {
         // update map and widget display based on layer settings values
         for(LayerSettings layerSettings : selectedLayers) {
+            LayerWidget layerWidget = (LayerWidget) WidgetUtil.findChild(layersList, new WidgetUtil.CheckValue() {
+                @Override
+                public boolean isValue(Widget widget) {
+                    return widget instanceof LayerWidget && ((LayerWidget) widget).getDatasetAccessOGC() == layerSettings.datasetAccessOGC;
+                }
+            });
+            layerWidget.getSelection().setValue(layerSettings.activated);
+            layerWidget.enableExtent(layerSettings.activated);
             if(layerSettings.activated) {
                 if (layerSettings.layerInfoDTO == null) {
                     // find layer widget
-                    LayerWidget layerWidget = (LayerWidget) WidgetUtil.findChild(layersList, new WidgetUtil.CheckValue() {
-                        @Override
-                        public boolean isValue(Widget widget) {
-                            return widget instanceof LayerWidget && ((LayerWidget) widget).getDatasetAccessOGC() == layerSettings.datasetAccessOGC;
-                        }
-                    });
                     try {
                         REST.withCallback(new MethodCallback<LayerInfoDTO>() {
 

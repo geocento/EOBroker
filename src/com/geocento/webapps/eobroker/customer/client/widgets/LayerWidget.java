@@ -29,14 +29,16 @@ public class LayerWidget extends Composite {
     MaterialPreLoader loader;
     @UiField
     MaterialIcon extent;
+    @UiField
+    MaterialIcon delete;
 
-    private final DatasetAccessOGC datasetAccessOGC;
+    private DatasetAccessOGC datasetAccessOGC;
 
     public LayerWidget(DatasetAccessOGC datasetAccessOGC) {
 
-        this.datasetAccessOGC = datasetAccessOGC;
-
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        this.datasetAccessOGC = datasetAccessOGC;
 
         layerSelection.setText(datasetAccessOGC.getTitle());
 
@@ -57,6 +59,14 @@ public class LayerWidget extends Composite {
 
     public HasClickHandlers getExtentButton() {
         return extent;
+    }
+
+    public void enableExtent(boolean enabled) {
+        extent.setEnabled(enabled);
+    }
+
+    public HasClickHandlers getDeleteButton() {
+        return delete;
     }
 
     public DatasetAccessOGC getDatasetAccessOGC() {

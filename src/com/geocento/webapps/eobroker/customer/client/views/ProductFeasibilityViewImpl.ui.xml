@@ -164,7 +164,7 @@
                             <widgets:LoadingWidget addStyleNames="{style.loadingResults}" ui:field="loadingResults"></widgets:LoadingWidget>
                             <m:MaterialLabel padding="10" ui:field="message"></m:MaterialLabel>
                             <g:HTMLPanel ui:field="results">
-                                <m:MaterialCollapsible margin="0" backgroundColor="WHITE" shadow="0">
+                                <m:MaterialCollapsible margin="0" backgroundColor="WHITE" shadow="0" accordion="true">
                                     <m:MaterialCollapsibleItem ui:field="feasibilityPanel">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
                                             <g:HTMLPanel>
@@ -219,7 +219,7 @@
             </g:west>
             <g:center>
                 <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                    <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" ui:field="mapContainer">
+                    <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" layersEnabled="true" ui:field="mapContainer">
                     </cmaps:MapContainer>
                     <cutout:MaterialCutOut circle="true" padding="50" ui:field="cutOut">
                         <m:MaterialTitle title="Sensors" description="List of sensors which will potentially be used to fulfill the service" textColor="WHITE"/>

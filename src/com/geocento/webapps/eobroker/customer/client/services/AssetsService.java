@@ -278,7 +278,7 @@ public interface AssetsService extends DirectRestService {
     List<DatasetAccessOGC> getSavedLayers() throws RequestException;
 
     @POST
-    @Path("/assets/user/layers/saved")
+    @Path("/assets/user/layers/saved/{id}")
     @Produces("application/json")
     void addSavedLayer(@PathParam("id") Long layerId) throws RequestException;
 

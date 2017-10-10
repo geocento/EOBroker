@@ -188,6 +188,7 @@ public class SelectLayers {
                     selectLayer(savedLayer);
                 }
             });
+            this.savedLayers.add(selectLayerWidget);
         }
     }
 

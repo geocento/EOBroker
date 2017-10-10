@@ -494,15 +494,15 @@ public class SearchResource implements SearchService {
         if(textFilter != null && textFilter.length() > 0) {
             String keywords = DBHelper.generateKeywords(textFilter);
             // change the last word so that it allows for partial match
-            sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
-                    "          FROM " + tableName + ", to_tsquery('" + keywords + "') AS keywords\n" +
+            sqlStatement = "SELECT t.id, ts_rank(tsv, keywords, 8) AS rank\n" +
+                    "          FROM " + tableName + " t, to_tsquery('" + keywords + "') AS keywords\n" +
                     (joinStatement == null ? "" : " " + joinStatement) +
                     "          WHERE tsv @@ keywords\n" +
                     (additionalStatement == null ? "" : (" AND " + additionalStatement)) +
                     "          ORDER BY rank DESC;";
         } else {
-            sqlStatement = "SELECT id, 'dummy'\n" +
-                    "          FROM " + tableName +
+            sqlStatement = "SELECT t.id, 'dummy'\n" +
+                    "          FROM " + tableName + " t " +
                     (joinStatement == null ? "" : " " + joinStatement) +
                     (additionalStatement == null ? "" : (" WHERE " + additionalStatement)) +
                     " ORDER BY name ASC";
@@ -718,7 +718,7 @@ public class SearchResource implements SearchService {
         addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
         String joinStatement = null;
         if(productId != null) {
-            joinStatement = "left join software_productsoftware p on p.software_id = id ";
+            joinStatement = "left join software_productsoftware p on p.software_id = t.id ";
             // search for productsoftware with the matching products
             additionalStatements.add("p.products_id IN ( select id from productsoftware  where product_id  = " + productId + ")");
         }
@@ -791,16 +791,16 @@ public class SearchResource implements SearchService {
         }
         // companies filter
         if(affiliatesOnly) {
-            joinStatements.add("left join companyrole c on c.project_id = id ");
+            joinStatements.add("left join companyrole c on c.project_id = t.id ");
             String companyIds = getAffiliatesIds(em, userName);
             additionalStatements.add("c.company_id  IN (" + companyIds + ")");
         } else if(companyId != null) {
-            joinStatements.add("left join companyrole c on c.project_id = id ");
+            joinStatements.add("left join companyrole c on c.project_id = t.id ");
             // search for company role with the matching company
             additionalStatements.add("c.company_id  = " + companyId);
         }
         if(productId != null) {
-            joinStatements.add("left join productsoftware p on p.project_id = id ");
+            joinStatements.add("left join productproject p on p.project_id = t.id ");
             // search for productsoftware with the matching products
             additionalStatements.add("p.product_id  = " + productId);
         }

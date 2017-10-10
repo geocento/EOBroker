@@ -2,14 +2,39 @@
              xmlns:design="urn:import:gwt.material.design.client.ui">
     <ui:style>
 
+        .panel {
+
+        }
+
+        .panel > * {
+            line-height: 2rem;
+        }
+
+        .layerSelection {
+            max-width: 200px;
+            margin-right: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .action {
+            vertical-align: middle;
+            cursor: pointer;
+        }
+
+        .actionPanel > * {
+            vertical-align: middle;
+        }
+
     </ui:style>
-    <design:MaterialPanel ui:field="panel">
-        <design:MaterialCheckBox ui:field="layerSelection"/>
-        <design:MaterialPanel float="RIGHT">
-            <design:MaterialIcon iconType="EXPLORE" ui:field="extent"></design:MaterialIcon>
+    <design:MaterialPanel addStyleNames="{style.panel}" ui:field="panel">
+        <design:MaterialPanel addStyleNames="{style.actionPanel}" float="RIGHT">
             <design:MaterialPreLoader size="SMALL" ui:field="loader">
                 <design:MaterialSpinner color="BLUE_ONLY"/>
             </design:MaterialPreLoader>
+            <design:MaterialIcon iconType="SEARCH" addStyleNames="{style.action}" ui:field="extent"></design:MaterialIcon>
+            <design:MaterialIcon iconType="DELETE" addStyleNames="{style.action}" ui:field="delete"></design:MaterialIcon>
         </design:MaterialPanel>
+        <design:MaterialCheckBox addStyleNames="{style.layerSelection}" ui:field="layerSelection"/>
     </design:MaterialPanel>
 </ui:UiBinder>
