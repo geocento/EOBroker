@@ -9,6 +9,16 @@
 
         @external nav-wrapper;
 
+        .actions {
+            white-space: nowrap;
+            margin-left: 5px;
+        }
+
+        .actions > i {
+            margin: 0;
+            padding: 0;
+        }
+
         .providers {
             padding-left: 20px;
             font-size: 1.2em !important;
@@ -114,6 +124,14 @@
             overflow: hidden;
         }
 
+        .actionsPanel {
+            white-space: nowrap;
+        }
+
+        .cataloguesPanel {
+            z-index: 10000;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -125,12 +143,27 @@
                         <sideprofile:MaterialSideProfile backgroundColor="BLUE" textColor="WHITE" ui:field="sideProfile">
                             <m:MaterialImage float="LEFT" margin="0" ui:field="image"></m:MaterialImage>
                             <m:MaterialPanel marginLeft="70" marginTop="0">
-                                <m:MaterialLink text="" fontSize="1.2em" textColor="WHITE" padding="10" truncate="true" addStyleNames="{style.name}" ui:field="name"></m:MaterialLink>
+                                <m:MaterialPanel display="FLEX">
+                                    <m:MaterialLink text="" flexGrow="1" fontSize="1.2em" textColor="WHITE" padding="5" truncate="true" addStyleNames="{style.name}" ui:field="name"></m:MaterialLink>
+                                    <m:MaterialPanel display="INLINE_BLOCK" addStyleNames="{style.actionsPanel}">
+                                        <m:MaterialTooltip text="Load another catalogue service for the same product">
+                                            <m:MaterialIcon activates="catalogue" textColor="WHITE" iconType="ARROW_DROP_DOWN" addStyleNames="{style.actions}" ui:field="cataloguesLink"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                        <m:MaterialTooltip text="View samples available for this catalogue">
+                                            <m:MaterialIcon textColor="WHITE" iconType="LIST" addStyleNames="{style.actions}" ui:field="samples"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                        <m:MaterialTooltip text="View the off the shelf product information">
+                                            <m:MaterialIcon textColor="WHITE" iconType="INFO" addStyleNames="{style.actions}" ui:field="information"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                    </m:MaterialPanel>
+                                </m:MaterialPanel>
                                 <m:MaterialPanel marginTop="5">
                                     <m:MaterialChip fontSize="0.8em" ui:field="supplier"></m:MaterialChip>
                                     <widgetsc:MaterialLabelIcon addStyleNames="{style.protocol}" ui:field="protocol"></widgetsc:MaterialLabelIcon>
                                 </m:MaterialPanel>
                             </m:MaterialPanel>
+                            <m:MaterialDropDown activator="catalogue" alignment="RIGHT" belowOrigin="true" constrainWidth="false" addStyleNames="{style.cataloguesPanel}" ui:field="catalogueDropdown">
+                            </m:MaterialDropDown>
                         </sideprofile:MaterialSideProfile>
                         <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
                             <m:MaterialTabItem waves="YELLOW" grid="s6">

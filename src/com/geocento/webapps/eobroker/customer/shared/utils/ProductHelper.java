@@ -1,7 +1,11 @@
 package com.geocento.webapps.eobroker.customer.shared.utils;
 
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccessOGC;
 import com.geocento.webapps.eobroker.common.shared.entities.Product;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+
+import java.util.List;
 
 /**
  * Created by thomas on 08/06/2016.
@@ -20,4 +24,14 @@ public class ProductHelper {
         return productDTO;
     }
 
+    public static boolean hasWMSSamples(List<DatasetAccess> samples) {
+        if(samples != null && samples.size() > 0) {
+            for(DatasetAccess datasetAccess : samples) {
+                if(datasetAccess instanceof DatasetAccessOGC) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -273,6 +273,7 @@ public class AssetsResource implements AssetsService {
                     productServiceFeasibilityDTO.setImageURL(productService.getImageUrl());
                     productServiceFeasibilityDTO.setCompany(CompanyHelper.createCompanyDTO(productService.getCompany()));
                     productServiceFeasibilityDTO.setApiURL(productService.getApiUrl());
+                    productServiceFeasibilityDTO.setHasSamples(ProductHelper.hasWMSSamples(productService.getSamples()));
                     return productServiceFeasibilityDTO;
                 }
             }));
@@ -554,6 +555,18 @@ public class AssetsResource implements AssetsService {
             productDatasetCatalogueDTO.setDatasetStandard(productDataset.getDatasetStandard());
             productDatasetCatalogueDTO.setDatasetURL(productDataset.getDatasetURL());
             productDatasetCatalogueDTO.setOrderable(productDataset.getServiceType() == ServiceType.commercial);
+            productDatasetCatalogueDTO.setHasSamples(ProductHelper.hasWMSSamples(productDataset.getSamples()));
+            // add relevant supplier services
+            TypedQuery<ProductDataset> query = em.createQuery("select p from ProductDataset p where p.product = :product and p.datasetStandard is not null and p.id <> :productDatasetId", ProductDataset.class);
+            query.setParameter("product", productDataset.getProduct());
+            query.setParameter("productDatasetId", productDataset.getId());
+            productDatasetCatalogueDTO.setOtherCatalogues(ListUtil.mutate(query.getResultList(), object -> {
+                ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+                productDatasetDTO.setId(productDataset.getId());
+                productDatasetDTO.setName(productDataset.getName());
+                productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+                return productDatasetDTO;
+            }));
             return productDatasetCatalogueDTO;
         } catch (Exception e) {
             throw handleException(em, e);
@@ -1540,6 +1553,11 @@ public class AssetsResource implements AssetsService {
             com.geocento.webapps.eobroker.customer.shared.utils.CompanyHelper.checkCompanyValues(createCompanyDTO);
             em.getTransaction().begin();
             // TODO - check a few values
+            TypedQuery<Long> query = em.createQuery("select count(c) from Company c where c.name = :companyName", Long.class);
+            query.setParameter("companyName", createCompanyDTO.getName());
+            if(query.getSingleResult() > 0) {
+                throw new RequestException("Company name is already taken");
+            }
             Company company = new Company();
             company.setName(createCompanyDTO.getName());
             company.setDescription(createCompanyDTO.getDescription());

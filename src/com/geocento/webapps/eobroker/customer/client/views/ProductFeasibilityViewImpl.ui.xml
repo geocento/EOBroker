@@ -10,14 +10,14 @@
              xmlns:charts="urn:import:com.geocento.webapps.eobroker.common.client.widgets.charts">
     <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityViewImpl.Style">
 
-        .providers {
-            padding-left: 20px;
-            font-size: 1.2em !important;
-            line-height: 1.2em !important;
+        .actions {
+            white-space: nowrap;
+            margin-left: 5px;
         }
 
-        .providers > i {
-            line-height: 1.2em !important;
+        .actions > i {
+            margin: 0;
+            padding: 0;
         }
 
         .queryPanel {
@@ -108,6 +108,14 @@
             padding: 1rem;
         }
 
+        .actionsPanel {
+            white-space: nowrap;
+        }
+
+        .servicesPanel {
+            z-index: 10000;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -119,15 +127,25 @@
                         <sideprofile:MaterialSideProfile ui:field="sideProfile">
                             <m:MaterialImage float="LEFT" margin="0" ui:field="serviceImage"></m:MaterialImage>
                             <m:MaterialPanel marginLeft="70" marginTop="0">
-                                <m:MaterialLink text="" fontSize="1.2em" textColor="WHITE" padding="5" truncate="true" addStyleNames="{style.name}" ui:field="servicesLink"></m:MaterialLink>
+                                <m:MaterialPanel display="FLEX">
+                                    <m:MaterialLink text="" flexGrow="1" fontSize="1.2em" textColor="WHITE" padding="5" truncate="true" addStyleNames="{style.name}" ui:field="serviceName"></m:MaterialLink>
+                                    <m:MaterialPanel display="INLINE_BLOCK" addStyleNames="{style.actionsPanel}">
+                                        <m:MaterialTooltip text="Load another feasibility service for the same product">
+                                            <m:MaterialIcon activates="service" textColor="WHITE" iconType="ARROW_DROP_DOWN" addStyleNames="{style.actions}" ui:field="servicesLink"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                        <m:MaterialTooltip text="View samples available for this service">
+                                            <m:MaterialIcon textColor="WHITE" iconType="LIST" addStyleNames="{style.actions}" ui:field="samples"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                        <m:MaterialTooltip text="View the bespoke service information">
+                                            <m:MaterialIcon textColor="WHITE" iconType="INFO" addStyleNames="{style.actions}" ui:field="information"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                    </m:MaterialPanel>
+                                </m:MaterialPanel>
                                 <m:MaterialPanel marginTop="5">
                                     <m:MaterialChip fontSize="0.8em" addStyleNames="{style.supplier}" ui:field="supplier"></m:MaterialChip>
                                 </m:MaterialPanel>
                             </m:MaterialPanel>
-<!--
-                            <m:MaterialLink text="Services" activates="service" textColor="WHITE" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" addStyleNames="{style.providers}" ui:field="servicesLink"></m:MaterialLink>
--->
-                            <m:MaterialDropDown activator="service" ui:field="serviceDropdown">
+                            <m:MaterialDropDown activator="service" alignment="RIGHT" belowOrigin="true" constrainWidth="false" addStyleNames="{style.servicesPanel}" ui:field="serviceDropdown">
                             </m:MaterialDropDown>
                         </sideprofile:MaterialSideProfile>
                         <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">

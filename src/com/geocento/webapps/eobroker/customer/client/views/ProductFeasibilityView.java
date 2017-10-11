@@ -37,7 +37,7 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void clearMap();
 
-    void setServices(List<ProductServiceFeasibilityDTO> productServices);
+    void setOtherServices(List<ProductServiceFeasibilityDTO> productServices);
 
     void setFormElements(List<FormElement> apiFormElements);
 
@@ -60,6 +60,8 @@ public interface ProductFeasibilityView extends IsWidget {
     HasClickHandlers getRequestButton();
 
     HasClickHandlers getContactButton();
+
+    void validateAoI();
 
     public interface Presenter {
 

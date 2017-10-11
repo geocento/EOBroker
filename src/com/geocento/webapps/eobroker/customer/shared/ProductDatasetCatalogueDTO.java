@@ -3,6 +3,8 @@ package com.geocento.webapps.eobroker.customer.shared;
 import com.geocento.webapps.eobroker.common.shared.datasets.DatasetStandard;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
+import java.util.List;
+
 /**
  * Created by thomas on 06/06/2016.
  */
@@ -19,6 +21,8 @@ public class ProductDatasetCatalogueDTO {
     // catalogue values
     DatasetStandard datasetStandard;
     String datasetURL;
+    private List<ProductDatasetDTO> otherCatalogues;
+    private boolean hasSamples;
 
     public ProductDatasetCatalogueDTO() {
     }
@@ -101,5 +105,21 @@ public class ProductDatasetCatalogueDTO {
 
     public void setOrderable(boolean orderable) {
         this.orderable = orderable;
+    }
+
+    public void setOtherCatalogues(List<ProductDatasetDTO> otherCatalogues) {
+        this.otherCatalogues = otherCatalogues;
+    }
+
+    public List<ProductDatasetDTO> getOtherCatalogues() {
+        return otherCatalogues;
+    }
+
+    public void setHasSamples(boolean hasSamples) {
+        this.hasSamples = hasSamples;
+    }
+
+    public boolean isHasSamples() {
+        return hasSamples;
     }
 }

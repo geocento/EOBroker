@@ -50,6 +50,8 @@ public interface RequestAccessView extends IsWidget {
 
     void hideLoading();
 
+    void setCompany(CompanyDTO companyDTO);
+
     public interface Presenter {
     }
 

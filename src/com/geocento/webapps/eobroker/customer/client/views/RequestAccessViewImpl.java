@@ -6,7 +6,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
-import com.geocento.webapps.eobroker.customer.client.widgets.CategorySearchBox;
+import com.geocento.webapps.eobroker.customer.client.widgets.CompanySearchBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -46,7 +46,7 @@ public class RequestAccessViewImpl extends Composite implements RequestAccessVie
     @UiField
     MaterialTextBox phoneNumber;
     @UiField
-    CategorySearchBox company;
+    CompanySearchBox company;
     @UiField
     CountryEditor companyCountry;
     @UiField
@@ -82,10 +82,8 @@ public class RequestAccessViewImpl extends Composite implements RequestAccessVie
                 CompanyDTO companyDTO = new CompanyDTO();
                 companyDTO.setName(suggestion.getName());
                 companyDTO.setId(Long.parseLong(suggestion.getUri().split("::")[1]));
-                RequestAccessViewImpl.this.companyDTO = companyDTO;
-                displayCompanyRegistration(false);
+                setCompany(companyDTO);
             }
-            //company.setText(companyDTO.getName());
         });
 
         displayCompanyRegistration(false);
@@ -205,6 +203,13 @@ public class RequestAccessViewImpl extends Composite implements RequestAccessVie
     @Override
     public void hideLoading() {
         submit.setLoading(false);
+    }
+
+    @Override
+    public void setCompany(CompanyDTO companyDTO) {
+        RequestAccessViewImpl.this.companyDTO = companyDTO;
+        company.setCompany(companyDTO);
+        displayCompanyRegistration(false);
     }
 
 }

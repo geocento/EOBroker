@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.common.client.widgets.maps;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
+import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
@@ -377,6 +378,11 @@ public class MapContainer extends Composite {
             widget.setRight(10);
         }
         panel.add(widget);
+    }
+
+    public void setMapExtent(Extent extent) {
+        ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
+        map.setExtent(extentJSNI);
     }
 
     protected void displayLoading() {

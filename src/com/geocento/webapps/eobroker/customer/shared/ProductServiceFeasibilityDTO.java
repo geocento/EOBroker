@@ -12,6 +12,7 @@ public class ProductServiceFeasibilityDTO {
     String imageURL;
     String apiURL;
     CompanyDTO company;
+    boolean hasSamples;
 
     public ProductServiceFeasibilityDTO() {
     }
@@ -54,5 +55,13 @@ public class ProductServiceFeasibilityDTO {
 
     public void setApiURL(String apiURL) {
         this.apiURL = apiURL;
+    }
+
+    public boolean isHasSamples() {
+        return hasSamples;
+    }
+
+    public void setHasSamples(boolean hasSamples) {
+        this.hasSamples = hasSamples;
     }
 }

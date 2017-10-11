@@ -70,6 +70,7 @@ public class RequestAccessActivity extends AbstractApplicationActivity implement
                             @Override
                             public void onSuccess(Method method, CompanyDTO companyDTO) {
                                 requestAccessView.hideLoading();
+                                requestAccessView.setCompany(companyDTO);
                                 createUser(companyDTO);
                             }
                         }).call(ServicesUtil.assetsService).createCompany(createCompanyDTO);

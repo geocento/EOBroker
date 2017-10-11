@@ -54,14 +54,12 @@ public class MapJSNI extends JavaScriptObject {
         return wmsLayer;
     }-*/;
 
-    public final native WMSLayerJSNI addWMSLayer(String wmsUrl, String layerName) /*-{
-        var wmsLayer = new $wnd['esri'].layers.WMSLayer(wmsUrl, {
-            visibleLayers: [layerName]
-        });
-        wmsLayer.spatialReferences[0] = 3857;
-        this.addLayers([wmsLayer]);
-        return wmsLayer;
-    }-*/;
+    public final WMSLayerJSNI addWMSLayer(String wmsUrl, String layerName, ExtentJSNI extentJSNI) {
+        if(extentJSNI == null) {
+            extentJSNI = createExtent(-180.0, -90.0, 180.0, 90.0);
+        }
+        return addWMSLayer(wmsUrl, WMSLayerInfoJSNI.createInfo(layerName, layerName), extentJSNI);
+    }
 
     public final native void removeWMSLayer(WMSLayerJSNI layer) /*-{
         this.removeLayer(layer);

@@ -136,7 +136,7 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Affiliates" textColor="BLACK" iconType="STAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Affiliates - companies you have validated as a supplier. This can be used for filtering in searches." textColor="BLACK" iconType="STAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialLabel addStyleNames="{style.message}" ui:field="affiliatesMessage"></design:MaterialLabel>
                     <design:MaterialRow ui:field="affiliates"></design:MaterialRow>

@@ -4,13 +4,14 @@ import com.geocento.webapps.eobroker.common.client.styles.MyCellTableResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
+import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.client.widgets.table.celltable.SubrowTableBuilder;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.Extent;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
@@ -19,6 +20,7 @@ import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
@@ -29,6 +31,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -45,7 +48,8 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
-import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.*;
+import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 
 import java.util.*;
@@ -75,7 +79,7 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @UiField
     MaterialDropDown serviceDropdown;
     @UiField
-    MaterialLink servicesLink;
+    MaterialIcon servicesLink;
     @UiField
     MapContainer mapContainer;
     @UiField
@@ -138,6 +142,12 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     ChartPanel chartPanel;
     @UiField
     MaterialCollapsibleItem coveragePanel;
+    @UiField
+    MaterialIcon information;
+    @UiField
+    MaterialIcon samples;
+    @UiField
+    MaterialLink serviceName;
 
     private Presenter presenter;
 
@@ -326,7 +336,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             WMSLayerJSNI displayLayer = layerStatisticsDisplay.get(wmsStatistics);
             if(layerStatistics.get(wmsStatistics)) {
                 if(displayLayer == null) {
-                    layerStatisticsDisplay.put(wmsStatistics, mapContainer.map.addWMSLayer(wmsStatistics.getBaseUrl(), wmsStatistics.getLayerName()));
+                    com.geocento.webapps.eobroker.common.shared.feasibility.Extent extent = wmsStatistics.getExtent();
+                    ExtentJSNI extentJSNI = extent == null ? null : MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
+                    layerStatisticsDisplay.put(wmsStatistics, mapContainer.map.addWMSLayer(wmsStatistics.getBaseUrl(), wmsStatistics.getLayerName(), extentJSNI));
                 }
             } else {
                 if(displayLayer != null) {
@@ -411,14 +423,16 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
-    public void setServices(List<ProductServiceFeasibilityDTO> productServices) {
-/*
+    public void setOtherServices(List<ProductServiceFeasibilityDTO> productServices) {
         serviceDropdown.clear();
+        boolean hasServices = productServices.size() > 0;
+        servicesLink.setVisible(hasServices);
         for(final ProductServiceFeasibilityDTO productServiceFeasibilityDTO : productServices) {
             MaterialLink materialLink = new MaterialLink(productServiceFeasibilityDTO.getName());
             materialLink.setBackgroundColor(Color.WHITE);
             materialLink.setTextColor(Color.BLACK);
-            materialLink.setTooltip("Service provided by " + productServiceFeasibilityDTO.getCompanyDTO().getName());
+            materialLink.setTooltip("Service provided by " + productServiceFeasibilityDTO.getCompany().getName());
+            materialLink.setTooltipPosition(Position.RIGHT);
             materialLink.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -430,7 +444,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         // TODO - add somewhere else
         tab.selectTab("query");
         onResize(null);
-*/
     }
 
     @Override
@@ -447,9 +460,13 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
     @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
-        servicesLink.setText(productServiceFeasibilityDTO.getName());
-        servicesLink.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+        serviceName.setText(productServiceFeasibilityDTO.getName());
+        information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
                 FullViewPlace.TOKENS.productserviceid.toString(), productServiceFeasibilityDTO.getId() + ""
+        ))));
+        samples.setVisible(productServiceFeasibilityDTO.isHasSamples());
+        samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
+                VisualisationPlace.TOKENS.productServiceId.toString(), productServiceFeasibilityDTO.getId() + ""
         ))));
         serviceImage.setUrl(productServiceFeasibilityDTO.getImageURL());
         supplier.setText(productServiceFeasibilityDTO.getCompany().getName());
@@ -525,13 +542,6 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         coverageFeaturesValue.setText(!hasProductCandidates ? "" : productCandidates.size() + "");
         messageCandidates.setText(hasProductCandidates ? "List of possible products" : "No product available");
         pagerPanel.setVisible(hasProductCandidates && response.getProductCandidates().size() > resultsTable.getPageSize());
-        refreshMap();
-
-        feasibilityPanel.expand();
-        if(hasProductCandidates) {
-            coveragePanel.expand();
-            selectedFeatures.add(productCandidates.get(0));
-        }
 
         resultsTab.setEnabled(true);
 
@@ -548,6 +558,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                         if(statistics instanceof WMSStatistics) {
                             layerStatistics.put((WMSStatistics) statistics, false);
                             MaterialPanel materialPanel = new MaterialPanel();
+                            materialPanel.setMarginTop(10);
+                            materialPanel.add(new MaterialIcon(IconType.MAP));
                             MaterialCheckBox materialCheckBox = new MaterialCheckBox(statistics.getName());
                             materialCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
                                 @Override
@@ -557,6 +569,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                                 }
                             });
                             materialPanel.add(materialCheckBox);
+                            MaterialIcon infoIcon = new MaterialIcon(IconType.INFO);
+                            infoIcon.setIconColor(Color.BLUE);
+                            materialPanel.add();
                             chartPanel.add(materialPanel);
                         } else {
                             chartPanel.addStatistics(statistics);
@@ -570,6 +585,26 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
             MaterialLabel materialLabel = new MaterialLabel("No statistic has been provided");
             materialLabel.addStyleName(style.subsection());
             chartPanel.add(materialLabel);
+        }
+
+        feasibilityPanel.expand();
+        if(hasProductCandidates) {
+            coveragePanel.expand();
+            ProductCandidate productCandidate = productCandidates.get(0);
+            selectedFeatures.add(productCandidate);
+            zoomToProductCandidate(productCandidate);
+        }
+
+        refreshMap();
+    }
+
+    private void zoomToProductCandidate(ProductCandidate productCandidate) {
+        if(productCandidate == null) {
+            return;
+        }
+        String geometryWKT = productCandidate.getGeometryWKT();
+        if(geometryWKT != null) {
+            mapContainer.setMapExtent(AoIUtil.getExtent(geometryWKT));
         }
     }
 
@@ -603,6 +638,11 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public HasClickHandlers getContactButton() {
         return contact;
+    }
+
+    @Override
+    public void validateAoI() {
+        mapContainer.stopEditing();
     }
 
     @Override

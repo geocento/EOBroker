@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class CompaniesList extends AsyncPagingWidgetList<CompanyDTO> {
 
     public CompaniesList() {
-        super(10, 12, 4, 3);
+        super(24, 12, 4, 3);
     }
 
     /*

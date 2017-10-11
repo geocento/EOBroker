@@ -276,20 +276,9 @@ public class SearchResource implements SearchService {
         productServiceDTO.setCompanyName(productService.getCompany().getName());
         productServiceDTO.setCompanyId(productService.getCompany().getId());
         productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-        productServiceDTO.setHasSamples(hasWMSSamples(productService.getSamples()));
+        productServiceDTO.setHasSamples(ProductHelper.hasWMSSamples(productService.getSamples()));
         productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
         return productServiceDTO;
-    }
-
-    private boolean hasWMSSamples(List<DatasetAccess> samples) {
-        if(samples != null && samples.size() > 0) {
-            for(DatasetAccess datasetAccess : samples) {
-                if(datasetAccess instanceof DatasetAccessOGC) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override
@@ -393,7 +382,7 @@ public class SearchResource implements SearchService {
         productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
         productDatasetDTO.setHasExplore(productDataset.getDatasetStandard() != null);
         productDatasetDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
-        productDatasetDTO.setHasSamples(hasWMSSamples(productDataset.getSamples()));
+        productDatasetDTO.setHasSamples(ProductHelper.hasWMSSamples(productDataset.getSamples()));
         return productDatasetDTO;
     }
 

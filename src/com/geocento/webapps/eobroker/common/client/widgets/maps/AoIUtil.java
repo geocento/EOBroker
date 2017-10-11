@@ -34,12 +34,15 @@ public class AoIUtil {
     }
 
     public static Extent getExtent(AoIDTO aoi) {
+        return getExtent(aoi.getWktGeometry());
+    }
+
+    public static Extent getExtent(String wkt) {
         Extent extent = new Extent();
         extent.setEast(-180.0);
         extent.setSouth(90.0);
         extent.setWest(180.0);
         extent.setNorth(-90.0);
-        String wkt = aoi.getWktGeometry();
         wkt = wkt.substring(wkt.indexOf("((") + 2, wkt.indexOf("))"));
         for(String latLongString : wkt.split(",")) {
             String[] lngLat = latLongString.trim().split(" +");

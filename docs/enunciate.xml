@@ -21,12 +21,17 @@
         <jaxws disabled="true"/>
 -->
         <spring-web disabled="true"/>
+        <jackson1 disabled="true"/>
+<!--
         <jackson disabled="true"/>
+-->
         <c-xml-client disabled="true"/>
         <csharp-xml-client disabled="true"/>
         <java-xml-client disabled="true"/>
         <obj-c-client disabled="true"/>
+<!--
         <php-xml-client disabled="true"/>
+-->
         <docs>
             <download file="LICENSE" name="Apache II" description="The license governing this API" showLink="true"/>
         </docs>

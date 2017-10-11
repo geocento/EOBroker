@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import gwt.material.design.client.ui.MaterialToast;
@@ -40,10 +41,11 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
     private ProductFeasibilityView productFeasibilityView;
 
+    private ProductFeasibilityDTO productFeasibilityDTO;
+    private ProductServiceFeasibilityDTO productFeasibilityService;
     private Date start;
     private Date stop;
     private List<FormElementValue> formElementValues;
-    private ProductServiceFeasibilityDTO productFeasibilityService;
 
     public ProductFeasibilityActivity(ProductFeasibilityPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -86,6 +88,10 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
             } catch (Exception e) {
 
             }
+        }
+        if(productServiceId == null) {
+            Window.alert("Missing bespoke service");
+            History.back();
         }
         Long startDate = null;
         if (tokens.containsKey(ProductFeasibilityPlace.TOKENS.startDate.toString())) {
@@ -137,19 +143,17 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
                 @Override
                 public void onSuccess(Method method, ProductFeasibilityDTO response) {
+                    ProductFeasibilityActivity.this.productFeasibilityDTO = response;
                     hideFullLoading();
-                    productFeasibilityView.setServices(response.getProductServices());
                     List<FormElement> formElements = new ArrayList<FormElement>();
                     formElements.addAll(response.getApiFormElements());
                     productFeasibilityView.setFormElements(formElements);
-                    if(productServiceId != null) {
-                        selectService(ListUtil.findValue(response.getProductServices(), new ListUtil.CheckValue<ProductServiceFeasibilityDTO>() {
-                            @Override
-                            public boolean isValue(ProductServiceFeasibilityDTO value) {
-                                return value.getId().longValue() == productServiceId.longValue();
-                            }
-                        }));
-                    }
+                    selectService(ListUtil.findValue(response.getProductServices(), new ListUtil.CheckValue<ProductServiceFeasibilityDTO>() {
+                        @Override
+                        public boolean isValue(ProductServiceFeasibilityDTO value) {
+                            return value.getId().equals(productServiceId);
+                        }
+                    }));
                 }
             }).call(ServicesUtil.assetsService).getProductFeasibility(productServiceId);
         } catch (RequestException e) {
@@ -159,6 +163,12 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     private void selectService(final ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         this.productFeasibilityService = productServiceFeasibilityDTO;
         productFeasibilityView.selectService(productServiceFeasibilityDTO);
+        productFeasibilityView.setOtherServices(ListUtil.filterValues(productFeasibilityDTO.getProductServices(), new ListUtil.CheckValue<ProductServiceFeasibilityDTO>() {
+            @Override
+            public boolean isValue(ProductServiceFeasibilityDTO value) {
+                return value != productFeasibilityService;
+            }
+        }));
         productFeasibilityView.getRequestButton().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -203,6 +213,8 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 // create request
                 FeasibilityRequestDTO feasibilityRequestDTO = new FeasibilityRequestDTO();
                 feasibilityRequestDTO.setProductServiceId(productFeasibilityService.getId());
+                // make sure AoI is not being edited first
+                productFeasibilityView.validateAoI();
                 feasibilityRequestDTO.setAoiWKT(AoIUtil.toWKT(currentAoI));
                 feasibilityRequestDTO.setStart(start);
                 feasibilityRequestDTO.setStop(stop);
@@ -262,8 +274,12 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
     @Override
     public void onServiceChanged(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
+/*
         this.productFeasibilityService = productServiceFeasibilityDTO;
         enableUpdateMaybe();
+*/
+        // TODO - make sure parameters remain the same
+        clientFactory.getPlaceController().goTo(new ProductFeasibilityPlace(Utils.generateTokens(ProductFeasibilityPlace.TOKENS.productservice.toString(), productServiceFeasibilityDTO.getId() + "")));
     }
 
     @Override

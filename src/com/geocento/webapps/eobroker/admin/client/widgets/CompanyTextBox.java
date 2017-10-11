@@ -1,12 +1,12 @@
 package com.geocento.webapps.eobroker.admin.client.widgets;
 
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialSearch;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import gwt.material.design.client.base.SearchObject;
-import gwt.material.design.client.ui.MaterialSearch;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -33,7 +33,7 @@ public class CompanyTextBox extends MaterialSearch {
 
                     @Override
                     public void onSuccess(Method method, List<CompanyDTO> response) {
-                        setListSearches(ListUtil.mutate(response, new ListUtil.Mutate<CompanyDTO, SearchObject>() {
+                        displayListSearches(ListUtil.mutate(response, new ListUtil.Mutate<CompanyDTO, SearchObject>() {
                             @Override
                             public SearchObject mutate(CompanyDTO companyDTO) {
                                 return new SearchObject(companyDTO.getName(), "", companyDTO);

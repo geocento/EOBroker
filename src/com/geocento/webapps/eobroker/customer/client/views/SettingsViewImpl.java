@@ -13,10 +13,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialAnchorButton;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialLabel;
-import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.*;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -29,7 +26,7 @@ public class SettingsViewImpl extends Composite implements SettingsView {
     private static DummyUiBinder ourUiBinder = GWT.create(DummyUiBinder.class);
 
     @UiField
-    MaterialAnchorButton editCompany;
+    MaterialLink editCompany;
     @UiField
     MaterialTextBox fullName;
     @UiField

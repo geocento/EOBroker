@@ -17,18 +17,23 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.places.CatalogueSearchPlace;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.client.styles.StyleResources;
 import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCell;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -132,6 +137,14 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     MaterialTitle requestQuotationTitle;
     @UiField
     ScrollPanel parametersPanel;
+    @UiField
+    MaterialDropDown catalogueDropdown;
+    @UiField
+    MaterialIcon cataloguesLink;
+    @UiField
+    MaterialIcon samples;
+    @UiField
+    MaterialIcon information;
 
     private Presenter presenter;
 
@@ -616,11 +629,29 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     public void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
         image.setUrl(productDatasetCatalogueDTO.getImageUrl());
         name.setText(productDatasetCatalogueDTO.getName());
-        name.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+        information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
                 FullViewPlace.TOKENS.productserviceid.toString(), productDatasetCatalogueDTO.getId() + ""
+        ))));
+        samples.setVisible(productDatasetCatalogueDTO.isHasSamples());
+        samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
+                VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetCatalogueDTO.getId() + ""
         ))));
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
+        catalogueDropdown.clear();
+        List<ProductDatasetDTO> otherCatalogues = productDatasetCatalogueDTO.getOtherCatalogues();
+        boolean hasServices = otherCatalogues.size() > 0;
+        cataloguesLink.setVisible(hasServices);
+        for(final ProductDatasetDTO productDatasetDTO : otherCatalogues) {
+            MaterialLink materialLink = new MaterialLink(productDatasetDTO.getName());
+            materialLink.setBackgroundColor(Color.WHITE);
+            materialLink.setTextColor(Color.BLACK);
+            materialLink.setTooltip("Service provided by " + productDatasetDTO.getCompany().getName());
+            materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(new CatalogueSearchPlace(
+                    Utils.generateTokens(CatalogueSearchPlace.TOKENS.productId.toString(), productDatasetCatalogueDTO.getId() + "")
+            )));
+            catalogueDropdown.add(materialLink);
+        }
         Scheduler.get().scheduleDeferred(() -> {
             tab.selectTab("query");
             onResize(null);

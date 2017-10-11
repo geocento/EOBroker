@@ -88,6 +88,7 @@ public class Company {
     @ManyToMany(fetch = FetchType.LAZY)
     List<Company> affiliates;
 
+    @JoinTable(name = "company_savedLayers")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccessOGC> savedLayers;
 

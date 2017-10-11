@@ -9,6 +9,7 @@ public class WMSStatistics extends Statistics {
     String layerName;
     String version;
     String preferredStyle;
+    Extent extent;
 
     public WMSStatistics() {
     }
@@ -43,5 +44,13 @@ public class WMSStatistics extends Statistics {
 
     public void setPreferredStyle(String preferredStyle) {
         this.preferredStyle = preferredStyle;
+    }
+
+    public Extent getExtent() {
+        return extent;
+    }
+
+    public void setExtent(Extent extent) {
+        this.extent = extent;
     }
 }

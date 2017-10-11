@@ -28,7 +28,7 @@ import java.util.List;
 public class CompaniesActivity extends TemplateActivity implements CompaniesView.Presenter {
 
     private int start = 0;
-    private int limit = 10;
+    private int limit = 24;
     private String orderby = "";
     private String filter;
 
@@ -86,7 +86,7 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
                             public void onSuccess(Method method, Void response) {
                                 hideLoading();
                                 displaySuccess("Company " + companyDTO.getName() + " has been removed!");
-                                loadCompanies();
+                                reloadCompanies();
                             }
                         }).call(ServicesUtil.assetsService).removeCompany(companyDTO.getId());
                     }
@@ -94,6 +94,11 @@ public class CompaniesActivity extends TemplateActivity implements CompaniesView
                 }
             }
         });
+    }
+
+    private void reloadCompanies() {
+        start = 0;
+        loadCompanies();
     }
 
     private void loadCompanies() {
