@@ -30,6 +30,7 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -43,6 +44,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.ListDataProvider;
@@ -461,13 +463,13 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     @Override
     public void selectService(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
         serviceName.setText(productServiceFeasibilityDTO.getName());
-        information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+        information.addClickHandler(event -> Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
                 FullViewPlace.TOKENS.productserviceid.toString(), productServiceFeasibilityDTO.getId() + ""
-        ))));
+        ))), "_info", null));
         samples.setVisible(productServiceFeasibilityDTO.isHasSamples());
-        samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
+        samples.addClickHandler(event -> Window.open("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
                 VisualisationPlace.TOKENS.productServiceId.toString(), productServiceFeasibilityDTO.getId() + ""
-        ))));
+        ))), "_info", null));
         serviceImage.setUrl(productServiceFeasibilityDTO.getImageURL());
         supplier.setText(productServiceFeasibilityDTO.getCompany().getName());
         supplier.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(
@@ -559,7 +561,13 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                             layerStatistics.put((WMSStatistics) statistics, false);
                             MaterialPanel materialPanel = new MaterialPanel();
                             materialPanel.setMarginTop(10);
-                            materialPanel.add(new MaterialIcon(IconType.MAP));
+                            materialPanel.setLayoutPosition(com.google.gwt.dom.client.Style.Position.RELATIVE);
+                            MaterialIcon mapIcon = new MaterialIcon(IconType.MAP);
+                            mapIcon.setIconColor(Color.BLUE);
+                            mapIcon.setLayoutPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
+                            materialPanel.add(mapIcon);
+                            mapIcon.setTop(0);
+                            mapIcon.setLeft(5);
                             MaterialCheckBox materialCheckBox = new MaterialCheckBox(statistics.getName());
                             materialCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
                                 @Override
@@ -568,10 +576,16 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
                                     refreshMap();
                                 }
                             });
+                            materialCheckBox.getElement().getStyle().setMarginLeft(40, com.google.gwt.dom.client.Style.Unit.PX);
                             materialPanel.add(materialCheckBox);
                             MaterialIcon infoIcon = new MaterialIcon(IconType.INFO);
                             infoIcon.setIconColor(Color.BLUE);
-                            materialPanel.add();
+                            infoIcon.setIconSize(IconSize.TINY);
+                            infoIcon.setLayoutPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
+                            infoIcon.setTop(0);
+                            infoIcon.setRight(5);
+                            MaterialTooltip materialTooltip = new MaterialTooltip(infoIcon, statistics.getDescription());
+                            materialPanel.add(materialTooltip);
                             chartPanel.add(materialPanel);
                         } else {
                             chartPanel.addStatistics(statistics);

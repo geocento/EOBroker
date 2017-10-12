@@ -374,6 +374,7 @@ public class AssetsResource implements AssetsService {
                 }
             }
             // TODO - remove the samples?
+            productService.getCompany().getServices().remove(productService);
             em.remove(productService);
             em.getTransaction().commit();
             // notify user
@@ -879,6 +880,7 @@ public class AssetsResource implements AssetsService {
             if(productDataset == null || user.getCompany() != productDataset.getCompany()) {
                 throw new RequestException("Not authorised");
             }
+            productDataset.getCompany().getDatasets().remove(productDataset);
             em.remove(productDataset);
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -1454,6 +1456,7 @@ public class AssetsResource implements AssetsService {
             if(software == null || user.getCompany() != software.getCompany()) {
                 throw new RequestException("Not authorised");
             }
+            software.getCompany().getSoftware().remove(software);
             em.remove(software);
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -1678,6 +1681,7 @@ public class AssetsResource implements AssetsService {
             if(project == null || user.getCompany() != project.getCompany()) {
                 throw new RequestException("Not authorised");
             }
+            project.getCompany().getProjects().remove(project);
             em.remove(project);
             em.getTransaction().commit();
         } catch (Exception e) {

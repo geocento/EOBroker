@@ -324,7 +324,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 REST.withCallback(new MethodCallback<SearchResult>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        Window.alert("Error");
+                        searchPageView.hideLoadingResults();
+                        searchPageView.displaySearchError(method.getResponse().getText());
                     }
 
                     @Override
@@ -398,7 +399,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             REST.withCallback(new MethodCallback<List<ProductDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
+                    searchPageView.hideLoadingResults();
+                    searchPageView.displaySearchError(method.getResponse().getText());
                 }
 
                 @Override
@@ -425,13 +427,14 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 affiliatesOnly,
                 company != null ? company.getId() : null,
                 product != null ? product.getId() : null);
-        if(!previousSearch.contentEquals(searchHash)) {
+        if(true) { //!previousSearch.contentEquals(searchHash)) {
             searchPageView.displayLoadingResults("Loading services...");
             try {
                 REST.withCallback(new MethodCallback<List<ProductServiceDTO>>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        Window.alert("Error");
+                        searchPageView.hideLoadingResults();
+                        searchPageView.displaySearchError(method.getResponse().getText());
                     }
 
                     @Override
@@ -466,7 +469,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
+                    searchPageView.hideLoadingResults();
+                    searchPageView.displaySearchError(method.getResponse().getText());
                 }
 
                 @Override
@@ -489,7 +493,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     }
 
     private String generateSearchHash(String text, int start, int limit, Long aoiId, String aoiWKT, ServiceType serviceType, Long startTime, Long stopTime, boolean affiliatesOnly, Long companyId, Long productId) {
-        return StringUtils.join(new String[] {text, start + "", limit + "", aoiId + "", aoiWKT, serviceType + "", startTime + "", stopTime + "", companyId + "", productId + ""}, "_");
+        return StringUtils.join(new String[] {text, start + "", limit + "", aoiId + "", aoiWKT, serviceType + "", startTime + "", stopTime + "", companyId + "", affiliatesOnly + "", productId + ""}, "_");
     }
 
     private void loadSoftware(final String text, final int start, final int limit) {
@@ -502,7 +506,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             REST.withCallback(new MethodCallback<List<SoftwareDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
+                    searchPageView.hideLoadingResults();
+                    searchPageView.displaySearchError(method.getResponse().getText());
                 }
 
                 @Override
@@ -532,7 +537,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             REST.withCallback(new MethodCallback<List<ProjectDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
+                    searchPageView.hideLoadingResults();
+                    searchPageView.displaySearchError(method.getResponse().getText());
                 }
 
                 @Override
@@ -559,7 +565,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             REST.withCallback(new MethodCallback<List<CompanyDTO>>() {
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    Window.alert("Error");
+                    searchPageView.hideLoadingResults();
+                    searchPageView.displaySearchError(method.getResponse().getText());
                 }
 
                 @Override

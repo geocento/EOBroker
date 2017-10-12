@@ -629,13 +629,13 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     public void setProductDatasetCatalogDTO(ProductDatasetCatalogueDTO productDatasetCatalogueDTO) {
         image.setUrl(productDatasetCatalogueDTO.getImageUrl());
         name.setText(productDatasetCatalogueDTO.getName());
-        information.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
-                FullViewPlace.TOKENS.productserviceid.toString(), productDatasetCatalogueDTO.getId() + ""
-        ))));
+        information.addClickHandler(event -> Window.open("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(Utils.generateTokens(
+                FullViewPlace.TOKENS.productdatasetid.toString(), productDatasetCatalogueDTO.getId() + ""
+        ))), "_info", null));
         samples.setVisible(productDatasetCatalogueDTO.isHasSamples());
-        samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
-                VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetCatalogueDTO.getId() + ""
-        ))));
+        samples.addClickHandler(event -> Window.open("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
+                VisualisationPlace.TOKENS.dataAccessId.toString(), productDatasetCatalogueDTO.getId() + ""
+        ))), "_info", null));
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());
         catalogueDropdown.clear();

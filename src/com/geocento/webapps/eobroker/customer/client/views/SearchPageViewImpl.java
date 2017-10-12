@@ -1,9 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
-import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
-import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
+import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.CSWBriefRecord;
@@ -967,6 +964,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     @Override
     public void enableAoiFilter(boolean enable) {
         filterByAoI.setValue(enable);
+    }
+
+    @Override
+    public void displaySearchError(String text) {
+        MaterialMessage materialMessage = new MaterialMessage();
+        materialMessage.displayErrorMessage(text);
+        materialMessage.setMargin(20);
+        container.add(materialMessage);
     }
 
     @Override

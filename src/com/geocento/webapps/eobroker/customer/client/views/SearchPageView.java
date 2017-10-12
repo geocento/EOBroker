@@ -98,6 +98,8 @@ public interface SearchPageView extends IsWidget {
 
     void enableAoiFilter(boolean aoiId);
 
+    void displaySearchError(String text);
+
     public interface Presenter {
 
         void loadMoreProducts();
