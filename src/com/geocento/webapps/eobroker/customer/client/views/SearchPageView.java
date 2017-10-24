@@ -102,6 +102,8 @@ public interface SearchPageView extends IsWidget {
 
     public interface Presenter {
 
+        void loadMoreCompanies();
+
         void loadMoreProducts();
 
         void loadMoreProductServices();
@@ -117,6 +119,7 @@ public interface SearchPageView extends IsWidget {
         void filtersChanged();
 
         void aoiSelected(AoIDTO aoi);
+
     }
 
 }

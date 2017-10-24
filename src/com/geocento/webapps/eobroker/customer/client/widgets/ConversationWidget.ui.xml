@@ -10,7 +10,10 @@
 
     </ui:style>
     <bubble:MaterialBubble backgroundColor="WHITE" position="LEFT" addStyleNames="{style.panel}">
-        <design:MaterialLink fontSize="1.2em" iconType="CHAT_BUBBLE" truncate="true" ui:field="title"></design:MaterialLink>
-        <design:MaterialLabel fontSize="0.8em" ui:field="comment"></design:MaterialLabel>
+        <design:MaterialImage width="50px" float="LEFT" ui:field="image"></design:MaterialImage>
+        <design:MaterialPanel marginLeft="60">
+            <design:MaterialLink fontSize="1.2em" iconType="CHAT_BUBBLE" truncate="true" ui:field="title"></design:MaterialLink>
+            <design:MaterialLabel fontSize="0.8em" ui:field="comment"></design:MaterialLabel>
+        </design:MaterialPanel>
     </bubble:MaterialBubble>
 </ui:UiBinder>

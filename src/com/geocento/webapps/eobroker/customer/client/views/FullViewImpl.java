@@ -371,13 +371,14 @@ public class FullViewImpl extends Composite implements FullView {
                                     materialLabelIcon.getElement().getStyle().setProperty("margin", "10px 0px");
                                     materialColumn.add(materialLabelIcon);
                                     // add link to view the service
-                                    MaterialLink viewService = new MaterialLink(IconType.OPEN_IN_BROWSER);
+                                    MaterialLink viewService = new MaterialLink(IconType.OPEN_IN_NEW);
                                     viewService.setHref("#" + PlaceHistoryHelper.convertPlace(
                                             new FullViewPlace(Utils.generateTokens(
                                                     FullViewPlace.TOKENS.productserviceid.toString(), compareProductDescriptionDTO.getId() + ""
                                             ))));
                                     viewService.setDisplay(Display.INLINE_BLOCK);
                                     viewService.setMarginLeft(10);
+                                    viewService.getElement().getStyle().setVerticalAlign(com.google.gwt.dom.client.Style.VerticalAlign.MIDDLE);
                                     materialLabelIcon.add(viewService);
                                 }
                             }
@@ -701,19 +702,23 @@ public class FullViewImpl extends Composite implements FullView {
         addSection("Description", fullDescriptionPanel);
 
         // create tab panel for services
-        MaterialRow featuresPanel = new MaterialRow();
+        MaterialPanel featuresPanel = new MaterialPanel();
         {
-            // add geoinformation provided
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
-            featuresPanel.add(materialColumn);
-            // add geoinformation provided
-            materialColumn.add(createGeoinformationPanel(productDatasetDescriptionDTO.getGeoinformation(), productDatasetDescriptionDTO.getGeoinformationComment()));
-        }
-        {
-            MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
-            featuresPanel.add(materialColumn);
-            // add perfomances
-            materialColumn.add(createPerformancesPanel(productDatasetDescriptionDTO.getPerformances(), productDatasetDescriptionDTO.getPerformancesComments()));
+            MaterialRow featuresPanelRow = new MaterialRow();
+            featuresPanel.add(featuresPanelRow);
+            {
+                // add geoinformation provided
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+                featuresPanelRow.add(materialColumn);
+                // add geoinformation provided
+                materialColumn.add(createGeoinformationPanel(productDatasetDescriptionDTO.getGeoinformation(), productDatasetDescriptionDTO.getGeoinformationComment()));
+            }
+            {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 6);
+                featuresPanelRow.add(materialColumn);
+                // add perfomances
+                materialColumn.add(createPerformancesPanel(productDatasetDescriptionDTO.getPerformances(), productDatasetDescriptionDTO.getPerformancesComments()));
+            }
         }
         // add panel for comparing if there are other off the shelf products
         if(productDatasetDescriptionDTO.getSuggestedDatasets().size() > 0) {
@@ -796,13 +801,14 @@ public class FullViewImpl extends Composite implements FullView {
                                     materialLabelIcon.getElement().getStyle().setProperty("margin", "10px 0px");
                                     materialColumn.add(materialLabelIcon);
                                     // add link to view the off the shelf product
-                                    MaterialLink viewDataset = new MaterialLink(IconType.OPEN_IN_BROWSER);
+                                    MaterialLink viewDataset = new MaterialLink(IconType.OPEN_IN_NEW);
                                     viewDataset.setHref("#" + PlaceHistoryHelper.convertPlace(
                                             new FullViewPlace(Utils.generateTokens(
                                                     FullViewPlace.TOKENS.productdatasetid.toString(), compareProductDescriptionDTO.getId() + ""
                                             ))));
                                     viewDataset.setDisplay(Display.INLINE_BLOCK);
                                     viewDataset.setMarginLeft(10);
+                                    viewDataset.getElement().getStyle().setVerticalAlign(com.google.gwt.dom.client.Style.VerticalAlign.MIDDLE);
                                     materialLabelIcon.add(viewDataset);
                                 }
                             }

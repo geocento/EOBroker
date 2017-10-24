@@ -63,6 +63,7 @@ public class ApplicationSettings {
     @Column(length = 10000)
     String adminWebsiteUrl;
 
+    @JoinTable(name = "applicationsettings_datasetaccess")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<DatasetAccessOGC> baseLayers;
 

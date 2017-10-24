@@ -47,6 +47,7 @@ public class ProductDataset {
     @Enumerated(EnumType.STRING)
     ServiceType serviceType;
 
+    @JoinTable(name = "productdataset_datasetaccess")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<DatasetAccess> datasetAccesses;
 

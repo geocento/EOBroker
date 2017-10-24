@@ -784,25 +784,25 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     @Override
     public void addCompanies(List<CompanyDTO> companyDTOs, int start, boolean hasMore, String text) {
-        MaterialRow productRow = new MaterialRow();
-        container.add(productRow);
+        MaterialRow companiesRow = new MaterialRow();
+        container.add(companiesRow);
         if(companyDTOs == null || companyDTOs.size() == 0) {
             if(start == 0) {
                 MaterialLabel label = new MaterialLabel("No companies found for your request...");
                 label.addStyleName(style.subtext());
-                productRow.add(label);
+                companiesRow.add(label);
             }
         } else {
             for(CompanyDTO companyDTO : companyDTOs) {
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
-                productRow.add(materialColumn);
+                companiesRow.add(materialColumn);
                 materialColumn.add(new CompanyWidget(companyDTO));
             }
             if(hasMore) {
-                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
+                MaterialScrollfire.apply(companiesRow.getWidget(companiesRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
                     @Override
                     public void call() {
-                        presenter.loadMoreProducts();
+                        presenter.loadMoreCompanies();
                     }
                 });
             }

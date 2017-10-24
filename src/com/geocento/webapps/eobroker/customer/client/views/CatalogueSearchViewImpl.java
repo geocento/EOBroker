@@ -634,7 +634,7 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         ))), "_info", null));
         samples.setVisible(productDatasetCatalogueDTO.isHasSamples());
         samples.addClickHandler(event -> Window.open("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(Utils.generateTokens(
-                VisualisationPlace.TOKENS.dataAccessId.toString(), productDatasetCatalogueDTO.getId() + ""
+                VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetCatalogueDTO.getId() + ""
         ))), "_info", null));
         supplier.setText(productDatasetCatalogueDTO.getCompany().getName());
         protocol.setText(productDatasetCatalogueDTO.getDatasetStandard().getName());

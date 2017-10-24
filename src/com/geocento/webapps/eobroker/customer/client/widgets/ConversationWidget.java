@@ -9,6 +9,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
+import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialPanel;
@@ -27,9 +28,13 @@ public class ConversationWidget extends MaterialPanel {
     MaterialLabel comment;
     @UiField
     MaterialLink title;
+    @UiField
+    MaterialImage image;
 
     public ConversationWidget(ConversationDTO conversationDTO) {
         add(ourUiBinder.createAndBindUi(this));
+
+        image.setUrl(conversationDTO.getCompany().getIconURL());
 
         title.setText("Conversation '" + conversationDTO.getTopic() + "'");
         comment.setText("with company " + conversationDTO.getCompany().getName() + " started on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));

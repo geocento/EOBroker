@@ -58,6 +58,10 @@ public class ContextListener implements ServletContextListener {
         // apply fixes if needed
         applyFixes();
 
+        // TODO - check that it works before erasing the data
+        // clean up the samples
+        //cleanupSamples();
+
         // start the email notification timer
         startNotifications();
         // start the supplier email notifications timer
@@ -74,6 +78,56 @@ public class ContextListener implements ServletContextListener {
             mailContent.sendEmail(ServerUtil.getUsersAdministrator(), "Server started", false);
         } catch (Exception e) {
             logger.error(e.getMessage());
+        }
+    }
+
+
+    private void cleanupSamples() {
+        // reset the db content if needed
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // find samples which are not linked to any items
+            TypedQuery<DatasetAccess> query = em.createQuery("select d from DatasetAccess d where (d.id not in (select p.samples_id from productdataset_samples p)) and\n" +
+                    "            (d.id not in (select s.samples_id from productservice_samples s)) and\n" +
+                    "            (d.id not in (select c.coveragelayers_id from productservice_coveragelayers c)) and\n" +
+                    "            (d.id not in (select a.baselayers_id from applicationsettings_datasetaccess a)) and\n" +
+                    "            (d.id not in (select cs.savedlayers_id from company_savedLayers cs)) and\n" +
+                    "            (d.id not in (select pc.coveragelayers_id from productdataset_coveragelayers pc)) and\n" +
+                    "            (d.id not in (select us.savedlayers_id from user_savedLayers us)) and\n" +
+                    "            (d.id not in (select ue.selectedlayers_id from user_selectedLayers ue))\n" +
+                    "", DatasetAccess.class);
+            List<DatasetAccess> datasetAccesses = query.getResultList();
+            for(DatasetAccess datasetAccess : datasetAccesses) {
+                if(!datasetAccess.isHostedData()) {
+                    boolean hasFile = datasetAccess.getUri() != null &&
+                            (datasetAccess instanceof DatasetAccessFile || datasetAccess instanceof DatasetAccessOGC);
+                    if (hasFile) {
+                        File datasetFile = ServerUtil.getDataFile(datasetAccess.getUri());
+                        if(datasetFile.exists()) {
+                            datasetFile.delete();
+                        }
+                    }
+                    boolean hasLayers = datasetAccess instanceof DatasetAccessOGC && ((DatasetAccessOGC) datasetAccess).getLayerName() != null;
+                    if(hasLayers) {
+                        String layerName = ((DatasetAccessOGC) datasetAccess).getLayerName();
+                        String[] layerNames = layerName.split(":");
+                        if(layerNames.length == 2) {
+                            try {
+                                GeoserverUtils.getGeoserverPublisher().unpublishCoverage(layerNames[0], layerNames[1], layerNames[1]);
+                            } catch (Exception e) {
+                                logger.error("Could not unpublish layer " + layerName + " from datasetAccess " + datasetAccess.getId());
+                            }
+                        }
+                    }
+                }
+            }
+            em.remove(datasetAccesses);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            em.close();
         }
     }
 

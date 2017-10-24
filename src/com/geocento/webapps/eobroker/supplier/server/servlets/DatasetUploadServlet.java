@@ -154,7 +154,7 @@ public class DatasetUploadServlet extends HttpServlet {
             String filePath =  fileDirectory + resourceName;
             // store file
             // TODO - check input and output format and limit output formats to be jpg or png
-            String diskDirectory = ServerUtil.getSettings().getDataDirectory() + fileDirectory;
+            String diskDirectory = ServerUtil.getDataFilePath(fileDirectory);
             String diskPath = diskDirectory + resourceName;
             logger.info("Process and store file at " + diskPath);
             // force creation of directory if it does not exist

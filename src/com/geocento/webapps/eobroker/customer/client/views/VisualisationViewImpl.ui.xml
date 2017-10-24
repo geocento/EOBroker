@@ -73,9 +73,25 @@
         }
 
         .dataAccessList a:after {
-/*
-            margin-left: 5px; content: '\25BA';
-*/
+            /*
+                        margin-left: 5px; content: '\25BA';
+            */
+        }
+
+        .actions {
+            display: inline-block;
+            white-space: nowrap;
+            margin: 0px;
+            margin-left: 5px;
+        }
+
+        .actions > i {
+            margin: 0;
+            padding: 0;
+        }
+
+        .actionsPanel {
+            white-space: nowrap;
         }
 
     </ui:style>
@@ -100,16 +116,16 @@
                         <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
                         <design:MaterialLabel visible="false" addStyleNames="{style.errorMessage}" textColor="RED" ui:field="errorMessage"></design:MaterialLabel>
                         <design:MaterialPanel visible="false" padding="10" addStyleNames="{style.dataAccessDetails}" ui:field="dataAccessDetails">
-                            <design:MaterialPanel addStyleNames="{style.title}" layoutPosition="RELATIVE">
-                                <design:MaterialPanel layoutPosition="ABSOLUTE" right="0">
+                            <design:MaterialPanel display="FLEX" addStyleNames="{style.title}">
+                                <design:MaterialLabel flexGrow="1" truncate="true" marginRight="5" ui:field="selectedDataset"></design:MaterialLabel>
+                                <design:MaterialPanel display="INLINE_BLOCK" addStyleNames="{style.actionsPanel}">
                                     <design:MaterialTooltip text="Zoom to the layer extent">
-                                        <design:MaterialLink iconType="SEARCH" iconColor="BLACK" marginRight="10" ui:field="zoomExtent"></design:MaterialLink>
+                                        <design:MaterialLink iconType="SEARCH" iconColor="BLACK" marginRight="10" addStyleNames="{style.actions}" ui:field="zoomExtent"></design:MaterialLink>
                                     </design:MaterialTooltip>
                                     <design:MaterialTooltip ui:field="downloadTip">
-                                        <design:MaterialLink iconType="FILE_DOWNLOAD" iconColor="GREEN" ui:field="download"></design:MaterialLink>
+                                        <design:MaterialLink iconType="FILE_DOWNLOAD" iconColor="GREEN" addStyleNames="{style.actions}" ui:field="download"></design:MaterialLink>
                                     </design:MaterialTooltip>
                                 </design:MaterialPanel>
-                                <design:MaterialLabel truncate="true" marginRight="30" ui:field="selectedDataset"></design:MaterialLabel>
                             </design:MaterialPanel>
                             <widgets:MorePanel ui:field="description"></widgets:MorePanel>
                             <widgets:MaterialLoadingLink iconType="STAR" text="Add to saved layers" ui:field="addToFavourites"></widgets:MaterialLoadingLink>

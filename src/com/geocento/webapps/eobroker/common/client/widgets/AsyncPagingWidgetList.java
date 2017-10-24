@@ -48,18 +48,6 @@ public abstract class AsyncPagingWidgetList<T extends Object> extends Composite 
 
         HTMLPanel htmlPanel = new HTMLPanel("");
 		cellList = new MaterialRow();
-/*
-        hasMoreColumn = new MaterialColumn(small, medium, large);
-        hasMoreWidget = new HasMoreWidget();
-        hasMoreWidget.getLoadMore().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                cellList.remove(hasMoreColumn);
-                presenter.loadMore();
-            }
-        });
-        hasMoreColumn.add(hasMoreWidget);
-*/
         htmlPanel.add(cellList);
         loadingPanel = new MaterialPanel();
         loadingPanel.setTextAlign(TextAlign.CENTER);

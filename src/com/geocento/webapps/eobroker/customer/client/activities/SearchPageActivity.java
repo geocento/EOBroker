@@ -94,8 +94,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         }
         if(tokens.containsKey(SearchPagePlace.TOKENS.text.toString())) {
             text = tokens.get(SearchPagePlace.TOKENS.text.toString());
-            setSearchText(text, true);
         }
+        setSearchText(text, text.length() > 0);
         this.start = 0;
         this.limit = 24;
         // now start the search
@@ -289,6 +289,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             // search using the category
             searchPageView.showFilters(true);
             searchPageView.setResultsTitle("");
+            // only do this for the first one
             switch (category) {
                 case products: {
                     setTitleText("Browse product categories");
@@ -312,7 +313,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 } break;
                 case companies: {
                     setTitleText("Browse companies");
-                    searchPageView.displayLoadingResults("Loading companies...");
                     loadCompanies(text, start, limit);
                 } break;
             }
@@ -559,6 +559,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     private void loadCompanies(final String text, final int start, final int limit) {
         try {
+            searchPageView.displayLoadingResults("Loading companies...");
             COMPANY_SIZE companySize = searchPageView.getCompanySizeFilter();
             int minYears = searchPageView.getCompanyAgeFilter();
             String countryCode = searchPageView.getCompanyCountryFilter();
@@ -768,6 +769,12 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         } else {
             displaySearchError("Sorry I could not understand your request...");
         }
+    }
+
+    @Override
+    public void loadMoreCompanies() {
+        start += limit;
+        loadCompanies(text, start, limit);
     }
 
     @Override

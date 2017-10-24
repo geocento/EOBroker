@@ -234,4 +234,11 @@ public class ServerUtil {
         return query.getResultList();
     }
 
+    public static String getDataFilePath(String filePath) {
+        return getDataFile(filePath).getAbsolutePath();
+    }
+
+    public static File getDataFile(String filePath) {
+        return new File(ServerUtil.getSettings().getDataDirectory(), filePath);
+    }
 }

@@ -335,7 +335,13 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
     @Override
     public void datasetAccessSelected(DatasetAccess datasetAccess) {
         String token = History.getToken();
-        token = token.substring(0, token.lastIndexOf("=") + 1) + (datasetAccess.getId() + "");
+        boolean hasDatasetAccessToken = token.contains(VisualisationPlace.TOKENS.dataAccessId.toString());
+        if(hasDatasetAccessToken) {
+            // expects token to be at the end
+            token = token.substring(0, token.lastIndexOf("=") + 1) + (datasetAccess.getId() + "");
+        } else {
+            token = token + "&" + Utils.generateTokens(VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + "");
+        }
         History.newItem(token, false);
         setDataAccess(datasetAccess);
     }
@@ -381,7 +387,7 @@ public class VisualisationActivity extends TemplateActivity implements Visualisa
             } catch (RequestException e) {
             }
         } else if(datasetAccess instanceof DatasetAccessKML) {
-            // donwload file
+            // download file
 
         }
     }
