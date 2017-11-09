@@ -64,6 +64,9 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     List<ProductDataset> productDatasets;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    List<SuccessStory> successStories;
+
     Long followers;
 
     public Product() {
@@ -195,6 +198,14 @@ public class Product {
 
     public Long getFollowers() {
         return followers;
+    }
+
+    public List<SuccessStory> getSuccessStories() {
+        return successStories;
+    }
+
+    public void setSuccessStories(List<SuccessStory> successStories) {
+        this.successStories = successStories;
     }
 
     @PreRemove

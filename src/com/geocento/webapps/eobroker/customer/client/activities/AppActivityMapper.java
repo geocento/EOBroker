@@ -55,6 +55,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new TestimonialsActivity((TestimonialsPlace) place, clientFactory);
         } else if(place instanceof TestimonialPlace) {
             return new TestimonialActivity((TestimonialPlace) place, clientFactory);
+        } else if(place instanceof SuccessStoryPlace) {
+            return new SuccessStoryActivity((SuccessStoryPlace) place, clientFactory);
         } else if(place instanceof NotificationsPlace) {
             return new NotificationsActivity((NotificationsPlace) place, clientFactory);
         } else if(place instanceof LoginPagePlace) {

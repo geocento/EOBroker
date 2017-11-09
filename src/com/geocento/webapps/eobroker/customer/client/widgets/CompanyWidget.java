@@ -52,10 +52,10 @@ public class CompanyWidget extends Composite {
         title.setText(companyDTO.getName());
         description.setText(companyDTO.getDescription());
 
-        offerings.setHref(PlaceHistoryHelper.convertPlace(
+        offerings.setHref("#" + PlaceHistoryHelper.convertPlace(
                 new FullViewPlace(
                         Utils.generateTokens(FullViewPlace.TOKENS.companyid.toString(), companyDTO.getId() + "",
-                                FullViewPlace.TOKENS.tab.toString(), "offering"))));
+                                FullViewPlace.TOKENS.tab.toString(), "offerings"))));
     }
 
 }

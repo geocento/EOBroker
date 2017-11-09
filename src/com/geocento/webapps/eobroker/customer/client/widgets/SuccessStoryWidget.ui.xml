@@ -39,10 +39,12 @@
             <design:MaterialLabel fontSize="1.4em" ui:field="title"></design:MaterialLabel>
             <design:MaterialLabel fontSize="1em" addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
+        <design:MaterialCardReveal>
+            <design:MaterialLabel fontSize="1em" addStyleNames="{style.descriptionFull}" ui:field="descriptionFull"></design:MaterialLabel>
+        </design:MaterialCardReveal>
         <design:MaterialCardAction>
             <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.date}" ui:field="date"></design:MaterialLabel>
-            <design:MaterialLink text="EDIT" textColor="GREY" ui:field="edit"></design:MaterialLink>
-            <design:MaterialLink text="REMOVE" textColor="GREY" ui:field="remove"></design:MaterialLink>
+            <design:MaterialLink text="MORE" textColor="GREY" ui:field="info"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

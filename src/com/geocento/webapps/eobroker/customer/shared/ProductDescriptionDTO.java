@@ -25,6 +25,7 @@ public class ProductDescriptionDTO {
     List<SoftwareDTO> softwares;
     List<ProjectDTO> projects;
     List<ProductDTO> suggestedProducts;
+    private List<SuccessStoryDTO> successStories;
 
     public ProductDescriptionDTO() {
     }
@@ -147,5 +148,13 @@ public class ProductDescriptionDTO {
 
     public void setSuggestedProducts(List<ProductDTO> suggestedProducts) {
         this.suggestedProducts = suggestedProducts;
+    }
+
+    public List<SuccessStoryDTO> getSuccessStories() {
+        return successStories;
+    }
+
+    public void setSuccessStories(List<SuccessStoryDTO> successStories) {
+        this.successStories = successStories;
     }
 }

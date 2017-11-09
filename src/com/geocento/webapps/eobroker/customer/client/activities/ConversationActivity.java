@@ -51,6 +51,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
         conversationView = clientFactory.getConversationView();
         conversationView.setPresenter(this);
         setTemplateView(conversationView.asWidget());
+        setTitleText("Conversation");
         selectMenu("conversations");
         Window.setTitle("Earth Observation Broker");
         bind();

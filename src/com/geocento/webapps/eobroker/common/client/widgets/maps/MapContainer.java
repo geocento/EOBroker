@@ -380,6 +380,10 @@ public class MapContainer extends Composite {
         panel.add(widget);
     }
 
+    public boolean isLoaded() {
+        return mapLoaded;
+    }
+
     public void setMapExtent(Extent extent) {
         ExtentJSNI extentJSNI = MapJSNI.createExtent(extent.getWest(), extent.getSouth(), extent.getEast(), extent.getNorth());
         map.setExtent(extentJSNI);

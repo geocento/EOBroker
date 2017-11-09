@@ -25,6 +25,7 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -333,53 +334,83 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                         searchPageView.hideLoadingResults();
                         searchPageView.setResultsTitle("");
                         searchPageView.showFilters(false);
+                        // list of not founds
+                        List<String> notFound = new ArrayList<String>();
                         // add all results to the interface
-                        // start with products
-                        {
-                            List<ProductDTO> products = searchResult.getProducts();
-                            boolean more = searchResult.isMoreProducts();
-                            String moreUrl = more ? getSearchCategoryUrl(Category.products, text) : null;
+                        // start with companies
+                        List<CompanyDTO> companyDTOs = searchResult.getCompanies();
+                        if(companyDTOs != null && companyDTOs.size() > 0) {
+                            boolean more = searchResult.isMoreCompanies();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.companies, text) : null;
                             if (more) {
-                                products = products.subList(0, 4);
+                                companyDTOs = companyDTOs.subList(0, 4);
                             }
-                            searchPageView.setMatchingProducts(products, moreUrl);
+                            searchPageView.setMatchingCompanies(companyDTOs, moreUrl);
+                        } else {
+                            notFound.add("companies");
                         }
-                        {
-                            List<ProductDatasetDTO> productDatasetDTOs = searchResult.getProductDatasets();
+                        List<ProductDatasetDTO> productDatasetDTOs = searchResult.getProductDatasets();
+                        if(productDatasetDTOs != null && productDatasetDTOs.size() > 0) {
                             boolean more = searchResult.isMoreProductDatasets();
                             String moreUrl = more ? getSearchCategoryUrl(Category.productdatasets, text) : null;
                             if (more) {
                                 productDatasetDTOs = productDatasetDTOs.subList(0, 4);
                             }
                             searchPageView.setMatchingDatasets(productDatasetDTOs, moreUrl);
+                        } else {
+                            notFound.add("off the shelf products");
                         }
                         // add on demand services
-                        {
-                            List<ProductServiceDTO> productServiceDTOs = searchResult.getProductServices();
+                        List<ProductServiceDTO> productServiceDTOs = searchResult.getProductServices();
+                        if(productServiceDTOs != null && productServiceDTOs.size() > 0) {
                             boolean more = searchResult.isMoreProductServices();
                             String moreUrl = more ? getSearchCategoryUrl(Category.productservices, text) : null;
                             if (more) {
                                 productServiceDTOs = productServiceDTOs.subList(0, 4);
                             }
                             searchPageView.setMatchingServices(productServiceDTOs, moreUrl);
+                        } else {
+                            notFound.add("bespoke services");
                         }
-                        {
-                            List<SoftwareDTO> softwareDTOs = searchResult.getSoftwares();
+                        List<SoftwareDTO> softwareDTOs = searchResult.getSoftwares();
+                        if(softwareDTOs != null && softwareDTOs.size() > 0) {
                             boolean more = searchResult.isMoreSoftware();
                             String moreUrl = more ? getSearchCategoryUrl(Category.software, text) : null;
                             if (more) {
                                 softwareDTOs = softwareDTOs.subList(0, 4);
                             }
                             searchPageView.setMatchingSoftwares(softwareDTOs, moreUrl);
+                        } else {
+                            notFound.add("software solutions");
                         }
-                        {
-                            List<ProjectDTO> projectDTOs = searchResult.getProjects();
+                        List<ProjectDTO> projectDTOs = searchResult.getProjects();
+                        if(projectDTOs != null && projectDTOs.size() > 0) {
                             boolean more = searchResult.isMoreProjects();
                             String moreUrl = more ? getSearchCategoryUrl(Category.project, text) : null;
                             if (more) {
                                 projectDTOs = projectDTOs.subList(0, 4);
                             }
                             searchPageView.setMatchingProjects(projectDTOs, moreUrl);
+                        } else {
+                            notFound.add("R&D projects");
+                        }
+                        List<ProductDTO> products = searchResult.getProducts();
+                        if(products != null && products.size() > 0) {
+                            boolean more = searchResult.isMoreProducts();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.products, text) : null;
+                            if (more) {
+                                products = products.subList(0, 4);
+                            }
+                            searchPageView.setMatchingProducts(products, moreUrl);
+                        } else {
+                            notFound.add("product categories");
+                        }
+                        if(notFound.size() > 0) {
+                            if(notFound.size() == 6) {
+                                searchPageView.setMatchingComments("No items found for your search");
+                            } else {
+                                searchPageView.setMatchingComments("No " + com.geocento.webapps.eobroker.common.shared.utils.StringUtils.join(notFound, ", ") + " found for your search");
+                            }
                         }
                     }
                 }).call(ServicesUtil.searchService).getMatchingServices(text);

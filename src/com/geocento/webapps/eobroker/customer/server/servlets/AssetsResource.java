@@ -20,6 +20,18 @@ import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
+import com.geocento.webapps.eobroker.customer.shared.CompanyRoleDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductProjectDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProductSoftwareDTO;
+import com.geocento.webapps.eobroker.customer.shared.ProjectDTO;
+import com.geocento.webapps.eobroker.customer.shared.SoftwareDTO;
+import com.geocento.webapps.eobroker.customer.shared.SuccessStoryDTO;
+import com.geocento.webapps.eobroker.customer.shared.TestimonialDTO;
+import com.geocento.webapps.eobroker.customer.shared.UserDTO;
+import com.geocento.webapps.eobroker.customer.shared.UserHelper;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
@@ -416,6 +428,15 @@ public class AssetsResource implements AssetsService {
                     @Override
                     public ProjectDTO mutate(ProductProject productProject) {
                         return createProjectDTO(productProject.getProject());
+                    }
+                }));
+            }
+            // add success stories
+            {
+                productDescriptionDTO.setSuccessStories(ListUtil.mutate(product.getSuccessStories(), new ListUtil.Mutate<SuccessStory, SuccessStoryDTO>() {
+                    @Override
+                    public SuccessStoryDTO mutate(SuccessStory successStory) {
+                        return convertToSuccessStoryDTO(successStory, false);
                     }
                 }));
             }
@@ -921,6 +942,12 @@ public class AssetsResource implements AssetsService {
                     testimonialDTO.setTestimonial(testimonial.getTestimonial());
                     testimonialDTO.setCreationDate(testimonial.getCreationDate());
                     return testimonialDTO;
+                }
+            }));
+            companyDescriptionDTO.setSuccessStories(ListUtil.mutate(company.getSuccessStories(), new ListUtil.Mutate<SuccessStory, SuccessStoryDTO>() {
+                @Override
+                public SuccessStoryDTO mutate(SuccessStory successStory) {
+                    return convertToSuccessStoryDTO(successStory, false);
                 }
             }));
             companyDescriptionDTO.setProductServices(ListUtil.mutate(company.getServices(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
@@ -1862,6 +1889,55 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public SuccessStoryDTO getSuccessStory(Long successStoryId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            SuccessStory successStory = em.find(SuccessStory.class, successStoryId);
+            if(successStory == null) {
+                throw new RequestException("Could not find success story");
+            }
+            return convertToSuccessStoryDTO(successStory, true);
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    private SuccessStoryDTO convertToSuccessStoryDTO(SuccessStory successStory, boolean full) {
+        SuccessStoryDTO successStoryDTO = new SuccessStoryDTO();
+        successStoryDTO.setId(successStory.getId());
+        successStoryDTO.setImageUrl(successStory.getImageUrl());
+        successStoryDTO.setName(successStory.getName());
+        successStoryDTO.setCompany(CompanyHelper.createCompanyDTO(successStory.getSupplier()));
+        successStoryDTO.setCustomer(CompanyHelper.createCompanyDTO(successStory.getCustomer()));
+        if(full) {
+            successStoryDTO.setDescription(successStory.getFullDescription());
+            successStoryDTO.setEndorsements(ListUtil.mutate(successStory.getEndorsements(), new ListUtil.Mutate<Endorsement, EndorsementDTO>() {
+                @Override
+                public EndorsementDTO mutate(Endorsement endorsement) {
+                    return createEndorsementDTO(endorsement);
+                }
+            }));
+        } else {
+            successStoryDTO.setDescription(successStory.getDescription());
+        }
+        successStoryDTO.setProductDTO(ProductHelper.createProductDTO(successStory.getProduct()));
+        successStoryDTO.setDate(successStory.getDate());
+        return successStoryDTO;
+    }
+
+    private EndorsementDTO createEndorsementDTO(Endorsement endorsement) {
+        EndorsementDTO endorsementDTO = new EndorsementDTO();
+        endorsementDTO.setId(endorsement.getId());
+        endorsementDTO.setFromUser(UserHelper.createUserDTO(endorsement.getFromUser()));
+        endorsementDTO.setTestimonial(endorsement.getTestimonial());
+        endorsementDTO.setCreationDate(endorsement.getCreationDate());
+        return endorsementDTO;
     }
 
     private RequestException handleException(EntityManager em, Exception e) {

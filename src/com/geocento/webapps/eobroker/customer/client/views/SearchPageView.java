@@ -40,6 +40,8 @@ public interface SearchPageView extends IsWidget {
 
     void setMatchingProjects(List<ProjectDTO> projects, String moreUrl);
 
+    void setMatchingCompanies(List<CompanyDTO> companyDTOs, String moreUrl);
+
     void setMatchingImagery(String text);
 
     void setDatasetProviders(List<DatasetProviderDTO> datasetProviderDTOs, final String text, AoIDTO aoi);
@@ -99,6 +101,8 @@ public interface SearchPageView extends IsWidget {
     void enableAoiFilter(boolean aoiId);
 
     void displaySearchError(String text);
+
+    void setMatchingComments(String comment);
 
     public interface Presenter {
 

@@ -2,10 +2,12 @@ package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialTextBox;
 
 /**
@@ -24,6 +26,8 @@ public class PerformanceWidget extends Composite {
     MaterialTextBox description;
     @UiField
     MaterialTextBox unit;
+    @UiField
+    MaterialButton remove;
 
     private final PerformanceDescription performanceDescription;
 
@@ -45,4 +49,9 @@ public class PerformanceWidget extends Composite {
         performanceDescription.setUnit(unit.getText());
         return performanceDescription;
     }
+
+    public HasClickHandlers getRemove() {
+        return remove;
+    }
+
 }

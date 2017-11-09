@@ -29,6 +29,7 @@ public class CompanyDescriptionDTO {
     List<ProjectDTO> project;
     private List<CompanyDTO> suggestedCompanies;
     private List<TestimonialDTO> testimonials;
+    private List<SuccessStoryDTO> successStories;
 
     public CompanyDescriptionDTO() {
     }
@@ -183,5 +184,13 @@ public class CompanyDescriptionDTO {
 
     public List<TestimonialDTO> getTestimonials() {
         return testimonials;
+    }
+
+    public List<SuccessStoryDTO> getSuccessStories() {
+        return successStories;
+    }
+
+    public void setSuccessStories(List<SuccessStoryDTO> successStories) {
+        this.successStories = successStories;
     }
 }

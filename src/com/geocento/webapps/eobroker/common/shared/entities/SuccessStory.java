@@ -17,11 +17,26 @@ public class SuccessStory {
     @Enumerated(EnumType.STRING)
     PUBLICATION_STATE publicationState;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     Company supplier;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     Company customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    Product product;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<ProductService> productServices;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<ProductDataset> productDatasets;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Software> software;
+
+    @OneToMany(mappedBy = "successStory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<Endorsement> endorsements;
 
     @Column(length = 1000)
     String name;
@@ -106,6 +121,22 @@ public class SuccessStory {
 
     public void setFullDescription(String fullDescription) {
         this.fullDescription = fullDescription;
+    }
+
+    public List<Endorsement> getEndorsements() {
+        return endorsements;
+    }
+
+    public void setEndorsements(List<Endorsement> endorsements) {
+        this.endorsements = endorsements;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public List<CompanyRole> getPartners() {

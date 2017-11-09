@@ -57,6 +57,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private TestimonialView testimonialView = null;
 
+    private SuccessStoryView successStoryView = null;
+
     private NotificationsView notificationsView = null;
 
     private CompanyView companyView = null;
@@ -270,6 +272,14 @@ public class ClientFactoryImpl implements ClientFactory {
             resetPasswordView = new ResetPasswordViewImpl(this);
         }
         return resetPasswordView;
+    }
+
+    @Override
+    public SuccessStoryView getSuccessStoryView() {
+        if(successStoryView == null) {
+            successStoryView = new SuccessStoryViewImpl(this);
+        }
+        return successStoryView;
     }
 }
 

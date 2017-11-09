@@ -1,0 +1,111 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+        >
+    <ui:style>
+        .formPanel {
+            max-width: 960px;
+            margin: 0px auto;
+            padding: 10px 0px;
+            background: white;
+        }
+
+        .addTestimomial {
+            line-height: 2em;
+        }
+
+        .addTestimomial > * {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .searchBox {
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .searchBox, .searchBox i {
+            height: 54px !important;
+            line-height: 54px !important;
+        }
+
+        .image {
+            margin: 10px;
+        }
+
+        .description {
+            overflow: hidden;
+            line-height: 1.2em;
+            height: 3.6em;
+            /* TODO - find something more cross browser */
+            -webkit-line-clamp: 3;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            color: #ccc;
+        }
+
+        .fullDescription {
+            margin: 10px;
+        }
+
+        .endorsements {
+            margin: 30px 0px;
+            font-size: 1.4em;
+        }
+
+        .endorsementsPanel {
+            margin-top: 30px;
+            margin-left: 20%;
+            margin-right: 20%;
+            border-top: 1px solid grey;
+        }
+
+        .items {
+            margin: 5px 0px;
+        }
+
+        .items > * {
+            display: inline-block;
+        }
+
+        .panelLine {
+            margin: 50px 20%;
+            border-top: 1px solid grey;
+        }
+
+    </ui:style>
+    <g:HTMLPanel addStyleNames="{style.formPanel}">
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12 m6 l4">
+                <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="iconUrl"></widgets:MaterialImageLoading>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12 m6 l8">
+                <design:MaterialLabel fontSize="2.4em" ui:field="title"></design:MaterialLabel>
+                <design:MaterialLink fontSize="1.4em" iconType="STAR" iconColor="AMBER" textColor="BLACK" text="Success story"></design:MaterialLink>
+                <design:MaterialPanel textAlign="LEFT" paddingLeft="30">
+                    <g:HTMLPanel addStyleNames="{style.items}">From company <widgets:MaterialLabelIcon imageHeight="30px" ui:field="company"></widgets:MaterialLabelIcon></g:HTMLPanel>
+                    <g:HTMLPanel addStyleNames="{style.items}">Client company <widgets:MaterialLabelIcon imageHeight="20px" ui:field="clientCompany"></widgets:MaterialLabelIcon></g:HTMLPanel>
+                    <g:HTMLPanel addStyleNames="{style.items}">Product category <widgets:MaterialLabelIcon imageHeight="20px" ui:field="productCategory"></widgets:MaterialLabelIcon></g:HTMLPanel>
+                    <g:HTMLPanel addStyleNames="{style.items}">On <design:MaterialLink iconType="PERM_CONTACT_CALENDAR" iconColor="BLACK" textColor="BLACK" ui:field="date"></design:MaterialLink></g:HTMLPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+        <g:HTMLPanel addStyleNames="{style.panelLine}"></g:HTMLPanel>
+        <design:MaterialRow>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.fullDescription}" ui:field="fullDescription"></g:HTMLPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <g:HTMLPanel addStyleNames="{style.endorsementsPanel}"></g:HTMLPanel>
+                <design:MaterialLabel addStyleNames="{style.endorsements}" text="Endorsements"></design:MaterialLabel>
+                <design:MaterialRow ui:field="endorsements"></design:MaterialRow>
+            </design:MaterialColumn>
+        </design:MaterialRow>
+    </g:HTMLPanel>
+</ui:UiBinder>

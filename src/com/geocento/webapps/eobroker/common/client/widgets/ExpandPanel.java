@@ -95,6 +95,10 @@ public class ExpandPanel extends Composite {
         content.add(widget);
     }
 
+    public void addHeaderWidget(Widget widget) {
+        header.add(widget);
+    }
+
     public void setOpenHandler(OpenHandler openHandler) {
         this.openHandler = openHandler;
     }

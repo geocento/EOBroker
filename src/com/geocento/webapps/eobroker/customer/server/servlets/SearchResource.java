@@ -263,6 +263,16 @@ public class SearchResource implements SearchService {
             searchResult.setProjects(projectDTOs);
             searchResult.setMoreProjects(more);
         }
+        // now search for companies
+        {
+            List<CompanyDTO> companyDTOs = listCompanies(text, 0, 5, null, null, 0, null);
+            boolean more = companyDTOs.size() > 4;
+            if (more) {
+                companyDTOs = companyDTOs.subList(0, 4);
+            }
+            searchResult.setCompanies(companyDTOs);
+            searchResult.setMoreCompanies(more);
+        }
         return searchResult;
     }
 
@@ -276,7 +286,7 @@ public class SearchResource implements SearchService {
         productServiceDTO.setCompanyName(productService.getCompany().getName());
         productServiceDTO.setCompanyId(productService.getCompany().getId());
         productServiceDTO.setHasFeasibility(productService.getApiUrl() != null && productService.getApiUrl().length() > 0);
-        productServiceDTO.setHasSamples(ProductHelper.hasWMSSamples(productService.getSamples()));
+        productServiceDTO.setHasSamples(ProductHelper.hasSamples(productService.getSamples()));
         productServiceDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
         return productServiceDTO;
     }
@@ -382,7 +392,7 @@ public class SearchResource implements SearchService {
         productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
         productDatasetDTO.setHasExplore(productDataset.getDatasetStandard() != null);
         productDatasetDTO.setCommercial(productDataset.getServiceType() == ServiceType.commercial);
-        productDatasetDTO.setHasSamples(ProductHelper.hasWMSSamples(productDataset.getSamples()));
+        productDatasetDTO.setHasSamples(ProductHelper.hasSamples(productDataset.getSamples()));
         return productDatasetDTO;
     }
 

@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.supplier.client.activities;
 
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
+import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.supplier.client.places.SuccessStoryPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.SuccessStoryView;
@@ -10,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
@@ -84,10 +86,15 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
     private void setSuccessStory(SuccessStoryEditDTO successStoryEditDTO) {
         this.successStoryEditDTO = successStoryEditDTO;
         successStoryView.getName().setText(successStoryEditDTO.getName());
+        successStoryView.setCustomer(successStoryEditDTO.getCustomer());
+        successStoryView.setEndorsements(successStoryEditDTO.getEndorsements());
+        successStoryView.setProductCategory(successStoryEditDTO.getProductDTO());
+        successStoryView.setOfferings(successStoryEditDTO.getDatasetDTOs(), successStoryEditDTO.getServiceDTOs(), successStoryEditDTO.getSoftwareDTOs());
         successStoryView.getDescription().setText(successStoryEditDTO.getDescription());
         successStoryView.setFullDescription(successStoryEditDTO.getFullDescription());
         successStoryView.setIconUrl(successStoryEditDTO.getImageUrl());
         successStoryView.setDate(successStoryEditDTO.getDate());
+        successStoryView.setConsortium(successStoryEditDTO.getConsortium());
     }
 
     @Override
@@ -97,23 +104,53 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
         handlers.add(successStoryView.getSubmit().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                successStoryEditDTO.setImageUrl(successStoryView.getImageUrl());
                 successStoryEditDTO.setName(successStoryView.getName().getText());
                 successStoryEditDTO.setDescription(successStoryView.getDescription().getText());
                 successStoryEditDTO.setFullDescription(successStoryView.getFullDescription());
+                successStoryEditDTO.setDate(successStoryView.getDate());
+                successStoryEditDTO.setCustomer(successStoryView.getCustomer());
+                successStoryEditDTO.setProductDTO(successStoryView.getProductCategory());
+                // validate inputs
+                try {
+                    if(successStoryEditDTO.getName() == null || successStoryEditDTO.getName().length() == 0) {
+                        throw new Exception("Please specify a name");
+                    }
+                    if (successStoryEditDTO.getCustomer() == null) {
+                        throw new Exception("Please specify a customer");
+                    }
+                    if(successStoryEditDTO.getDescription() == null || successStoryEditDTO.getDescription().length() == 0) {
+                        throw new Exception("Please specify a description");
+                    }
+                    if(successStoryEditDTO.getFullDescription() == null || successStoryEditDTO.getFullDescription().length() == 0) {
+                        throw new Exception("Please specify a full description");
+                    }
+                    if(successStoryEditDTO.getProductDTO() == null) {
+                        throw new Exception("Please specify a product category");
+                    }
+                    if(successStoryEditDTO.getDate() == null) {
+                        throw new Exception("Please specify a date");
+                    }
+                } catch (Exception e) {
+                    displayError(e.getMessage());
+                    return;
+                }
                 try {
                     displayLoading("Saving success story...");
-                    REST.withCallback(new MethodCallback<Void>() {
+                    REST.withCallback(new MethodCallback<Long>() {
 
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             hideLoading();
-                            displayError("Error saving success story...");
+                            displayError(method.getResponse().getText());
                         }
 
                         @Override
-                        public void onSuccess(Method method, Void result) {
+                        public void onSuccess(Method method, Long result) {
                             hideLoading();
                             displaySuccess("Success story saved");
+                            History.newItem(PlaceHistoryHelper.convertPlace(new SuccessStoryPlace(
+                                    Utils.generateTokens(SuccessStoryPlace.TOKENS.id.toString(), result.toString()))));
                         }
 
                     }).call(ServicesUtil.assetsService).updateSuccessStory(successStoryEditDTO);

@@ -5,9 +5,13 @@ import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
+import com.geocento.webapps.eobroker.common.server.Utils.WMSCapabilities;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
+import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
+import com.google.gwt.http.client.RequestException;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -25,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -253,6 +258,12 @@ public class DatasetUploadServlet extends HttpServlet {
         datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
         datasetAccessOGC.setCorsEnabled(true);
         datasetAccessOGC.setStyleName("geometry");
+        // generate thumbnail
+        try {
+            datasetAccessOGC.setImageUrl(generateThumbnail(datasetAccessOGC, keyGenerator.CreateKey()));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
         return datasetAccessOGC;
     }
 
@@ -407,6 +418,12 @@ public class DatasetUploadServlet extends HttpServlet {
                 // WCS is automatically published
                 datasetAccessOGC.setWcsServerUrl(ServerUtil.getSettings().getGeoserverOWS());
                 datasetAccessOGC.setWcsResourceName(layerName.replace(":", "__"));
+                // generate thumbnail
+                try {
+                    datasetAccessOGC.setImageUrl(generateThumbnail(datasetAccessOGC, resourceName));
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
                 return datasetAccessOGC;
             } else {
                 throw new Exception("Could not publish layer");
@@ -414,6 +431,83 @@ public class DatasetUploadServlet extends HttpServlet {
         } catch (Exception e) {
             throw new Exception("Could not publish layer, reason is " + e.getMessage());
         }
+    }
+
+    private String generateThumbnail(DatasetAccessOGC datasetAccessOGC, String fileName) throws Exception {
+        // TODO - move to helper class
+        String serverUrl = datasetAccessOGC.getServerUrl();
+        // manage several layers
+        Set<String> layerNames = new HashSet<String>();
+        String layerName = datasetAccessOGC.getLayerName();
+        // overwrite if it is the internal eobroker server
+        // this is to optimise the call
+        if(!datasetAccessOGC.isHostedData() && layerName.contains(":")) {
+            int index = serverUrl.lastIndexOf("/");
+            String workspace = layerName.substring(0, layerName.indexOf(":"));
+            for(String layerNameValue : layerName.split(",")) {
+                layerNames.add(layerNameValue.replace(workspace + ":", ""));
+            }
+            // force to 1.1.0 as there are problems with 1.3.0 and multiple layers
+            serverUrl = serverUrl.substring(0, index) + "/" + workspace + serverUrl.substring(index) + "&version=1.1.1";
+        } else {
+            for(String layerNameValue : layerName.split(",")) {
+                layerNames.add(layerNameValue);
+            }
+        }
+        List<WMSCapabilities.WMSLayer> layers = new ArrayList<WMSCapabilities.WMSLayer>();
+        // make WMS query
+        WMSCapabilities wmsCapabilities = new WMSCapabilities();
+        wmsCapabilities.extractWMSXMLResources(serverUrl + "&service=WMS&request=getCapabilities");
+        for(WMSCapabilities.WMSLayer wmsLayer : wmsCapabilities.getLayersList()) {
+            if(layerNames.contains(wmsLayer.getLayerName())) {
+                layers.add(wmsLayer);
+            }
+        }
+        if(layers.size() == 0) {
+            throw new RequestException("Layer does not exist");
+        }
+        LayerInfoDTO layerInfoDTO = new LayerInfoDTO();
+        layerInfoDTO.setName(datasetAccessOGC.getTitle());
+        layerInfoDTO.setServerUrl(serverUrl);
+        layerInfoDTO.setLayerName(ListUtil.toString(layers, new ListUtil.GetLabel<WMSCapabilities.WMSLayer>() {
+            @Override
+            public String getLabel(WMSCapabilities.WMSLayer value) {
+                return value.getLayerName();
+            }
+        }, ","));
+        layerInfoDTO.setDescription(datasetAccessOGC.getPitch());
+        layerInfoDTO.setStyleName(datasetAccessOGC.getStyleName());
+        layerInfoDTO.setCrs(layers.get(0).getSupportedSRS());
+        Extent bounds = layers.get(0).getBounds();
+        for(WMSCapabilities.WMSLayer layer : layers) {
+            Extent layerBounds = layer.getBounds();
+            bounds.setEast(Math.max(bounds.getEast(), layerBounds.getEast()));
+            bounds.setNorth(Math.max(bounds.getNorth(), layerBounds.getNorth()));
+            bounds.setWest(Math.min(bounds.getWest(), layerBounds.getWest()));
+            bounds.setSouth(Math.min(bounds.getSouth(), layerBounds.getSouth()));
+        }
+        layerInfoDTO.setExtent(bounds);
+        layerInfoDTO.setVersion(layers.get(0).getVersion());
+        layerInfoDTO.setQueryable(layers.get(0).isQueryable());
+        // now we need to make the call
+        String bbox = bounds.getWest() + "%2C" +
+                bounds.getSouth() + "%2C" +
+                bounds.getEast() + "%2C" +
+                bounds.getNorth();
+        String url = serverUrl + "&" +
+                "SERVICE=WMS&" +
+                "VERSION=1.1.1&" +
+                "REQUEST=GetMap&" +
+                "FORMAT=image%2Fjpeg&" +
+                "LAYERS=" + layerName +
+                "&SRS=EPSG%3A4326" +
+                "&WIDTH=200" +
+                "&HEIGHT=200&" +
+                "BBOX=" + bbox;
+        String imagePath = fileName + ".jpeg";
+        File thumbnailFile = new File(ServerUtil.getSettings().getDataDirectory() + "./img", imagePath);
+        FileUtils.copyURLToFile(new URL(url), thumbnailFile);
+        return "./uploaded/img/" + imagePath;
     }
 
     private boolean existsWorkpspace(String workspaceName) throws MalformedURLException {

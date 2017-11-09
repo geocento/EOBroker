@@ -17,6 +17,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
@@ -230,6 +231,12 @@ public class ProductViewImpl extends Composite implements ProductView {
         this.geoinformation.add(materialColumn);
         GeoinformationWidget geoinformationWidget = new GeoinformationWidget(featureDescription);
         materialColumn.add(geoinformationWidget);
+        geoinformationWidget.getRemove().addClickHandler(event -> {
+            if (Window.confirm("Are you sure you want to remove this geoinformation?")) {
+                this.geoinformation.remove(materialColumn);
+                updateGeoinformationMessage();
+            }
+        });
     }
 
     private void updateGeoinformationMessage() {
@@ -268,6 +275,12 @@ public class ProductViewImpl extends Composite implements ProductView {
         this.performances.add(materialColumn);
         PerformanceWidget performanceWidget = new PerformanceWidget(performanceDescription);
         materialColumn.add(performanceWidget);
+        performanceWidget.getRemove().addClickHandler(event -> {
+            if (Window.confirm("Are you sure you want to remove this performance?")) {
+                this.performances.remove(materialColumn);
+                updatePerformanceMessage();
+            }
+        });
     }
 
     private void updatePerformanceMessage() {

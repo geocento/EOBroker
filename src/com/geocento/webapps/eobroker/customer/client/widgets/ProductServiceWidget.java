@@ -1,13 +1,13 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
-import com.geocento.webapps.eobroker.customer.client.places.VisualisationPlace;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -67,7 +67,14 @@ public class ProductServiceWidget extends Composite {
 
         samples.setVisible(productServiceDTO.isHasSamples());
         if(productServiceDTO.isHasSamples()) {
-            samples.setHref("#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(VisualisationPlace.TOKENS.productServiceId.toString() + "=" + productServiceDTO.getId())));
+            samples.setHref("#" +
+                            new FullViewPlace(
+                                    Utils.generateTokens(FullViewPlace.TOKENS.productserviceid.toString(), productServiceDTO.getId() + "",
+                                            FullViewPlace.TOKENS.tab.toString(), "samples"))
+/*
+                    PlaceHistoryHelper.convertPlace(new VisualisationPlace(VisualisationPlace.TOKENS.productServiceId.toString() + "=" + productServiceDTO.getId()))
+*/
+            );
         }
     }
 

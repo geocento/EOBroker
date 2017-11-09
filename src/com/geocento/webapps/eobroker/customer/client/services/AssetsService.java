@@ -287,4 +287,8 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     void removeSavedLayer(@PathParam("id") Long layerId) throws RequestException;
 
+    @GET
+    @Path("/successstories/{id}")
+    @Produces("application/json")
+    SuccessStoryDTO getSuccessStory(@PathParam("id") Long successStoryId) throws RequestException;
 }

@@ -85,10 +85,9 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                 responseId = Long.valueOf(tokens.get(ProductResponsePlace.TOKENS.responseid.toString()));
             } catch (Exception e) {
             }
-            loadProductServiceResponse(id, responseId);
         } else if(tokens.containsKey(ProductResponsePlace.TOKENS.otsresponseid.toString())) {
         }
-
+        loadProductServiceResponse(id, responseId);
     }
 
     private void loadProductServiceResponse(String id, final Long responseId) {

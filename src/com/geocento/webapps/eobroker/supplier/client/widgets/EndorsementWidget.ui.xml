@@ -8,7 +8,6 @@
         .panel {
             max-width: none !important;
             width: 100%;
-            z-index: 0 !important;
         }
 
         .topic {
@@ -26,12 +25,11 @@
         }
 
     </ui:style>
-    <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="WHITE" addStyleNames="{style.panel}" ui:field="panel">
+    <bubble:MaterialBubble position="LEFT" float="LEFT" backgroundColor="AMBER_LIGHTEN_3" addStyleNames="{style.panel}" ui:field="panel">
         <design:MaterialPanel ui:field="userPanel">
             <widgets:UserWidget float="LEFT" size="50" margin="10" ui:field="user"></widgets:UserWidget>
             <design:MaterialLabel marginLeft="60" lineHeight="50" fontSize="1.2em" ui:field="userName"></design:MaterialLabel>
         </design:MaterialPanel>
-        <widgets:MaterialLabelIcon imageWidth="35px" addStyleNames="{style.topic}" ui:field="topic"></widgets:MaterialLabelIcon>
         <g:HTMLPanel addStyleNames="{style.testimonial}" ui:field="testimonial"></g:HTMLPanel>
         <design:MaterialLabel float="RIGHT" fontSize="0.6em" ui:field="creationDate"></design:MaterialLabel>
     </bubble:MaterialBubble>

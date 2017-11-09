@@ -53,7 +53,7 @@ public class ProductWidget extends Composite {
         offerings.setHref("#" + PlaceHistoryHelper.convertPlace(
                 new FullViewPlace(
                         Utils.generateTokens(FullViewPlace.TOKENS.productid.toString(), productDTO.getId() + "",
-                                FullViewPlace.TOKENS.tab.toString(), "offering"))));
+                                FullViewPlace.TOKENS.tab.toString(), "offerings"))));
     }
 
 }

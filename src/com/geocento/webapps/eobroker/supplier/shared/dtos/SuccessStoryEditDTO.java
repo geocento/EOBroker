@@ -10,8 +10,12 @@ import java.util.List;
 public class SuccessStoryEditDTO extends SuccessStoryDTO {
 
     String fullDescription;
-    List<ProductProjectDTO> products;
+    ProductDTO productDTO;
+    List<ProductServiceDTO> serviceDTOs;
+    List<ProductDatasetDTO> datasetDTOs;
+    List<SoftwareDTO> softwareDTOs;
     List<CompanyRoleDTO> consortium;
+    private List<EndorsementDTO> endorsements;
 
     public SuccessStoryEditDTO() {
     }
@@ -32,12 +36,36 @@ public class SuccessStoryEditDTO extends SuccessStoryDTO {
         this.customer = customer;
     }
 
-    public List<ProductProjectDTO> getProducts() {
-        return products;
+    public ProductDTO getProductDTO() {
+        return productDTO;
     }
 
-    public void setProducts(List<ProductProjectDTO> products) {
-        this.products = products;
+    public void setProductDTO(ProductDTO productDTO) {
+        this.productDTO = productDTO;
+    }
+
+    public List<ProductServiceDTO> getServiceDTOs() {
+        return serviceDTOs;
+    }
+
+    public void setServiceDTOs(List<ProductServiceDTO> serviceDTOs) {
+        this.serviceDTOs = serviceDTOs;
+    }
+
+    public List<ProductDatasetDTO> getDatasetDTOs() {
+        return datasetDTOs;
+    }
+
+    public void setDatasetDTOs(List<ProductDatasetDTO> datasetDTOs) {
+        this.datasetDTOs = datasetDTOs;
+    }
+
+    public List<SoftwareDTO> getSoftwareDTOs() {
+        return softwareDTOs;
+    }
+
+    public void setSoftwareDTOs(List<SoftwareDTO> softwareDTOs) {
+        this.softwareDTOs = softwareDTOs;
     }
 
     public List<CompanyRoleDTO> getConsortium() {
@@ -46,5 +74,13 @@ public class SuccessStoryEditDTO extends SuccessStoryDTO {
 
     public void setConsortium(List<CompanyRoleDTO> consortium) {
         this.consortium = consortium;
+    }
+
+    public void setEndorsements(List<EndorsementDTO> endorsements) {
+        this.endorsements = endorsements;
+    }
+
+    public List<EndorsementDTO> getEndorsements() {
+        return endorsements;
     }
 }

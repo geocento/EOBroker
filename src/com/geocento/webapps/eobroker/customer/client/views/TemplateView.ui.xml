@@ -120,19 +120,18 @@
 
             .offering {
                 padding-left: 20px;
-                padding-bottom: 20px;
-                margin-bottom: 20px;
-                border-bottom: 1px solid darkgrey;
             }
 
             .interactions {
-                padding-bottom: 20px;
-                margin-bottom: 20px;
-                border-bottom: 1px solid darkgrey;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid darkgrey;
             }
 
             .settings {
-
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid darkgrey;
             }
 
         </ui:style>
@@ -180,7 +179,6 @@
                             <g:HTMLPanel>
                                 <m:MaterialLink addStyleNames="{style.category}" text="Home" iconType="HOME" ui:field="homeCategory"></m:MaterialLink>
                                 <m:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></m:MaterialLink>
-                                <m:MaterialLink addStyleNames="{style.category}" text="Product categories" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></m:MaterialLink>
                                 <m:MaterialLink addStyleNames="{style.category}, {style.notlinked}" text="Offering" iconSize="TINY" iconType="ARROW_FORWARD"></m:MaterialLink>
                                 <m:MaterialPanel addStyleNames="{style.offering}" ui:field="offering">
                                     <m:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf products" iconType="MAP" ui:field="productDatasetsCategory"></m:MaterialLink>
@@ -188,6 +186,7 @@
                                     <m:MaterialLink addStyleNames="{style.category}" text="Software solutions" iconType="MAP" ui:field="softwareCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="R&amp;D Projects" iconType="MAP" ui:field="projectsCategory"></m:MaterialLink>
                                 </m:MaterialPanel>
+                                <m:MaterialLink addStyleNames="{style.category}" text="Product categories" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></m:MaterialLink>
                                 <m:MaterialPanel addStyleNames="{style.interactions}" ui:field="interactions">
                                     <m:MaterialLink addStyleNames="{style.category}" text="Conversations" iconType="CHAT_BUBBLE" ui:field="conversationsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Requests" iconType="SHOPPING_CART" ui:field="requestsCategory"></m:MaterialLink>

@@ -23,6 +23,7 @@ import com.google.gwt.place.shared.WithTokenizers;
         TestimonialsPlace.Tokenizer.class,
         TestimonialPlace.Tokenizer.class,
         NotificationsPlace.Tokenizer.class,
+        SuccessStoryPlace.Tokenizer.class,
         LoginPagePlace.Tokenizer.class,
         ResetPasswordPlace.Tokenizer.class,
         RequestAccessPlace.Tokenizer.class})

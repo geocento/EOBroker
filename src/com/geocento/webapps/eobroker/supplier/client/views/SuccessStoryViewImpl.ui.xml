@@ -28,9 +28,12 @@
         }
 
         .product {
+            margin-bottom: 20px;
+            background: white;
+        }
+        .product, .product i {
             height: 60px;
             line-height: 60px;
-            margin-bottom: 20px;
         }
 
         .productsPanel, .consortiumPanel {
@@ -63,8 +66,14 @@
                     <widgets:CompanyTextBox addStyleNames="{style.product}" ui:field="customer"></widgets:CompanyTextBox>
                     <design:MaterialPanel marginTop="20">
                         <design:MaterialButton text="Get Endorsement" float="RIGHT"></design:MaterialButton>
-                        <design:MaterialLabel>The customer hasn't endorsed this story</design:MaterialLabel>
+                        <design:MaterialRow ui:field="endorsements"></design:MaterialRow>
                     </design:MaterialPanel>
+                </design:MaterialPanel>
+            </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLink text="Product category" textColor="BLACK" iconType="ADD_LOCATION" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <widgets:ProductTextBox addStyleNames="{style.product}" ui:field="productCategory"></widgets:ProductTextBox>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
@@ -82,13 +91,15 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Offering used" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel addStyleNames="{style.productsPanel}">
+                <design:MaterialPanel addStyleNames="{style.productsPanel}" ui:field="offeringsUsed">
+                    <design:MaterialLabel>TODO</design:MaterialLabel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
+            <design:MaterialColumn visible="false" grid="s12">
                 <design:MaterialLink text="Partners" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.consortiumPanel}">
                     <design:MaterialRow ui:field="consortium">
+                        <design:MaterialLabel>TODO</design:MaterialLabel>
                     </design:MaterialRow>
                     <design:MaterialLabel paddingTop="20" paddingBottom="20" text="Add partner"></design:MaterialLabel>
                 </design:MaterialPanel>

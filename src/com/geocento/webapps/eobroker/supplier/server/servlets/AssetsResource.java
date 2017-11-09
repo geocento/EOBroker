@@ -724,6 +724,8 @@ public class AssetsResource implements AssetsService {
                 @Override
                 public SuccessStoryDTO mutate(SuccessStory successStory) {
                     SuccessStoryDTO successStoryDTO = new SuccessStoryDTO();
+                    successStoryDTO.setId(successStory.getId());
+                    successStoryDTO.setImageUrl(successStory.getImageUrl());
                     successStoryDTO.setName(successStory.getName());
                     successStoryDTO.setDescription(successStory.getDescription());
                     successStoryDTO.setDate(successStory.getDate());
@@ -754,8 +756,16 @@ public class AssetsResource implements AssetsService {
             }
             SuccessStoryEditDTO successStoryEditDTO = new SuccessStoryEditDTO();
             successStoryEditDTO.setName(successStory.getName());
+            successStoryEditDTO.setImageUrl(successStory.getImageUrl());
             successStoryEditDTO.setDescription(successStory.getDescription());
             successStoryEditDTO.setCustomer(CompanyHelper.createCompanyDTO(successStory.getCustomer()));
+            successStoryEditDTO.setEndorsements(ListUtil.mutate(successStory.getEndorsements(), new ListUtil.Mutate<Endorsement, EndorsementDTO>() {
+                @Override
+                public EndorsementDTO mutate(Endorsement endorsement) {
+                    return createEndorsementDTO(endorsement);
+                }
+            }));
+            successStoryEditDTO.setProductDTO(ProductHelper.createProductDTO(successStory.getProduct()));
             successStoryEditDTO.setDate(successStory.getDate());
             successStoryEditDTO.setFullDescription(successStory.getFullDescription());
             return successStoryEditDTO;
@@ -764,6 +774,15 @@ public class AssetsResource implements AssetsService {
         } finally {
             em.close();
         }
+    }
+
+    private EndorsementDTO createEndorsementDTO(Endorsement endorsement) {
+        EndorsementDTO endorsementDTO = new EndorsementDTO();
+        endorsementDTO.setId(endorsement.getId());
+        endorsementDTO.setFromUser(UserHelper.createUserDTO(endorsement.getFromUser()));
+        endorsementDTO.setTestimonial(endorsement.getTestimonial());
+        endorsementDTO.setCreationDate(endorsement.getCreationDate());
+        return endorsementDTO;
     }
 
     @Override
@@ -792,8 +811,42 @@ public class AssetsResource implements AssetsService {
             successStory.setImageUrl(successStoryEditDTO.getImageUrl());
             successStory.setName(successStoryEditDTO.getName());
             successStory.setDescription(successStoryEditDTO.getDescription());
-            successStory.setDate(successStory.getDate());
+            successStory.setDate(successStoryEditDTO.getDate());
             successStory.setFullDescription(successStoryEditDTO.getFullDescription());
+            {
+                if (successStoryEditDTO.getCustomer() == null) {
+                    throw new RequestException("You need to specify a customer");
+                }
+                Company company = em.find(Company.class, successStoryEditDTO.getCustomer().getId());
+                if (company == null) {
+                    throw new RequestException("Company could not be found");
+                }
+                successStory.setCustomer(company);
+            }
+            {
+                if (successStoryEditDTO.getProductDTO() == null) {
+                    throw new RequestException("You need to specify a product category");
+                }
+                Product product = em.find(Product.class, successStoryEditDTO.getProductDTO().getId());
+                if (product == null) {
+                    throw new RequestException("Product could not be found");
+                }
+                // check if product has changed
+                if(successStory.getProduct() != null && successStory.getProduct() != product) {
+                    // remove from previous product
+                    successStory.getProduct().getSuccessStories().remove(successStory);
+                }
+                // update with new product
+                successStory.setProduct(product);
+                List<SuccessStory> successStories = product.getSuccessStories();
+                if(successStories == null) {
+                    successStories = new ArrayList<SuccessStory>();
+                    product.setSuccessStories(successStories);
+                }
+                if(!successStories.contains(successStory)) {
+                    successStories.add(successStory);
+                }
+            }
             em.getTransaction().commit();
             return successStory.getId();
         } catch (Exception e) {

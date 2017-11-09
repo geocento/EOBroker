@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -40,6 +41,8 @@ public class DataAccessWidget extends Composite {
     MaterialTooltip typeTooltip;
     @UiField
     MaterialIntegerBox size;
+    @UiField
+    MaterialImageUploader imageUpload;
 
     protected final DatasetAccess datasetAccess;
 
@@ -80,6 +83,7 @@ public class DataAccessWidget extends Composite {
         type.setIconType(iconType);
         boolean newDataAccess = datasetAccess.getTitle() == null;
         panel.setLabel(newDataAccess ? "New data access - TODO fill information" : datasetAccess.getTitle());
+        imageUpload.setImageUrl(datasetAccess.getImageUrl());
         title.setText(datasetAccess.getTitle());
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());

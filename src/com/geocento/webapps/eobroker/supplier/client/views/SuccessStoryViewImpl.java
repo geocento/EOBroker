@@ -2,10 +2,13 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyRoleWidget;
 import com.geocento.webapps.eobroker.supplier.client.widgets.CompanyTextBox;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.CompanyRoleDTO;
+import com.geocento.webapps.eobroker.supplier.client.widgets.EndorsementWidget;
+import com.geocento.webapps.eobroker.supplier.client.widgets.ProductTextBox;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -55,6 +58,12 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     CompanyTextBox customer;
     @UiField
     MaterialLink viewClient;
+    @UiField
+    MaterialPanel offeringsUsed;
+    @UiField
+    MaterialRow endorsements;
+    @UiField
+    ProductTextBox productCategory;
 
     public SuccessStoryViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -177,6 +186,45 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     @Override
     public TemplateView getTemplateView() {
         return template;
+    }
+
+    @Override
+    public void setCustomer(CompanyDTO customer) {
+        this.customer.setCompany(customer);
+    }
+
+    @Override
+    public CompanyDTO getCustomer() {
+        return this.customer.getCompany();
+    }
+
+    @Override
+    public void setEndorsements(List<EndorsementDTO> endorsements) {
+        this.endorsements.clear();
+        if(endorsements == null || endorsements.size() == 0) {
+            this.endorsements.add(new MaterialLabel("No endorsement yet..."));
+        } else {
+            for(EndorsementDTO endorsementDTO : endorsements) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
+                materialColumn.add(new EndorsementWidget(endorsementDTO));
+                this.endorsements.add(materialColumn);
+            }
+        }
+    }
+
+    @Override
+    public void setProductCategory(ProductDTO productDTO) {
+        this.productCategory.setProduct(productDTO);
+    }
+
+    @Override
+    public ProductDTO getProductCategory() {
+        return this.productCategory.getProduct();
+    }
+
+    @Override
+    public void setOfferings(List<ProductDatasetDTO> datasetDTOs, List<ProductServiceDTO> serviceDTOs, List<SoftwareDTO> softwareDTOs) {
+
     }
 
 }

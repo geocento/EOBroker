@@ -46,7 +46,7 @@ public class MaterialLabelIcon extends HTMLPanel {
 
     public void setImageUrl(String imageUrl) {
         createImageMaybe();
-        image.setUrl(imageUrl);
+        image.setUrl(imageUrl == null || imageUrl.length() == 0 ? "./images/noImage.png" : imageUrl);
     }
 
     public void setImageResource(ImageResource resource) {

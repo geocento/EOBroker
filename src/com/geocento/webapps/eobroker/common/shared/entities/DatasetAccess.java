@@ -27,6 +27,12 @@ public class DatasetAccess {
     String title;
 
     @Column(length = 1000)
+    String imageUrl;
+
+    @Column(length = 1000)
+    String category;
+
+    @Column(length = 1000)
     String pitch;
 
     @Column(length = 1000)
@@ -53,6 +59,22 @@ public class DatasetAccess {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getPitch() {

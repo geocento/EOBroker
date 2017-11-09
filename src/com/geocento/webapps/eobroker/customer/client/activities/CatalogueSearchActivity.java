@@ -61,6 +61,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
         catalogueSearchView.setPresenter(this);
         setTemplateView(catalogueSearchView.asWidget());
         setTitleText("Browse catalogue");
+        selectMenu("catalogue");
         displayMenu(false);
         Window.setTitle("Earth Observation Broker");
         bind();

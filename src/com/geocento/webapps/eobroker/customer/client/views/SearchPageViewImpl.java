@@ -534,6 +534,37 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
+    public void setMatchingCompanies(List<CompanyDTO> companyDTOs, String moreUrl) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        boolean more = companyDTOs != null && companyDTOs.size() > 4;
+        addTitle(productRow, "Companies", style.productServicesTitle(), moreUrl);
+        if(companyDTOs != null && companyDTOs.size() > 0) {
+            if(more) {
+                companyDTOs = companyDTOs.subList(0, 4);
+            }
+            for (CompanyDTO companyDTO : companyDTOs) {
+                MaterialColumn serviceColumn = new MaterialColumn(12, 6, 3);
+                productRow.add(serviceColumn);
+                serviceColumn.add(new CompanyWidget(companyDTO));
+            }
+        } else {
+            MaterialLabel label = new MaterialLabel("No company found...");
+            label.addStyleName(style.subtext());
+            productRow.add(label);
+        }
+    }
+
+    @Override
+    public void setMatchingComments(String comment) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        MaterialLabel label = new MaterialLabel(comment);
+        label.addStyleName(style.subtext());
+        productRow.add(label);
+    }
+
+    @Override
     public void setMatchingImagery(String text) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);

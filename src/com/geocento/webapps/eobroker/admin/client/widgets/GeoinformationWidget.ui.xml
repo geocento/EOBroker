@@ -20,7 +20,8 @@
     <design:MaterialPanel backgroundColor="WHITE" padding="20" margin="10">
         <design:MaterialRow>
             <design:MaterialColumn grid="s12">
-                <design:MaterialListBox ui:field="type"></design:MaterialListBox>
+                <design:MaterialButton type="FLOATING" iconType="DELETE" float="RIGHT" marginLeft="10" ui:field="remove"/>
+                <design:MaterialListBox marginRight="60" ui:field="type"></design:MaterialListBox>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialTextBox length="100" placeholder="Name of the geoinformation" marginBottom="10" ui:field="name"></design:MaterialTextBox>

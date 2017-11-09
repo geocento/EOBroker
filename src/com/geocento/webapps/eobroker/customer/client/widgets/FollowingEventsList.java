@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.EOBrokerPlace;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.TestimonialPlace;
 import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,37 +32,39 @@ public class FollowingEventsList extends AsyncPagingWidgetList<FollowingEventDTO
                 case companies:
                     switch (followingEventDTO.getType()) {
                         case TESTIMONIAL:
-                            // TODO - replace by a full page for testimonies
-                            place = new FullViewPlace(
+                            place = new TestimonialPlace(
                                     Utils.generateTokens(
-                                            FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getCompanyDTO().getId() + "",
-                                            FullViewPlace.TOKENS.tab.toString(), "credentials"));
+                                            TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
                             break;
                         case OFFER:
                             place = new FullViewPlace(
                                     Utils.generateTokens(
                                             FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId(),
-                                            FullViewPlace.TOKENS.tab.toString(), "offering"));
+                                            FullViewPlace.TOKENS.tab.toString(), "offerings"));
                             break;
                     }
                     break;
                 case products:
                     switch (followingEventDTO.getType()) {
                         case TESTIMONIAL:
-                            // TODO - replace by a full page for testimonies
+                            place = new TestimonialPlace(
+                                    Utils.generateTokens(
+                                            TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
                             break;
                         case OFFER:
                             place = new FullViewPlace(
                                     Utils.generateTokens(
                                             FullViewPlace.TOKENS.productid.toString(), followingEventDTO.getLinkId(),
-                                            FullViewPlace.TOKENS.tab.toString(), "offering"));
+                                            FullViewPlace.TOKENS.tab.toString(), "offerings"));
                             break;
                     }
                     break;
                 case productservices:
                     switch (followingEventDTO.getType()) {
                         case TESTIMONIAL:
-                            // TODO - replace by a full page for testimonies
+                            place = new TestimonialPlace(
+                                    Utils.generateTokens(
+                                            TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
                             break;
                         case OFFER:
                             place = new FullViewPlace(
