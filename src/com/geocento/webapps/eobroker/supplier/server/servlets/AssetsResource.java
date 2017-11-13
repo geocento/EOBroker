@@ -447,7 +447,9 @@ public class AssetsResource implements AssetsService {
                     em.persist(datasetAccess);
                     dbDatasetAccess = datasetAccess;
                 }
+                dbDatasetAccess.setImageUrl(datasetAccess.getImageUrl());
                 dbDatasetAccess.setTitle(datasetAccess.getTitle());
+                dbDatasetAccess.setCategory(datasetAccess.getCategory());
                 dbDatasetAccess.setPitch(datasetAccess.getPitch());
                 dbDatasetAccess.setUri(datasetAccess.getUri());
                 dbDatasetAccess.setSize(datasetAccess.getSize());

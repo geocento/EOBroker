@@ -79,8 +79,8 @@ public class ProductDatasetActivity extends TemplateActivity implements ProductD
             // load dataset
             loadDataset(datasetId);
         } else {
-            ProductDatasetDTO company = new ProductDatasetDTO();
-            setProductDataset(company);
+            ProductDatasetDTO datasetDTO = new ProductDatasetDTO();
+            setProductDataset(datasetDTO);
         }
     }
 

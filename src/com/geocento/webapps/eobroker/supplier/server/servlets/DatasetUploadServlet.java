@@ -13,6 +13,7 @@ import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.google.gwt.http.client.RequestException;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -21,6 +22,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.referencing.CRS;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
@@ -33,7 +39,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -106,19 +111,12 @@ public class DatasetUploadServlet extends HttpServlet {
                 }
             }
             System.out.println("Reading file content");
-            // Process the input stream
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            int len;
-            byte[] buffer = new byte[8192];
-            while ((len = filecontent.read(buffer, 0, buffer.length)) != -1) {
-                out.write(buffer, 0, len);
-            }
 
             EntityManager em = EMF.get().createEntityManager();
             try {
                 final User user = em.find(User.class, logUserName);
                 System.out.println("Processing resource");
-                DatasetAccess dataAccess = processAndStoreResource(out, user, resourceId, saveFile, publish);
+                DatasetAccess dataAccess = processAndStoreResource(filecontent, user, resourceId, saveFile, publish);
                 response.setStatus(200);
                 response.setContentType("text/html");
                 PrintWriter writer = response.getWriter();
@@ -147,11 +145,18 @@ public class DatasetUploadServlet extends HttpServlet {
         writer.close();
     }
 
-    protected DatasetAccess processAndStoreResource(ByteArrayOutputStream out, User user, Long resourceId, String resourceName, boolean publish) throws Exception {
+    protected DatasetAccess processAndStoreResource(InputStream filecontent, User user, Long resourceId, String resourceName, boolean publish) throws Exception {
         try {
             int maxFileSize = ServerUtil.getSettings().getMaxSampleSizeMB() * (1024 * 1024);
-            if (out.size() > maxFileSize) {
-                throw new Exception("File is > than " + maxFileSize);
+            // Process the input stream
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[8192];
+            while ((len = filecontent.read(buffer, 0, buffer.length)) != -1) {
+                out.write(buffer, 0, len);
+                if (out.size() > maxFileSize) {
+                    throw new Exception("File is > than " + maxFileSize);
+                }
             }
             // save file to disk first
             Long companyId = user.getCompany().getId();
@@ -160,12 +165,13 @@ public class DatasetUploadServlet extends HttpServlet {
             // store file
             // TODO - check input and output format and limit output formats to be jpg or png
             String diskDirectory = ServerUtil.getDataFilePath(fileDirectory);
-            String diskPath = diskDirectory + resourceName;
+            String diskPath = new File(diskDirectory, resourceName).getAbsolutePath();
             logger.info("Process and store file at " + diskPath);
             // force creation of directory if it does not exist
             FileUtils.forceMkdir(new File(diskDirectory));
             File file = new File(diskPath);
             FileUtils.writeByteArrayToFile(file, out.toByteArray());
+            out.close();
             // now check extension and publish to geoserver if it is a geospatial file
             String workspaceName = companyId + "_" + resourceId;
             String extension = resourceName.substring(resourceName.lastIndexOf(".") + 1).toLowerCase();
@@ -205,6 +211,24 @@ public class DatasetUploadServlet extends HttpServlet {
                     default:
                         throw new Exception("File format '" + extension + "' not supported");
                 }
+                // generate thumbnail
+                switch (extension) {
+                    case "gif":
+                    case "jpg":
+                    case "jpeg":
+                    case "png": {
+                        try {
+                            String imagePath = keyGenerator.CreateKey() + ".jpg";
+                            File thumbnailFile = new File(ServerUtil.getSettings().getDataDirectory() + "./img", imagePath);
+                            Thumbnails.of(file).width(200).height(200).keepAspectRatio(true).toFile(thumbnailFile);
+                            datasetAccess.setImageUrl("./uploaded/img/" + imagePath);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    } break;
+                    default:
+                        throw new Exception("File format '" + extension + "' not supported");
+                }
             }
             datasetAccess.setUri(filePath);
             datasetAccess.setSize((int) file.length());
@@ -217,42 +241,82 @@ public class DatasetUploadServlet extends HttpServlet {
     }
 
     private DatasetAccessOGC publishShapefile(String workspaceName, File file) throws Exception {
-        ZipFile zipFile = new ZipFile(file.getPath());
-        int folders = 0;
-        int shpFiles = 0;
-        // inspect zip file to see if it contains folders
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while(entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            if(entry.isDirectory()) {
-                folders++;
-            } else if(entry.getName().endsWith("shp")) {
-                shpFiles++;
-            }
-        }
         String layerName = null;
-        if(folders > 0 || shpFiles > 1) {
-            List<String> layerNames = new ArrayList<String>();
-            // we need to rewrite the file as geoserver doesn't support directories or multiple shapefiles
-            String directoryPath = file.getParent() + "/" + new Date().getTime();
-            File tmpPath = new File(directoryPath);
-            if(!tmpPath.mkdirs()) {
-                throw new Exception("Could not create shapefile directory");
-            }
-            List<File> files = extractShapeFiles(tmpPath, file);
-            // for now take the first directory
-            for(File shpFile : files) {
-                String resourceName = keyGenerator.CreateKey();
-                layerNames.add(publishShapefile(workspaceName,
-                        resourceName,
-                        shpFile));
-            }
-            layerName = StringUtils.join(layerNames, ",");
-            FileUtils.deleteDirectory(tmpPath);
-        } else {
-            String resourceName = keyGenerator.CreateKey();
-            layerName = publishShapefile(workspaceName, resourceName, file);
+        List<String> layerNames = new ArrayList<String>();
+        // we need to rewrite the file as geoserver doesn't support directories or multiple shapefiles
+        String directoryPath = file.getParent() + "/" + new Date().getTime();
+        File tmpPath = new File(directoryPath);
+        if(!tmpPath.mkdirs()) {
+            throw new Exception("Could not create shapefile directory");
         }
+        // extract shapefiles to directory
+        HashMap<String, List<File>> listShapeFiles = extractShapeFiles(tmpPath, file);
+        // now we have a list of files to analyse and zip
+        for(String fileName : listShapeFiles.keySet()) {
+            List<File> files = listShapeFiles.get(fileName);
+            // look for the shp file
+            boolean hasShp = false;
+            String resourceName = null;
+            String projection = "EPSG:4326";
+            for(File shapeFile : files) {
+                if(shapeFile.getName().endsWith("shp")) {
+                    hasShp = true;
+                    resourceName = shapeFile.getName().replace(".shp", "");
+                    // get CRS as the geoserver doesn't handle CRS automatically...
+                    ShapefileDataStore store = new ShapefileDataStore(DataUtilities.fileToURL(shapeFile));
+                    SimpleFeatureType storeSchema = store.getFeatureSource().getSchema();
+                    if(storeSchema != null) {
+                        CoordinateReferenceSystem crs = storeSchema.getCoordinateReferenceSystem();
+                        if (crs != null) {
+                            Integer epsgId = CRS.lookupEpsgCode(crs, false);
+                            if(epsgId == null) {
+                                throw new Exception("Shapefile's projection is not a valid projection");
+                            }
+                            projection = "EPSG:" + epsgId;
+                        }
+                    }
+                }
+            }
+            if(hasShp) {
+                // we need to make sure zip file name, file name and layer name are the same
+                resourceName = makeValid(resourceName);
+                // create a zip input file
+                String path = files.get(0).getParent();
+                File zipShapeFile = new File(path + "/" + resourceName + ".zip");
+                ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipShapeFile));
+                for(File shapeFile : files) {
+                    String shpFileName = shapeFile.getName();
+                    ZipEntry zipEntry = new ZipEntry(resourceName + shpFileName.substring(shpFileName.lastIndexOf(".")));
+                    zipOutputStream.putNextEntry(zipEntry);
+                    FileUtils.copyFile(shapeFile, zipOutputStream);
+                    zipOutputStream.closeEntry();
+                }
+                zipOutputStream.close();
+                // now publish the shapefile
+                try {
+                    GeoServerRESTPublisher publisher = GeoserverUtils.getGeoserverPublisher();
+                    if (!existsWorkpspace(workspaceName)) {
+                        boolean created = publisher.createWorkspace(workspaceName);
+                        if(!created) {
+                            throw new Exception("Could not create workspace " + workspaceName);
+                        }
+                    }
+                    boolean published = publisher.publishShp(workspaceName, resourceName, resourceName, zipShapeFile, projection);
+                    if (published) {
+                        layerNames.add(workspaceName + ":" + resourceName);
+                    } else {
+                        throw new Exception("Could not publish layer");
+                    }
+                } catch (Exception e) {
+                    throw new Exception("Could not publish layer, reason is " + e.getMessage());
+                }
+            }
+        }
+        if(layerNames.size() == 0) {
+            throw new Exception("No valid shape file found");
+        }
+        layerName = StringUtils.join(layerNames, ",");
+        FileUtils.deleteDirectory(tmpPath);
         DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
         datasetAccessOGC.setLayerName(layerName);
         datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
@@ -273,13 +337,12 @@ public class DatasetUploadServlet extends HttpServlet {
         return geoserverUrl.replace("$workspace", workspaceName);
     }
 
-    private List<File> extractShapeFiles(File tmpPath, File zipFile) throws Exception {
+    private HashMap<String, List<File>> extractShapeFiles(File tmpPath, File zipFile) throws Exception {
         ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile));
         ZipEntry entry = zipInputStream.getNextEntry();
         // create directory to store the shapefiles
         try {
             // the standard shapefile with the shp extension
-            ArrayList<File> shapeFiles = new ArrayList<File>();
             HashMap<String, List<File>> listShapeFiles = new HashMap<String, List<File>>();
             while(entry != null) {
                 String name = entry.getName();
@@ -336,60 +399,11 @@ public class DatasetUploadServlet extends HttpServlet {
                 zipInputStream.closeEntry();
                 entry = zipInputStream.getNextEntry();
             }
-            // now we have a list of files to zip
-            for(String fileName : listShapeFiles.keySet()) {
-                String resourceName = makeValid(fileName) + "_" + new Date().getTime();
-                List<File> files = listShapeFiles.get(fileName);
-                // look for the shp file
-                boolean hasShp = false;
-                for(File file : files) {
-                    if(file.getName().endsWith("shp")) {
-                        hasShp = true;
-                    }
-                }
-                if(hasShp) {
-                    // create a zip input file
-                    String path = files.get(0).getParent();
-                    File zipFileExtracted = new File(path + "/" + resourceName + ".zip");
-                    ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFileExtracted));
-                    for(File file : files) {
-                        String shpFileName = file.getName();
-                        ZipEntry zipEntry = new ZipEntry(resourceName + shpFileName.substring(shpFileName.lastIndexOf(".")));
-                        zipOutputStream.putNextEntry(zipEntry);
-                        FileUtils.copyFile(file, zipOutputStream);
-                        zipOutputStream.closeEntry();
-                    }
-                    zipOutputStream.close();
-                    // add to the list of shapefiles
-                    shapeFiles.add(zipFileExtracted);
-                }
-            }
-            return shapeFiles;
+            return listShapeFiles;
         } finally {
             if (zipInputStream != null) {
                 zipInputStream.close();
             }
-        }
-    }
-
-    private String publishShapefile(String workspaceName, String resourceName, File file) throws Exception {
-        try {
-            GeoServerRESTPublisher publisher = GeoserverUtils.getGeoserverPublisher();
-            if (!existsWorkpspace(workspaceName)) {
-                boolean created = publisher.createWorkspace(workspaceName);
-                if(!created) {
-                    throw new Exception("Could not create workspace " + workspaceName);
-                }
-            }
-            // TODO - check why we need to have different names for storename and layername
-            boolean published = publisher.publishShp(workspaceName, resourceName, resourceName, file);
-            if (published) {
-                return workspaceName + ":" + resourceName;
-            } else {
-                throw new Exception("Could not publish layer");
-            }
-        } catch (Exception e) {
-            throw new Exception("Could not publish layer, reason is " + e.getMessage());
         }
     }
 
@@ -490,10 +504,38 @@ public class DatasetUploadServlet extends HttpServlet {
         layerInfoDTO.setVersion(layers.get(0).getVersion());
         layerInfoDTO.setQueryable(layers.get(0).isQueryable());
         // now we need to make the call
+        // make a square box
+        double width = bounds.getEast() - bounds.getWest();
+        double height = bounds.getNorth() - bounds.getSouth();
+        double widthHeightRatio = width / height;
+        if(widthHeightRatio > 1) {
+            double newHeight = height * widthHeightRatio;
+            double extra = (newHeight - height) / 2;
+            bounds.setNorth(bounds.getNorth() + extra);
+            bounds.setSouth(bounds.getSouth() - extra);
+        } else {
+            double newWidth = width / widthHeightRatio;
+            double extra = (newWidth - width) / 2;
+            bounds.setEast(bounds.getEast() + extra);
+            bounds.setWest(bounds.getWest() - extra);
+        }
+        // add a bit of margin
+        width = bounds.getEast() - bounds.getWest();
+        height = bounds.getNorth() - bounds.getSouth();
+        bounds.setSouth(bounds.getSouth() - height * 0.05);
+        bounds.setNorth(bounds.getNorth() + height * 0.05);
+        bounds.setWest(bounds.getWest() - width * 0.05);
+        bounds.setEast(bounds.getEast() + width * 0.05);
+        // make sure it is within limits
+        bounds.setSouth(Math.max(bounds.getSouth(), -90.0));
+        bounds.setNorth(Math.min(bounds.getNorth(), 90.0));
+        bounds.setWest(Math.max(bounds.getWest(), -180.0));
+        bounds.setEast(Math.min(bounds.getEast(), 180.0));
+        // width higher so enlarge the height
         String bbox = bounds.getWest() + "%2C" +
-                bounds.getSouth() + "%2C" +
-                bounds.getEast() + "%2C" +
-                bounds.getNorth();
+                        bounds.getSouth() + "%2C" +
+                        bounds.getEast() + "%2C" +
+                        bounds.getNorth();
         String url = serverUrl + "&" +
                 "SERVICE=WMS&" +
                 "VERSION=1.1.1&" +

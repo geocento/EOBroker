@@ -1,16 +1,15 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.supplier.client.widgets"
-             xmlns:design="urn:import:gwt.material.design.client.ui">
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
     <ui:style>
 
         .pitch {
             overflow: hidden;
             line-height: 1.2em;
-            height: 2.4em;
+            height: 1.2em;
             font-size: 1em;
             /* TODO - find something more cross browser */
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             color: grey;
@@ -22,7 +21,29 @@
             color: #333;
         }
 
+        .image {
+            cursor: pointer;
+        }
+
+        .imageIcon {
+            font-size: 8rem !important;
+        }
+
     </ui:style>
+    <design:MaterialCard backgroundColor="WHITE" axis="HORIZONTAL" shadow="1">
+        <design:MaterialCardImage>
+            <design:MaterialIcon iconSize="LARGE" backgroundColor="GREEN" textColor="WHITE" addStyleNames="{style.imageIcon}" ui:field="imageIcon"></design:MaterialIcon>
+            <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
+        </design:MaterialCardImage>
+        <design:MaterialCardContent textColor="BLACK" padding="10">
+            <design:MaterialLabel truncate="true" fontSize="1.2em" ui:field="title"/>
+            <design:MaterialLabel addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialLabel>
+        </design:MaterialCardContent>
+        <design:MaterialCardAction fontSize="0.8em" padding="10" ui:field="actions">
+            <design:MaterialLabel float="RIGHT" ui:field="details"></design:MaterialLabel>
+        </design:MaterialCardAction>
+    </design:MaterialCard>
+<!--
     <design:MaterialPanel height="6em" backgroundColor="WHITE" padding="0" margin="0" shadow="1">
         <design:MaterialPanel height="100%" backgroundColor="GREEN" float="LEFT">
             <design:MaterialTooltip ui:field="tooltip">
@@ -34,7 +55,11 @@
             <design:MaterialBadge ui:field="format"></design:MaterialBadge>
             <design:MaterialLabel addStyleNames="{style.title}" truncate="true" paddingLeft="10" ui:field="title">
             </design:MaterialLabel>
-            <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" ui:field="pitch"></design:MaterialLabel>
+            <design:MaterialLabel addStyleNames="{style.pitch}" paddingLeft="10" truncate="true" ui:field="pitch"></design:MaterialLabel>
+            <design:MaterialPanel truncate="true">
+
+            </design:MaterialPanel>
         </design:MaterialPanel>
     </design:MaterialPanel>
+-->
 </ui:UiBinder>

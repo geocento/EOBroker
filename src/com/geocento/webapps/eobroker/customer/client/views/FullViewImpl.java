@@ -7,9 +7,10 @@ import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialPopup;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.*;
@@ -18,17 +19,15 @@ import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -41,6 +40,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -540,10 +540,33 @@ public class FullViewImpl extends Composite implements FullView {
             MaterialRow materialRow = new MaterialRow();
             materialRow.setMargin(10);
             materialRow.setMarginBottom(30);
-            for(DatasetAccess datasetAccess : samples) {
-                MaterialColumn materialColumnSample = new MaterialColumn(12, 12, 6);
-                materialColumnSample.add(createDataAccessWidgetProductService(productServiceDescriptionDTO, datasetAccess, true));
-                materialRow.add(materialColumnSample);
+            // group by category
+            HashMap<String, List<DatasetAccess>> categoryDataAccess = ListUtil.group(samples, new ListUtil.GetValue<String, DatasetAccess>() {
+                @Override
+                public String getLabel(DatasetAccess value) {
+                    return value.getCategory() == null ? "" : value.getCategory();
+                }
+
+                @Override
+                public List<DatasetAccess> createList() {
+                    return new ArrayList<DatasetAccess>();
+                }
+            });
+            for(String categoryName : categoryDataAccess.keySet()) {
+                if(categoryName.length() > 0) {
+                    MaterialLink categoryLink = new MaterialLink();
+                    categoryLink.setText(categoryName);
+                    categoryLink.setFontSize(1.2, com.google.gwt.dom.client.Style.Unit.EM);
+                    categoryLink.setIconType(IconType.ARROW_FORWARD);
+                    categoryLink.setMarginBottom(10);
+                    categoryLink.setDisplay(Display.BLOCK);
+                    materialRow.add(categoryLink);
+                }
+                for(DatasetAccess datasetAccess : categoryDataAccess.get(categoryName)) {
+                    MaterialColumn materialColumnSample = new MaterialColumn(12, 12, 6);
+                    materialColumnSample.add(createDataAccessWidget(datasetAccess, true, true, productServiceDescriptionDTO.getId()));
+                    materialRow.add(materialColumnSample);
+                }
             }
             addSection("Provided product samples",
                     "samples",
@@ -997,7 +1020,7 @@ public class FullViewImpl extends Composite implements FullView {
                 MaterialColumn materialColumnAccess = new MaterialColumn(12, 12, 6);
                 materialRow.add(materialColumnAccess);
                 boolean freeAvailable = !productDatasetDescriptionDTO.isCommercial();
-                DataAccessWidget dataAccessWidget = createDataAccessWidgetProductDataset(productDatasetDescriptionDTO, datasetAccess, freeAvailable);
+                DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, freeAvailable, false, productDatasetDescriptionDTO.getId());
                 materialColumnAccess.add(dataAccessWidget);
                 if (datasetAccess instanceof DatasetAccessOGC && freeAvailable) {
                     availableMapData.add(datasetAccess);
@@ -1046,7 +1069,7 @@ public class FullViewImpl extends Composite implements FullView {
             for(DatasetAccess datasetAccess : samples) {
                 MaterialColumn materialColumnSample = new MaterialColumn(12, 12, 6);
                 materialRow.add(materialColumnSample);
-                materialColumnSample.add(createDataAccessWidgetProductDataset(productDatasetDescriptionDTO, datasetAccess, true));
+                materialColumnSample.add(createDataAccessWidget(datasetAccess, true, false, productDatasetDescriptionDTO.getId()));
                 if(datasetAccess instanceof DatasetAccessOGC) {
                     availableMapData.add(datasetAccess);
                 }
@@ -1287,7 +1310,12 @@ public class FullViewImpl extends Composite implements FullView {
             }
         });
         section.setOpen(true);
-        section.getElement().scrollIntoView();
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                section.getElement().scrollIntoView();
+            }
+        });
     }
 
     private MaterialChip addTag(String text, Color backgroundColor) {
@@ -1574,65 +1602,73 @@ public class FullViewImpl extends Composite implements FullView {
         return materialAnchorButton;
     }
 
-    private DataAccessWidget createDataAccessWidgetProductDataset(final ProductDatasetDescriptionDTO productDatasetDescriptionDTO, final DatasetAccess datasetAccess, final boolean freeAvailable) {
-        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, freeAvailable);
-        dataAccessWidget.getAction().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (datasetAccess instanceof DatasetAccessFile) {
-                    Window.open(DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess), "_blank", null);
-                } else if (datasetAccess instanceof DatasetAccessAPP) {
-                    Window.open(datasetAccess.getUri(), "_blank", null);
-                } else if (datasetAccess instanceof DatasetAccessOGC) {
-                    if (freeAvailable) {
-                        clientFactory.getPlaceController().goTo(new VisualisationPlace(
-                                Utils.generateTokens(
-                                        VisualisationPlace.TOKENS.productDatasetId.toString(), productDatasetDescriptionDTO.getId() + "",
-                                        VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
-                                )));
-                    } else {
-                        // just open the service web page
-                        Window.open(datasetAccess.getUri(), "_blank", null);
-                    }
-                } else if (datasetAccess instanceof DatasetAccessAPI) {
-                    Window.open(datasetAccess.getUri(), "_blank", null);
-                }
-            }
-        });
-        return dataAccessWidget;
-    }
-
-    private DataAccessWidget createDataAccessWidgetProductService(final ProductServiceDescriptionDTO productServiceDescriptionDTO, final DatasetAccess datasetAccess, final boolean freeAvailable) {
-        DataAccessWidget dataAccessWidget = createDataAccessWidget(datasetAccess, freeAvailable);
-        dataAccessWidget.getAction().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (datasetAccess instanceof DatasetAccessFile) {
-                    Window.open(DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess), "_blank", null);
-                } else if (datasetAccess instanceof DatasetAccessAPP) {
-                    Window.open(datasetAccess.getUri(), "_blank", null);
-                } else if (datasetAccess instanceof DatasetAccessOGC) {
-                    if (freeAvailable) {
-                        clientFactory.getPlaceController().goTo(new VisualisationPlace(
-                                Utils.generateTokens(
-                                        VisualisationPlace.TOKENS.productServiceId.toString(), productServiceDescriptionDTO.getId() + "",
-                                        VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
-                                )));
-                    } else {
-                        Window.open(datasetAccess.getUri(), "_blank", null);
-                    }
-                } else if (datasetAccess instanceof DatasetAccessAPI) {
-                    Window.open(datasetAccess.getUri(), "_blank", null);
-                }
-            }
-        });
-        return dataAccessWidget;
-    }
-
-    private DataAccessWidget createDataAccessWidget(final DatasetAccess datasetAccess, final boolean freeAvailable) {
+    private DataAccessWidget createDataAccessWidget(final DatasetAccess datasetAccess, final boolean freeAvailable, boolean isService, Long offeringId) {
         DataAccessWidget dataAccessWidget = new DataAccessWidget(datasetAccess, freeAvailable);
         dataAccessWidget.getElement().getStyle().setMarginTop(20, com.google.gwt.dom.client.Style.Unit.PX);
         dataAccessWidget.getElement().getStyle().setMarginBottom(20, com.google.gwt.dom.client.Style.Unit.PX);
+        // actions
+        if(datasetAccess.getSize() != null && datasetAccess.getUri() != null) {
+            dataAccessWidget.addAction("DOWNLOAD", DataAccessUtils.getDownloadUrl(datasetAccess), "_blank;",
+                    "Download file" +
+                            (datasetAccess.getSize() == null ? "" : ", size is " + Utils.displayFileSize(Long.valueOf(datasetAccess.getSize()))));
+            String fileName = datasetAccess.getUri();
+            int index = fileName.lastIndexOf(".");
+            if(index > 0) {
+                String format = fileName.substring(index + 1);
+                String formatName = null;
+                switch (format) {
+                    case "png":
+                    case "jpg":
+                    case "jpeg":
+                    case "gif":
+                        formatName = "image (" + format + ")";
+                        break;
+                    case "pdf":
+                        formatName = "PDF";
+                        break;
+                    case "doc":
+                    case "docx":
+                        formatName = "DOC";
+                        break;
+                    case "xls":
+                    case "xlsx":
+                        formatName = "EXCEL";
+                        break;
+                    default:
+                        formatName = format.toUpperCase();
+                }
+                dataAccessWidget.setComment(formatName +
+                        (datasetAccess.getSize() != null ? ", " + Utils.displayFileSize(Long.valueOf(datasetAccess.getSize())) : ""));
+            }
+        }
+        if(datasetAccess instanceof DatasetAccessOGC) {
+            dataAccessWidget.addAction("VIEW", "./#" + PlaceHistoryHelper.convertPlace(new VisualisationPlace(
+                    Utils.generateTokens(
+                            (isService ? VisualisationPlace.TOKENS.productServiceId.toString() : VisualisationPlace.TOKENS.productDatasetId.toString()),
+                            offeringId + "",
+                            VisualisationPlace.TOKENS.dataAccessId.toString(), datasetAccess.getId() + ""
+                    ))), "visualisation", "View data in EO Broker map visualisation page");
+        } else if(datasetAccess instanceof DatasetAccessFile) {
+            String fileName = datasetAccess.getUri();
+            int index = fileName.lastIndexOf(".");
+            if(index > 0) {
+                String format = fileName.substring(index + 1);
+                switch (format) {
+                    case "png":
+                    case "jpg":
+                    case "jpeg":
+                    case "gif":
+                        MaterialLink action = dataAccessWidget.addAction("VIEW", null, null,
+                                "View image");
+                        action.addClickHandler(event -> MaterialPopup.getInstance().
+                                display(new HTML("<img style='max-width: 100%;' src='" + DataAccessUtils.getDownloadUrl((DatasetAccessFile) datasetAccess) + "'/>")));
+                }
+            }
+        } else if (datasetAccess instanceof DatasetAccessAPP) {
+            dataAccessWidget.addAction("OPEN", datasetAccess.getUri(), "_blank;", "Open application");
+        } else  if (datasetAccess instanceof DatasetAccessAPI) {
+            dataAccessWidget.addAction("DOC", datasetAccess.getUri(), "_blank;", "View API documentation");
+        }
         return dataAccessWidget;
     }
 

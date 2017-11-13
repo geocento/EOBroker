@@ -144,6 +144,11 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
         // quirk to make sure the list box is initialised
         sampleAccessType.setEnabled(true);
 
+        // configure the sample uploader
+        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
+        sampleUploader.setUrl(uploadUrl);
+        sampleUploader.setMaxFileSize(200);
+
         // Added the progress to card uploader
         sampleUploader.addTotalUploadProgressHandler(event -> {
         });
@@ -171,11 +176,6 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             DatasetAccess datasetAccess = datasetAccessMapper.read(response);
             addSample(datasetAccess);
         });
-
-        // configure the sample uploader
-        final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/";
-        sampleUploader.setUrl(uploadUrl);
-        sampleUploader.setMaxFileSize(200);
 
         sampleUploader.addDragOverHandler(new DragOverEvent.DragOverHandler() {
             @Override
@@ -498,9 +498,12 @@ public class ProductServiceViewImpl extends Composite implements ProductServiceV
             uploadSampleComment.setText("Allowed files are shapefiles (zipped), GeoTIFF and documents (PDF, doc, xls...)");
             uploadSampleComment.setTextColor(Color.GREY_DARKEN_1);
             uploadSampleButton.setEnabled(true);
+            sampleUploader.setParameter("resourceId", serviceId + "");
+/*
             // configure the sample uploader
             final String uploadUrl = GWT.getModuleBaseURL().replace(GWT.getModuleName() + "/", "") + "upload/datasets/?resourceId=" + serviceId;
             sampleUploader.setUrl(uploadUrl);
+*/
         }
     }
 

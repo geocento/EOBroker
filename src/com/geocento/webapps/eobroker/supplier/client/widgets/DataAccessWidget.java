@@ -43,6 +43,8 @@ public class DataAccessWidget extends Composite {
     MaterialIntegerBox size;
     @UiField
     MaterialImageUploader imageUpload;
+    @UiField
+    MaterialTextBox category;
 
     protected final DatasetAccess datasetAccess;
 
@@ -85,6 +87,7 @@ public class DataAccessWidget extends Composite {
         panel.setLabel(newDataAccess ? "New data access - TODO fill information" : datasetAccess.getTitle());
         imageUpload.setImageUrl(datasetAccess.getImageUrl());
         title.setText(datasetAccess.getTitle());
+        category.setText(datasetAccess.getCategory());
         pitch.setText(datasetAccess.getPitch());
         uri.setText(datasetAccess.getUri());
         uri.setReadOnly(!editableUri);
@@ -103,7 +106,9 @@ public class DataAccessWidget extends Composite {
 
     public DatasetAccess getDatasetAccess() {
         // update values first
+        datasetAccess.setImageUrl(imageUpload.getImageUrl());
         datasetAccess.setTitle(title.getText());
+        datasetAccess.setCategory(category.getValue());
         datasetAccess.setPitch(pitch.getText());
         // required to be able to leave the size empty
         try {

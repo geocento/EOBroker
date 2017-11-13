@@ -57,6 +57,7 @@ public class Utils {
     }
 
     static private NumberFormat numberFormat = NumberFormat.getFormat(".###");
+    static private NumberFormat fileSizeNumberFormat = NumberFormat.getFormat(".#");
 
     public static String displayFileSize(Long size) {
         if(size == null) {
@@ -65,11 +66,11 @@ public class Utils {
         if(size < 1000) {
             return size + " bytes";
         } else if(size < 10E6) {
-            return numberFormat.format(size / 1000.0) + " KB";
+            return fileSizeNumberFormat.format(size / 1000.0) + " KB";
         } else if(size < 10E9) {
-            return numberFormat.format(size / 1000.0) + " MB";
+            return fileSizeNumberFormat.format(size / 1000.0 / 1000.0) + " MB";
         } else { //if(size < 10E12) {
-            return numberFormat.format(size / 1000.0) + " GB";
+            return fileSizeNumberFormat.format(size / 1000.0) + " GB";
         }
     }
 }

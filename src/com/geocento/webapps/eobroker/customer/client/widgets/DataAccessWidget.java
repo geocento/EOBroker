@@ -1,16 +1,19 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.MaterialCardAction;
+import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialLink;
 
 /**
  * Created by thomas on 08/11/2016.
@@ -22,70 +25,84 @@ public class DataAccessWidget extends Composite {
 
     private static DataAccessWidgetUiBinder ourUiBinder = GWT.create(DataAccessWidgetUiBinder.class);
     @UiField
-    MaterialIcon image;
-    @UiField
-    MaterialButton action;
+    MaterialImageLoading image;
     @UiField
     MaterialLabel pitch;
     @UiField
     MaterialLabel title;
     @UiField
-    MaterialBadge format;
+    MaterialLabel details;
     @UiField
-    MaterialTooltip tooltip;
+    MaterialCardAction actions;
+    @UiField
+    MaterialIcon imageIcon;
+
+    private Color color;
 
     public DataAccessWidget(DatasetAccess datasetAccess, boolean isFree) {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
         // TODO - change uri if free or commercial
-        title.setText(datasetAccess.getTitle());
-        pitch.setText(datasetAccess.getPitch());
+        title.setText(StringUtils.isEmpty(datasetAccess.getTitle()) ? "No title" : datasetAccess.getTitle());
+        pitch.setText(StringUtils.isEmpty(datasetAccess.getPitch()) ? "No description" : datasetAccess.getPitch());
         IconType iconType = IconType.HELP_OUTLINE;
-        IconType actionIconType = IconType.HELP_OUTLINE;
-        String tooltip = null;
-        String format = null;
-        if(datasetAccess instanceof DatasetAccessFile) {
-            iconType = IconType.ARCHIVE;
-            actionIconType = IconType.INFO;
-            tooltip = "Download file" +
-                    (datasetAccess.getSize() == null ? "" : ", size is " + Utils.displayFileSize(Long.valueOf(datasetAccess.getSize())));
-        } else if(datasetAccess instanceof DatasetAccessAPP) {
-            iconType = IconType.WEB;
-            actionIconType = IconType.INFO;
-            tooltip = "Open web application in new browser window";
-        } else if(datasetAccess instanceof DatasetAccessOGC) {
-            iconType = IconType.MAP;
-            actionIconType = IconType.INFO;
-            tooltip = "View data in EO Broker map visualisation page";
-        } else if(datasetAccess instanceof DatasetAccessAPI) {
-            iconType = IconType.CLOUD_CIRCLE;
-            actionIconType = IconType.INFO;
-            tooltip = "Open API help page in new browser window";
-        } else if(datasetAccess instanceof DatasetAccessKML) {
-            iconType = IconType.MAP;
-            format = "KML";
-        }
-        Color color = isFree ? Color.GREEN : Color.BLUE;
-        image.setBackgroundColor(color);
-        action.setText("");
-        action.setIconType(IconType.EXIT_TO_APP);
-        action.setBackgroundColor(color);
-        action.setVisible(false);
-        image.setIconType(iconType);
-        boolean hasFormat = format != null;
-        this.format.setVisible(hasFormat);
-        if(hasFormat) {
-            this.format.setText(format);
-            this.format.setTextColor(Color.WHITE);
-            this.format.setBackgroundColor(color);
-        }
-        if(tooltip != null) {
-            this.tooltip.setText(tooltip);
+        color = isFree ? Color.GREEN : Color.BLUE;
+        boolean hasImage = !StringUtils.isEmpty(datasetAccess.getImageUrl());
+        image.setVisible(hasImage);
+        imageIcon.setVisible(!hasImage);
+        if(hasImage) {
+            image.setImageUrl(datasetAccess.getImageUrl());
+        } else {
+            imageIcon.setBackgroundColor(color);
+            if (datasetAccess instanceof DatasetAccessFile) {
+                iconType = IconType.ARCHIVE;
+            } else if (datasetAccess instanceof DatasetAccessAPP) {
+                iconType = IconType.WEB;
+            } else if (datasetAccess instanceof DatasetAccessOGC) {
+                iconType = IconType.MAP;
+            } else if (datasetAccess instanceof DatasetAccessAPI) {
+                iconType = IconType.CLOUD_CIRCLE;
+            } else if (datasetAccess instanceof DatasetAccessKML) {
+                iconType = IconType.MAP;
+            }
+            imageIcon.setIconType(iconType);
         }
     }
 
-    public HasClickHandlers getAction() {
-        return image;
+    public MaterialLink addAction(String name, String url, String target, String tooltip) {
+        MaterialLink materialLink = new MaterialLink(name);
+        if(url != null) {
+            materialLink.setHref(url);
+            materialLink.setTarget(target);
+        }
+        materialLink.setTextColor(color);
+        materialLink.setMarginRight(10);
+        materialLink.setTextColor(color);
+        materialLink.setTooltip(tooltip);
+        actions.add(materialLink);
+        return materialLink;
     }
+
+/*
+    public MaterialLink addAction(IconType iconType, String url, String target, String tooltip) {
+        MaterialLink materialLink = new MaterialLink("", url);
+        materialLink.setBackgroundColor(color);
+        materialLink.setIconColor(Color.WHITE);
+        materialLink.setIconType(iconType);
+        materialLink.setType(ButtonType.FLOATING);
+        materialLink.setMarginRight(10);
+        materialLink.setTextColor(color);
+        materialLink.setTarget(target);
+        materialLink.setTooltip(tooltip);
+        actions.add(materialLink);
+        return materialLink;
+    }
+*/
+
+    public void setComment(String comment) {
+        details.setVisible(true);
+        details.setText(comment);
+    }
+
 }

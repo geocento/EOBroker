@@ -68,9 +68,9 @@ public class ProductServiceWidget extends Composite {
         samples.setVisible(productServiceDTO.isHasSamples());
         if(productServiceDTO.isHasSamples()) {
             samples.setHref("#" +
-                            new FullViewPlace(
+                            PlaceHistoryHelper.convertPlace(new FullViewPlace(
                                     Utils.generateTokens(FullViewPlace.TOKENS.productserviceid.toString(), productServiceDTO.getId() + "",
-                                            FullViewPlace.TOKENS.tab.toString(), "samples"))
+                                            FullViewPlace.TOKENS.tab.toString(), "samples")))
 /*
                     PlaceHistoryHelper.convertPlace(new VisualisationPlace(VisualisationPlace.TOKENS.productServiceId.toString() + "=" + productServiceDTO.getId()))
 */
