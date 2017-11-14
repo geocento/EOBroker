@@ -43,9 +43,6 @@ public class Configuration {
     static public void loadConfiguration() throws Exception {
         String home = System.getProperty("user.home");
         props.load(new FileReader(home + "/configurations/eobroker.properties"));
-/*
-        props.load(Configuration.class.getClassLoader().getResourceAsStream("overlay.properties"));
-*/
     }
 
     static public String getProperty (String propertyName) {

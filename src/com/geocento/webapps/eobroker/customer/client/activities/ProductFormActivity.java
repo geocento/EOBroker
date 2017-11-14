@@ -9,12 +9,10 @@ import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.events.RequestCreated;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
+import com.geocento.webapps.eobroker.customer.client.places.ProductResponsePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFormView;
-import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,6 +36,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
     private Long productId;
     private Long productServiceId;
+    private String searchId;
 
     public ProductFormActivity(ProductFormPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -81,54 +80,6 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
     }
 
-    private void submitForm() {
-        try {
-            List<FormElementValue> values = productFormView.getFormElementValues();
-            ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
-            productServiceRequestDTO.setProductId(productId);
-            if(currentAoI == null) {
-                throw new Exception("Please define an AoI first");
-            }
-            productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(currentAoI));
-            if(productServiceId == null) {
-                List<Long> productServiceIds = ListUtil.mutate(productFormView.getSelectedServices(), new ListUtil.Mutate<ProductServiceDTO, Long>() {
-                    @Override
-                    public Long mutate(ProductServiceDTO productServiceDTO) {
-                        return productServiceDTO.getId();
-                    }
-                });
-                if (productServiceIds.size() == 0) {
-                    throw new Exception("Please select at least one service");
-                }
-                productServiceRequestDTO.setProductServiceIds(productServiceIds);
-            } else {
-                productServiceRequestDTO.setProductServiceIds(ListUtil.toList(productServiceId));
-            }
-            productServiceRequestDTO.setValues(values);
-            displayLoading();
-            try {
-                REST.withCallback(new MethodCallback<RequestDTO>() {
-                    @Override
-                    public void onFailure(Method method, Throwable exception) {
-                        hideLoading();
-                        displayError(method.getResponse().getText());
-                    }
-
-                    @Override
-                    public void onSuccess(Method method, RequestDTO requestDTO) {
-                        activityEventBus.fireEvent(new RequestCreated(requestDTO));
-                        hideLoading();
-                        displaySuccess("Your request has been successfully submitted");
-                        clearRequest();
-                    }
-                }).call(ServicesUtil.requestsService).submitProductRequest(productServiceRequestDTO);
-            } catch (Exception e) {
-            }
-        } catch (Exception e) {
-            productFormView.displayFormValidationError(e.getMessage());
-        }
-    }
-
     private void handleHistory() {
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
         productId = null;
@@ -147,7 +98,11 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
 
             }
         }
-        if(productId == null && productServiceId == null) {
+        searchId = null;
+        if(tokens.containsKey(ProductFormPlace.TOKENS.searchId.toString())) {
+            searchId = tokens.get(ProductFormPlace.TOKENS.searchId.toString());
+        }
+        if(productId == null && productServiceId == null && searchId == null) {
             Window.alert("At least product or bespoke service is required");
             clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace());
             return;
@@ -173,7 +128,7 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 }).call(ServicesUtil.assetsService).getProductForm(productId);
             } catch (RequestException e) {
             }
-        } else {
+        } else if(productServiceId != null) {
             try {
                 REST.withCallback(new MethodCallback<ProductServiceFormDTO>() {
                     @Override
@@ -193,8 +148,83 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
                 }).call(ServicesUtil.assetsService).getProductServiceForm(productServiceId);
             } catch (RequestException e) {
             }
+        } else if(searchId != null) {
+            try {
+                REST.withCallback(new MethodCallback<ProductServiceSearchFormDTO>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideLoading();
+                        displayError("Could not retrieve product information");
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, final ProductServiceSearchFormDTO productServiceSearchFormDTO) {
+                        hideLoading();
+                        clearRequest();
+                        // make sure we also update the product id
+                        ProductServiceFormDTO productServiceFormDTO = productServiceSearchFormDTO.getProductServiceFormDTO();
+                        productId = productServiceFormDTO.getProduct().getId();
+                        productServiceId = productServiceFormDTO.getId();
+                        productFormView.setProductService(productServiceFormDTO);
+                        productFormView.setFormElementValues(productServiceSearchFormDTO.getValues());
+                    }
+                }).call(ServicesUtil.assetsService).getProductServiceSearchForm(searchId);
+            } catch (RequestException e) {
+            }
         }
 
+    }
+
+    private void submitForm() {
+        try {
+            List<FormElementValue> values = productFormView.getFormElementValues();
+            ProductServiceRequestDTO productServiceRequestDTO = new ProductServiceRequestDTO();
+            productServiceRequestDTO.setProductId(productId);
+            if(currentAoI == null) {
+                throw new Exception("Please define an AoI first");
+            }
+            productServiceRequestDTO.setAoIWKT(AoIUtil.toWKT(currentAoI));
+            if(productServiceId == null) {
+                List<Long> productServiceIds = ListUtil.mutate(productFormView.getSelectedServices(), new ListUtil.Mutate<ProductServiceDTO, Long>() {
+                    @Override
+                    public Long mutate(ProductServiceDTO productServiceDTO) {
+                        return productServiceDTO.getId();
+                    }
+                });
+                if (productServiceIds.size() == 0) {
+                    throw new Exception("Please select at least one service");
+                }
+                productServiceRequestDTO.setProductServiceIds(productServiceIds);
+            } else {
+                productServiceRequestDTO.setProductServiceIds(ListUtil.toList(productServiceId));
+            }
+            if(searchId != null) {
+                productServiceRequestDTO.setSearchId(searchId);
+            }
+            productServiceRequestDTO.setValues(values);
+            displayLoading();
+            try {
+                REST.withCallback(new MethodCallback<RequestDTO>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideLoading();
+                        displayError(method.getResponse().getText());
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, RequestDTO requestDTO) {
+                        activityEventBus.fireEvent(new RequestCreated(requestDTO));
+                        hideLoading();
+                        displaySuccess("Your request has been successfully submitted");
+                        clearRequest();
+                        clientFactory.getPlaceController().goTo(new ProductResponsePlace(ProductResponsePlace.TOKENS.id.toString() + "=" + requestDTO.getId()));
+                    }
+                }).call(ServicesUtil.requestsService).submitProductRequest(productServiceRequestDTO);
+            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+            productFormView.displayFormValidationError(e.getMessage());
+        }
     }
 
     private void clearRequest() {

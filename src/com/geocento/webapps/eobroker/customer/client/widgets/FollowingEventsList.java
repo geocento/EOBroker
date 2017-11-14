@@ -26,59 +26,62 @@ public class FollowingEventsList extends AsyncPagingWidgetList<FollowingEventDTO
     @Override
     protected Widget getItemWidget(FollowingEventDTO followingEventDTO) {
         FollowingEventWidget followingEventWidget = new FollowingEventWidget(followingEventDTO);
-        followingEventWidget.getAction().addClickHandler(event -> {
-            EOBrokerPlace place = null;
-            switch (followingEventDTO.getCategory()) {
-                case companies:
-                    switch (followingEventDTO.getType()) {
-                        case TESTIMONIAL:
-                            place = new TestimonialPlace(
-                                    Utils.generateTokens(
-                                            TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
-                            break;
-                        case OFFER:
-                            place = new FullViewPlace(
-                                    Utils.generateTokens(
-                                            FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId(),
-                                            FullViewPlace.TOKENS.tab.toString(), "offerings"));
-                            break;
-                    }
-                    break;
-                case products:
-                    switch (followingEventDTO.getType()) {
-                        case TESTIMONIAL:
-                            place = new TestimonialPlace(
-                                    Utils.generateTokens(
-                                            TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
-                            break;
-                        case OFFER:
-                            place = new FullViewPlace(
-                                    Utils.generateTokens(
-                                            FullViewPlace.TOKENS.productid.toString(), followingEventDTO.getLinkId(),
-                                            FullViewPlace.TOKENS.tab.toString(), "offerings"));
-                            break;
-                    }
-                    break;
-                case productservices:
-                    switch (followingEventDTO.getType()) {
-                        case TESTIMONIAL:
-                            place = new TestimonialPlace(
-                                    Utils.generateTokens(
-                                            TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
-                            break;
-                        case OFFER:
-                            place = new FullViewPlace(
-                                    Utils.generateTokens(
-                                            FullViewPlace.TOKENS.productserviceid.toString(), followingEventDTO.getLinkId(),
-                                            FullViewPlace.TOKENS.tab.toString(), "description"));
-                            break;
-                    }
-                    break;
-            }
-            if (place != null) {
-                Customer.clientFactory.getPlaceController().goTo(place);
-            }
-        });
+        EOBrokerPlace place = null;
+        switch (followingEventDTO.getCategory()) {
+            case companies:
+                switch (followingEventDTO.getType()) {
+                    case TESTIMONIAL:
+                        place = new TestimonialPlace(
+                                Utils.generateTokens(
+                                        TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
+                        break;
+                    case OFFER:
+                        place = new FullViewPlace(
+                                Utils.generateTokens(
+                                        FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId(),
+                                        FullViewPlace.TOKENS.tab.toString(), "offerings"));
+                        break;
+                }
+                break;
+            case products:
+                switch (followingEventDTO.getType()) {
+                    case TESTIMONIAL:
+                        place = new TestimonialPlace(
+                                Utils.generateTokens(
+                                        TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
+                        break;
+                    case OFFER:
+                        place = new FullViewPlace(
+                                Utils.generateTokens(
+                                        FullViewPlace.TOKENS.productid.toString(), followingEventDTO.getLinkId(),
+                                        FullViewPlace.TOKENS.tab.toString(), "offerings"));
+                        break;
+                }
+                break;
+            case productservices:
+                switch (followingEventDTO.getType()) {
+                    case TESTIMONIAL:
+                        place = new TestimonialPlace(
+                                Utils.generateTokens(
+                                        TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
+                        break;
+                    case OFFER:
+                        place = new FullViewPlace(
+                                Utils.generateTokens(
+                                        FullViewPlace.TOKENS.productserviceid.toString(), followingEventDTO.getLinkId(),
+                                        FullViewPlace.TOKENS.tab.toString(), "description"));
+                        break;
+                }
+                break;
+        }
+        boolean hasAction = place != null;
+        followingEventWidget.displayAction(hasAction);
+        if (hasAction) {
+            final EOBrokerPlace finalPlace = place;
+            followingEventWidget.getAction().addClickHandler(event -> {
+                Customer.clientFactory.getPlaceController().goTo(finalPlace);
+            });
+        }
         followingEventWidget.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
         return followingEventWidget;
     }

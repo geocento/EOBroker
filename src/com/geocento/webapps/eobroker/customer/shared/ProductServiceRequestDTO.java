@@ -13,6 +13,7 @@ public class ProductServiceRequestDTO {
     List<Long> productServiceIds;
     List<FormElementValue> values;
     private String aoIWKT;
+    private String searchId;
 
     public ProductServiceRequestDTO() {
     }
@@ -47,5 +48,13 @@ public class ProductServiceRequestDTO {
 
     public String getAoIWKT() {
         return aoIWKT;
+    }
+
+    public void setSearchId(String searchId) {
+        this.searchId = searchId;
+    }
+
+    public String getSearchId() {
+        return searchId;
     }
 }

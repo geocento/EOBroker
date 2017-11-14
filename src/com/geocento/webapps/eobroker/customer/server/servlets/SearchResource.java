@@ -12,6 +12,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.recommendation.SelectionRule;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.FeasibilitySearch;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityRequest;
 import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
@@ -71,6 +72,8 @@ public class SearchResource implements SearchService {
             }
         });
     }
+
+    static KeyGenerator keyGenerator = new KeyGenerator(16);
 
     @Context
     HttpServletRequest request;
@@ -883,7 +886,7 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public FeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequestDTO) throws RequestException {
+    public FeasibilityResponseDTO callSupplierAPI(FeasibilityRequestDTO feasibilityRequestDTO) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         if(feasibilityRequestDTO == null) {
             throw new RequestException("Feasibility request cannot be null");
@@ -942,10 +945,25 @@ public class SearchResource implements SearchService {
                         return parameter;
                     }
                 }));
+                // store search
+                em.getTransaction().begin();
+                FeasibilitySearch feasibilitySearch = new FeasibilitySearch();
+                feasibilitySearch.setId(keyGenerator.CreateKey());
+                feasibilitySearch.setSelectionGeometry(feasibilityRequest.getAoiWKT());
+                feasibilitySearch.setProductService(productService);
+                feasibilitySearch.setFormValues(formElementValues);
+                em.persist(feasibilitySearch);
+                em.getTransaction().commit();
+                // call the supplier
                 ObjectMapper objectMapper = new ObjectMapper();
                 String response = sendAPIRequest(productService.getApiUrl(), objectMapper.writeValueAsString(feasibilityRequest));
                 FeasibilityResponse feasibilityResponse = objectMapper.readValue(response, FeasibilityResponse.class);
-                return feasibilityResponse;
+                // TODO - store response id and statistics
+                // generate response
+                FeasibilityResponseDTO feasibilityResponseDTO = new FeasibilityResponseDTO();
+                feasibilityResponseDTO.setSearchId(feasibilitySearch.getId());
+                feasibilityResponseDTO.setFeasibilityResponse(feasibilityResponse);
+                return feasibilityResponseDTO;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw new RequestException("Failed to access supplier API");

@@ -40,6 +40,10 @@ public class FollowingEventWidget extends Composite {
         creationDate.setText(DateUtils.dateFormat.format(followingEventDTO.getCreationDate()));
     }
 
+    public void displayAction(boolean display) {
+        action.setVisible(display);
+    }
+
     public HasClickHandlers getAction() {
         return action;
     }

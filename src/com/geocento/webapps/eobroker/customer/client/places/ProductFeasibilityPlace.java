@@ -8,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class ProductFeasibilityPlace extends EOBrokerPlace {
 
-    static public enum TOKENS {productservice, aoi, startDate, stopDate}
+    static public enum TOKENS {productservice, aoi, startDate, stopDate, feasibilityId}
 
     public ProductFeasibilityPlace() {
     }

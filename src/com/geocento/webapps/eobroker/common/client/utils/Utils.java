@@ -65,12 +65,13 @@ public class Utils {
         }
         if(size < 1000) {
             return size + " bytes";
-        } else if(size < 10E6) {
-            return fileSizeNumberFormat.format(size / 1000.0) + " KB";
-        } else if(size < 10E9) {
-            return fileSizeNumberFormat.format(size / 1000.0 / 1000.0) + " MB";
-        } else { //if(size < 10E12) {
-            return fileSizeNumberFormat.format(size / 1000.0) + " GB";
         }
+        if(size < 1000 * 1000) {
+            return fileSizeNumberFormat.format(size / 1000.0) + " KB";
+        }
+        if(size < 1000 * 1000 * 1000) {
+            return fileSizeNumberFormat.format(size / 1000.0 / 1000.0) + " MB";
+        }
+        return fileSizeNumberFormat.format(size / 1000.0) + " GB";
     }
 }

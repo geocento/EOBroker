@@ -37,15 +37,17 @@ public class DoubleEditor extends ElementEditor<DoubleFormElement> {
 
     @Override
     public FormElementValue getFormElementValue() throws Exception {
-        Double value = doubleBox.getValue();
-        if(formElement.getMin() != null && value < formElement.getMin()) {
-            throw new Exception("Minimum value is " + formElement.getMin());
-        }
-        if(formElement.getMax() != null && value > formElement.getMax()) {
-            throw new Exception("Maximum value is " + formElement.getMax());
+        Double value = doubleBox.getText().length() > 0 ? doubleBox.getValue() : null;
+        if(value != null) {
+            if (formElement.getMin() != null && value < formElement.getMin()) {
+                throw new Exception("Minimum value is " + formElement.getMin());
+            }
+            if (formElement.getMax() != null && value > formElement.getMax()) {
+                throw new Exception("Maximum value is " + formElement.getMax());
+            }
         }
         FormElementValue formElementValue = new FormElementValue();
-        formElementValue.setValue(value + "");
+        formElementValue.setValue(value == null ? null : (value + ""));
         formElementValue.setName(formElement.getName());
         formElementValue.setFormid(formElement.getFormid());
         return formElementValue;

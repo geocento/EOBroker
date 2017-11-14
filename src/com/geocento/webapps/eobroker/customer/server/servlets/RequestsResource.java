@@ -283,6 +283,7 @@ public class RequestsResource implements RequestsService {
             productServiceRequest.setFormValues(values);
             productServiceRequest.setCreationDate(new Date());
             productServiceRequest.setSupplierRequests(new ArrayList<ProductServiceSupplierRequest>());
+            productServiceRequest.setSearchId(productServiceRequestDTO.getSearchId());
             em.persist(productServiceRequest);
             for (ProductService productService : productServices) {
                 ProductServiceSupplierRequest productServiceSupplierRequest = new ProductServiceSupplierRequest();

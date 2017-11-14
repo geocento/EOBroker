@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.customer.shared.ProductFormDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
@@ -34,6 +35,8 @@ public interface ProductFormView extends IsWidget {
     List<ProductServiceDTO> getSelectedServices();
 
     void clearRequest();
+
+    void setFormElementValues(List<FormElementValue> values);
 
     public interface Presenter {
     }

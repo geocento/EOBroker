@@ -507,6 +507,19 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     }
 
     @Override
+    public List<FormElementValue> getFormElementValues() throws Exception {
+        List<FormElementValue> values = new ArrayList<FormElementValue>();
+        for(int index = 0; index < parameters.getWidgetCount(); index++) {
+            MaterialColumn materialColumn = (MaterialColumn) parameters.getWidget(index);
+            if(materialColumn.getWidget(0) instanceof ElementEditor) {
+                ElementEditor elementEditor = (ElementEditor) materialColumn.getWidget(0);
+                values.add(elementEditor.getFormElementValue());
+            }
+        }
+        return values;
+    }
+
+    @Override
     public void displayResultsError(String message) {
         results.setVisible(false);
         this.message.setVisible(true);

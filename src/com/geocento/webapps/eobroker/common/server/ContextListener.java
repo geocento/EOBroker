@@ -532,6 +532,15 @@ public class ContextListener implements ServletContextListener {
                     em.getTransaction().commit();
                 }
             }
+            // set the column to a geometry type if there is no record
+            {
+                if (em.createQuery("select count(f) from FeasibilitySearch f", Long.class).getSingleResult() == 0) {
+                    // check the type of the geometry extent first
+                    em.createNativeQuery("alter table feasibilitysearch drop column selectiongeometry;" +
+                            "alter table feasibilitysearch add column selectiongeometry geometry;").executeUpdate();
+                }
+            }
+
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

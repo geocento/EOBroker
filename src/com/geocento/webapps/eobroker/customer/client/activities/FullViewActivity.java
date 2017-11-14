@@ -119,7 +119,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find company");
+                    displayError("Could not find product category");
                 }
 
                 @Override

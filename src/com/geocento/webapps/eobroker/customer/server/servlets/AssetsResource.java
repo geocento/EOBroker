@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.FeasibilitySearch;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Following;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.FollowingEvent;
@@ -1557,15 +1558,43 @@ public class AssetsResource implements AssetsService {
             if(productService == null) {
                 throw new RequestException("Product does not exist");
             }
-            ProductServiceFormDTO productServiceFormDTO = new ProductServiceFormDTO();
-            productServiceFormDTO.setId(productService.getId());
-            productServiceFormDTO.setName(productService.getName());
-            productServiceFormDTO.setDescription(productService.getDescription());
-            productServiceFormDTO.setServiceImage(productService.getImageUrl());
-            productServiceFormDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(productService.getCompany()));
-            productServiceFormDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
-            productServiceFormDTO.setFormFields(productService.getProduct().getFormFields());
-            return productServiceFormDTO;
+            return convertToProductServiceFormDTO(productService);
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductServiceFormDTO convertToProductServiceFormDTO(ProductService productService) {
+        ProductServiceFormDTO productServiceFormDTO = new ProductServiceFormDTO();
+        productServiceFormDTO.setId(productService.getId());
+        productServiceFormDTO.setName(productService.getName());
+        productServiceFormDTO.setDescription(productService.getDescription());
+        productServiceFormDTO.setServiceImage(productService.getImageUrl());
+        productServiceFormDTO.setCompanyDTO(CompanyHelper.createCompanyDTO(productService.getCompany()));
+        productServiceFormDTO.setProduct(ProductHelper.createProductDTO(productService.getProduct()));
+        productServiceFormDTO.setFormFields(productService.getProduct().getFormFields());
+        return productServiceFormDTO;
+    }
+
+    @Override
+    public ProductServiceSearchFormDTO getProductServiceSearchForm(String searchId) throws RequestException {
+        if(searchId == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            FeasibilitySearch feasibilitySearch = em.find(FeasibilitySearch.class, searchId);
+            if(feasibilitySearch == null) {
+                throw new RequestException("Search does not exist");
+            }
+            ProductServiceSearchFormDTO productServiceSearchFormDTO = new ProductServiceSearchFormDTO();
+            productServiceSearchFormDTO.setSearchId(searchId);
+            productServiceSearchFormDTO.setAoiWKT(feasibilitySearch.getSelectionGeometry());
+            productServiceSearchFormDTO.setProductServiceFormDTO(convertToProductServiceFormDTO(feasibilitySearch.getProductService()));
+            productServiceSearchFormDTO.setValues(feasibilitySearch.getFormValues());
+            return productServiceSearchFormDTO;
         } catch (Exception e) {
             throw handleException(em, e);
         } finally {

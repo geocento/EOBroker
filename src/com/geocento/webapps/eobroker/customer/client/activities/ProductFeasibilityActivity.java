@@ -9,11 +9,13 @@ import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityRespon
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFeasibilityPlace;
 import com.geocento.webapps.eobroker.customer.client.places.ProductFormPlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.ProductFeasibilityView;
 import com.geocento.webapps.eobroker.customer.shared.FeasibilityRequestDTO;
+import com.geocento.webapps.eobroker.customer.shared.FeasibilityResponseDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductFeasibilityDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.google.gwt.core.client.Callback;
@@ -46,6 +48,9 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
     private Date start;
     private Date stop;
     private List<FormElementValue> formElementValues;
+
+    // current response
+    private FeasibilityResponseDTO feasibilityResponseDTO;
 
     public ProductFeasibilityActivity(ProductFeasibilityPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -169,22 +174,6 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 return value != productFeasibilityService;
             }
         }));
-        productFeasibilityView.getRequestButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new ProductFormPlace(
-                        ProductFormPlace.TOKENS.serviceid.toString() + "=" + productServiceFeasibilityDTO.getId()));
-            }
-        });
-        productFeasibilityView.getContactButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new ConversationPlace(
-                        Utils.generateTokens(
-                                ConversationPlace.TOKENS.companyid.toString(), productServiceFeasibilityDTO.getCompany().getId() + "",
-                                ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productServiceFeasibilityDTO.getName() + "'")));
-            }
-        });
     }
 
     public void setStart(Date start) {
@@ -197,11 +186,6 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
         productFeasibilityView.setStop(stop);
     }
 
-    public void setFormElementValues(List<FormElementValue> formElementValues) {
-        this.formElementValues = formElementValues;
-        productFeasibilityView.setFormElementValues(formElementValues);
-    }
-
     @Override
     protected void bind() {
         super.bind();
@@ -209,7 +193,6 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
             @Override
             public void onClick(ClickEvent event) {
                 productFeasibilityView.clearResults();
-                productFeasibilityView.displayLoadingResults("Checking feasibility...");
                 // create request
                 FeasibilityRequestDTO feasibilityRequestDTO = new FeasibilityRequestDTO();
                 feasibilityRequestDTO.setProductServiceId(productFeasibilityService.getId());
@@ -218,9 +201,15 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 feasibilityRequestDTO.setAoiWKT(AoIUtil.toWKT(currentAoI));
                 feasibilityRequestDTO.setStart(start);
                 feasibilityRequestDTO.setStop(stop);
-                feasibilityRequestDTO.setFormElementValues(formElementValues);
                 try {
-                    REST.withCallback(new MethodCallback<FeasibilityResponse>() {
+                    feasibilityRequestDTO.setFormElementValues(productFeasibilityView.getFormElementValues());
+                } catch (Exception e) {
+                    displayError("Issue with parameters, reason is " + e.getMessage());
+                    return;
+                }
+                try {
+                    productFeasibilityView.displayLoadingResults("Checking feasibility...");
+                    REST.withCallback(new MethodCallback<FeasibilityResponseDTO>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
                             productFeasibilityView.hideLoadingResults();
@@ -228,17 +217,21 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                         }
 
                         @Override
-                        public void onSuccess(Method method, FeasibilityResponse response) {
-/*
-                            // TODO - update history with feasibility request ID
-                            History.
-*/
+                        public void onSuccess(Method method, FeasibilityResponseDTO feasibilityResponseDTO) {
+                            ProductFeasibilityActivity.this.feasibilityResponseDTO = feasibilityResponseDTO;
+                            FeasibilityResponse feasibilityResponse = feasibilityResponseDTO.getFeasibilityResponse();
+                            History.newItem(PlaceHistoryHelper.convertPlace(new ProductFeasibilityPlace(
+                                    Utils.generateTokens(
+                                            ProductFeasibilityPlace.TOKENS.productservice.toString(), productFeasibilityService.getId() + "",
+                                            ProductFeasibilityPlace.TOKENS.feasibilityId.toString(), feasibilityResponseDTO.getSearchId()
+                                    )
+                            )), false);
                             productFeasibilityView.hideLoadingResults();
-                            if(response.getStatusCode() > 299) {
-                                productFeasibilityView.displayResultsError(response.getStatusMessage());
+                            if(feasibilityResponse.getStatusCode() > 299) {
+                                productFeasibilityView.displayResultsError(feasibilityResponse.getStatusMessage());
                                 return;
                             }
-                            productFeasibilityView.displayResponse(response);
+                            productFeasibilityView.displayResponse(feasibilityResponse);
                         }
                     }).call(ServicesUtil.searchService).callSupplierAPI(feasibilityRequestDTO);
                 } catch (Exception e) {
@@ -246,6 +239,24 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
                 }
             }
         }));
+
+        handlers.add(productFeasibilityView.getRequestButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ProductFormPlace(
+                        ProductFormPlace.TOKENS.searchId.toString() + "=" + feasibilityResponseDTO.getSearchId())
+                );
+            }
+        }));
+        productFeasibilityView.getContactButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ConversationPlace(
+                        Utils.generateTokens(
+                                ConversationPlace.TOKENS.companyid.toString(), productFeasibilityService.getCompany().getId() + "",
+                                ConversationPlace.TOKENS.topic.toString(), "Information on service '" + productFeasibilityService.getName() + "'")));
+            }
+        });
     }
 
     @Override
@@ -274,11 +285,6 @@ public class ProductFeasibilityActivity extends TemplateActivity implements Prod
 
     @Override
     public void onServiceChanged(ProductServiceFeasibilityDTO productServiceFeasibilityDTO) {
-/*
-        this.productFeasibilityService = productServiceFeasibilityDTO;
-        enableUpdateMaybe();
-*/
-        // TODO - make sure parameters remain the same
         clientFactory.getPlaceController().goTo(new ProductFeasibilityPlace(Utils.generateTokens(ProductFeasibilityPlace.TOKENS.productservice.toString(), productServiceFeasibilityDTO.getId() + "")));
     }
 

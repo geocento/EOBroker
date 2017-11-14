@@ -46,6 +46,7 @@
     <orderEntry type="library" name="geoserver" level="project" />
     <orderEntry type="library" name="gwt-user" level="project" />
     <orderEntry type="library" name="geotools" level="project" />
+    <orderEntry type="library" name="pdf" level="project" />
   </component>
 </module>
 

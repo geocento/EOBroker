@@ -24,6 +24,10 @@ public class ProductServiceRequest extends Request {
     @OneToMany(mappedBy = "productServiceRequest", cascade = CascadeType.ALL)
     List<ProductServiceSupplierRequest> supplierRequests;
 
+    // the feasibility search id from which the request originated, if not null
+    @Column(length = 16)
+    String searchId;
+
     public ProductServiceRequest() {
     }
 
@@ -57,5 +61,13 @@ public class ProductServiceRequest extends Request {
 
     public String getAoIWKT() {
         return aoIWKT;
+    }
+
+    public void setSearchId(String searchId) {
+        this.searchId = searchId;
+    }
+
+    public String getSearchId() {
+        return searchId;
     }
 }

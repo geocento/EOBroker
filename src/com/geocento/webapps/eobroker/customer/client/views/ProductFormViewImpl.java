@@ -11,6 +11,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.TextFormElement;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
@@ -278,6 +279,31 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
             Widget widget = productServices.getWidget(index);
             if(widget instanceof MaterialCheckBox) {
                 ((MaterialCheckBox) widget).setValue(false);
+            }
+        }
+    }
+
+    @Override
+    public void setFormElementValues(List<FormElementValue> values) {
+        List<FormElementValue> formElementValues = new ArrayList<FormElementValue>();
+        for(int index = 0; index < formContainer.getWidgetCount(); index++) {
+            Widget widget = formContainer.getWidget(index);
+            if(widget instanceof ElementEditor) {
+                try {
+                    FormElementValue formElementValue = ((ElementEditor) widget).getFormElementValue();
+                    // look for matching parameter
+                    FormElementValue value = ListUtil.findValue(values, new ListUtil.CheckValue<FormElementValue>() {
+                        @Override
+                        public boolean isValue(FormElementValue value) {
+                            return formElementValue.getFormid() != null && formElementValue.getFormid().contentEquals(value.getFormid());
+                        }
+                    });
+                    if(value != null) {
+                        ((ElementEditor) widget).setFormElementValue(value.getValue());
+                    }
+                } catch (Exception e) {
+
+                }
             }
         }
     }

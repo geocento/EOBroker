@@ -7,7 +7,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSDescripti
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryRequest;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.OSQueryResponse;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.feasibility.FeasibilityResponse;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.http.client.RequestException;
@@ -52,7 +51,7 @@ public interface SearchService extends DirectRestService {
     @POST
     @Path("/search/products/feasibility")
     @Produces("application/json")
-    public FeasibilityResponse callSupplierAPI(FeasibilityRequestDTO feasibilityRequestDTO) throws RequestException;
+    public FeasibilityResponseDTO callSupplierAPI(FeasibilityRequestDTO feasibilityRequestDTO) throws RequestException;
 
     @GET
     @Path("/search/sensors")

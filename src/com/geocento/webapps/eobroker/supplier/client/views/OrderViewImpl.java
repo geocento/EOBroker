@@ -196,6 +196,10 @@ public class OrderViewImpl extends Composite implements OrderView {
                 addRequestValue(formElementValue.getName(), formElementValue.getValue());
             }
         }
+        if(productServiceSupplierRequestDTO.getSearchId() != null) {
+            this.requestDescription.add(new HTMLPanel("<p style='padding: 0.5rem;'>This request originated from the following " +
+                    "<a href='" + GWT.getHostPageBaseURL() + "#productfeasibility:feasibilityId=" + productServiceSupplierRequestDTO.getSearchId() + "'>feasibility search</a></p>"));
+        }
         displayAoI(AoIUtil.fromWKT(productServiceSupplierRequestDTO.getAoIWKT()));
         displayResponse(productServiceSupplierRequestDTO.getSupplierResponse());
         displayMessages(productServiceSupplierRequestDTO.getMessages());

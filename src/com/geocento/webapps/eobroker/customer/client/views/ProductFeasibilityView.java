@@ -49,6 +49,8 @@ public interface ProductFeasibilityView extends IsWidget {
 
     void setFormElementValues(List<FormElementValue> formElementValues);
 
+    List<FormElementValue> getFormElementValues() throws Exception;
+
     void displayResultsError(String message);
 
     void displayResponse(FeasibilityResponse response);

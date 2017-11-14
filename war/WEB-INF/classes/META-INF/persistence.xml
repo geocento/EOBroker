@@ -68,6 +68,7 @@
         <class>com.geocento.webapps.eobroker.common.shared.entities.UserFile</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.CustomerSettings</class>
         <class>com.geocento.webapps.eobroker.common.shared.entities.Endorsement</class>
+        <class>com.geocento.webapps.eobroker.common.shared.entities.requests.FeasibilitySearch</class>
         <properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5433/eobroker" />

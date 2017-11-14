@@ -214,6 +214,11 @@ public interface AssetsService extends DirectRestService {
     @Produces("application/json")
     ProductServiceFormDTO getProductServiceForm(@PathParam("id") Long productServiceId) throws RequestException;
 
+    @GET
+    @Path("/assets/service/search/{id}")
+    @Produces("application/json")
+    ProductServiceSearchFormDTO getProductServiceSearchForm(@PathParam("id") String searchId) throws RequestException;
+
     @POST
     @Path("/assets/company/create")
     @Produces("application/json")

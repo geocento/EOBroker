@@ -55,6 +55,7 @@ public class OrdersResource implements OrdersService {
             productServiceSupplierRequestDTO.setAoIWKT(productServiceRequest.getAoIWKT());
             productServiceSupplierRequestDTO.setCustomer(UserHelper.createUserDTO(productServiceRequest.getCustomer()));
             productServiceSupplierRequestDTO.setFormValues(productServiceRequest.getFormValues());
+            productServiceSupplierRequestDTO.setSearchId(productServiceRequest.getSearchId());
             // get the supplier specific request
             ProductServiceSupplierRequest productSupplierServiceRequest = ListUtil.findValue(productServiceRequest.getSupplierRequests(), new ListUtil.CheckValue<ProductServiceSupplierRequest>() {
                 @Override

@@ -22,8 +22,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.DefaultTransaction;
+import org.geotools.data.Transaction;
+import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -33,6 +42,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -212,22 +222,45 @@ public class DatasetUploadServlet extends HttpServlet {
                         throw new Exception("File format '" + extension + "' not supported");
                 }
                 // generate thumbnail
-                switch (extension) {
-                    case "gif":
-                    case "jpg":
-                    case "jpeg":
-                    case "png": {
-                        try {
-                            String imagePath = keyGenerator.CreateKey() + ".jpg";
-                            File thumbnailFile = new File(ServerUtil.getSettings().getDataDirectory() + "./img", imagePath);
-                            Thumbnails.of(file).width(200).height(200).keepAspectRatio(true).toFile(thumbnailFile);
-                            datasetAccess.setImageUrl("./uploaded/img/" + imagePath);
-                        } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    } break;
-                    default:
-                        throw new Exception("File format '" + extension + "' not supported");
+                try {
+                    File imageFile = null;
+                    File tempFile = null;
+                    switch (extension) {
+                        case "gif":
+                        case "jpg":
+                        case "jpeg":
+                        case "png": {
+                            imageFile = file;
+                        } break;
+                        case "pdf": {
+                            PDDocument doc = PDDocument.load(file);
+                            try {
+                                PDFRenderer renderer = new PDFRenderer(doc);
+                                BufferedImage bufferedImage = renderer.renderImage(0);
+                                tempFile = new File(ServerUtil.getSettings().getDataDirectory() + "./tmp", file.getName() + ".jpg");
+                                if(!new File(tempFile.getParent()).exists()) {
+                                    new File(tempFile.getParent()).mkdir();
+                                }
+                                ImageIOUtil.writeImage(bufferedImage, tempFile.getAbsolutePath(), 100);
+                                imageFile = tempFile;
+                            } finally {
+                                doc.close();
+                            }
+                        } break;
+                        default:
+                            break;
+                    }
+                    if(imageFile != null) {
+                        String imagePath = keyGenerator.CreateKey() + ".jpg";
+                        File thumbnailFile = new File(ServerUtil.getSettings().getDataDirectory() + "./img", imagePath);
+                        Thumbnails.of(imageFile).width(200).height(200).keepAspectRatio(true).toFile(thumbnailFile);
+                        datasetAccess.setImageUrl("./uploaded/img/" + imagePath);
+                    }
+                    if(tempFile != null) {
+                        tempFile.delete();
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                 }
             }
             datasetAccess.setUri(filePath);
@@ -270,9 +303,16 @@ public class DatasetUploadServlet extends HttpServlet {
                         if (crs != null) {
                             Integer epsgId = CRS.lookupEpsgCode(crs, false);
                             if(epsgId == null) {
-                                throw new Exception("Shapefile's projection is not a valid projection");
+                                // try analysing the actual srs returned
+                                String srs = CRS.toSRS(crs);
+                                //if(srs.startsWith())
+                                if(srs == null) {
+                                    throw new Exception("Shapefile's projection is not a valid projection");
+                                }
+                                projection = "EPSG:4326";
+                            } else {
+                                projection = "EPSG:" + epsgId;
                             }
-                            projection = "EPSG:" + epsgId;
                         }
                     }
                 }
@@ -301,7 +341,8 @@ public class DatasetUploadServlet extends HttpServlet {
                             throw new Exception("Could not create workspace " + workspaceName);
                         }
                     }
-                    boolean published = publisher.publishShp(workspaceName, resourceName, resourceName, zipShapeFile, projection);
+                    boolean published = projection == null ? publisher.publishShp(workspaceName, resourceName, resourceName, zipShapeFile) :
+                            publisher.publishShp(workspaceName, resourceName, resourceName, zipShapeFile, projection);
                     if (published) {
                         layerNames.add(workspaceName + ":" + resourceName);
                     } else {
@@ -554,6 +595,40 @@ public class DatasetUploadServlet extends HttpServlet {
 
     private boolean existsWorkpspace(String workspaceName) throws MalformedURLException {
         return GeoserverUtils.getGeoserverReader().getWorkspaceNames().contains(workspaceName);
+    }
+
+    private void storeToPostgis() {
+        Transaction transaction = new DefaultTransaction("create");
+
+        String typeName = newDataStore.getTypeNames()[0];
+        SimpleFeatureSource featureSource = newDataStore.getFeatureSource(typeName);
+
+        if (featureSource instanceof SimpleFeatureStore) {
+            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+
+        /*
+         * SimpleFeatureStore has a method to add features from a
+         * SimpleFeatureCollection object, so we use the ListFeatureCollection
+         * class to wrap our list of features.
+         */
+            SimpleFeatureCollection collection = new ListFeatureCollection(TYPE, features);
+            featureStore.setTransaction(transaction);
+            try {
+                featureStore.addFeatures(collection);
+                transaction.commit();
+
+            } catch (Exception problem) {
+                problem.printStackTrace();
+                transaction.rollback();
+
+            } finally {
+                transaction.close();
+            }
+            System.exit(0); // success!
+        } else {
+            System.out.println(typeName + " does not support read/write access");
+            System.exit(1);
+        }
     }
 
 }
