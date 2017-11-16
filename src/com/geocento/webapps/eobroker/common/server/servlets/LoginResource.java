@@ -34,7 +34,7 @@ public class LoginResource implements LoginService {
     public LoginInfo signin(String userName, String passwordHash) {
         EntityManager em = EMF.get().createEntityManager();
         try {
-            User user = em.find(User.class, userName);
+            User user = UserUtils.findUserByNameOrEmail(em, userName);
             if(user != null) {
                 if(user.getStatus() != REGISTRATION_STATUS.APPROVED) {
                     throw new RequestException("Not authorised");

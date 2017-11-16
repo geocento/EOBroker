@@ -147,6 +147,30 @@ public class SuccessStory {
         this.partners = partners;
     }
 
+    public List<ProductService> getProductServices() {
+        return productServices;
+    }
+
+    public void setProductServices(List<ProductService> productServices) {
+        this.productServices = productServices;
+    }
+
+    public List<ProductDataset> getProductDatasets() {
+        return productDatasets;
+    }
+
+    public void setProductDatasets(List<ProductDataset> productDatasets) {
+        this.productDatasets = productDatasets;
+    }
+
+    public List<Software> getSoftware() {
+        return software;
+    }
+
+    public void setSoftware(List<Software> software) {
+        this.software = software;
+    }
+
     public Date getDate() {
         return date;
     }

@@ -128,7 +128,7 @@ public class CategorySearchBox extends MaterialSearch {
                         }));
                     }
                 }
-            }).call(ServicesUtil.searchService).complete(text, category, null);
+            }).call(ServicesUtil.searchService).complete(text, category);
         } catch (RequestException e) {
             e.printStackTrace();
         }

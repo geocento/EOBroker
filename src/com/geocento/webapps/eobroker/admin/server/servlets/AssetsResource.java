@@ -441,6 +441,135 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public List<ChallengeDTO> listChallenges(int start, int limit, String orderby, String filter) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            boolean hasFilter = filter != null && filter.length() > 0;
+            // force orderby if null
+            if(orderby == null) {
+                orderby = "creationDate";
+            }
+            switch(orderby) {
+                case "creationDate":
+                    orderby = "c.name";
+                    break;
+                default:
+                    orderby = "c.name";
+            }
+            TypedQuery<Challenge> query = em.createQuery("select c from Challenge c" +
+                    (hasFilter ?  "  where UPPER(c.name) LIKE UPPER(:filter)" : "") +
+                    " order by " + orderby, Challenge.class);
+            if(hasFilter) {
+                query.setParameter("filter", "%" + filter + "%");
+            }
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
+            return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<Challenge, ChallengeDTO>() {
+                @Override
+                public ChallengeDTO mutate(Challenge challenge) {
+                    ChallengeDTO challengeDTO = new ChallengeDTO();
+                    challengeDTO.setId(challenge.getId());
+                    challengeDTO.setImageUrl(challenge.getImageUrl());
+                    challengeDTO.setName(challenge.getName());
+                    challengeDTO.setShortDescription(challenge.getShortDescription());
+                    return challengeDTO;
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ChallengeDTO getChallenge(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Challenge challenge = em.find(Challenge.class, id);
+            if(challenge == null) {
+                throw new Exception("Could not find challenge with id " + id);
+            }
+            ChallengeDTO challengeDTO = new ChallengeDTO();
+            challengeDTO.setId(challenge.getId());
+            challengeDTO.setImageUrl(challenge.getImageUrl());
+            challengeDTO.setName(challenge.getName());
+            challengeDTO.setShortDescription(challenge.getShortDescription());
+            challengeDTO.setDescription(challenge.getDescription());
+            challengeDTO.setProductDTOs(ListUtil.mutate(challenge.getProducts(), new ListUtil.Mutate<Product, ProductDTO>() {
+                @Override
+                public ProductDTO mutate(Product product) {
+                    return ProductHelper.createProductDTO(product);
+                }
+            }));
+            return challengeDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Long saveChallenge(ChallengeDTO challengeDTO) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Challenge challenge = null;
+            if(challengeDTO.getId() == null) {
+                challenge = new Challenge();
+                em.persist(challenge);
+            } else {
+                challenge = em.find(Challenge.class, challengeDTO.getId());
+                if (challenge == null) {
+                    throw new Exception("Could not find challenge with id " + challengeDTO.getId());
+                }
+            }
+            em.getTransaction().begin();
+            challenge.setName(challengeDTO.getName());
+            challenge.setImageUrl(challengeDTO.getImageUrl());
+            challenge.setShortDescription(challengeDTO.getShortDescription());
+            challenge.setDescription(challengeDTO.getDescription());
+            // update the keyphrases
+            Query query = em.createNativeQuery("UPDATE challenge SET tsv = " + DBHelper.getChallengeTSV(challenge) +
+                    ", tsvname = " + DBHelper.getChallengeNameTSV(challenge) + " where id = " + challenge.getId() +
+                    ";");
+            query.executeUpdate();
+            em.getTransaction().commit();
+            return challenge.getId();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeChallenge(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Challenge challenge = em.find(Challenge.class, id);
+            if(challenge == null) {
+                throw new Exception("Could not find challenge with id " + id);
+            }
+            em.getTransaction().begin();
+            em.remove(challenge);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public List<NewsItem> listNewsItems(int start, int limit, String orderby, String filter) throws RequestException {
         String userName = UserUtils.verifyUserAdmin(request);
         EntityManager em = EMF.get().createEntityManager();

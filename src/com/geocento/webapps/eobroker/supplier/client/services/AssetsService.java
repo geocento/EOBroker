@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.supplier.client.services;
 
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
+import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
@@ -36,6 +38,11 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/products/")
     @Produces("application/json")
     public List<ProductDTO> listProducts() throws RequestException;
+
+    @GET
+    @Path("/assets/offerings/")
+    @Produces("application/json")
+    List<Suggestion> listOfferings(@QueryParam("text") String text) throws RequestException;
 
     @GET
     @Path("/assets/productservices/{id}")
@@ -204,4 +211,9 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/statistics/")
     @Produces("application/json")
     SupplierStatisticsDTO getStatistics() throws RequestException;
+
+    @POST
+    @Path("/assets/dataaccess/")
+    @Consumes("application/json")
+    String getDataAccessThumbnail(DatasetAccess datasetAccess) throws RequestException;
 }

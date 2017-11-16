@@ -111,6 +111,9 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
                 successStoryEditDTO.setDate(successStoryView.getDate());
                 successStoryEditDTO.setCustomer(successStoryView.getCustomer());
                 successStoryEditDTO.setProductDTO(successStoryView.getProductCategory());
+                successStoryEditDTO.setServiceDTOs(successStoryView.getServices());
+                successStoryEditDTO.setDatasetDTOs(successStoryView.getDatasets());
+                successStoryEditDTO.setSoftwareDTOs(successStoryView.getSoftware());
                 // validate inputs
                 try {
                     if(successStoryEditDTO.getName() == null || successStoryEditDTO.getName().length() == 0) {

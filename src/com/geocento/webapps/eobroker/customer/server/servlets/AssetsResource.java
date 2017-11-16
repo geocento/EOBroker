@@ -1956,6 +1956,9 @@ public class AssetsResource implements AssetsService {
             successStoryDTO.setDescription(successStory.getDescription());
         }
         successStoryDTO.setProductDTO(ProductHelper.createProductDTO(successStory.getProduct()));
+        successStoryDTO.setDatasets(ListUtil.mutate(successStory.getProductDatasets(), productDataset -> createProductDatasetDTO(productDataset)));
+        successStoryDTO.setServices(ListUtil.mutate(successStory.getProductServices(), productService -> createProductServiceDTO(productService)));
+        successStoryDTO.setSoftware(ListUtil.mutate(successStory.getSoftware(), software -> createSoftwareDTO(software)));
         successStoryDTO.setDate(successStory.getDate());
         return successStoryDTO;
     }

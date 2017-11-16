@@ -41,6 +41,9 @@
                 <design:MaterialColumn grid="s8">
                     <design:MaterialTextBox placeholder="Category" addStyleNames="{style.pitch}" ui:field="category"></design:MaterialTextBox>
                 </design:MaterialColumn>
+                <design:MaterialColumn grid="s8">
+                    <widgets:MaterialLoadingLink fontSize="0.9em" text="Update Image" ui:field="updateImage"></widgets:MaterialLoadingLink>
+                </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialTextBox placeholder="Your pitch on this data access" addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialTextBox>
                 </design:MaterialColumn>

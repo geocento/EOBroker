@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
+import com.google.gwt.http.client.RequestException;
 import gwt.material.design.client.base.SearchObject;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -21,7 +22,10 @@ public class CompanySearchBox extends CategorySearchBox {
 
     @Override
     protected void fetchSuggestions(String text, MethodCallback<List<Suggestion>> methodCallback) {
-        REST.withCallback(methodCallback).call(ServicesUtil.searchService).completeAllCompanies(text, null);
+        try {
+            REST.withCallback(methodCallback).call(ServicesUtil.searchService).completeAllCompanies(text);
+        } catch (RequestException e) {
+        }
     }
 
     public void setCompany(CompanyDTO companyDTO) {

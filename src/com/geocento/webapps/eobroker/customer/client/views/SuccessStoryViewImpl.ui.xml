@@ -106,6 +106,10 @@
                 <design:MaterialLabel addStyleNames="{style.endorsements}" text="Endorsements"></design:MaterialLabel>
                 <design:MaterialRow ui:field="endorsements"></design:MaterialRow>
             </design:MaterialColumn>
+            <design:MaterialColumn grid="s12">
+                <design:MaterialLabel addStyleNames="{style.endorsements}" text="Supplier offerings used"></design:MaterialLabel>
+                <design:MaterialRow ui:field="offeringsUsed"></design:MaterialRow>
+            </design:MaterialColumn>
         </design:MaterialRow>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -35,7 +35,12 @@ public class ProductDatasetWidget extends Composite {
     @UiField
     MaterialImageLoading imagePanel;
 
+    private final ProductDatasetDTO productDataset;
+
     public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO) {
+
+        this.productDataset = productDatasetDTO;
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         imagePanel.setImageUrl(productDatasetDTO.getImageUrl());
@@ -46,4 +51,7 @@ public class ProductDatasetWidget extends Composite {
         remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveProductDataset(productDatasetDTO.getId())));
     }
 
+    public ProductDatasetDTO getProductDataset() {
+        return productDataset;
+    }
 }

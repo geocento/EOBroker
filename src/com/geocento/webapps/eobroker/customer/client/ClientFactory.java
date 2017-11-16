@@ -64,4 +64,6 @@ public interface ClientFactory {
     ResetPasswordView getResetPasswordView();
 
     SuccessStoryView getSuccessStoryView();
+
+    OTSProductResponseView getOTSProductResponseView();
 }

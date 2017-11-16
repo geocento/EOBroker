@@ -101,61 +101,54 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<Suggestion> complete(String text, Category category, String aoi) throws RequestException {
-        try {
-            return completeGeneric(text, category,
-                    category == Category.companies ?
-                            "          AND supplier = '1' AND status = 'APPROVED'" : ""
-                    , aoi);
-        } catch (Exception e) {
-            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
-        }
-    }
-
-    public List<Suggestion> completeGeneric(String text, Category category, String additionalStatement, String aoi) {
-        ArrayList<Suggestion> suggestions = new ArrayList<Suggestion>();
-        // check if last character is a space
-        boolean partialMatch = !text.endsWith(" ");
-        text.trim();
-        // break down text into sub words
-        String[] words = text.split("\\s+");
-        String keywords = StringUtils.join(words, " | ");
-        if(partialMatch) {
-            keywords += ":*";
-        }
-        // make sure words together get better ranking than when they are far apart
-        // optimise based on the ratio of matching words and the total number of words of the search phrase
-        // prioritise based on matching word position, ie if starts the same give higher priority
-        // analyse words and look for common words such as image, product, theme
-        ArrayList<Category> categories = new ArrayList<Category>();
-        if(category != null) {
-            categories.add(category);
-        } else {
-            categories.addAll(Arrays.asList(new Category[] {Category.companies, Category.products}));
-        }
-        ArrayList<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
-        for(Category searchCategory : categories) {
-            rankedSuggestions.addAll(completeCategory(searchCategory, keywords, additionalStatement));
-        }
-        // now sort and filter
-        Collections.sort(rankedSuggestions, new Comparator<RankedSuggestion>() {
-            @Override
-            public int compare(RankedSuggestion o1, RankedSuggestion o2) {
-                return new Double(o2.rank).compareTo(new Double(o1.rank));
+    public List<Suggestion> complete(String text, Category category) throws RequestException {
+        if(category == null) {
+            String keywords = DBHelper.generateKeywords(text);
+            // make sure words together get better ranking than when they are far apart
+            // optimise based on the ratio of matching words and the total number of words of the search phrase
+            // prioritise based on matching word position, ie if starts the same give higher priority
+            // analyse words and look for common words such as image, product, theme
+            EntityManager em = EMF.get().createEntityManager();
+            try {
+                // look in the generic view table
+                // change the last word so that it allows for partial match
+                Query q = em.createNativeQuery("SELECT id, " +
+                        "category, " +
+                        "ts_rank(tsvname, keywords, 8) AS rank\n" +
+                        "name, " +
+                        "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
+                        "          WHERE tsvname @@ keywords\n" +
+                        (category != null ? "" : " AND category = '" + category.toString() + "'") +
+                        "          ORDER BY rank DESC\n" +
+                        "          LIMIT 10;");
+                List<Object[]> results = q.getResultList();
+                return ListUtil.mutate(results, new ListUtil.Mutate<Object[], Suggestion>() {
+                    @Override
+                    public Suggestion mutate(Object[] result) {
+                        Long id = (Long) result[0];
+                        String category = (String) result[1];
+                        Double ranking = (Double) result[2];
+                        String name = (String) result[3];
+                        return new Suggestion(name, Category.valueOf(category), "access" + "::" + id);
+                    }
+                });
+            } catch (Exception e) {
+                throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
+            } finally {
+                em.close();
             }
-        });
-        for(RankedSuggestion rankedSuggestion : rankedSuggestions.subList(0, Math.min(rankedSuggestions.size(), 10))) {
-            suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
+        } else {
+            return completeCategory(category, text,
+                    category == Category.companies ? "          AND supplier = '1' AND status = 'APPROVED'" : "");
         }
-        return suggestions;
     }
 
     @Override
-    public List<Suggestion> completeAllCompanies(String text, String aoi) {
-        return completeGeneric(text, Category.companies, null, aoi);
+    public List<Suggestion> completeAllCompanies(String text) throws RequestException {
+        return completeCategory(Category.companies, text, null);
     }
 
-    private List<RankedSuggestion> completeCategory(Category category, String keywords, String additionalStatement) {
+    private List<Suggestion> completeCategory(Category category, String keywords, String additionalStatement) throws RequestException {
         // change the last word so that it allows for partial match
         String categoryTable = null;
         switch(category) {
@@ -178,20 +171,33 @@ public class SearchResource implements SearchService {
                 categoryTable = "project";
                 break;
         }
-        String sqlStatement = "SELECT \"name\", ts_rank(tsvname, keywords, 8) AS rank, id\n" +
-                "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
-                "          WHERE tsvname @@ keywords\n" +
-                (additionalStatement != null ? additionalStatement : "") +
-                "          ORDER BY rank DESC\n" +
-                "          LIMIT 10;";
         EntityManager em = EMF.get().createEntityManager();
-        Query q = em.createNativeQuery(sqlStatement);
-        List<Object[]> results = q.getResultList();
-        List<RankedSuggestion> suggestions = new ArrayList<RankedSuggestion>();
-        for(Object[] result : results) {
-            suggestions.add(new RankedSuggestion((String) result[0], category, "access" + "::" + ((Long) result[2]) + "", (double) ((float) result[1])));
+        try {
+            Query q = em.createNativeQuery("SELECT id, " +
+                    "category, " +
+                    "ts_rank(tsvname, keywords, 8) AS rank\n" +
+                    "name, " +
+                    "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          WHERE tsvname @@ keywords\n" +
+                    (additionalStatement != null ? additionalStatement : "") +
+                    "          ORDER BY rank DESC\n" +
+                    "          LIMIT 10;");
+            List<Object[]> results = q.getResultList();
+            return ListUtil.mutate(results, new ListUtil.Mutate<Object[], Suggestion>() {
+                @Override
+                public Suggestion mutate(Object[] result) {
+                    Long id = (Long) result[0];
+                    String category = (String) result[1];
+                    Double ranking = (Double) result[2];
+                    String name = (String) result[3];
+                    return new Suggestion(name, Category.valueOf(category), "access" + "::" + id);
+                }
+            });
+        } catch (Exception e) {
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
+        } finally {
+            em.close();
         }
-        return suggestions;
     }
 
     private List<RankedSuggestion> completeImagery(String keywordsString) {
@@ -297,17 +303,6 @@ public class SearchResource implements SearchService {
     @Override
     public List<Offer> getMatchingOffer(String textFilter, Category category, Long aoiId) throws RequestException {
         ArrayList<RankedOffer> offers = new ArrayList<RankedOffer>();
-/*
-        // check if last character is a space
-        boolean partialMatch = !text.endsWith(" ");
-        text.trim();
-        // break down text into sub words
-        String[] words = text.split(" ");
-        String keywords = StringUtils.join(words, " | ");
-        if(partialMatch) {
-            keywords += ":*";
-        }
-*/
         String keywords = DBHelper.generateKeywords(textFilter);
         EntityManager em = EMF.get().createEntityManager();
         try {
@@ -976,42 +971,6 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<Suggestion> completeSensors(String sensors) {
-/*
-        ArrayList<Suggestion> suggestions = new ArrayList<Suggestion>();
-        ArrayList<RankedSuggestion> rankedSuggestions = new ArrayList<RankedSuggestion>();
-        // start working on sensors options
-        try {
-            rankedSuggestions.addAll(completeImagery(sensors));
-        } catch (Exception e) {
-
-        }
-        try {
-            // now look for matching products
-            // check if last character is a space
-            boolean partialMatch = !sensors.endsWith(" ");
-            sensors.trim();
-            // break down text into sub words
-            String[] words = sensors.split(" ");
-            String keywords = StringUtils.join(words, " | ");
-            if (partialMatch) {
-                keywords += ":*";
-            }
-            rankedSuggestions.addAll(completeProducts(keywords));
-        } catch (Exception e) {
-
-        }
-        // now sort and filter
-        Collections.sort(rankedSuggestions, new Comparator<RankedSuggestion>() {
-            @Override
-            public int compare(RankedSuggestion o1, RankedSuggestion o2) {
-                return new Double(o2.rank).compareTo(new Double(o1.rank));
-            }
-        });
-        for(RankedSuggestion rankedSuggestion : rankedSuggestions.subList(0, Math.min(rankedSuggestions.size(), 10))) {
-            suggestions.add(new Suggestion(rankedSuggestion.getName(), rankedSuggestion.getCategory(), rankedSuggestion.getUri()));
-        }
-        return suggestions;
-*/
         return null;
     }
 

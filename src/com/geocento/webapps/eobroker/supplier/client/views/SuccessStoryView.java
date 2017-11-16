@@ -56,6 +56,12 @@ public interface SuccessStoryView extends IsWidget {
 
     void setOfferings(List<ProductDatasetDTO> datasetDTOs, List<ProductServiceDTO> serviceDTOs, List<SoftwareDTO> softwareDTOs);
 
+    List<ProductServiceDTO> getServices();
+
+    List<ProductDatasetDTO> getDatasets();
+
+    List<SoftwareDTO> getSoftware();
+
     public interface Presenter {
     }
 

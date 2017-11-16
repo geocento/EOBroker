@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.services;
 
+import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.shared.*;
@@ -51,6 +52,16 @@ public interface RequestsService extends DirectRestService {
     ProductServiceResponseDTO getProductResponse(@PathParam("id") String id) throws RequestException;
 
     @GET
+    @Path("/requests/otsproduct/{id}")
+    @Produces("application/json")
+    OTSProductResponseDTO getOTSProductResponse(@PathParam("id") String id) throws RequestException;
+
+    @POST
+    @Path("/requests/otsproduct/{id}/message")
+    @Produces("application/json")
+    MessageDTO addOTSProductResponseMessage(@PathParam("id") String id, String text) throws RequestException;
+
+    @GET
     @Path("/requests/image/{id}")
     @Produces("application/json")
     ImageryResponseDTO getImageResponse(@PathParam("id") String id) throws RequestException;
@@ -61,7 +72,7 @@ public interface RequestsService extends DirectRestService {
     ImagesServiceResponseDTO getImagesResponse(@PathParam("id") String id) throws RequestException;
 
     @POST
-    @Path("/requests/product/message/{id}")
+    @Path("/requests/product/{id}/message")
     @Produces("application/json")
     com.geocento.webapps.eobroker.customer.shared.requests.MessageDTO addProductResponseMessage(@PathParam("id") Long id, String text) throws RequestException;
 
@@ -114,4 +125,5 @@ public interface RequestsService extends DirectRestService {
     @Path("/assets/feedback/")
     @Produces("application/json")
     List<FeedbackDTO> listFeedbacks() throws RequestException;
+
 }

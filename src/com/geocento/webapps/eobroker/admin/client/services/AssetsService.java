@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.admin.shared.dtos.ChallengeDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
@@ -64,7 +65,6 @@ public interface AssetsService extends DirectRestService {
                                           @QueryParam("orderby") String orderby,
                                           @QueryParam("filter") String filter) throws RequestException;
 
-
     @GET
     @Path("/assets/companies/find/")
     @Produces("application/json")
@@ -82,6 +82,28 @@ public interface AssetsService extends DirectRestService {
     @DELETE
     @Path("/assets/companies/{id}")
     void removeCompany(@PathParam("id") Long id) throws RequestException;
+
+    @GET
+    @Path("/assets/companies/")
+    @Produces("application/json")
+    public List<ChallengeDTO> listChallenges(@QueryParam("start") int start,
+                                          @QueryParam("limit") int limit,
+                                          @QueryParam("orderby") String orderby,
+                                          @QueryParam("filter") String filter) throws RequestException;
+
+    @GET
+    @Path("/assets/challenges/{id}")
+    @Produces("application/json")
+    public ChallengeDTO getChallenge(@PathParam("id") Long id) throws RequestException;
+
+    @POST
+    @Path("/assets/challenges/")
+    @Produces("application/json")
+    Long saveChallenge(ChallengeDTO challengeDTO) throws RequestException;
+
+    @DELETE
+    @Path("/assets/challenges/{id}")
+    void removeChallenge(@PathParam("id") Long id) throws RequestException;
 
     @GET
     @Path("/assets/newsitem/")

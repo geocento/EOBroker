@@ -27,52 +27,42 @@ public class FollowingEventsList extends AsyncPagingWidgetList<FollowingEventDTO
     protected Widget getItemWidget(FollowingEventDTO followingEventDTO) {
         FollowingEventWidget followingEventWidget = new FollowingEventWidget(followingEventDTO);
         EOBrokerPlace place = null;
-        switch (followingEventDTO.getCategory()) {
-            case companies:
-                switch (followingEventDTO.getType()) {
-                    case TESTIMONIAL:
-                        place = new TestimonialPlace(
-                                Utils.generateTokens(
-                                        TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
-                        break;
-                    case OFFER:
+        String linkId = followingEventDTO.getLinkId();
+        if(linkId != null) {
+            switch (followingEventDTO.getType()) {
+                case TESTIMONIAL:
+                    place = new TestimonialPlace(
+                            Utils.generateTokens(
+                                    TestimonialPlace.TOKENS.id.toString(), linkId));
+                    break;
+                case OFFER: {
+                    FullViewPlace.TOKENS firstToken = null;
+                    switch (followingEventDTO.getCategory()) {
+                        case companies:
+                            firstToken = FullViewPlace.TOKENS.companyid;
+                            break;
+                        case products:
+                            firstToken = FullViewPlace.TOKENS.productid;
+                            place = new FullViewPlace(
+                                    Utils.generateTokens(
+                                            FullViewPlace.TOKENS.productid.toString(), linkId,
+                                            FullViewPlace.TOKENS.tab.toString(), "offerings"));
+                            break;
+                        case productservices:
+                            firstToken = FullViewPlace.TOKENS.productserviceid;
+                            break;
+                        case productdatasets:
+                            firstToken = FullViewPlace.TOKENS.productdatasetid;
+                            break;
+                    }
+                    if (firstToken != null) {
                         place = new FullViewPlace(
-                                Utils.generateTokens(
-                                        FullViewPlace.TOKENS.companyid.toString(), followingEventDTO.getLinkId(),
+                                Utils.generateTokens(firstToken.toString(), linkId,
                                         FullViewPlace.TOKENS.tab.toString(), "offerings"));
-                        break;
+                    }
                 }
                 break;
-            case products:
-                switch (followingEventDTO.getType()) {
-                    case TESTIMONIAL:
-                        place = new TestimonialPlace(
-                                Utils.generateTokens(
-                                        TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
-                        break;
-                    case OFFER:
-                        place = new FullViewPlace(
-                                Utils.generateTokens(
-                                        FullViewPlace.TOKENS.productid.toString(), followingEventDTO.getLinkId(),
-                                        FullViewPlace.TOKENS.tab.toString(), "offerings"));
-                        break;
-                }
-                break;
-            case productservices:
-                switch (followingEventDTO.getType()) {
-                    case TESTIMONIAL:
-                        place = new TestimonialPlace(
-                                Utils.generateTokens(
-                                        TestimonialPlace.TOKENS.id.toString(), followingEventDTO.getLinkId()));
-                        break;
-                    case OFFER:
-                        place = new FullViewPlace(
-                                Utils.generateTokens(
-                                        FullViewPlace.TOKENS.productserviceid.toString(), followingEventDTO.getLinkId(),
-                                        FullViewPlace.TOKENS.tab.toString(), "description"));
-                        break;
-                }
-                break;
+            }
         }
         boolean hasAction = place != null;
         followingEventWidget.displayAction(hasAction);

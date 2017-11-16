@@ -91,9 +91,12 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Offering used" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
-                <design:MaterialPanel addStyleNames="{style.productsPanel}" ui:field="offeringsUsed">
-                    <design:MaterialLabel>TODO</design:MaterialLabel>
+                <design:MaterialPanel addStyleNames="{style.productsPanel}">
+                    <material:MaterialSearch ui:field="offeringsSearch"></material:MaterialSearch>
                 </design:MaterialPanel>
+                <design:MaterialRow addStyleNames="{style.productsPanel}" ui:field="offeringsUsed">
+                    <design:MaterialLabel>TODO</design:MaterialLabel>
+                </design:MaterialRow>
             </design:MaterialColumn>
             <design:MaterialColumn visible="false" grid="s12">
                 <design:MaterialLink text="Partners" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>

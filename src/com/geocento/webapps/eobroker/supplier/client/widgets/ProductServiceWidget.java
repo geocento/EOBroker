@@ -37,7 +37,12 @@ public class ProductServiceWidget extends Composite {
     @UiField
     MaterialImageLoading imagePanel;
 
+    private ProductServiceDTO productService;
+
     public ProductServiceWidget(final ProductServiceDTO productServiceDTO) {
+
+        this.productService = productServiceDTO;
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         imagePanel.setImageUrl(productServiceDTO.getServiceImage());
@@ -47,6 +52,10 @@ public class ProductServiceWidget extends Composite {
         shortDescription.setText(productServiceDTO.getDescription());
         edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId())));
         remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveService(productServiceDTO.getId())));
+    }
+
+    public ProductServiceDTO getProductService() {
+        return productService;
     }
 
 }

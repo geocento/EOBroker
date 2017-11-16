@@ -13,6 +13,7 @@ import com.google.gwt.place.shared.WithTokenizers;
         ProductFeasibilityPlace.Tokenizer.class,
         RequestsPlace.Tokenizer.class,
         ProductResponsePlace.Tokenizer.class,
+        OTSProductResponsePlace.Tokenizer.class,
         ImageryResponsePlace.Tokenizer.class,
         ImagesResponsePlace.Tokenizer.class,
         VisualisationPlace.Tokenizer.class,

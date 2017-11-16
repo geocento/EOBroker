@@ -19,6 +19,9 @@ public class SuccessStoryDTO {
     Date date;
     CompanyDTO company;
     private List<EndorsementDTO> endorsements;
+    private List<ProductDatasetDTO> datasets;
+    private List<ProductServiceDTO> services;
+    private List<SoftwareDTO> software;
 
     public SuccessStoryDTO() {
     }
@@ -93,5 +96,29 @@ public class SuccessStoryDTO {
 
     public void setEndorsements(List<EndorsementDTO> endorsements) {
         this.endorsements = endorsements;
+    }
+
+    public List<ProductDatasetDTO> getDatasets() {
+        return datasets;
+    }
+
+    public void setDatasets(List<ProductDatasetDTO> datasets) {
+        this.datasets = datasets;
+    }
+
+    public List<ProductServiceDTO> getServices() {
+        return services;
+    }
+
+    public void setServices(List<ProductServiceDTO> services) {
+        this.services = services;
+    }
+
+    public List<SoftwareDTO> getSoftware() {
+        return software;
+    }
+
+    public void setSoftware(List<SoftwareDTO> software) {
+        this.software = software;
     }
 }

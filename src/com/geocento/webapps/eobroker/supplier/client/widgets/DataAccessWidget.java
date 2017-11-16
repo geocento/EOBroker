@@ -2,16 +2,22 @@ package com.geocento.webapps.eobroker.supplier.client.widgets;
 
 import com.geocento.webapps.eobroker.common.client.widgets.ExpandPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingLink;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
+import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
+import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.MethodCallback;
+import org.fusesource.restygwt.client.REST;
 
 /**
  * Created by thomas on 08/11/2016.
@@ -45,6 +51,8 @@ public class DataAccessWidget extends Composite {
     MaterialImageUploader imageUpload;
     @UiField
     MaterialTextBox category;
+    @UiField
+    MaterialLoadingLink updateImage;
 
     protected final DatasetAccess datasetAccess;
 
@@ -102,6 +110,30 @@ public class DataAccessWidget extends Composite {
             }
         }
         panel.setOpen(newDataAccess);
+        boolean isLoaded = datasetAccess.getId() != null;
+        updateImage.setVisible(isLoaded);
+        if(isLoaded) {
+            updateImage.addClickHandler(event -> {
+                try {
+                    updateImage.setLoading(true);
+                    REST.withCallback(new MethodCallback<String>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            updateImage.setLoading(false);
+                            Window.alert("Failed to load response");
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, String imageUrl) {
+                            updateImage.setLoading(false);
+                            imageUpload.setImageUrl(imageUrl);
+                        }
+                    }).call(ServicesUtil.assetsService).getDataAccessThumbnail(getDatasetAccess());
+                } catch (Exception e) {
+
+                }
+            });
+        }
     }
 
     public DatasetAccess getDatasetAccess() {

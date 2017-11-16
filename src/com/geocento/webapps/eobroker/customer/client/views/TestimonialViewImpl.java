@@ -109,7 +109,7 @@ public class TestimonialViewImpl extends Composite implements TestimonialView {
                             }));
                         }
                     }
-                }).call(ServicesUtil.searchService).complete(text, category.getValue(), null);
+                }).call(ServicesUtil.searchService).complete(text, category.getValue());
             } catch (RequestException e) {
                 e.printStackTrace();
             }

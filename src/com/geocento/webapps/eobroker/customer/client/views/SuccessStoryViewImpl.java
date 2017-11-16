@@ -1,13 +1,14 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.widgets.EndorsementWidget;
-import com.geocento.webapps.eobroker.customer.shared.EndorsementDTO;
-import com.geocento.webapps.eobroker.customer.shared.SuccessStoryDTO;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProductDatasetWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.ProductServiceWidget;
+import com.geocento.webapps.eobroker.customer.client.widgets.SoftwareWidget;
+import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,6 +17,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialRow;
@@ -50,6 +52,8 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     MaterialImageLoading iconUrl;
     @UiField
     MaterialLink date;
+    @UiField
+    MaterialRow offeringsUsed;
 
     private Presenter presenter;
 
@@ -92,6 +96,34 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
                 endorsements.add(new EndorsementWidget(endorsementDTO));
             }
         }
+        offeringsUsed.clear();
+        for(ProductDatasetDTO productDatasetDTO : successStoryDTO.getDatasets()) {
+            addDatasetOffering(productDatasetDTO);
+        }
+        for(ProductServiceDTO productServiceDTO : successStoryDTO.getServices()) {
+            addServiceOffering(productServiceDTO);
+        }
+        for(SoftwareDTO softwareDTO : successStoryDTO.getSoftware()) {
+            addSoftwareOffering(softwareDTO);
+        }
+    }
+
+    private void addOffering(Widget widget) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 4, 3);
+        materialColumn.add(widget);
+        offeringsUsed.add(materialColumn);
+    }
+
+    private void addServiceOffering(ProductServiceDTO serviceDTO) {
+        addOffering(new ProductServiceWidget(serviceDTO));
+    }
+
+    private void addDatasetOffering(ProductDatasetDTO productDatasetDTO) {
+        addOffering(new ProductDatasetWidget(productDatasetDTO));
+    }
+
+    private void addSoftwareOffering(SoftwareDTO softwareDTO) {
+        addOffering(new SoftwareWidget(softwareDTO));
     }
 
     @Override

@@ -25,6 +25,10 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ProductViewImpl productView = null;
 
+    private ChallengesViewImpl challengesView = null;
+
+    private ChallengeViewImpl challengeView = null;
+
     private NewsItemsViewImpl newsItemsView = null;
 
     private NewsItemViewImpl newsItemView = null;
@@ -156,6 +160,22 @@ public class ClientFactoryImpl implements ClientFactory {
             logsView = new LogsViewImpl(this);
         }
         return logsView;
+    }
+
+    @Override
+    public ChallengesView getChallengesView() {
+        if(challengesView == null) {
+            challengesView = new ChallengesViewImpl(this);
+        }
+        return challengesView;
+    }
+
+    @Override
+    public ChallengeView getChallengeView() {
+        if(challengeView == null) {
+            challengeView = new ChallengeViewImpl(this);
+        }
+        return challengeView;
     }
 
 }

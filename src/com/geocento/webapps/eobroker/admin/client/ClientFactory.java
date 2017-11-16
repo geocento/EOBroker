@@ -38,4 +38,8 @@ public interface ClientFactory {
     SettingsView getSettingsView();
 
     LogsView getLogsView();
+
+    ChallengesView getChallengesView();
+
+    ChallengeView getChallengeView();
 }

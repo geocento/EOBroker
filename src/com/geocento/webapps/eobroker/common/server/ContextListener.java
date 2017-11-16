@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.common.server;
 
 import com.geocento.webapps.eobroker.common.server.Utils.Configuration;
+import com.geocento.webapps.eobroker.common.server.Utils.GISUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -12,6 +13,10 @@ import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import org.apache.log4j.Logger;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -55,8 +60,19 @@ public class ContextListener implements ServletContextListener {
         EntityManager em = EMF.get().createEntityManager();
         em.close();
 
+        System.setProperty("org.geotools.referencing.forceXY", "true");
+
         // apply fixes if needed
         applyFixes();
+
+        // quick check of libraries
+        try {
+            CoordinateReferenceSystem geo = CRS.decode("EPSG:4326", false);
+            File shapeFile = new File("C:\\Users\\thomas\\Downloads\\bristol1\\bristol1.shp");
+            GISUtils.reprojectShapefile(new ShapefileDataStore(DataUtilities.fileToURL(shapeFile)), geo, new File(shapeFile.getParent(), "_" + shapeFile.getName()));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
 
         // TODO - check that it works before erasing the data
         // clean up the samples

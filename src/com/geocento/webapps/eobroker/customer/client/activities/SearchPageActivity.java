@@ -650,7 +650,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                             displayListSuggestions(response);
                         }
                     }
-                }).call(ServicesUtil.searchService).complete(text, category, toWkt(currentAoI));
+                }).call(ServicesUtil.searchService).complete(text, category);
             } catch (RequestException e) {
                 e.printStackTrace();
             }

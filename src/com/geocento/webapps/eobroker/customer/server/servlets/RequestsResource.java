@@ -11,10 +11,10 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.RequestsService;
+import com.geocento.webapps.eobroker.customer.server.utils.MessageHelper;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.requests.*;
-import com.geocento.webapps.eobroker.customer.server.utils.MessageHelper;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
@@ -472,6 +472,95 @@ public class RequestsResource implements RequestsService {
         } finally {
             em.close();
         }
+    }
+
+    @Override
+    public OTSProductResponseDTO getOTSProductResponse(String id) throws RequestException {
+        String logUserName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            final User user = em.find(User.class, logUserName);
+            OTSProductRequest otsProductRequest = em.find(OTSProductRequest.class, id);
+            if(otsProductRequest == null) {
+                throw new RequestException("Unknown off the shelf product request");
+            }
+            if(otsProductRequest.getCustomer() != user) {
+                throw new RequestException("You are not authorised to view this request");
+            }
+            OTSProductResponseDTO otsProductResponseDTO = new OTSProductResponseDTO();
+            otsProductResponseDTO.setId(otsProductRequest.getId());
+            otsProductResponseDTO.setProductDataset(createProductDatasetDTO(otsProductRequest.getProductDataset()));
+            otsProductResponseDTO.setAoIWKT(otsProductRequest.getAoIWKT());
+            otsProductResponseDTO.setFormValues(otsProductRequest.getFormValues());
+            otsProductResponseDTO.setSelection(otsProductRequest.getSelection());
+            otsProductResponseDTO.setComments(otsProductRequest.getComments());
+            otsProductResponseDTO.setResponse(otsProductRequest.getResponse());
+            otsProductResponseDTO.setResponseDate(otsProductRequest.getLastModifiedDate());
+            otsProductResponseDTO.setMessages(MessageHelper.convertToDTO(otsProductRequest.getMessages()));
+            otsProductResponseDTO.setCreationTime(otsProductRequest.getCreationDate());
+            return otsProductResponseDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public MessageDTO addOTSProductResponseMessage(String id, String text) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("Request id cannot be null");
+        }
+        if(text == null || text.length() == 0) {
+            throw new RequestException("No message provided");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            OTSProductRequest otsProductRequest = em.find(OTSProductRequest.class, id);
+            if(otsProductRequest.getCustomer() != user) {
+                throw new RequestException("Not allowed");
+            }
+            Company company = otsProductRequest.getProductDataset().getCompany();
+            Message message = new Message();
+            message.setFrom(user);
+            message.setMessage(text);
+            message.setCreationDate(new Date());
+            em.persist(message);
+            otsProductRequest.getMessages().add(message);
+            try {
+                NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.OTSPRODUCTREQUEST, "New message from user '" + user.getUsername() + "' on request '" + otsProductRequest.getId() + "'", otsProductRequest.getId() + "");
+                MessageHelper.sendCompanyRequestMessage(company, otsProductRequest.getId() + "", message);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            em.getTransaction().commit();
+            return MessageHelper.convertToDTO(message);
+        } catch (Exception e) {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Could not add message to request, server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private ProductDatasetDTO createProductDatasetDTO(ProductDataset productDataset) {
+        ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
+        productDatasetDTO.setId(productDataset.getId());
+        productDatasetDTO.setName(productDataset.getName());
+        productDatasetDTO.setImageUrl(productDataset.getImageUrl());
+        productDatasetDTO.setDescription(productDataset.getDescription());
+        productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+        return productDatasetDTO;
     }
 
     @Override

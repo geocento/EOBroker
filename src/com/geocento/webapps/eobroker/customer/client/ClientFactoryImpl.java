@@ -41,6 +41,8 @@ public class ClientFactoryImpl implements ClientFactory {
 
     private ProductResponseView productResponseView = null;
 
+    private OTSProductResponseView otsProductResponseView = null;
+
     private ImageryResponseView imageryResponseView = null;
 
     private ImagesResponseView imagesResponseView = null;
@@ -280,6 +282,14 @@ public class ClientFactoryImpl implements ClientFactory {
             successStoryView = new SuccessStoryViewImpl(this);
         }
         return successStoryView;
+    }
+
+    @Override
+    public OTSProductResponseView getOTSProductResponseView() {
+        if(otsProductResponseView == null) {
+            otsProductResponseView = new OTSProductResponseViewImpl(this);
+        }
+        return otsProductResponseView;
     }
 }
 

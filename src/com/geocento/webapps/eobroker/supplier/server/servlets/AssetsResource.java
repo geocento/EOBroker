@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.shared.AuthorizationException;
+import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
@@ -19,6 +20,7 @@ import com.geocento.webapps.eobroker.common.shared.feasibility.BarChartStatistic
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
+import com.geocento.webapps.eobroker.supplier.server.util.DatasetAccessUtils;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
 import com.geocento.webapps.eobroker.supplier.shared.utils.ProductHelper;
@@ -100,6 +102,41 @@ public class AssetsResource implements AssetsService {
             });
         } catch (Exception e) {
             throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<Suggestion> listOfferings(String text) throws RequestException {
+        String keywords = DBHelper.generateKeywords(text);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            // look in the generic view table
+            // change the last word so that it allows for partial match
+            List<Category> categories = ListUtil.toList(new Category[] {Category.productdatasets, Category.productservices, Category.software});
+            Query q = em.createNativeQuery("SELECT id, " +
+                    "category, " +
+                    "ts_rank(tsvname, keywords, 8) AS rank\n" +
+                    "name, " +
+                    "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          WHERE tsvname @@ keywords\n" +
+                    " AND category IN('" + ListUtil.toString(categories, value -> value.toString(), ",") + "')" +
+                    "          ORDER BY rank DESC\n" +
+                    "          LIMIT 10;");
+            List<Object[]> results = q.getResultList();
+            return ListUtil.mutate(results, new ListUtil.Mutate<Object[], Suggestion>() {
+                @Override
+                public Suggestion mutate(Object[] result) {
+                    Long id = (Long) result[0];
+                    String category = (String) result[1];
+                    Double ranking = (Double) result[2];
+                    String name = (String) result[3];
+                    return new Suggestion(name, Category.valueOf(category), id + "");
+                }
+            });
+        } catch (Exception e) {
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
         } finally {
             em.close();
         }
@@ -542,20 +579,6 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public List<ProductDTO> findProducts(String textFilter) {
-/*
-        // check if last character is a space
-        boolean partialMatch = !text.endsWith(" ");
-        text.trim();
-        if(text.length() == 0) {
-            return null;
-        }
-        // break down text into sub words
-        String[] words = text.split(" ");
-        String keywords = StringUtils.join(words, " | ");
-        if(partialMatch) {
-            keywords += ":*";
-        }
-*/
         String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
         String sqlStatement = "SELECT id, \"name\", imageurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
@@ -579,20 +602,6 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public List<CompanyDTO> findCompanies(String textFilter) {
-/*
-        // check if last character is a space
-        boolean partialMatch = !text.endsWith(" ");
-        text.trim();
-        if(text.length() == 0) {
-            return null;
-        }
-        // break down text into sub words
-        String[] words = text.split(" ");
-        String keywords = StringUtils.join(words, " | ");
-        if(partialMatch) {
-            keywords += ":*";
-        }
-*/
         String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
         String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
@@ -916,6 +925,20 @@ public class AssetsResource implements AssetsService {
             barChartStatistics.setValues(values);
             supplierStatisticsDTO.setStatistics(ListUtil.toList(barChartStatistics));
             return supplierStatisticsDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error getting statistics");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public String getDataAccessThumbnail(DatasetAccess datasetAccess) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            return DatasetAccessUtils.generateThumbnail(datasetAccess);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error getting statistics");
