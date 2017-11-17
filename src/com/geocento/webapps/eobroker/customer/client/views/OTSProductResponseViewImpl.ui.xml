@@ -4,7 +4,7 @@
              xmlns:maps="urn:import:com.geocento.webapps.eobroker.common.client.widgets.maps"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
-    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.ProductResponseViewImpl.StyleFile">
+    <ui:style field="style" type="com.geocento.webapps.eobroker.customer.client.views.OTSProductResponseViewImpl.StyleFile">
 
         .formValues {
             margin: 0;
@@ -91,7 +91,9 @@
         }
 
         .response {
-            padding-left: 20px;
+            margin: 20px 0px;
+            padding: 20px 0px 20px 20px;
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .image {
@@ -120,8 +122,9 @@
                         <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
                     </design:MaterialPanel>
                     <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
-                        <design:MaterialPanel ui:field="actions">
+                    <design:MaterialPanel paddingTop="30">
+                        <widgets:MaterialLabelIcon imageHeight="30px" ui:field="company"></widgets:MaterialLabelIcon>
+                        <design:MaterialPanel float="RIGHT" ui:field="actions">
                             <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
                         </design:MaterialPanel>
                     </design:MaterialPanel>
@@ -149,10 +152,10 @@
                 </widgets:ExpandPanel>
                 <design:MaterialPanel addStyleNames="{style.responsesContent}" ui:field="responsesPanel">
                     <design:MaterialPanel padding="20" ui:field="responsePanel">
-                        <widgets:MaterialLabelIcon imageHeight="50px" addStyleNames="{style.supplier}" ui:field="supplier"></widgets:MaterialLabelIcon>
+                        <design:MaterialLabel marginTop="10" marginBottom="10" fontSize="1.2em">Supplier response</design:MaterialLabel>
                         <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.response}">
                         </g:HTMLPanel>
-                        <design:MaterialLabel fontSize="1.2em">Conversation</design:MaterialLabel>
+                        <design:MaterialLabel marginTop="10" marginBottom="10" fontSize="1.2em">Conversation</design:MaterialLabel>
                         <design:MaterialLabel padding="10" ui:field="messagesComment"></design:MaterialLabel>
                         <design:MaterialRow marginTop="20" padding="10" ui:field="messages" addStyleNames="{style.formValues}">
                         </design:MaterialRow>

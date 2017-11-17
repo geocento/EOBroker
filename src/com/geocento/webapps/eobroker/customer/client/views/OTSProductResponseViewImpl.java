@@ -2,11 +2,13 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.OTSProductRequest;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
@@ -88,7 +90,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     @UiField
     MaterialLabel messagesComment;
     @UiField
-    MaterialLabelIcon supplier;
+    MaterialLabelIcon company;
 
     private ClientFactoryImpl clientFactory;
 
@@ -109,11 +111,6 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     @Override
     public void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler) {
         mapContainer.setMapLoadedHandler(mapLoadedHandler);
-    }
-
-    @Override
-    public void displayTitle(String title) {
-        this.title.setText(title);
     }
 
     @Override
@@ -164,7 +161,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
 
     protected void displayResponse(String response) {
         requestResponse.clear();
-        if(response == null) {
+        if(StringUtils.isEmpty(response)) {
             MaterialLabel materialLabel = new MaterialLabel("This supplier hasn't provided an offer yet...");
             materialLabel.setMargin(20);
             materialLabel.setTextColor(Color.GREY);
@@ -191,7 +188,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     private void updateMessagesComment() {
         boolean hasMessages = messages.getWidgetCount() > 0;
         messagesComment.setVisible(!hasMessages);
-        if(hasMessages) {
+        if(!hasMessages) {
             messagesComment.setText("No messages yet...");
             message.setPlaceholder("Start a conversation...");
         } else {
@@ -200,33 +197,38 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     }
 
     protected void setStatus(Request.STATUS status) {
-        this.status.setText(status.toString());
         statuses.clear();
-        this.status.setEnabled(false);
-        switch(status) {
-            case submitted:
-                this.status.setEnabled(true);
-            {
-                MaterialLink materialLink = new MaterialLink("Cancel");
-                materialLink.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        clientFactory.getEventBus().fireEvent(new ChangeStatus(Request.STATUS.cancelled));
-                    }
-                });
-                statuses.add(materialLink);
+        if(status == null) {
+            this.status.setText("Undefined");
+            this.status.setEnabled(false);
+        } else {
+            this.status.setText(status.toString());
+            this.status.setEnabled(false);
+            switch (status) {
+                case submitted:
+                    this.status.setEnabled(true);
+                {
+                    MaterialLink materialLink = new MaterialLink("Cancel");
+                    materialLink.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            clientFactory.getEventBus().fireEvent(new ChangeStatus(Request.STATUS.cancelled));
+                        }
+                    });
+                    statuses.add(materialLink);
+                }
+                {
+                    MaterialLink materialLink = new MaterialLink("Complete");
+                    materialLink.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            clientFactory.getEventBus().fireEvent(new ChangeStatus(Request.STATUS.completed));
+                        }
+                    });
+                    statuses.add(materialLink);
+                }
+                break;
             }
-            {
-                MaterialLink materialLink = new MaterialLink("Complete");
-                materialLink.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        clientFactory.getEventBus().fireEvent(new ChangeStatus(Request.STATUS.completed));
-                    }
-                });
-                statuses.add(materialLink);
-            }
-            break;
         }
     }
 
@@ -247,11 +249,17 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
 
     @Override
     public void displayProductResponse(OTSProductResponseDTO otsProductResponseDTO) {
-        setStatus(otsProductResponseDTO.getStatus());
         this.requestDescription.clear();
         ProductDatasetDTO productDataset = otsProductResponseDTO.getProductDataset();
-        addRequestValue("Off the shelf product requested for '", productDataset.getName() + "'");
-        status.setText("Submitted");
+        title.setText("Off the shelf product request '" + productDataset.getName() + "'");
+        image.setImageUrl(productDataset.getImageUrl());
+        description.setText("Off the shelf product '" + otsProductResponseDTO.getId() + "' " +
+                "requested on " + otsProductResponseDTO.getCreationTime().toString() +
+                " for " + otsProductResponseDTO.getSelection().split(OTSProductRequest.selectionSeparator).length + " products");
+        CompanyDTO companyDTO = productDataset.getCompany();
+        company.setImageUrl(companyDTO.getIconURL());
+        company.setText("From company " + companyDTO.getName());
+        setStatus(otsProductResponseDTO.getStatus());
         addRequestValue("Your comments", otsProductResponseDTO.getComments());
         addRequestValue("Products ID selection", otsProductResponseDTO.getSelection());
         if(otsProductResponseDTO.getFormValues().size() == 0) {
@@ -271,10 +279,8 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
             }
         }
         // now add the responses
-        supplier.setImageUrl(productDataset.getCompany().getIconURL());
-        supplier.setText("Offer from '" + productDataset.getCompany().getName());
-        requestResponse.clear();
-        requestResponse.add(new HTML(otsProductResponseDTO.getResponse()));
+        displayResponse(otsProductResponseDTO.getResponse());
+        displayMessages(otsProductResponseDTO.getMessages());
     }
 
 }

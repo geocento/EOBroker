@@ -5,6 +5,7 @@ import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.*;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.OTSProductRequest;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
@@ -341,7 +342,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                         public String getLabel(Record value) {
                             return value.getId();
                         }
-                    }, "#;-"));
+                    }, OTSProductRequest.selectionSeparator));
                     // submit the request
                     catalogueSearchView.hideRequestQuotation();
                     displayFullLoading("Submitting request...");

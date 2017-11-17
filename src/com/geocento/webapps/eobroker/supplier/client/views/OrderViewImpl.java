@@ -259,7 +259,7 @@ public class OrderViewImpl extends Composite implements OrderView {
     private void updateMessagesComment() {
         boolean hasMessages = messages.getWidgetCount() > 0;
         messagesComment.setVisible(!hasMessages);
-        if(hasMessages) {
+        if(!hasMessages) {
             messagesComment.setText("No messages yet...");
             message.setPlaceholder("Start a conversation...");
         } else {

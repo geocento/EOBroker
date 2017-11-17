@@ -93,7 +93,6 @@ public class OTSProductResponseActivity extends TemplateActivity implements OTSP
                 public void onSuccess(Method method, OTSProductResponseDTO otsProductResponseDTO) {
                     hideFullLoading();
                     request = otsProductResponseDTO;
-                    otsProductResponseView.displayTitle("Viewing your product request '" + otsProductResponseDTO.getId() + "'");
                     otsProductResponseView.displayProductResponse(otsProductResponseDTO);
                 }
             }).call(ServicesUtil.requestsService).getOTSProductResponse(id);

@@ -37,6 +37,8 @@ public class AppActivityMapper implements ActivityMapper {
             return new RequestsActivity((RequestsPlace) place, clientFactory);
         } else if(place instanceof ProductResponsePlace) {
             return new ProductResponseActivity((ProductResponsePlace) place, clientFactory);
+        } else if(place instanceof OTSProductResponsePlace) {
+            return new OTSProductResponseActivity((OTSProductResponsePlace) place, clientFactory);
         } else if(place instanceof ImageryResponsePlace) {
             return new ImageryResponseActivity((ImageryResponsePlace) place, clientFactory);
         } else if(place instanceof ImagesResponsePlace) {

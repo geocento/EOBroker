@@ -422,6 +422,22 @@ public class OrdersResource implements OrdersService {
                         logger.error(e.getMessage(), e);
                     }
                 } break;
+                case otsproduct: {
+                    OTSProductRequest otsProductRequest = em.find(OTSProductRequest.class, id);
+                    if (otsProductRequest == null) {
+                        throw new RequestException("No off the shelf product request with id " + id);
+                    }
+                    otsProductRequest.getMessages().add(message);
+                    try {
+                        // TODO - change to take into account that it is a message...
+                        NotificationHelper.notifyCustomer(em, otsProductRequest.getCustomer(), Notification.TYPE.PRODUCTREQUEST, "New message from company '" + user.getCompany().getName() + "' on request '" + otsProductRequest.getId() + "'", otsProductRequest.getId() + "");
+                        MessageHelper.sendUserRequestMessage(otsProductRequest.getCustomer(), otsProductRequest.getId() + "", message);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                } break;
+                default:
+                    throw new RequestException("Unknown type " + type);
             }
             em.getTransaction().commit();
             return MessageHelper.convertToDTO(message);

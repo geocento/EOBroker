@@ -102,7 +102,7 @@
                 </design:MaterialRow>
             </widgets:content>
         </widgets:ExpandPanel>
-        <widgets:ExpandPanel label="Your offer" labelStyle="{style.sectionLabel}" labelColor="WHITE" ui:field="response">
+        <widgets:ExpandPanel label="Your offer" labelStyle="{style.sectionLabel}" labelColor="WHITE" open="true" ui:field="response">
             <widgets:content>
                 <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
                     <material:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></material:MaterialRichEditor>
@@ -113,7 +113,7 @@
                 </g:HTMLPanel>
             </widgets:content>
         </widgets:ExpandPanel>
-        <widgets:ExpandPanel label="Conversation" labelStyle="{style.sectionLabel}" labelColor="WHITE" ui:field="conversation">
+        <widgets:ExpandPanel label="Conversation" labelStyle="{style.sectionLabel}" labelColor="WHITE" open="true" ui:field="conversation">
             <widgets:content>
                 <design:MaterialPanel>
                     <design:MaterialLabel padding="10" ui:field="messagesComment"></design:MaterialLabel>

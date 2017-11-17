@@ -114,11 +114,10 @@ public class SearchResource implements SearchService {
                 // change the last word so that it allows for partial match
                 Query q = em.createNativeQuery("SELECT id, " +
                         "category, " +
-                        "ts_rank(tsvname, keywords, 8) AS rank\n" +
-                        "name, " +
+                        "ts_rank(tsvname, keywords, 8) AS rank, " +
+                        "name " +
                         "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
                         "          WHERE tsvname @@ keywords\n" +
-                        (category != null ? "" : " AND category = '" + category.toString() + "'") +
                         "          ORDER BY rank DESC\n" +
                         "          LIMIT 10;");
                 List<Object[]> results = q.getResultList();
@@ -127,12 +126,12 @@ public class SearchResource implements SearchService {
                     public Suggestion mutate(Object[] result) {
                         Long id = (Long) result[0];
                         String category = (String) result[1];
-                        Double ranking = (Double) result[2];
                         String name = (String) result[3];
                         return new Suggestion(name, Category.valueOf(category), "access" + "::" + id);
                     }
                 });
             } catch (Exception e) {
+                logger.error(e.getMessage(), e);
                 throw new RequestException(e instanceof RequestException ? e.getMessage() : "Server error");
             } finally {
                 em.close();
@@ -150,34 +149,13 @@ public class SearchResource implements SearchService {
 
     private List<Suggestion> completeCategory(Category category, String keywords, String additionalStatement) throws RequestException {
         // change the last word so that it allows for partial match
-        String categoryTable = null;
-        switch(category) {
-            case products:
-                categoryTable = "product";
-                break;
-            case companies:
-                categoryTable = "company";
-                break;
-            case productdatasets:
-                categoryTable = "productdataset";
-                break;
-            case productservices:
-                categoryTable = "productservice";
-                break;
-            case software:
-                categoryTable = "software";
-                break;
-            case project:
-                categoryTable = "project";
-                break;
-        }
         EntityManager em = EMF.get().createEntityManager();
         try {
             Query q = em.createNativeQuery("SELECT id, " +
                     "category, " +
                     "ts_rank(tsvname, keywords, 8) AS rank\n" +
                     "name, " +
-                    "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
+                    "          FROM " + category.toString() + ", to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsvname @@ keywords\n" +
                     (additionalStatement != null ? additionalStatement : "") +
                     "          ORDER BY rank DESC\n" +
@@ -188,7 +166,6 @@ public class SearchResource implements SearchService {
                 public Suggestion mutate(Object[] result) {
                     Long id = (Long) result[0];
                     String category = (String) result[1];
-                    Double ranking = (Double) result[2];
                     String name = (String) result[3];
                     return new Suggestion(name, Category.valueOf(category), "access" + "::" + id);
                 }
@@ -322,16 +299,17 @@ public class SearchResource implements SearchService {
                     Long id = (Long) result[0];
                     Double ranking = (Double) result[2];
                     rankings.put(id, ranking);
-                    switch((String) result[1]) {
-                        case "product":
+                    switch(Category.valueOf((String) result[1])) {
+                        case products:
                             productIds.add(id);
                             break;
-                        case "productservice":
+                        case productservices:
                             productServiceIds.add(id);
                             break;
-                        case "productdatasets":
+                        case productdatasets:
                             productDatasetIds.add(id);
                             break;
+                        case software:
                     }
                 }
                 // now fetch the actual entities

@@ -218,6 +218,13 @@ public class OrderActivity extends TemplateActivity implements OrderView.Present
                             request.getMessages().add(event.getMessage());
                             addMessage(event.getMessage());
                         }
+                    } else if(request instanceof OTSProductRequestDTO) {
+                        OTSProductRequestDTO otsProductRequestDTO = (OTSProductRequestDTO) request;
+                        // check if it belongs to the response
+                        if (otsProductRequestDTO.getId().toString().equals(event.getDestination())) {
+                            request.getMessages().add(event.getMessage());
+                            addMessage(event.getMessage());
+                        }
                     }
                 }
             }

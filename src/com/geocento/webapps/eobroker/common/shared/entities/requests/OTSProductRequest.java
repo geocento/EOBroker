@@ -13,6 +13,8 @@ import java.util.List;
 @Entity
 public class OTSProductRequest extends Request {
 
+    public static String selectionSeparator = "#;-";
+
     @ManyToOne
     ProductDataset productDataset;
 

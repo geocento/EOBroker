@@ -118,7 +118,7 @@ public class RequestsResource implements RequestsService {
             OTSProductRequest otsProductRequest = (OTSProductRequest) request;
             requestDTO.setDescription("Request for off the shelf product '" + otsProductRequest.getProductDataset().getName() +
                             "' from company '" + otsProductRequest.getProductDataset().getCompany().getName() + "' - " +
-                            otsProductRequest.getSelection().split("#;-").length + " products selected"
+                            otsProductRequest.getSelection().split(OTSProductRequest.selectionSeparator).length + " products selected"
             );
         }
         return requestDTO;

@@ -15,8 +15,6 @@ public interface OTSProductResponseView extends IsWidget {
 
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
-    void displayTitle(String title);
-
     void addMessage(String imageUrl, boolean isCustomer, String message, Date date);
 
     HasClickHandlers getSubmitMessage();
