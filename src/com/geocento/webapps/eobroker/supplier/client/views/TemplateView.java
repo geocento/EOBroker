@@ -10,13 +10,21 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
 import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
+import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.places.*;
+import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.EOBrokerPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.NotificationsPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.supplier.client.places.SettingsPlace;
+import com.geocento.webapps.eobroker.supplier.client.places.TestimonialsPlace;
 import com.geocento.webapps.eobroker.supplier.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -110,6 +118,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLink notificationsLink;
     @UiField
     MaterialLink statistics;
+
+    private int maxNotifications = 10;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -241,33 +251,35 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         boolean hasNotifications = notifications != null && notifications.size() > 0;
         notificationsBadge.setVisible(hasNotifications);
         if(hasNotifications) {
+            boolean hasMore = notifications.size() > maxNotifications;
+            if(hasMore) {
+                notifications = notifications.subList(0, maxNotifications);
+            }
             for (SupplierNotificationDTO supplierNotificationDTO : notifications) {
-                MaterialLink message = new MaterialLink(supplierNotificationDTO.getMessage());
-                message.setTruncate(true);
-                message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
-                message.add(new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(supplierNotificationDTO.getCreationDate()) + "</span>"));
-                EOBrokerPlace place = null;
-                switch(supplierNotificationDTO.getType()) {
-                    case MESSAGE:
-                        place = new ConversationPlace(ConversationPlace.TOKENS.id.toString() + "=" + supplierNotificationDTO.getLinkId());
-                        break;
-                    case PRODUCTREQUEST:
-                    case IMAGESERVICEREQUEST:
-                    case IMAGEREQUEST:
-                        place = new OrderPlace(
-                                supplierNotificationDTO.getLinkId(),
-                                supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGEREQUEST ? RequestDTO.TYPE.image :
-                                        supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGESERVICEREQUEST ? RequestDTO.TYPE.imageservice :
-                                                supplierNotificationDTO.getType() == SupplierNotification.TYPE.PRODUCTREQUEST ? RequestDTO.TYPE.product : null
-                        );
-                        break;
-                }
-                message.setHref("#" + PlaceHistoryHelper.convertPlace(NotificationHelper.convertToPlace(supplierNotificationDTO)));
-                notificationsPanel.add(message);
+                addNotification(supplierNotificationDTO);
+            }
+            if(hasMore) {
+                MaterialLink materialLink = new MaterialLink("See all notifications");
+                materialLink.setTruncate(true);
+                materialLink.setFontSize("0.8em");
+                materialLink.setPadding(10);
+                materialLink.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.CENTER);
+                materialLink.getElement().getStyle().setTextDecoration(com.google.gwt.dom.client.Style.TextDecoration.UNDERLINE);
+                materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(new NotificationsPlace()));
+                notificationsPanel.add(materialLink);
             }
         } else {
             notificationsPanel.add(new MaterialLabel("No new notification"));
         }
+    }
+
+    public void addNotification(SupplierNotificationDTO supplierNotificationDTO) {
+        MaterialLink message = new MaterialLink(supplierNotificationDTO.getMessage());
+        message.setTruncate(true);
+        message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
+        message.add(new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(supplierNotificationDTO.getCreationDate()) + "</span>"));
+        message.setHref("#" + PlaceHistoryHelper.convertPlace(NotificationHelper.convertToPlace(supplierNotificationDTO)));
+        notificationsPanel.add(message);
     }
 
     public void scrollToTop() {

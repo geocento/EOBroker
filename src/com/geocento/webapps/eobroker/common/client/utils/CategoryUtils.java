@@ -47,6 +47,8 @@ public class CategoryUtils {
                 return Color.BLUE;
             case companies:
                 return Color.BLUE;
+            case successStories:
+                return Color.AMBER;
             case imagery:
                 return Color.BLUE;
         }

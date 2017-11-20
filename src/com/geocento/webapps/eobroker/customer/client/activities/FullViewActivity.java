@@ -119,7 +119,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find product category");
+                    displayFullError("Error loading product category, reason is " + method.getResponse().getText());
                 }
 
                 @Override
@@ -144,7 +144,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find company");
+                    displayFullError("Error loading company, reason is " + method.getResponse().getText());
                 }
 
                 @Override
@@ -169,7 +169,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find bespoke service");
+                    displayFullError("Error loading bespoke service, reason is " + method.getResponse().getText());
                 }
 
                 @Override
@@ -194,7 +194,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find off the shelf product");
+                    displayFullError("Error loading off the shelf product, reason is " + method.getResponse().getText());
                 }
 
                 @Override
@@ -219,7 +219,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find software");
+                    displayFullError("Error loading software solution, reason is " + method.getResponse().getText());
                 }
 
                 @Override
@@ -244,7 +244,7 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    displayError("Could not find project");
+                    displayFullError("Error loading project, reason is " + method.getResponse().getText());
                 }
 
                 @Override

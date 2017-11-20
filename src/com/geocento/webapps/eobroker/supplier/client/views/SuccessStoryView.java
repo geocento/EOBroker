@@ -28,9 +28,7 @@ public interface SuccessStoryView extends IsWidget {
 
     HasText getDescription();
 
-    void setDate(Date date);
-
-    Date getDate();
+    HasText getPeriod();
 
     String getFullDescription();
 

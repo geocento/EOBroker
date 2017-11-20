@@ -39,7 +39,7 @@ public class ProductServiceWidget extends Composite {
 
     private ProductServiceDTO productService;
 
-    public ProductServiceWidget(final ProductServiceDTO productServiceDTO) {
+    public ProductServiceWidget(final ProductServiceDTO productServiceDTO, boolean withAction) {
 
         this.productService = productServiceDTO;
 
@@ -50,8 +50,16 @@ public class ProductServiceWidget extends Composite {
 
         title.setText(productServiceDTO.getName());
         shortDescription.setText(productServiceDTO.getDescription());
-        edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId())));
-        remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveService(productServiceDTO.getId())));
+
+        action.setVisible(withAction);
+        if(withAction) {
+            edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductServicePlace(ProductServicePlace.TOKENS.service.toString() + "=" + productServiceDTO.getId())));
+            remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveService(productServiceDTO.getId())));
+        }
+    }
+
+    public ProductServiceWidget(final ProductServiceDTO productServiceDTO) {
+        this(productServiceDTO, true);
     }
 
     public ProductServiceDTO getProductService() {

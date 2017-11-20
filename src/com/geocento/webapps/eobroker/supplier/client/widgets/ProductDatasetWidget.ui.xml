@@ -28,6 +28,7 @@
         </design:MaterialCardImage>
         <design:MaterialCardContent textColor="WHITE">
             <design:MaterialLabel fontSize="1.5em" addStyleNames="{style.title}" ui:field="title"/>
+            <design:MaterialLabel addStyleNames="{style.shortDescription}" ui:field="shortDescription"></design:MaterialLabel>
         </design:MaterialCardContent>
         <design:MaterialCardAction addStyleNames="{style.actions}" ui:field="action">
             <design:MaterialLink iconType="EDIT" text="EDIT" ui:field="edit"></design:MaterialLink>

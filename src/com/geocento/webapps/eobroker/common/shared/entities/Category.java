@@ -10,7 +10,7 @@ public enum Category {
     project("Projects"),
     companies("Companies"),
     imagery("Imagery"),
-    newsItems;
+    newsItems, successStories;
 
     private String name;
 

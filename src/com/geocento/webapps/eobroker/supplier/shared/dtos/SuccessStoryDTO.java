@@ -2,8 +2,6 @@ package com.geocento.webapps.eobroker.supplier.shared.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
-import java.util.Date;
-
 /**
  * Created by thomas on 06/06/2016.
  */
@@ -14,7 +12,6 @@ public class SuccessStoryDTO {
     String description;
     String imageUrl;
     CompanyDTO customer;
-    Date date;
 
     public SuccessStoryDTO() {
     }
@@ -49,13 +46,5 @@ public class SuccessStoryDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 }

@@ -239,7 +239,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         for(int index = 0; index < formContainer.getWidgetCount(); index++) {
             Widget widget = formContainer.getWidget(index);
             if(widget instanceof ElementEditor) {
-                formElementValues.add(((ElementEditor) widget).getFormElementValue());
+                formElementValues.add(((ElementEditor) widget).getReadableFormElementValue());
             }
         }
         return formElementValues;

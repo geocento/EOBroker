@@ -34,10 +34,12 @@ public class ProductDatasetWidget extends Composite {
     MaterialLink remove;
     @UiField
     MaterialImageLoading imagePanel;
+    @UiField
+    MaterialLabel shortDescription;
 
     private final ProductDatasetDTO productDataset;
 
-    public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO) {
+    public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO, boolean withAction) {
 
         this.productDataset = productDatasetDTO;
 
@@ -47,8 +49,17 @@ public class ProductDatasetWidget extends Composite {
         imagePanel.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductDatasetPlace(ProductDatasetPlace.TOKENS.id.toString() + "=" + productDatasetDTO.getId())));
 
         title.setText(productDatasetDTO.getName());
-        edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductDatasetPlace(ProductDatasetPlace.TOKENS.id.toString() + "=" + productDatasetDTO.getId())));
-        remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveProductDataset(productDatasetDTO.getId())));
+        shortDescription.setText(productDatasetDTO.getDescription());
+
+        action.setVisible(withAction);
+        if(withAction) {
+            edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new ProductDatasetPlace(ProductDatasetPlace.TOKENS.id.toString() + "=" + productDatasetDTO.getId())));
+            remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveProductDataset(productDatasetDTO.getId())));
+        }
+    }
+
+    public ProductDatasetWidget(final ProductDatasetDTO productDatasetDTO) {
+        this(productDatasetDTO, true);
     }
 
     public ProductDatasetDTO getProductDataset() {

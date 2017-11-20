@@ -28,8 +28,10 @@ public class MaterialLoadingLink extends MaterialLink {
                 getElement().insertFirst(loadingIcon.getElement());
             }
         } else {
-            getElement().removeChild(loadingIcon.getElement());
-            loadingIcon = null;
+            if(loadingIcon != null) {
+                getElement().removeChild(loadingIcon.getElement());
+                loadingIcon = null;
+            }
         }
     }
 }

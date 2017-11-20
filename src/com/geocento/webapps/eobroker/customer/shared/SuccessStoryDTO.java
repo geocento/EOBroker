@@ -2,7 +2,6 @@ package com.geocento.webapps.eobroker.customer.shared;
 
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,12 +15,12 @@ public class SuccessStoryDTO {
     String imageUrl;
     CompanyDTO customer;
     ProductDTO productDTO;
-    Date date;
     CompanyDTO company;
     private List<EndorsementDTO> endorsements;
     private List<ProductDatasetDTO> datasets;
     private List<ProductServiceDTO> services;
     private List<SoftwareDTO> software;
+    private String period;
 
     public SuccessStoryDTO() {
     }
@@ -58,12 +57,12 @@ public class SuccessStoryDTO {
         this.imageUrl = imageUrl;
     }
 
-    public Date getDate() {
-        return date;
+    public void setPeriod(String period) {
+        this.period = period;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public String getPeriod() {
+        return period;
     }
 
     public CompanyDTO getCustomer() {

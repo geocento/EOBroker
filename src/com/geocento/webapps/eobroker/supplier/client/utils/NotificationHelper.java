@@ -26,7 +26,9 @@ public class NotificationHelper {
                         supplierNotificationDTO.getLinkId(),
                         supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGEREQUEST ? RequestDTO.TYPE.image :
                                 supplierNotificationDTO.getType() == SupplierNotification.TYPE.IMAGESERVICEREQUEST ? RequestDTO.TYPE.imageservice :
-                                        supplierNotificationDTO.getType() == SupplierNotification.TYPE.PRODUCTREQUEST ? RequestDTO.TYPE.product : null
+                                        supplierNotificationDTO.getType() == SupplierNotification.TYPE.PRODUCTREQUEST ? RequestDTO.TYPE.product :
+                                                supplierNotificationDTO.getType() == SupplierNotification.TYPE.OTSPRODUCTREQUEST ? RequestDTO.TYPE.otsproduct :
+                                                        null
                 );
                 break;
         }

@@ -79,6 +79,14 @@
             border-top: 1px solid grey;
         }
 
+        .colorPanel {
+            position: absolute;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.formPanel}">
         <design:MaterialRow>
@@ -86,30 +94,37 @@
                 <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="iconUrl"></widgets:MaterialImageLoading>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12 m6 l8">
-                <design:MaterialLabel fontSize="2.4em" ui:field="title"></design:MaterialLabel>
-                <design:MaterialLink fontSize="1.4em" iconType="STAR" iconColor="AMBER" textColor="BLACK" text="Success story"></design:MaterialLink>
-                <design:MaterialPanel textAlign="LEFT" paddingLeft="30">
+                <design:MaterialLabel fontSize="2em" ui:field="title"></design:MaterialLabel>
+                <design:MaterialChip fontSize="1.2em" backgroundColor="AMBER" iconType="STAR" iconColor="WHITE" textColor="WHITE" text="Success story"></design:MaterialChip>
+                <design:MaterialPanel textAlign="LEFT" paddingLeft="30" fontSize="0.8em">
                     <g:HTMLPanel addStyleNames="{style.items}">From company <widgets:MaterialLabelIcon imageHeight="30px" ui:field="company"></widgets:MaterialLabelIcon></g:HTMLPanel>
                     <g:HTMLPanel addStyleNames="{style.items}">Client company <widgets:MaterialLabelIcon imageHeight="20px" ui:field="clientCompany"></widgets:MaterialLabelIcon></g:HTMLPanel>
                     <g:HTMLPanel addStyleNames="{style.items}">Product category <widgets:MaterialLabelIcon imageHeight="20px" ui:field="productCategory"></widgets:MaterialLabelIcon></g:HTMLPanel>
-                    <g:HTMLPanel addStyleNames="{style.items}">On <design:MaterialLink iconType="PERM_CONTACT_CALENDAR" iconColor="BLACK" textColor="BLACK" ui:field="date"></design:MaterialLink></g:HTMLPanel>
+                    <g:HTMLPanel addStyleNames="{style.items}">When? <design:MaterialLink textColor="BLACK" ui:field="date"></design:MaterialLink></g:HTMLPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
         </design:MaterialRow>
+<!--
         <g:HTMLPanel addStyleNames="{style.panelLine}"></g:HTMLPanel>
-        <design:MaterialRow>
-            <design:MaterialColumn grid="s12">
-                <g:HTMLPanel addStyleNames="{style.fullDescription}" ui:field="fullDescription"></g:HTMLPanel>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
-                <g:HTMLPanel addStyleNames="{style.endorsementsPanel}"></g:HTMLPanel>
-                <design:MaterialLabel addStyleNames="{style.endorsements}" text="Endorsements"></design:MaterialLabel>
-                <design:MaterialRow ui:field="endorsements"></design:MaterialRow>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
-                <design:MaterialLabel addStyleNames="{style.endorsements}" text="Supplier offerings used"></design:MaterialLabel>
-                <design:MaterialRow ui:field="offeringsUsed"></design:MaterialRow>
-            </design:MaterialColumn>
-        </design:MaterialRow>
+-->
+        <design:MaterialPanel layoutPosition="RELATIVE">
+            <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
+            <design:MaterialPanel paddingTop="20">
+                <design:MaterialRow>
+                    <design:MaterialColumn grid="s12">
+                        <g:HTMLPanel addStyleNames="{style.fullDescription}" ui:field="fullDescription"></g:HTMLPanel>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12">
+                        <g:HTMLPanel addStyleNames="{style.endorsementsPanel}"></g:HTMLPanel>
+                        <design:MaterialLabel addStyleNames="{style.endorsements}" text="Endorsements"></design:MaterialLabel>
+                        <design:MaterialRow ui:field="endorsements"></design:MaterialRow>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12">
+                        <design:MaterialLabel addStyleNames="{style.endorsements}" text="Supplier offerings used"></design:MaterialLabel>
+                        <design:MaterialRow ui:field="offeringsUsed"></design:MaterialRow>
+                    </design:MaterialColumn>
+                </design:MaterialRow>
+            </design:MaterialPanel>
+        </design:MaterialPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

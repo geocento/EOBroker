@@ -149,7 +149,7 @@ public class OTSProductResponseActivity extends TemplateActivity implements OTSP
             public void onNotification(NotificationEvent event) {
                 NotificationDTO notificationDTO = event.getNotification();
                 // TODO - change so that it handles product request response changes as well as product request messages
-                if(notificationDTO.getType() == Notification.TYPE.PRODUCTREQUEST) {
+                if(notificationDTO.getType() == Notification.TYPE.OTSPRODUCTREQUEST) {
 
                 }
             }

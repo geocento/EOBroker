@@ -15,7 +15,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import gwt.material.design.client.ui.MaterialToast;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
@@ -51,6 +50,11 @@ public class SuccessStoriesActivity extends TemplateActivity implements Dashboar
         HashMap<String, String> tokens = Utils.extractTokens(place.getToken());
 
         // no need for company id
+        loadSuccessStories();
+
+    }
+
+    private void loadSuccessStories() {
         displayFullLoading("Loading success stories...");
         try {
             REST.withCallback(new MethodCallback<List<SuccessStoryDTO>>() {
@@ -71,7 +75,6 @@ public class SuccessStoriesActivity extends TemplateActivity implements Dashboar
         } catch (RequestException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -82,7 +85,26 @@ public class SuccessStoriesActivity extends TemplateActivity implements Dashboar
             @Override
             public void onRemoveSuccessStory(RemoveSuccessStory event) {
                 if (Window.confirm("Are you sure you want to remove this success story?")) {
-                    MaterialToast.fireToast("Not implemented yet");
+                    displayLoading("Removing success story...");
+                    try {
+                        REST.withCallback(new MethodCallback<Void>() {
+
+                            @Override
+                            public void onFailure(Method method, Throwable exception) {
+                                hideLoading();
+                                Window.alert("Problem removing success story");
+                            }
+
+                            @Override
+                            public void onSuccess(Method method, Void result) {
+                                hideLoading();
+                                loadSuccessStories();
+                            }
+
+                        }).call(ServicesUtil.assetsService).removeSuccessStory(event.getId());
+                    } catch (RequestException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });

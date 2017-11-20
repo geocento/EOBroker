@@ -34,16 +34,35 @@ public class SoftwareWidget extends Composite {
     MaterialLink remove;
     @UiField
     MaterialImageLoading imagePanel;
+    @UiField
+    MaterialLabel shortDescription;
 
-    public SoftwareWidget(final SoftwareDTO softwareDTO) {
+    private SoftwareDTO software;
+
+    public SoftwareWidget(final SoftwareDTO softwareDTO, boolean withAction) {
+
+        this.software = softwareDTO;
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
         imagePanel.setImageUrl(softwareDTO.getImageUrl());
         imagePanel.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new SoftwarePlace(SoftwarePlace.TOKENS.id.toString() + "=" + softwareDTO.getId())));
 
         title.setText(softwareDTO.getName());
-        edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new SoftwarePlace(SoftwarePlace.TOKENS.id.toString() + "=" + softwareDTO.getId())));
-        remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveSoftware(softwareDTO.getId())));
+        shortDescription.setText(softwareDTO.getDescription());
+
+        action.setVisible(withAction);
+        if(withAction) {
+            edit.addClickHandler(event -> Supplier.clientFactory.getPlaceController().goTo(new SoftwarePlace(SoftwarePlace.TOKENS.id.toString() + "=" + softwareDTO.getId())));
+            remove.addClickHandler(event -> Supplier.clientFactory.getEventBus().fireEvent(new RemoveSoftware(softwareDTO.getId())));
+        }
     }
 
+    public SoftwareWidget(final SoftwareDTO softwareDTO) {
+        this(softwareDTO, true);
+    }
+
+    public SoftwareDTO getSoftware() {
+        return software;
+    }
 }

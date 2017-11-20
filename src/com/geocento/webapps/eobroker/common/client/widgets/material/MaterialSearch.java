@@ -57,6 +57,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
     private Label label = new Label();
     private MaterialIcon iconSearch = new MaterialIcon(IconType.SEARCH);
     private MaterialIcon iconClose = new MaterialIcon(IconType.CLOSE);
+    private MaterialLoadingLink iconLoading = new MaterialLoadingLink();
 
     /**
      * Panel to display the result items
@@ -80,15 +81,25 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
     private Presenter presenter;
 
     public MaterialSearch() {
+
         super(new TextBox());
+
         setType(InputType.SEARCH);
+
         iconSearch.setLayoutPosition(Style.Position.ABSOLUTE);
         iconSearch.setLeft(10);
         insert(iconSearch, 0);
+
+        iconLoading.setLayoutPosition(Style.Position.ABSOLUTE);
+        iconLoading.setLeft(10);
+        insert(iconLoading, 0);
+
         label.getElement().setAttribute("for", "search");
         add(label);
+
         add(iconClose);
         iconClose.addMouseDownHandler(mouseDownEvent -> CloseEvent.fire(MaterialSearch.this, getText()));
+
         // populate the lists of search result on search panel
         searchResult = new MaterialSearchResult();
         add(searchResult);
@@ -193,6 +204,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
             }
         });
         hideListSearches();
+        setLoading(false);
     }
 
     public MaterialSearch(String placeholder) {
@@ -351,6 +363,14 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
         searchResult.setVisible(true);
         searchResult.clear();
         searchResult.add(materialMessage);
+    }
+
+    public void setLoading(boolean loading) {
+        searchResult.setVisible(false);
+        label.setEnabled(!loading);
+        iconSearch.setVisible(!loading);
+        iconLoading.setVisible(loading);
+        iconLoading.setLoading(loading);
     }
 
 }

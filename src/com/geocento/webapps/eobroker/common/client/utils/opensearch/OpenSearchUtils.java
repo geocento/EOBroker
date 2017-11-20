@@ -198,10 +198,14 @@ public class OpenSearchUtils {
                             List<Url> urls = new ArrayList<Url>();
                             for(int index = 0; index < urlNodes.getLength(); index++) {
                                 Node urlNode = urlNodes.item(index);
-                                Url url = parseUrlNode(urlNode);
-                                // only add the supported ones
-                                if(supportedFormats.contains(url.getType())) {
-                                    urls.add(url);
+                                try {
+                                    Url url = parseUrlNode(urlNode);
+                                    // only add the supported ones
+                                    if (supportedFormats.contains(url.getType())) {
+                                        urls.add(url);
+                                    }
+                                } catch (Exception e) {
+
                                 }
                             }
                             openSearchDescription.setUrl(urls);

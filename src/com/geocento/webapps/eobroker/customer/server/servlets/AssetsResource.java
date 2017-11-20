@@ -443,6 +443,7 @@ public class AssetsResource implements AssetsService {
             }
             // TODO - add suggestions
             {
+                // search for products in the same categories and/or with similar keywords?
                 productDescriptionDTO.setSuggestedProducts(new ArrayList<ProductDTO>());
             }
             return productDescriptionDTO;
@@ -1959,7 +1960,7 @@ public class AssetsResource implements AssetsService {
         successStoryDTO.setDatasets(ListUtil.mutate(successStory.getProductDatasets(), productDataset -> createProductDatasetDTO(productDataset)));
         successStoryDTO.setServices(ListUtil.mutate(successStory.getProductServices(), productService -> createProductServiceDTO(productService)));
         successStoryDTO.setSoftware(ListUtil.mutate(successStory.getSoftware(), software -> createSoftwareDTO(software)));
-        successStoryDTO.setDate(successStory.getDate());
+        successStoryDTO.setPeriod(successStory.getPeriod());
         return successStoryDTO;
     }
 

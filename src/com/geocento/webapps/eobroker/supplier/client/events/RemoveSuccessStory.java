@@ -15,6 +15,10 @@ public class RemoveSuccessStory extends GwtEvent<RemoveSuccessStoryHandler> {
         this.id = id;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Type<RemoveSuccessStoryHandler> getAssociatedType() {
         return TYPE;
     }

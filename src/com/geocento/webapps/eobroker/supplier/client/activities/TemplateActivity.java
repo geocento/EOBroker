@@ -6,6 +6,8 @@ import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOutHandler;
 import com.geocento.webapps.eobroker.supplier.client.events.WebSocketFailedEvent;
 import com.geocento.webapps.eobroker.supplier.client.events.WebSocketFailedEventHandler;
+import com.geocento.webapps.eobroker.supplier.client.places.NotificationEvent;
+import com.geocento.webapps.eobroker.supplier.client.places.NotificationEventHandler;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.TemplateView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
@@ -16,6 +18,8 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -71,6 +75,26 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
                 // TODO - take specific action when
             }
         });
+
+        activityEventBus.addHandler(NotificationEvent.TYPE, new NotificationEventHandler() {
+            @Override
+            public void onNotification(NotificationEvent event) {
+                // update notifications
+                SupplierNotificationDTO notificationDTO = event.getSupplierNotificationDTO();
+                // make sure it is not already included
+                if(!notifications.contains(notificationDTO)) {
+                    notifications.add(notificationDTO);
+                    Collections.sort(notifications, new Comparator<SupplierNotificationDTO>() {
+                        @Override
+                        public int compare(SupplierNotificationDTO o1, SupplierNotificationDTO o2) {
+                            return o1.getCreationDate().compareTo(o2.getCreationDate());
+                        }
+                    });
+                    templateView.setNotifications(notifications);
+                }
+            }
+        });
+
 
     }
 

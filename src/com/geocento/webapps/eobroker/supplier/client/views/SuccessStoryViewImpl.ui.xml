@@ -31,6 +31,7 @@
             margin-bottom: 20px;
             background: white;
         }
+
         .product, .product i {
             height: 60px;
             line-height: 60px;
@@ -39,6 +40,11 @@
         .productsPanel, .consortiumPanel {
             padding: 20px;
             background: #E9E9E9;
+        }
+
+        .comment {
+            margin: 20px 0px;
+            font-style: italic;
         }
 
     </ui:style>
@@ -58,7 +64,10 @@
                 <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextBox placeholder="Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+                <design:MaterialLink text="Name" textColor="BLACK" iconType="PERM_IDENTITY" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialTextBox placeholder="Name" ui:field="name"/>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Customer" textColor="BLACK" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
@@ -77,13 +86,16 @@
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialLink text="Date (only month and year count)" textColor="BLACK" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
+                <design:MaterialLink text="Period of time when the success story happened" textColor="BLACK" iconType="PERM_CONTACT_CALENDAR" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
-                    <design:MaterialDatePicker placeholder="Month and year" autoClose="true" dateSelectionType="YEAR_MONTH_DAY" ui:field="date"></design:MaterialDatePicker>
+                    <design:MaterialTextBox maxLength="100" placeholder="Specify a period of time" ui:field="period"></design:MaterialTextBox>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextArea placeholder="Short Description" iconType="FACE" ui:field="description"/>
+                <design:MaterialLink text="Short description" textColor="BLACK" iconType="TEXTSMS" addStyleNames="{style.subtitle}"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialTextArea placeholder="Short Description" ui:field="description"/>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" textColor="BLACK" iconType="TEXT_FIELDS" addStyleNames="{style.subtitle}"/>
@@ -92,11 +104,11 @@
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Offering used" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.productsPanel}">
-                    <material:MaterialSearch ui:field="offeringsSearch"></material:MaterialSearch>
+                    <material:MaterialSearch addStyleNames="{style.product}" placeholder="Type offering name" ui:field="offeringsSearch"></material:MaterialSearch>
                 </design:MaterialPanel>
                 <design:MaterialRow addStyleNames="{style.productsPanel}" ui:field="offeringsUsed">
-                    <design:MaterialLabel>TODO</design:MaterialLabel>
                 </design:MaterialRow>
+                <design:MaterialLabel addStyleNames="{style.comment}" ui:field="offeringsMessage"></design:MaterialLabel>
             </design:MaterialColumn>
             <design:MaterialColumn visible="false" grid="s12">
                 <design:MaterialLink text="Partners" textColor="BLACK" iconType="MAP" addStyleNames="{style.subtitle}"/>

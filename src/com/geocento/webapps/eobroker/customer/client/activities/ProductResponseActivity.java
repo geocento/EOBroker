@@ -97,7 +97,7 @@ public class ProductResponseActivity extends TemplateActivity implements Product
                 @Override
                 public void onFailure(Method method, Throwable exception) {
                     hideFullLoading();
-                    Window.alert("Failed to load response");
+                    displayFullError("Error loading response, reason is " + method.getResponse().getText());
                 }
 
                 @Override

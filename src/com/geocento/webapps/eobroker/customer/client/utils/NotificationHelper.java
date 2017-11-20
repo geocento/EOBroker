@@ -17,6 +17,9 @@ public class NotificationHelper {
             case PRODUCTREQUEST:
                 place = new ProductResponsePlace(ProductResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
                 break;
+            case OTSPRODUCTREQUEST:
+                place = new OTSProductResponsePlace(OTSProductResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
+                break;
             case IMAGESERVICEREQUEST:
                 place = new ImageryResponsePlace(ImageryResponsePlace.TOKENS.id.toString() + "=" + notificationDTO.getLinkId());
                 break;

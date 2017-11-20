@@ -32,7 +32,7 @@ public class DatasetAccessUtils {
     static private KeyGenerator keyGenerator = new KeyGenerator(16);
 
     public static String generateThumbnail(DatasetAccess datasetAccess) throws Exception {
-        String imagePath = keyGenerator + ".jpeg";
+        String imagePath = keyGenerator.CreateKey() + ".jpeg";
         File thumbnailFile = new File(ServerUtil.getSettings().getDataDirectory() + "./img", imagePath);
         if(datasetAccess instanceof DatasetAccessOGC) {
             generateThumbnailOGC((DatasetAccessOGC) datasetAccess, thumbnailFile);

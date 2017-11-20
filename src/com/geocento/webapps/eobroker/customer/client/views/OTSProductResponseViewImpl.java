@@ -80,11 +80,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     @UiField
     MaterialRow requestTab;
     @UiField
-    MaterialPanel responsePanel;
-    @UiField
     MaterialPanel colorPanel;
-    @UiField
-    MaterialPanel responsesPanel;
     @UiField
     MaterialImageLoading image;
     @UiField
@@ -263,7 +259,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
         addRequestValue("Your comments", otsProductResponseDTO.getComments());
         addRequestValue("Products ID selection", otsProductResponseDTO.getSelection());
         if(otsProductResponseDTO.getFormValues().size() == 0) {
-            this.requestDescription.add(new HTMLPanel("<p>No search parameters provided</p>"));
+            //this.requestDescription.add(new HTMLPanel("<p>No search parameters provided</p>"));
         } else {
             this.requestDescription.add(new HTMLPanel("<p>Initial search parameters</p>"));
             for (FormElementValue formElementValue : otsProductResponseDTO.getFormValues()) {
@@ -272,7 +268,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
         }
         displayAoI(AoIUtil.fromWKT(otsProductResponseDTO.getAoIWKT()));
         if(otsProductResponseDTO.getFormValues().size() == 0) {
-            this.requestDescription.add(new HTMLPanel("<p>No data provided</p>"));
+            //this.requestDescription.add(new HTMLPanel("<p>No data provided</p>"));
         } else {
             for (FormElementValue formElementValue : otsProductResponseDTO.getFormValues()) {
                 addRequestValue(formElementValue.getName(), formElementValue.getValue());

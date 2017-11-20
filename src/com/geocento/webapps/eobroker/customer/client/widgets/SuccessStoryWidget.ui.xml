@@ -4,7 +4,7 @@
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets">
     <ui:style>
 
-        .date {
+        .company {
             float: right;
             font-style: italic;
             text-align: right;
@@ -13,7 +13,7 @@
 
         .description {
             overflow: hidden;
-            line-height: 1.2em;
+            line-height: 1.4em;
             height: 1.4em;
             /* TODO - find something more cross browser */
             -webkit-line-clamp: 1;
@@ -30,21 +30,26 @@
 
         }
 
+        .title {
+            line-height: normal !important;
+        }
+
     </ui:style>
     <design:MaterialCard backgroundColor="WHITE" axis="HORIZONTAL" ui:field="panel">
         <design:MaterialCardImage>
             <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
-        <design:MaterialCardContent>
-            <design:MaterialLabel fontSize="1.4em" ui:field="title"></design:MaterialLabel>
+        <design:MaterialCardContent padding="10" layoutPosition="RELATIVE" height="100%">
+            <design:MaterialCardTitle iconType="MORE_VERT" iconPosition="RIGHT" addStyleNames="{style.title}" ui:field="title"></design:MaterialCardTitle>
             <design:MaterialLabel fontSize="1em" addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+            <design:MaterialPanel padding="5" layoutPosition="ABSOLUTE" bottom="0" left="5" right="5">
+                <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.company}" ui:field="company"></design:MaterialLabel>
+                <design:MaterialLink text="MORE" textColor="GREY" ui:field="info"></design:MaterialLink>
+            </design:MaterialPanel>
         </design:MaterialCardContent>
         <design:MaterialCardReveal>
+            <design:MaterialCardTitle text="Description" iconType="CLOSE" iconPosition="RIGHT" textColor="BLACK"/>
             <design:MaterialLabel fontSize="1em" addStyleNames="{style.descriptionFull}" ui:field="descriptionFull"></design:MaterialLabel>
         </design:MaterialCardReveal>
-        <design:MaterialCardAction>
-            <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.date}" ui:field="date"></design:MaterialLabel>
-            <design:MaterialLink text="MORE" textColor="GREY" ui:field="info"></design:MaterialLink>
-        </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

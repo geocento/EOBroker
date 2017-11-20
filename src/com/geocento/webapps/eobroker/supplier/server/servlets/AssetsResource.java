@@ -109,28 +109,30 @@ public class AssetsResource implements AssetsService {
 
     @Override
     public List<Suggestion> listOfferings(String text) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
         String keywords = DBHelper.generateKeywords(text);
         EntityManager em = EMF.get().createEntityManager();
         try {
+            User user = em.find(User.class, userName);
             // look in the generic view table
             // change the last word so that it allows for partial match
             List<Category> categories = ListUtil.toList(new Category[] {Category.productdatasets, Category.productservices, Category.software});
             Query q = em.createNativeQuery("SELECT id, " +
                     "category, " +
-                    "ts_rank(tsvname, keywords, 8) AS rank\n" +
-                    "name, " +
-                    "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
+                    "ts_rank(tsvname, keywords, 8) AS rank, " +
+                    "name " +
+                    "          FROM textsearchofferings, to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsvname @@ keywords\n" +
-                    " AND category IN('" + ListUtil.toString(categories, value -> value.toString(), ",") + "')" +
+                    " AND category IN('" + ListUtil.toString(categories, value -> value.toString(), "','") + "')" +
+                    " AND companyid = " + user.getCompany().getId() +
                     "          ORDER BY rank DESC\n" +
-                    "          LIMIT 10;");
+                    "          LIMIT 5;");
             List<Object[]> results = q.getResultList();
             return ListUtil.mutate(results, new ListUtil.Mutate<Object[], Suggestion>() {
                 @Override
                 public Suggestion mutate(Object[] result) {
                     Long id = (Long) result[0];
                     String category = (String) result[1];
-                    Double ranking = (Double) result[2];
                     String name = (String) result[3];
                     return new Suggestion(name, Category.valueOf(category), id + "");
                 }
@@ -216,6 +218,26 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public ProductServiceDTO getProductServiceSimple(Long id) throws RequestException {
+        UserUtils.verifyUserSupplier(request);
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductService productService = em.find(ProductService.class, id);
+            if(productService == null) {
+                throw new RequestException("Unknown product");
+            }
+            return createProductServiceDTO(productService);
+        } catch (Exception e) {
+            throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public List<ProductServiceDTO> listProductServices() throws RequestException {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
@@ -226,21 +248,25 @@ public class AssetsResource implements AssetsService {
             return ListUtil.mutate(query.getResultList(), new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
                 @Override
                 public ProductServiceDTO mutate(ProductService productService) {
-                        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
-                        productServiceDTO.setId(productService.getId());
-                        productServiceDTO.setName(productService.getName());
-                        productServiceDTO.setDescription(productService.getDescription());
-                        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
-                        productServiceDTO.setCompanyName(productService.getCompany().getName());
-                        productServiceDTO.setServiceImage(productService.getImageUrl());
-                        return productServiceDTO;
-                    }
+                    return createProductServiceDTO(productService);
+                }
             });
         } catch (Exception e) {
             throw new RequestException("Error");
         } finally {
             em.close();
         }
+    }
+
+    private ProductServiceDTO createProductServiceDTO(ProductService productService) {
+        ProductServiceDTO productServiceDTO = new ProductServiceDTO();
+        productServiceDTO.setId(productService.getId());
+        productServiceDTO.setName(productService.getName());
+        productServiceDTO.setDescription(productService.getDescription());
+        productServiceDTO.setCompanyLogo(productService.getCompany().getIconURL());
+        productServiceDTO.setCompanyName(productService.getCompany().getName());
+        productServiceDTO.setServiceImage(productService.getImageUrl());
+        return productServiceDTO;
     }
 
     @Override
@@ -739,7 +765,6 @@ public class AssetsResource implements AssetsService {
                     successStoryDTO.setImageUrl(successStory.getImageUrl());
                     successStoryDTO.setName(successStory.getName());
                     successStoryDTO.setDescription(successStory.getDescription());
-                    successStoryDTO.setDate(successStory.getDate());
                     return successStoryDTO;
                 }
             });
@@ -766,6 +791,7 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Could not find success story");
             }
             SuccessStoryEditDTO successStoryEditDTO = new SuccessStoryEditDTO();
+            successStoryEditDTO.setId(successStory.getId());
             successStoryEditDTO.setName(successStory.getName());
             successStoryEditDTO.setImageUrl(successStory.getImageUrl());
             successStoryEditDTO.setDescription(successStory.getDescription());
@@ -777,9 +803,44 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             successStoryEditDTO.setProductDTO(ProductHelper.createProductDTO(successStory.getProduct()));
-            successStoryEditDTO.setDate(successStory.getDate());
+            successStoryEditDTO.setPeriod(successStory.getPeriod());
             successStoryEditDTO.setFullDescription(successStory.getFullDescription());
+            successStoryEditDTO.setServiceDTOs(ListUtil.mutate(successStory.getProductServices(), productService -> createProductServiceDTO(productService)));
+            successStoryEditDTO.setDatasetDTOs(ListUtil.mutate(successStory.getProductDatasets(), productDataset -> createProductDatasetDTO(productDataset)));
+            successStoryEditDTO.setSoftwareDTOs(ListUtil.mutate(successStory.getSoftware(), software -> createSoftwareDTO(software)));
             return successStoryEditDTO;
+        } catch (Exception e) {
+            throw new RequestException("Problem retrieving success stories");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeSuccessStory(final Long id) throws RequestException {
+        String logUserName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, logUserName);
+            SuccessStory successStory = ListUtil.findValue(user.getCompany().getSuccessStories(), new ListUtil.CheckValue<SuccessStory>() {
+                @Override
+                public boolean isValue(SuccessStory value) {
+                    return value.getId().equals(id);
+                }
+            });
+            if(successStory == null) {
+                throw new RequestException("Could not find success story");
+            }
+            em.getTransaction().begin();
+            if(successStory.getProduct() != null) {
+                successStory.getProduct().getSuccessStories().remove(successStory);
+            }
+            if(successStory.getSupplier() != null) {
+                successStory.getSupplier().getSuccessStories().remove(successStory);
+            }
+            // endorsements will be removed automatically
+            em.remove(successStory);
+            em.getTransaction().commit();
         } catch (Exception e) {
             throw new RequestException("Problem retrieving success stories");
         } finally {
@@ -822,7 +883,7 @@ public class AssetsResource implements AssetsService {
             successStory.setImageUrl(successStoryEditDTO.getImageUrl());
             successStory.setName(successStoryEditDTO.getName());
             successStory.setDescription(successStoryEditDTO.getDescription());
-            successStory.setDate(successStoryEditDTO.getDate());
+            successStory.setPeriod(successStoryEditDTO.getPeriod());
             successStory.setFullDescription(successStoryEditDTO.getFullDescription());
             {
                 if (successStoryEditDTO.getCustomer() == null) {
@@ -857,6 +918,19 @@ public class AssetsResource implements AssetsService {
                 if(!successStories.contains(successStory)) {
                     successStories.add(successStory);
                 }
+            }
+            Company company = user.getCompany();
+            if(!ListUtil.isNullOrEmpty(successStoryEditDTO.getDatasetDTOs())) {
+                List<Long> selectedIds = ListUtil.mutate(successStoryEditDTO.getDatasetDTOs(), (ListUtil.Mutate<ProductDatasetDTO, Long>) productDatasetDTO -> productDatasetDTO.getId());
+                successStory.setProductDatasets(ListUtil.filterValues(company.getDatasets(), value -> selectedIds.contains(value.getId())));
+            }
+            if(!ListUtil.isNullOrEmpty(successStoryEditDTO.getServiceDTOs())) {
+                List<Long> selectedIds = ListUtil.mutate(successStoryEditDTO.getServiceDTOs(), (ListUtil.Mutate<ProductServiceDTO, Long>) productServiceDTO -> productServiceDTO.getId());
+                successStory.setProductServices(ListUtil.filterValues(company.getServices(), value -> selectedIds.contains(value.getId())));
+            }
+            if(!ListUtil.isNullOrEmpty(successStoryEditDTO.getSoftwareDTOs())) {
+                List<Long> selectedIds = ListUtil.mutate(successStoryEditDTO.getSoftwareDTOs(), (ListUtil.Mutate<SoftwareDTO, Long>) productDatasetDTO -> productDatasetDTO.getId());
+                successStory.setSoftware(ListUtil.filterValues(company.getSoftware(), value -> selectedIds.contains(value.getId())));
             }
             em.getTransaction().commit();
             return successStory.getId();
@@ -1196,6 +1270,24 @@ public class AssetsResource implements AssetsService {
             productDatasetDTO.setDatasetURL(productDataset.getDatasetURL());
             productDatasetDTO.setTermsAndConditions(productDataset.getTermsAndConditions());
             return productDatasetDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading dataset");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProductDatasetDTO getProductDatasetSimple(Long id) throws RequestException {
+        String userName = UserUtils.verifyUserSupplier(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            ProductDataset productDataset = em.find(ProductDataset.class, id);
+            if(productDataset == null) {
+                throw new RequestException("Dataset does not exist");
+            }
+            return createProductDatasetDTO(productDataset);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error loading dataset");

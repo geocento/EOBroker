@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
+import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.widgets.EndorsementWidget;
 import com.geocento.webapps.eobroker.customer.client.widgets.ProductDatasetWidget;
@@ -17,10 +19,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialColumn;
-import gwt.material.design.client.ui.MaterialLabel;
-import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.MaterialRow;
+import gwt.material.design.client.ui.*;
 
 import java.util.List;
 
@@ -29,10 +28,10 @@ import java.util.List;
  */
 public class SuccessStoryViewImpl extends Composite implements SuccessStoryView {
 
-    interface TestimonialViewUiBinder extends UiBinder<Widget, SuccessStoryViewImpl> {
+    interface SuccessStoryViewUiBinder extends UiBinder<Widget, SuccessStoryViewImpl> {
     }
 
-    private static TestimonialViewUiBinder ourUiBinder = GWT.create(TestimonialViewUiBinder.class);
+    private static SuccessStoryViewUiBinder ourUiBinder = GWT.create(SuccessStoryViewUiBinder.class);
 
     static DateTimeFormat fmt = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.YEAR_MONTH);
 
@@ -54,6 +53,8 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     MaterialLink date;
     @UiField
     MaterialRow offeringsUsed;
+    @UiField
+    MaterialPanel colorPanel;
 
     private Presenter presenter;
 
@@ -61,6 +62,7 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
+        colorPanel.setBackgroundColor(CategoryUtils.getColor(Category.successStories));
     }
 
     @Override
@@ -78,9 +80,9 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
         clientCompany.setText(successStoryDTO.getCustomer().getName());
         productCategory.setImageUrl(successStoryDTO.getProductDTO().getImageUrl());
         productCategory.setText(successStoryDTO.getProductDTO().getName());
-        if(successStoryDTO.getDate() != null) {
+        if(successStoryDTO.getPeriod() != null) {
             date.setVisible(true);
-            date.setText(fmt.format(successStoryDTO.getDate()));
+            date.setText(successStoryDTO.getPeriod());
         } else {
             date.setVisible(false);
         }

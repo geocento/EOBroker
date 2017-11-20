@@ -50,6 +50,11 @@ public interface AssetsService extends DirectRestService {
     public ProductServiceEditDTO getProductService(@PathParam("id") Long id) throws RequestException;
 
     @GET
+    @Path("/assets/productservices/{id}/simple")
+    @Produces("application/json")
+    public ProductServiceDTO getProductServiceSimple(@PathParam("id") Long id) throws RequestException;
+
+    @GET
     @Path("/assets/productservices/")
     @Produces("application/json")
     public List<ProductServiceDTO> listProductServices() throws RequestException;
@@ -110,6 +115,11 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/productdataset/{id}")
     @Produces("application/json")
     ProductDatasetDTO getProductDataset(@PathParam("id") Long id) throws RequestException;
+
+    @GET
+    @Path("/assets/productdataset/{id}/simple")
+    @Produces("application/json")
+    ProductDatasetDTO getProductDatasetSimple(@PathParam("id") Long id) throws RequestException;
 
     @POST
     @Path("/assets/productdataset/")
@@ -202,6 +212,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/stories/")
     Long updateSuccessStory(SuccessStoryEditDTO successStoryEditDTO) throws RequestException;
 
+    @DELETE
+    @Path("/assets/stories/{id}")
+    void removeSuccessStory(@PathParam("id") Long id) throws RequestException;
+
     @GET
     @Path("/assets/testimonials/")
     @Produces("application/json")
@@ -215,5 +229,6 @@ public interface AssetsService extends DirectRestService {
     @POST
     @Path("/assets/dataaccess/")
     @Consumes("application/json")
+    @Produces("text/plain")
     String getDataAccessThumbnail(DatasetAccess datasetAccess) throws RequestException;
 }

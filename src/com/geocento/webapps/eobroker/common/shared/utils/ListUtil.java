@@ -1,5 +1,7 @@
 package com.geocento.webapps.eobroker.common.shared.utils;
 
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
+
 import java.util.*;
 
 public class ListUtil {
@@ -73,6 +75,14 @@ public class ListUtil {
             list.add(value);
         }
         return list;
+    }
+
+    /**
+     *
+     * @return whether the collection is null or empty
+     */
+    public static <T extends Object> boolean isNullOrEmpty(List<T> values) {
+        return values == null || values.isEmpty();
     }
 
     /*

@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
@@ -143,6 +144,10 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLink feedbackCategory;
     @UiField
     MaterialLink helpCategory;
+    @UiField
+    MaterialPanel messagePanel;
+    @UiField
+    MaterialMessage message;
 
     private int maxNotifications = 5;
 
@@ -390,7 +395,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
             materialLink.setTruncate(true);
             materialLink.setFontSize("0.8em");
             materialLink.setPadding(10);
-            materialLink.getElement().getStyle().setProperty("borderTop", "1px solid grey");
+            materialLink.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.CENTER);
+            materialLink.getElement().getStyle().setTextDecoration(com.google.gwt.dom.client.Style.TextDecoration.UNDERLINE);
             materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(new NotificationsPlace()));
             notificationsPanel.add(materialLink);
         }
@@ -398,6 +404,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
     private void addNotification(NotificationDTO notificationDTO) {
         MaterialLink message = new MaterialLink(notificationDTO.getMessage());
+        message.setTruncate(true);
         message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
         HTML timePanel = new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(notificationDTO.getCreationDate()) + "</span>");
         timePanel.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.RIGHT);
@@ -466,11 +473,13 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
 
     public void displayContent(boolean display) {
         content.setVisible(display);
-        loading.setVisible(!display);
+        messagePanel.setVisible(!display);
     }
 
     public void displayFullLoading(String message) {
         displayContent(false);
+        loading.setVisible(true);
+        this.message.setVisible(false);
         loading.setText(message);
     }
 
@@ -484,6 +493,13 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         } else {
             navigationPanel.hide();
         }
+    }
+
+    public void displayFullError(String message) {
+        displayContent(false);
+        loading.setVisible(false);
+        this.message.setVisible(true);
+        this.message.displayErrorMessage(message);
     }
 
     public void displayWebsocketError(String message) {

@@ -440,6 +440,9 @@ public class RequestsResource implements RequestsService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             ProductServiceRequest productServiceRequest = em.find(ProductServiceRequest.class, id);
+            if(productServiceRequest == null) {
+                throw new RequestException("product request does not exist");
+            }
             if(!productServiceRequest.getCustomer().getUsername().contentEquals(userName)) {
                 throw new RequestException("Not allowed");
             }
@@ -683,7 +686,7 @@ public class RequestsResource implements RequestsService {
             em.persist(message);
             productServiceSupplierRequest.getMessages().add(message);
             try {
-                NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.MESSAGE, "New message from user '" + user.getUsername() + "' on request '" + productServiceSupplierRequest.getId() + "'", productServiceSupplierRequest.getId() + "");
+                NotificationHelper.notifySupplier(em, company, SupplierNotification.TYPE.PRODUCTREQUEST, "New message from user '" + user.getUsername() + "' on request '" + productServiceSupplierRequest.getId() + "'", productServiceSupplierRequest.getProductServiceRequest().getId() + "");
                 MessageHelper.sendCompanyRequestMessage(company, productServiceSupplierRequest.getId() + "", message);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

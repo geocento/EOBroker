@@ -102,8 +102,8 @@ public class SearchResource implements SearchService {
 
     @Override
     public List<Suggestion> complete(String text, Category category) throws RequestException {
+        String keywords = DBHelper.generateKeywords(text);
         if(category == null) {
-            String keywords = DBHelper.generateKeywords(text);
             // make sure words together get better ranking than when they are far apart
             // optimise based on the ratio of matching words and the total number of words of the search phrase
             // prioritise based on matching word position, ie if starts the same give higher priority
@@ -137,25 +137,46 @@ public class SearchResource implements SearchService {
                 em.close();
             }
         } else {
-            return completeCategory(category, text,
+            return completeCategory(category, keywords,
                     category == Category.companies ? "          AND supplier = '1' AND status = 'APPROVED'" : "");
         }
     }
 
     @Override
     public List<Suggestion> completeAllCompanies(String text) throws RequestException {
-        return completeCategory(Category.companies, text, null);
+        String keywords = DBHelper.generateKeywords(text);
+        return completeCategory(Category.companies, keywords, null);
     }
 
     private List<Suggestion> completeCategory(Category category, String keywords, String additionalStatement) throws RequestException {
+        String categoryTable = null;
+        switch(category) {
+            case products:
+                categoryTable = "product";
+                break;
+            case companies:
+                categoryTable = "company";
+                break;
+            case productdatasets:
+                categoryTable = "productdataset";
+                break;
+            case productservices:
+                categoryTable = "productservice";
+                break;
+            case software:
+                categoryTable = "software";
+                break;
+            case project:
+                categoryTable = "project";
+                break;
+        }
         // change the last word so that it allows for partial match
         EntityManager em = EMF.get().createEntityManager();
         try {
             Query q = em.createNativeQuery("SELECT id, " +
-                    "category, " +
-                    "ts_rank(tsvname, keywords, 8) AS rank\n" +
-                    "name, " +
-                    "          FROM " + category.toString() + ", to_tsquery('" + keywords + "') AS keywords\n" +
+                    "ts_rank(tsvname, keywords, 8) AS rank, " +
+                    "name " +
+                    "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsvname @@ keywords\n" +
                     (additionalStatement != null ? additionalStatement : "") +
                     "          ORDER BY rank DESC\n" +
@@ -165,9 +186,8 @@ public class SearchResource implements SearchService {
                 @Override
                 public Suggestion mutate(Object[] result) {
                     Long id = (Long) result[0];
-                    String category = (String) result[1];
-                    String name = (String) result[3];
-                    return new Suggestion(name, Category.valueOf(category), "access" + "::" + id);
+                    String name = (String) result[2];
+                    return new Suggestion(name, category, "access" + "::" + id);
                 }
             });
         } catch (Exception e) {

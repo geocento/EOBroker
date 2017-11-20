@@ -28,7 +28,6 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,12 +35,10 @@ import java.util.List;
  */
 public class SuccessStoryViewImpl extends Composite implements SuccessStoryView {
 
-    private Presenter presenter;
-
-    interface ProjectViewUiBinder extends UiBinder<Widget, SuccessStoryViewImpl> {
+    interface SuccessStoryViewUiBinder extends UiBinder<Widget, SuccessStoryViewImpl> {
     }
 
-    private static ProjectViewUiBinder ourUiBinder = GWT.create(ProjectViewUiBinder.class);
+    private static SuccessStoryViewUiBinder ourUiBinder = GWT.create(SuccessStoryViewUiBinder.class);
 
     @UiField
     MaterialTextBox name;
@@ -60,8 +57,6 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     @UiField
     MaterialRow consortium;
     @UiField
-    MaterialDatePicker date;
-    @UiField
     CompanyTextBox customer;
     @UiField
     MaterialLink viewClient;
@@ -73,6 +68,12 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     ProductTextBox productCategory;
     @UiField
     MaterialSearch offeringsSearch;
+    @UiField
+    MaterialLabel offeringsMessage;
+    @UiField
+    MaterialTextBox period;
+
+    private Presenter presenter;
 
     public SuccessStoryViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -127,15 +128,19 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
                     // add offering to list of offerings
                     Suggestion suggestion = (Suggestion) searchObject.getO();
                     Long offeringId = Long.parseLong(suggestion.getUri());
+                    offeringsSearch.setLoading(true);
                     switch (suggestion.getCategory()) {
                         case productdatasets: {
                             REST.withCallback(new MethodCallback<ProductDatasetDTO>() {
                                 @Override
                                 public void onFailure(Method method, Throwable exception) {
+                                    offeringsSearch.setLoading(false);
+                                    template.displayError(method.getResponse().getText());
                                 }
 
                                 @Override
                                 public void onSuccess(Method method, ProductDatasetDTO productDatasetDTO) {
+                                    offeringsSearch.setLoading(false);
                                     // check if not a duplicate
                                     ProductDatasetDTO dataset = ListUtil.findValue(getDatasets(), new ListUtil.CheckValue<ProductDatasetDTO>() {
                                         @Override
@@ -145,18 +150,22 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
                                     });
                                     if(dataset == null) {
                                         addDatasetOffering(productDatasetDTO);
+                                        updateOfferingsMessage();
                                     }
                                 }
-                            }).call(ServicesUtil.assetsService).getProductDataset(offeringId);
+                            }).call(ServicesUtil.assetsService).getProductDatasetSimple(offeringId);
                         } break;
                         case productservices: {
                             REST.withCallback(new MethodCallback<ProductServiceDTO>() {
                                 @Override
                                 public void onFailure(Method method, Throwable exception) {
+                                    offeringsSearch.setLoading(false);
+                                    template.displayError(method.getResponse().getText());
                                 }
 
                                 @Override
                                 public void onSuccess(Method method, ProductServiceDTO productServiceDTO) {
+                                    offeringsSearch.setLoading(false);
                                     // check if not a duplicate
                                     ProductServiceDTO serviceDTO = ListUtil.findValue(getServices(), new ListUtil.CheckValue<ProductServiceDTO>() {
                                         @Override
@@ -165,10 +174,36 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
                                         }
                                     });
                                     if(serviceDTO == null) {
-                                        addServiceOffering(serviceDTO);
+                                        addServiceOffering(productServiceDTO);
+                                        updateOfferingsMessage();
                                     }
                                 }
-                            }).call(ServicesUtil.assetsService).getProductDataset(offeringId);
+                            }).call(ServicesUtil.assetsService).getProductServiceSimple(offeringId);
+                        } break;
+                        case software: {
+                            REST.withCallback(new MethodCallback<SoftwareDTO>() {
+                                @Override
+                                public void onFailure(Method method, Throwable exception) {
+                                    offeringsSearch.setLoading(false);
+                                    template.displayError(method.getResponse().getText());
+                                }
+
+                                @Override
+                                public void onSuccess(Method method, SoftwareDTO softwareDTO) {
+                                    offeringsSearch.setLoading(false);
+                                    // check if not a duplicate
+                                    SoftwareDTO software = ListUtil.findValue(getSoftware(), new ListUtil.CheckValue<SoftwareDTO>() {
+                                        @Override
+                                        public boolean isValue(SoftwareDTO value) {
+                                            return value.getId().equals(offeringId);
+                                        }
+                                    });
+                                    if(software == null) {
+                                        addSoftwareOffering(softwareDTO);
+                                        updateOfferingsMessage();
+                                    }
+                                }
+                            }).call(ServicesUtil.assetsService).getSoftware(offeringId);
                         } break;
                     }
                 } catch (Exception e) {
@@ -191,15 +226,15 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     }
 
     private void addServiceOffering(ProductServiceDTO serviceDTO) {
-        addOffering(new ProductServiceWidget(serviceDTO));
+        addOffering(new ProductServiceWidget(serviceDTO, false));
     }
 
     private void addDatasetOffering(ProductDatasetDTO productDatasetDTO) {
-        addOffering(new ProductDatasetWidget(productDatasetDTO));
+        addOffering(new ProductDatasetWidget(productDatasetDTO, false));
     }
 
     private void addSoftwareOffering(SoftwareDTO softwareDTO) {
-        addOffering(new SoftwareWidget(softwareDTO));
+        addOffering(new SoftwareWidget(softwareDTO, false));
     }
 
     @Override
@@ -243,13 +278,8 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     }
 
     @Override
-    public void setDate(Date date) {
-        this.date.setDate(date);
-    }
-
-    @Override
-    public Date getDate() {
-        return date.getDate();
+    public HasText getPeriod() {
+        return period;
     }
 
     @Override
@@ -353,15 +383,29 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
     @Override
     public void setOfferings(List<ProductDatasetDTO> datasetDTOs, List<ProductServiceDTO> serviceDTOs, List<SoftwareDTO> softwareDTOs) {
         offeringsUsed.clear();
-        for(ProductDatasetDTO productDatasetDTO : datasetDTOs) {
-            addDatasetOffering(productDatasetDTO);
+        if(!ListUtil.isNullOrEmpty(datasetDTOs)) {
+            for (ProductDatasetDTO productDatasetDTO : datasetDTOs) {
+                addDatasetOffering(productDatasetDTO);
+            }
         }
-        for(ProductServiceDTO productServiceDTO : serviceDTOs) {
-            addServiceOffering(productServiceDTO);
+        if(!ListUtil.isNullOrEmpty(serviceDTOs)) {
+            for (ProductServiceDTO productServiceDTO : serviceDTOs) {
+                addServiceOffering(productServiceDTO);
+            }
         }
-        for(SoftwareDTO softwareDTO : softwareDTOs) {
-            addSoftwareOffering(softwareDTO);
+        if(!ListUtil.isNullOrEmpty(softwareDTOs)) {
+            for (SoftwareDTO softwareDTO : softwareDTOs) {
+                addSoftwareOffering(softwareDTO);
+            }
         }
+        updateOfferingsMessage();
+    }
+
+    private void updateOfferingsMessage() {
+        boolean hasOfferings = getServices().size() > 0 || getDatasets().size() > 0 || getSoftware().size() > 0;
+        offeringsUsed.setVisible(hasOfferings);
+        offeringsMessage.setVisible(!hasOfferings);
+        offeringsMessage.setText("No offering selected for this success story...");
     }
 
     @Override
@@ -404,7 +448,21 @@ public class SuccessStoryViewImpl extends Composite implements SuccessStoryView 
 
     @Override
     public List<SoftwareDTO> getSoftware() {
-        return null;
+        List<SoftwareDTO> software = new ArrayList<>();
+        for(Widget widget : offeringsUsed.getChildrenList()) {
+            if(widget instanceof MaterialColumn) {
+                SoftwareWidget softwareWidget = (SoftwareWidget) WidgetUtil.findChild((MaterialColumn) widget, new WidgetUtil.CheckValue() {
+                    @Override
+                    public boolean isValue(Widget widget) {
+                        return widget instanceof SoftwareWidget;
+                    }
+                });
+                if(softwareWidget != null) {
+                    software.add(softwareWidget.getSoftware());
+                }
+            }
+        }
+        return software;
     }
 
 }

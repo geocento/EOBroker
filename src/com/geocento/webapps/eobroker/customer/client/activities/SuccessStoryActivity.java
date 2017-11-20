@@ -65,18 +65,19 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
             History.back();
         }
 
+        displayFullLoading("Loading success story...");
         try {
             REST.withCallback(new MethodCallback<SuccessStoryDTO>() {
 
                 @Override
                 public void onFailure(Method method, Throwable exception) {
-                    hideLoading();
-                    displayError("Could not find company");
+                    hideFullLoading();
+                    displayFullError("Error retrieving success story, reason is " + method.getResponse().getText());
                 }
 
                 @Override
                 public void onSuccess(Method method, SuccessStoryDTO successStoryDTO) {
-                    hideLoading();
+                    hideFullLoading();
                     successStoryView.displaySuccessStory(successStoryDTO);
                 }
             }).call(ServicesUtil.assetsService).getSuccessStory(successStoryId);

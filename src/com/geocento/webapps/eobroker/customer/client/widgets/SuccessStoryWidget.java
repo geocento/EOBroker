@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialCard;
+import gwt.material.design.client.ui.MaterialCardTitle;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 
@@ -30,15 +31,15 @@ public class SuccessStoryWidget extends Composite {
     @UiField
     MaterialImageLoading image;
     @UiField
-    MaterialLabel title;
+    MaterialCardTitle title;
     @UiField
     MaterialLabel description;
-    @UiField
-    MaterialLabel date;
     @UiField
     MaterialLink info;
     @UiField
     MaterialLabel descriptionFull;
+    @UiField
+    MaterialLabel company;
 
     static DateTimeFormat fmt = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.YEAR_MONTH);
 
@@ -49,9 +50,10 @@ public class SuccessStoryWidget extends Composite {
         image.setImageUrl(successStoryDTO.getImageUrl());
         title.setText(successStoryDTO.getName());
         description.setText(successStoryDTO.getDescription());
+        company.setText("from " + successStoryDTO.getCompany().getName());
         descriptionFull.setText("Story from " + successStoryDTO.getCompany().getName() + " with customer " + successStoryDTO.getCustomer().getName() + ". " +
                 successStoryDTO.getDescription());
-        date.setText(successStoryDTO.getDate() == null ? "" : "from " + fmt.format(successStoryDTO.getDate()));
+        //date.setText(successStoryDTO.getDate() == null ? "" : "from " + fmt.format(successStoryDTO.getDate()));
 
         info.setHref("#" + PlaceHistoryHelper.convertPlace(new SuccessStoryPlace(Utils.generateTokens(SuccessStoryPlace.TOKENS.id.toString(), successStoryDTO.getId().toString()))));
     }

@@ -352,7 +352,24 @@ public class OrdersResource implements OrdersService {
 /*
                     try {
                         WebSocketMessage webSocketMessage = new WebSocketMessage();
-                        webSocketMessage.setType(WebSocketMessage.TYPE.res);
+                        webSocketMessage.setType(WebSocketMessage.TYPE.);
+                        NotificationSocket.sendMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+*/
+                } break;
+                case otsproduct: {
+                    OTSProductRequest otsProductRequest = em.find(OTSProductRequest.class, id);
+                    if (otsProductRequest == null) {
+                        throw new RequestException("No OTS product request with id " + id);
+                    }
+                    otsProductRequest.setResponse(response);
+                    NotificationHelper.notifyCustomer(em, user, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your OTS product request", otsProductRequest.getId());
+/*
+                    try {
+                        WebSocketMessage webSocketMessage = new WebSocketMessage();
+                        webSocketMessage.setType(WebSocketMessage.TYPE.);
                         NotificationSocket.sendMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
@@ -430,7 +447,7 @@ public class OrdersResource implements OrdersService {
                     otsProductRequest.getMessages().add(message);
                     try {
                         // TODO - change to take into account that it is a message...
-                        NotificationHelper.notifyCustomer(em, otsProductRequest.getCustomer(), Notification.TYPE.PRODUCTREQUEST, "New message from company '" + user.getCompany().getName() + "' on request '" + otsProductRequest.getId() + "'", otsProductRequest.getId() + "");
+                        NotificationHelper.notifyCustomer(em, otsProductRequest.getCustomer(), Notification.TYPE.OTSPRODUCTREQUEST, "New message from company '" + user.getCompany().getName() + "' on OTS request '" + otsProductRequest.getId() + "'", otsProductRequest.getId() + "");
                         MessageHelper.sendUserRequestMessage(otsProductRequest.getCustomer(), otsProductRequest.getId() + "", message);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);

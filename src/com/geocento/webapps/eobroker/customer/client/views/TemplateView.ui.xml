@@ -76,7 +76,7 @@
                 vertical-align: middle;
             }
 
-            .loading {
+            .messagePanel {
                 margin: 50px;
             }
 
@@ -205,7 +205,10 @@
                 </m:MaterialSideNav>
             </header>
             <m:MaterialContainer ui:field="mainPanel" layoutPosition="RELATIVE" paddingTop="64" addStyleNames="{style.mainPanel}">
-                <cwidgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></cwidgets:LoadingWidget>
+                <m:MaterialPanel visible="false" addStyleNames="{style.messagePanel}" ui:field="messagePanel">
+                    <cwidgets:LoadingWidget ui:field="loading"></cwidgets:LoadingWidget>
+                    <cwidgets:MaterialMessage ui:field="message"></cwidgets:MaterialMessage>
+                </m:MaterialPanel>
                 <m:MaterialPanel ui:field="content"></m:MaterialPanel>
             </m:MaterialContainer>
         </g:HTMLPanel>

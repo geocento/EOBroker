@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.supplier.client.places.SuccessStoryPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.SuccessStoryView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SuccessStoryEditDTO;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -86,14 +87,14 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
     private void setSuccessStory(SuccessStoryEditDTO successStoryEditDTO) {
         this.successStoryEditDTO = successStoryEditDTO;
         successStoryView.getName().setText(successStoryEditDTO.getName());
+        successStoryView.setIconUrl(successStoryEditDTO.getImageUrl());
         successStoryView.setCustomer(successStoryEditDTO.getCustomer());
         successStoryView.setEndorsements(successStoryEditDTO.getEndorsements());
         successStoryView.setProductCategory(successStoryEditDTO.getProductDTO());
         successStoryView.setOfferings(successStoryEditDTO.getDatasetDTOs(), successStoryEditDTO.getServiceDTOs(), successStoryEditDTO.getSoftwareDTOs());
         successStoryView.getDescription().setText(successStoryEditDTO.getDescription());
         successStoryView.setFullDescription(successStoryEditDTO.getFullDescription());
-        successStoryView.setIconUrl(successStoryEditDTO.getImageUrl());
-        successStoryView.setDate(successStoryEditDTO.getDate());
+        successStoryView.getPeriod().setText(successStoryEditDTO.getPeriod());
         successStoryView.setConsortium(successStoryEditDTO.getConsortium());
     }
 
@@ -108,7 +109,7 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
                 successStoryEditDTO.setName(successStoryView.getName().getText());
                 successStoryEditDTO.setDescription(successStoryView.getDescription().getText());
                 successStoryEditDTO.setFullDescription(successStoryView.getFullDescription());
-                successStoryEditDTO.setDate(successStoryView.getDate());
+                successStoryEditDTO.setPeriod(successStoryView.getPeriod().getText());
                 successStoryEditDTO.setCustomer(successStoryView.getCustomer());
                 successStoryEditDTO.setProductDTO(successStoryView.getProductCategory());
                 successStoryEditDTO.setServiceDTOs(successStoryView.getServices());
@@ -131,8 +132,8 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
                     if(successStoryEditDTO.getProductDTO() == null) {
                         throw new Exception("Please specify a product category");
                     }
-                    if(successStoryEditDTO.getDate() == null) {
-                        throw new Exception("Please specify a date");
+                    if(successStoryEditDTO.getPeriod() == null) {
+                        throw new Exception("Please specify a period");
                     }
                 } catch (Exception e) {
                     displayError(e.getMessage());
@@ -166,11 +167,7 @@ public class SuccessStoryActivity extends TemplateActivity implements SuccessSto
         handlers.add(successStoryView.getViewClient().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Window.alert("Not implemented yet");
-/*
-                // TODO - how do we get to use the place instead?
-                Window.open(GWT.getHostPageBaseURL() + "#fullview:softwareid=" + softwareDTO.getId(), "_fullview;", null);
-*/
+                Window.open(GWT.getHostPageBaseURL() + "#story:id=" + successStoryEditDTO.getId(), "_story;", null);
             }
         }));
     }

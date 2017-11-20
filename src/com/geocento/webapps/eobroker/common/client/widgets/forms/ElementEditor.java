@@ -78,6 +78,12 @@ public abstract class ElementEditor<T extends FormElement> extends Composite imp
 
     public abstract void setFormElementValue(String value);
 
+    // return the form value in a readable format
+    public FormElementValue getReadableFormElementValue() throws Exception {
+        // default to the standard form element value
+        return getFormElementValue();
+    }
+
     public T getFormElement() {
         return formElement;
     }

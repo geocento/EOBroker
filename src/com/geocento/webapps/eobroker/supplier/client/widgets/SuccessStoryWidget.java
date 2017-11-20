@@ -55,7 +55,6 @@ public class SuccessStoryWidget extends Composite {
         image.setImageUrl(successStoryDTO.getImageUrl());
         title.setText(successStoryDTO.getName());
         description.setText(successStoryDTO.getDescription());
-        date.setText(successStoryDTO.getDate() == null ? "" : "from " + fmt.format(successStoryDTO.getDate()));
 
         edit.addClickHandler(new ClickHandler() {
             @Override

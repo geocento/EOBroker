@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 public class Notification {
 
-    static public enum TYPE {MESSAGE, IMAGEREQUEST, IMAGESERVICEREQUEST, PRODUCTREQUEST, REQUESTMESSAGE, ORDER};
+    static public enum TYPE {MESSAGE, IMAGEREQUEST, IMAGESERVICEREQUEST, PRODUCTREQUEST, REQUESTMESSAGE, OTSPRODUCTREQUEST, ORDER};
 
     @Id
     @GeneratedValue

@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.common.client.widgets.forms;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.DateFormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -48,6 +49,13 @@ public class DateEditor extends ElementEditor<DateFormElement> {
     @Override
     public void setFormElementValue(String value) {
         setValue(value == null ? null : new Date(Long.valueOf(value)));
+    }
+
+    @Override
+    public FormElementValue getReadableFormElementValue() throws Exception {
+        FormElementValue formElementValue = getFormElementValue();
+        formElementValue.setValue(DateUtil.displaySimpleUTCDate(datePicker.getValue()));
+        return formElementValue;
     }
 
     public void setValue(Date value) {

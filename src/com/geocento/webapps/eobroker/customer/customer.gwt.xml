@@ -7,6 +7,8 @@
     <inherits name="com.googlecode.gwt.charts.Charts"/>
     <inherits name="org.realityforge.gwt.websockets.WebSockets"/>
 
+    <set-property name="restygwt.autodetect.plainText" value="true" />
+
     <!-- Specify the app entry point class.                   -->
     <entry-point class='com.geocento.webapps.eobroker.customer.client.Customer'/>
 

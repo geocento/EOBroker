@@ -10,12 +10,13 @@ import java.util.List;
 public class SuccessStoryEditDTO extends SuccessStoryDTO {
 
     String fullDescription;
+    String period;
     ProductDTO productDTO;
     List<ProductServiceDTO> serviceDTOs;
     List<ProductDatasetDTO> datasetDTOs;
     List<SoftwareDTO> softwareDTOs;
     List<CompanyRoleDTO> consortium;
-    private List<EndorsementDTO> endorsements;
+    List<EndorsementDTO> endorsements;
 
     public SuccessStoryEditDTO() {
     }
@@ -82,5 +83,13 @@ public class SuccessStoryEditDTO extends SuccessStoryDTO {
 
     public List<EndorsementDTO> getEndorsements() {
         return endorsements;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
+    public String getPeriod() {
+        return period;
     }
 }

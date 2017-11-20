@@ -1,7 +1,6 @@
 package com.geocento.webapps.eobroker.common.shared.entities;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,8 +52,8 @@ public class SuccessStory {
     @OneToMany(fetch = FetchType.LAZY)
     List<CompanyRole> partners;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    Date date;
+    @Column(length = 100)
+    String period;
 
     public SuccessStory() {
     }
@@ -171,11 +170,11 @@ public class SuccessStory {
         this.software = software;
     }
 
-    public Date getDate() {
-        return date;
+    public String getPeriod() {
+        return period;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setPeriod(String period) {
+        this.period = period;
     }
 }
