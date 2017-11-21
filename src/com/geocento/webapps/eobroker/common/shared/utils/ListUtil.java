@@ -149,7 +149,12 @@ public class ListUtil {
 		List<T> list = new ArrayList<T>();
 		if(firstList != null) {
 			for(O value : firstList) {
-				list.add(mutate.mutate(value));
+                if(value != null) {
+                    T mutatedValue = mutate.mutate(value);
+                    if (mutatedValue != null) {
+                        list.add(mutatedValue);
+                    }
+                }
 			}
 		}
 		return list;

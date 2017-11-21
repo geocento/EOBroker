@@ -19,6 +19,7 @@ public class NotificationHelper {
             case MESSAGE:
                 place = new ConversationPlace(ConversationPlace.TOKENS.id.toString() + "=" + supplierNotificationDTO.getLinkId());
                 break;
+            case OTSPRODUCTREQUEST:
             case PRODUCTREQUEST:
             case IMAGESERVICEREQUEST:
             case IMAGEREQUEST:

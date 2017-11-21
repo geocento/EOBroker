@@ -5,9 +5,7 @@ import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.Record;
 import com.geocento.webapps.eobroker.common.client.utils.opensearch.SearchResponse;
-import com.geocento.webapps.eobroker.common.client.widgets.ImageCell;
-import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
+import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
@@ -26,14 +24,12 @@ import com.geocento.webapps.eobroker.customer.client.widgets.MaterialCheckBoxCel
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceFeasibilityDTO;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -145,6 +141,12 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     MaterialIcon samples;
     @UiField
     MaterialIcon information;
+    @UiField
+    MaterialIcon resize;
+    @UiField
+    MaterialMessage requestMessage;
+    @UiField
+    MaterialPanel tablePanel;
 
     private Presenter presenter;
 
@@ -166,6 +168,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     private HashMap<Record, RecordRendering> renderedRecords = new HashMap<Record, RecordRendering>();
+
+    private boolean orderable;
 
     public CatalogueSearchViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -204,6 +208,9 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         additionalFieldsPanel.addOpenHandler(event -> updateAdditionalFieldsMessage());
         additionalFieldsPanel.addCloseHandler(event -> updateAdditionalFieldsMessage());
         updateAdditionalFieldsMessage();
+
+        // add resizing of search and result panel
+        WidgetUtil.enableDragging(resize, (clientX, clientY) -> panel.setWidgetSize(searchPanel, panel.getWidgetSize(searchPanel) + clientX));
 
         // add to document
         RootPanel.get().add(requestQuotation);
@@ -431,7 +438,8 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     @Override
-    public void displayQueryResponse(SearchResponse searchResponse, boolean isOrderable) {
+    public void displayQueryResponse(SearchResponse searchResponse, int start) {
+        resultsTable.setPageStart(start);
         resultsPanel.getElement().getStyle().setProperty("height", (Window.getClientHeight() - 135 - queryPanel.getAbsoluteTop()) + "px");
         recordsList.updateRowCount(searchResponse.getTotalRecords(), true);
         //resultsTable.setPageStart(searchResponse.getStart());
@@ -440,10 +448,15 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
         //resultsTable.setRowData(records);
         recordsList.updateRowData(searchResponse.getLimit() * (int) (Math.round(searchResponse.getStart() / searchResponse.getLimit())), records);
         boolean hasResults = searchResponse.getTotalRecords() > 0;
-        resultsPanel.setVisible(hasResults);
+        tablePanel.setVisible(hasResults);
         resultsMessage.setVisible(!hasResults);
         resultsMessage.setText(hasResults ? "Found " + searchResponse.getTotalRecords() + " results" : "No results found...");
-        submitForQuote.setVisible(isOrderable && hasResults);
+        if(hasResults) {
+            enableQuotingMayBe();
+        } else {
+            submitForQuote.setVisible(false);
+            requestMessage.setVisible(false);
+        }
         // refresh map
         refreshMap();
     }
@@ -510,8 +523,14 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
     }
 
     private void enableQuotingMayBe() {
-        boolean enabled = true;
-        // TODO - check products have been selected
+        boolean enabled = getSelectedRecord().size() > 0 && orderable;
+        submitForQuote.setVisible(orderable);
+        requestMessage.setVisible(!enabled);
+        if(enabled) {
+            submitForQuote.setEnabled(enabled);
+        } else {
+            requestMessage.setText(orderable ? "Select products to submit for quoting" : "These products cannot be ordered");
+        }
         enableQuoting(enabled);
     }
 
@@ -649,10 +668,11 @@ public class CatalogueSearchViewImpl extends Composite implements CatalogueSearc
             materialLink.setTextColor(Color.BLACK);
             materialLink.setTooltip("Service provided by " + productDatasetDTO.getCompany().getName());
             materialLink.setHref("#" + PlaceHistoryHelper.convertPlace(new CatalogueSearchPlace(
-                    Utils.generateTokens(CatalogueSearchPlace.TOKENS.productId.toString(), productDatasetCatalogueDTO.getId() + "")
+                    Utils.generateTokens(CatalogueSearchPlace.TOKENS.productId.toString(), productDatasetDTO.getId() + "")
             )));
             catalogueDropdown.add(materialLink);
         }
+        this.orderable = productDatasetCatalogueDTO.isOrderable();
         Scheduler.get().scheduleDeferred(() -> {
             tab.selectTab("query");
             onResize(null);

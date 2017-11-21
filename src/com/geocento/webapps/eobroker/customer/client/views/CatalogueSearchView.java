@@ -31,7 +31,7 @@ public interface CatalogueSearchView extends IsWidget {
 
     void hideLoadingResults();
 
-    void displayQueryResponse(SearchResponse records, boolean isOrderable);
+    void displayQueryResponse(SearchResponse records, int start);
 
     void displayStartDate(Date date);
 

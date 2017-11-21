@@ -98,6 +98,7 @@ public class Supplier implements EntryPoint {
     }
 
     private void initialise() {
+        com.geocento.webapps.eobroker.common.client.styles.StyleResources.INSTANCE.style().ensureInjected();
         Defaults.setServiceRoot(GWT.getModuleBaseURL() + "api");
         Defaults.setDateFormat(null);
     }

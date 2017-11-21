@@ -41,7 +41,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
         if(notifications == null) {
             loadUserNotifications();
         } else {
-            templateView.setNotifications(notifications);
+            setNotifications(notifications);
         }
         templateView.setCompany(Supplier.getLoginInfo().getCompanyDTO());
         // make sure page scrolls to the top
@@ -84,18 +84,22 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
                 // make sure it is not already included
                 if(!notifications.contains(notificationDTO)) {
                     notifications.add(notificationDTO);
-                    Collections.sort(notifications, new Comparator<SupplierNotificationDTO>() {
-                        @Override
-                        public int compare(SupplierNotificationDTO o1, SupplierNotificationDTO o2) {
-                            return o1.getCreationDate().compareTo(o2.getCreationDate());
-                        }
-                    });
-                    templateView.setNotifications(notifications);
+                    setNotifications(notifications);
                 }
             }
         });
 
 
+    }
+
+    private void setNotifications(List<SupplierNotificationDTO> notifications) {
+        Collections.sort(notifications, new Comparator<SupplierNotificationDTO>() {
+            @Override
+            public int compare(SupplierNotificationDTO o1, SupplierNotificationDTO o2) {
+                return o2.getCreationDate().compareTo(o1.getCreationDate());
+            }
+        });
+        templateView.setNotifications(notifications);
     }
 
     private void loadUserNotifications() {
@@ -109,7 +113,7 @@ public abstract class TemplateActivity extends AbstractApplicationActivity {
                 @Override
                 public void onSuccess(Method method, List<SupplierNotificationDTO> notificationDTOs) {
                     notifications = notificationDTOs;
-                    templateView.setNotifications(notificationDTOs);
+                    setNotifications(notificationDTOs);
                 }
             }).call(ServicesUtil.assetsService).getNotifications();
         } catch (RequestException e) {

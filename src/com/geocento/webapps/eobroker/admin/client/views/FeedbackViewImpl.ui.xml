@@ -28,7 +28,7 @@
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="Feedback" link="feedback" ui:field="template">
-        <g:HTMLPanel addStyleNames="{style.panel}">
+        <design:MaterialPanel padding="20">
             <design:MaterialTitle title="" marginBottom="20" ui:field="title"></design:MaterialTitle>
             <design:MaterialLabel addStyleNames="{style.comment}" ui:field="comment"></design:MaterialLabel>
             <g:HTMLPanel ui:field="feedbackPanel">
@@ -54,6 +54,6 @@
             <g:HTMLPanel visible="false" ui:field="feedbacksPanel">
                 <design:MaterialRow marginTop="20" ui:field="recentFeedback"></design:MaterialRow>
             </g:HTMLPanel>
-        </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

@@ -61,6 +61,12 @@
             display: inline-block;
         }
 
+        .response {
+            margin: 20px 0px;
+            padding: 20px 0px 20px 20px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
     </ui:style>
     <views:TemplateView titleText="Manage user requests" ui:field="template">
         <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
@@ -104,13 +110,17 @@
         </widgets:ExpandPanel>
         <widgets:ExpandPanel label="Your offer" labelStyle="{style.sectionLabel}" labelColor="WHITE" open="true" ui:field="response">
             <widgets:content>
-                <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.formValues}">
-                    <material:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></material:MaterialRichEditor>
-                    <g:HTMLPanel addStyleNames="{style.buttonPanel}">
-                        <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
-                        </widgets:ProgressButton>
+                <design:MaterialPanel>
+                    <g:HTMLPanel ui:field="submitResponsePanel">
+                        <material:MaterialRichEditor placeholder="Enter your response" height="200px" ui:field="responseEditor"></material:MaterialRichEditor>
+                        <g:HTMLPanel addStyleNames="{style.buttonPanel}">
+                            <widgets:ProgressButton text="SUBMIT" ui:field="submitResponse">
+                            </widgets:ProgressButton>
+                        </g:HTMLPanel>
                     </g:HTMLPanel>
-                </g:HTMLPanel>
+                    <g:HTMLPanel ui:field="requestResponse" addStyleNames="{style.response}">
+                    </g:HTMLPanel>
+                </design:MaterialPanel>
             </widgets:content>
         </widgets:ExpandPanel>
         <widgets:ExpandPanel label="Conversation" labelStyle="{style.sectionLabel}" labelColor="WHITE" open="true" ui:field="conversation">

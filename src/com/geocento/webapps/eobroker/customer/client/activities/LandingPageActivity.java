@@ -73,8 +73,13 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
                 @Override
                 public void onSuccess(Method method, List<FollowingEventDTO> followingEventDTOs) {
                     landingPageView.setLoadingFollowingEvents(false);
-                    start += followingEventDTOs.size();
-                    landingPageView.addNewsFollowingEvents(followingEventDTOs.size() == limit, followingEventDTOs);
+                    if(start == 0 && followingEventDTOs.size() == 0) {
+                        landingPageView.displayFollowingMessage("You have no events. Start following companies and product categories and be notified of changes in your network.");
+                    } else {
+                        landingPageView.hideFollowingMessage();
+                        start += followingEventDTOs.size();
+                        landingPageView.addNewsFollowingEvents(followingEventDTOs.size() == limit, followingEventDTOs);
+                    }
                 }
             }).call(ServicesUtil.assetsService).getFollowingEvents(start, limit);
         } catch (Exception e) {

@@ -5,6 +5,7 @@
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
         >
     <ui:style>
+
         .formPanel {
             width: 960px;
             margin: 0px auto;

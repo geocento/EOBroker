@@ -55,6 +55,7 @@
             </cwidgets:MaterialSlider>
             <m:MaterialLabel addStyleNames="{style.newsFeedTitle}" text="Updates in your network" />
             <widgets:FollowingEventsList ui:field="followingEvents"></widgets:FollowingEventsList>
+            <cwidgets:MaterialMessage visible="false" marginTop="20" ui:field="followingMessage"></cwidgets:MaterialMessage>
 <!--
             <m:MaterialRow ui:field="newsFeed">
             </m:MaterialRow>

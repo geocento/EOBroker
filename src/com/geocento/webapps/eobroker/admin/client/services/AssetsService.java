@@ -84,7 +84,7 @@ public interface AssetsService extends DirectRestService {
     void removeCompany(@PathParam("id") Long id) throws RequestException;
 
     @GET
-    @Path("/assets/companies/")
+    @Path("/assets/challenges/")
     @Produces("application/json")
     public List<ChallengeDTO> listChallenges(@QueryParam("start") int start,
                                           @QueryParam("limit") int limit,
@@ -122,6 +122,10 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/newsitem/")
     @Produces("application/json")
     void saveNewsItem(NewsItem newsItem) throws RequestException;
+
+    @DELETE
+    @Path("/assets/newsitem/{id}")
+    void removeNewsItem(@PathParam("id") Long newsItemId) throws RequestException;
 
     @GET
     @Path("/assets/dataset/")
@@ -190,5 +194,4 @@ public interface AssetsService extends DirectRestService {
     @Consumes("application/json")
     @Produces("application/json")
     LogsDTO getLogs() throws RequestException;
-
 }

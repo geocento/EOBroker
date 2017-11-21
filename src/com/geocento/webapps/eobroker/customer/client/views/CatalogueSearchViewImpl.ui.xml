@@ -49,7 +49,6 @@
         .queryButton {
             text-align: center;
             padding: 20px 10px 10px;
-            background: #eeeeee;
         }
 
         .mapPanel {
@@ -155,6 +154,9 @@
                                         <m:MaterialTooltip text="View the off the shelf product information">
                                             <m:MaterialIcon textColor="WHITE" iconType="INFO" addStyleNames="{style.actions}" ui:field="information"></m:MaterialIcon>
                                         </m:MaterialTooltip>
+                                        <m:MaterialTooltip text="Resize this panel">
+                                            <m:MaterialIcon textColor="WHITE" iconType="MORE_VERT" addStyleNames="{style.actions}" ui:field="resize"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
                                     </m:MaterialPanel>
                                 </m:MaterialPanel>
                                 <m:MaterialPanel marginTop="5">
@@ -207,24 +209,28 @@
                         <m:MaterialColumn m:id="results" grid="s12" padding="0">
                             <widgetsc:LoadingWidget addStyleNames="{style.loadingMessage}" ui:field="loadingResults"></widgetsc:LoadingWidget>
                             <m:MaterialPanel ui:field="resultsContainer">
-                                <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
-                                </g:SimplePanel>
-                                <g:SimplePanel addStyleNames="{style.pager}" ui:field="pagerPanel"></g:SimplePanel>
+                                <m:MaterialPanel ui:field="tablePanel">
+                                    <g:SimplePanel addStyleNames="{style.result}" ui:field="resultsPanel">
+                                    </g:SimplePanel>
+                                    <g:SimplePanel addStyleNames="{style.pager}" ui:field="pagerPanel"></g:SimplePanel>
+                                </m:MaterialPanel>
                                 <widgetsc:MaterialLabelIcon addStyleNames="{style.resultMessage}" ui:field="resultsMessage"></widgetsc:MaterialLabelIcon>
                                 <g:HTMLPanel addStyleNames="{style.buttonPanel}">
                                     <m:MaterialButton text="Submit for quote" type="FLAT" textAlign="CENTER" backgroundColor="GREEN" enabled="false" ui:field="submitForQuote"/>
+                                    <widgetsc:MaterialMessage visible="false" ui:field="requestMessage"></widgetsc:MaterialMessage>
                                 </g:HTMLPanel>
                             </m:MaterialPanel>
                         </m:MaterialColumn>
                     </m:MaterialRow>
                 </g:HeaderPanel>
             </g:west>
-        <g:center>
-            <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
-                <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" layersEnabled="true" ui:field="mapContainer">
-                </cmaps:MapContainer>
-            </g:HTMLPanel>
-        </g:center>
+            <g:center>
+                <g:HTMLPanel addStyleNames="{style.mapPanel}" ui:field="mapPanel">
+                    <cmaps:MapContainer width="100%" height="100%" buttonMargin="50" search="true" layersEnabled="true" ui:field="mapContainer">
+                    </cmaps:MapContainer>
+                    <m:MaterialIcon visible="false" layoutPosition="ABSOLUTE" top="0" left="0" iconType="ARROW_FORWARD" backgroundColor="GREEN" iconColor="WHITE" ui:field="expand"></m:MaterialIcon>
+                </g:HTMLPanel>
+            </g:center>
         </g:DockLayoutPanel>
         <m:MaterialModal type="DEFAULT" dismissible="false" inDuration="500" outDuration="500" ui:field="requestQuotation">
             <m:MaterialModalContent>

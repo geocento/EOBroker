@@ -349,7 +349,6 @@ public class RequestsResource implements RequestsService {
             dbOTSProductRequest.setStatus(Request.STATUS.submitted);
             dbOTSProductRequest.setLastModifiedDate(dbOTSProductRequest.getCreationDate());
             em.persist(dbOTSProductRequest);
-            em.getTransaction().commit();
             // notify the supplier
             try {
                 NotificationHelper.notifySupplier(em, productDataset.getCompany(), SupplierNotification.TYPE.OTSPRODUCTREQUEST,
@@ -358,6 +357,7 @@ public class RequestsResource implements RequestsService {
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
+            em.getTransaction().commit();
             return createRequestDTO(dbOTSProductRequest);
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
@@ -449,6 +449,7 @@ public class RequestsResource implements RequestsService {
             ProductServiceResponseDTO productServiceResponseDTO = new ProductServiceResponseDTO();
             productServiceResponseDTO.setId(productServiceRequest.getId());
             productServiceResponseDTO.setStatus(productServiceRequest.getStatus());
+            productServiceResponseDTO.setCreationTime(productServiceRequest.getCreationDate());
             productServiceResponseDTO.setAoIWKT(productServiceRequest.getAoIWKT());
             productServiceResponseDTO.setFormValues(productServiceRequest.getFormValues());
             productServiceResponseDTO.setProduct(ProductHelper.createProductDTO(productServiceRequest.getProduct()));

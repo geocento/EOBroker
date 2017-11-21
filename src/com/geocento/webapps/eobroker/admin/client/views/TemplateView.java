@@ -85,6 +85,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     MaterialLink logs;
     @UiField
     MaterialLink settings;
+    @UiField
+    MaterialLink challenges;
 
     private final ClientFactoryImpl clientFactory;
 
@@ -104,6 +106,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         setLink(users, new UsersPlace());
         setLink(companies, new CompaniesPlace());
         setLink(products, new ProductsPlace());
+        setLink(challenges, new ChallengesPlace());
         setLink(newsItems, new NewsItemsPlace());
         setLink(feedback, new FeedbackPlace());
         setLink(settings, new SettingsPlace());
@@ -137,6 +140,9 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
                 break;
             case "products":
                 products.addStyleName(style.selected());
+                break;
+            case "challenges":
+                challenges.addStyleName(style.selected());
                 break;
             case "newsItems":
                 newsItems.addStyleName(style.selected());

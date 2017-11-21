@@ -92,7 +92,9 @@
         }
 
         .response {
-            padding-left: 20px;
+            margin: 20px 0px;
+            padding: 20px 0px 20px 20px;
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .image {
@@ -117,10 +119,9 @@
                         <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
                     </design:MaterialPanel>
                     <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
-                        <design:MaterialPanel ui:field="actions">
-                            <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
-                        </design:MaterialPanel>
+                    <design:MaterialPanel paddingTop="30">
+                        <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
+                        <design:MaterialLabel fontSize="0.8em" ui:field="creationTime"></design:MaterialLabel>
                     </design:MaterialPanel>
                 </design:MaterialColumn>
             </design:MaterialRow>

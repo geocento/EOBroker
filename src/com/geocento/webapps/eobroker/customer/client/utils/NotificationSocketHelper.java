@@ -62,6 +62,8 @@ public class NotificationSocketHelper {
                                 MaterialToast.fireToast("New notification!");
                             }
                             break;
+                        case productResponse:
+                        case otsproductResponse:
                         case conversationMessage:
                         case requestMessage:
                             MessageEvent messageEvent = new MessageEvent();

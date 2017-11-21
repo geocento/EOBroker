@@ -10,7 +10,7 @@ public class WebSocketMessage {
 
     public static interface WebSocketMessageMapper extends ObjectMapper<WebSocketMessage> {};
 
-    static public enum TYPE {notification, conversationMessage, logout, requestMessage};
+    static public enum TYPE {notification, conversationMessage, logout, productResponse, otsproductResponse, requestMessage};
 
     TYPE type;
 

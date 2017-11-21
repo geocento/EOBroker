@@ -23,6 +23,10 @@ public interface LandingPageView extends IsWidget {
 
     void clearNewsFeed();
 
+    void displayFollowingMessage(String message);
+
+    void hideFollowingMessage();
+
     public interface Presenter {
         void loadMoreFollowingEvents();
     }

@@ -54,6 +54,9 @@ public class FollowingEventsList extends AsyncPagingWidgetList<FollowingEventDTO
                         case productdatasets:
                             firstToken = FullViewPlace.TOKENS.productdatasetid;
                             break;
+                        case project:
+                            firstToken = FullViewPlace.TOKENS.projectid;
+                            break;
                     }
                     if (firstToken != null) {
                         place = new FullViewPlace(

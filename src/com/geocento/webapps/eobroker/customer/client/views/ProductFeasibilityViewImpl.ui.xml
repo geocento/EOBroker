@@ -120,7 +120,7 @@
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
     <m:MaterialPanel addStyleNames="{style.content}">
-        <g:DockLayoutPanel addStyleNames="{style.contentPanel}">
+        <g:DockLayoutPanel addStyleNames="{style.contentPanel}" ui:field="panel">
             <g:west size="350">
                 <g:HeaderPanel addStyleNames="{style.searchPanel}" ui:field="searchPanel">
                     <m:MaterialPanel>
@@ -138,6 +138,9 @@
                                         </m:MaterialTooltip>
                                         <m:MaterialTooltip text="View the bespoke service information">
                                             <m:MaterialIcon textColor="WHITE" iconType="INFO" addStyleNames="{style.actions}" ui:field="information"></m:MaterialIcon>
+                                        </m:MaterialTooltip>
+                                        <m:MaterialTooltip text="Resize this panel">
+                                            <m:MaterialIcon textColor="WHITE" iconType="MORE_VERT" addStyleNames="{style.actions}" ui:field="resize"></m:MaterialIcon>
                                         </m:MaterialTooltip>
                                     </m:MaterialPanel>
                                 </m:MaterialPanel>

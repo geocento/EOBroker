@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.client.styles.MyCellTableResources;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
+import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
@@ -150,6 +151,10 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
     MaterialIcon samples;
     @UiField
     MaterialLink serviceName;
+    @UiField
+    DockLayoutPanel panel;
+    @UiField
+    MaterialIcon resize;
 
     private Presenter presenter;
 
@@ -201,6 +206,9 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
 
         searchPanel.getElement().getParentElement().addClassName("z-depth-1");
         searchPanel.getElement().getParentElement().getStyle().setZIndex(10);
+
+        // add resizing of search and result panel
+        WidgetUtil.enableDragging(resize, (clientX, clientY) -> panel.setWidgetSize(searchPanel, panel.getWidgetSize(searchPanel) + clientX));
 
         mapContainer.setPresenter(aoi -> presenter.aoiChanged(aoi));
 

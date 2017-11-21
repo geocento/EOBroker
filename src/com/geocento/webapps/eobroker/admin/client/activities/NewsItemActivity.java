@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
 import com.geocento.webapps.eobroker.admin.client.places.NewsItemPlace;
+import com.geocento.webapps.eobroker.admin.client.places.NewsItemsPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.admin.client.views.NewsItemView;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
@@ -93,18 +94,19 @@ public class NewsItemActivity extends TemplateActivity implements NewsItemView.P
                 newsItem.setImageUrl(newsItemView.getImageUrl());
                 newsItem.setDescription(newsItemView.getDescription().getText());
                 newsItem.setWebsiteUrl(newsItemView.getWebsiteUrl().getText());
-                newsItemView.setLoading("Saving newsItem...");
+                newsItemView.setLoading("Saving news item...");
                 try {
                     REST.withCallback(new MethodCallback<Long>() {
                         @Override
                         public void onFailure(Method method, Throwable exception) {
-                            newsItemView.setLoadingError("Error saving newsItem");
+                            newsItemView.setLoadingError("Error saving news item");
                         }
 
                         @Override
                         public void onSuccess(Method method, Long newsItemId) {
-                            newsItemView.hideLoading("NewsItem saved");
+                            newsItemView.hideLoading("News Item saved");
                             newsItem.setId(newsItemId);
+                            clientFactory.getPlaceController().goTo(new NewsItemsPlace());
                         }
                     }).call(ServicesUtil.assetsService).saveNewsItem(newsItem);
                 } catch (RequestException e) {

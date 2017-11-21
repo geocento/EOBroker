@@ -296,4 +296,9 @@ public interface AssetsService extends DirectRestService {
     @Path("/successstories/{id}")
     @Produces("application/json")
     SuccessStoryDTO getSuccessStory(@PathParam("id") Long successStoryId) throws RequestException;
+
+    @POST
+    @Path("/assets/user/invite/")
+    @Produces("application/json")
+    void inviteColleague(String email) throws RequestException;
 }

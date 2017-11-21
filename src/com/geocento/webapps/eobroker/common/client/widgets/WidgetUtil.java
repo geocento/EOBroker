@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.common.client.widgets;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -92,6 +94,62 @@ public class WidgetUtil {
             }
         }
         return null;
+    }
+
+    static class Position {
+        int x;
+        int y;
+
+        public Position() {
+            reset();
+        }
+
+        public void reset() {
+            x = -1;
+            y = -1;
+        }
+    }
+
+    static public interface Dragging {
+
+        void onDrag(int clientX, int clientY);
+
+    }
+
+    public static void enableDragging(final Widget panel, final Dragging dragging) {
+        final Position position = new Position();
+        panel.sinkEvents(Event.ONMOUSEOUT | Event.ONMOUSEDOWN | Event.ONMOUSEMOVE | Event.ONMOUSEUP);
+        panel.addDomHandler(new MouseUpHandler() {
+
+            @Override
+            public void onMouseUp(MouseUpEvent mouseEvent) {
+                position.reset();
+                Event.releaseCapture(panel.getElement());
+                mouseEvent.preventDefault();
+            }
+        }, MouseUpEvent.getType());
+        panel.addDomHandler(new MouseDownHandler() {
+
+            @Override
+            public void onMouseDown(MouseDownEvent mouseEvent) {
+                position.x = mouseEvent.getClientX();
+                position.y = mouseEvent.getClientY();
+                Event.setCapture(panel.getElement());
+                mouseEvent.preventDefault();
+            }
+        }, MouseDownEvent.getType());
+        panel.addDomHandler(new MouseMoveHandler() {
+
+            @Override
+            public void onMouseMove(MouseMoveEvent mouseEvent) {
+                if(position.x != -1) {
+                    dragging.onDrag(mouseEvent.getClientX() - position.x, mouseEvent.getClientY() - position.y);
+                    position.x = mouseEvent.getClientX();
+                    position.y = mouseEvent.getClientY();
+                    mouseEvent.preventDefault();
+                }
+            }
+        }, MouseMoveEvent.getType());
     }
 
 }

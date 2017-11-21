@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.server.servlets;
 
 import com.geocento.webapps.eobroker.common.server.EMF;
+import com.geocento.webapps.eobroker.common.server.MailContent;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.EventHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.NotificationHelper;
@@ -21,18 +22,6 @@ import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.customer.shared.CompanyRoleDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductProjectDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductSoftwareDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProjectDTO;
-import com.geocento.webapps.eobroker.customer.shared.SoftwareDTO;
-import com.geocento.webapps.eobroker.customer.shared.SuccessStoryDTO;
-import com.geocento.webapps.eobroker.customer.shared.TestimonialDTO;
-import com.geocento.webapps.eobroker.customer.shared.UserDTO;
-import com.geocento.webapps.eobroker.customer.shared.UserHelper;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
 import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
@@ -583,11 +572,11 @@ public class AssetsResource implements AssetsService {
             TypedQuery<ProductDataset> query = em.createQuery("select p from ProductDataset p where p.product = :product and p.datasetStandard is not null and p.id <> :productDatasetId", ProductDataset.class);
             query.setParameter("product", productDataset.getProduct());
             query.setParameter("productDatasetId", productDataset.getId());
-            productDatasetCatalogueDTO.setOtherCatalogues(ListUtil.mutate(query.getResultList(), object -> {
+            productDatasetCatalogueDTO.setOtherCatalogues(ListUtil.mutate(query.getResultList(), otherProductDataset -> {
                 ProductDatasetDTO productDatasetDTO = new ProductDatasetDTO();
-                productDatasetDTO.setId(productDataset.getId());
-                productDatasetDTO.setName(productDataset.getName());
-                productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
+                productDatasetDTO.setId(otherProductDataset.getId());
+                productDatasetDTO.setName(otherProductDataset.getName());
+                productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(otherProductDataset.getCompany()));
                 return productDatasetDTO;
             }));
             return productDatasetCatalogueDTO;
@@ -1931,6 +1920,26 @@ public class AssetsResource implements AssetsService {
                 throw new RequestException("Could not find success story");
             }
             return convertToSuccessStoryDTO(successStory, true);
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void inviteColleague(String email) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            User user = em.find(User.class, userName);
+            String websiteUrl = ServerUtil.getSettings().getWebsiteUrl();
+            String linkUrl = websiteUrl + "#requestAccess:companyId=" + user.getCompany().getId();
+            MailContent mailContent = new MailContent(MailContent.EMAIL_TYPE.CONSUMER);
+            mailContent.addTitle(user.getFullName() + " has invited you to join the EO Broker platform!");
+            mailContent.addLine("Use the button below to join your " + user.getCompany().getName() + " colleagues and the other members of the EO Broker community.");
+            mailContent.addAction("Register with the EO Broker", null, linkUrl);
+            mailContent.sendEmail(user.getEmail(), "Your invitation to the EO Broker platform", false);
         } catch (Exception e) {
             throw handleException(em, e);
         } finally {

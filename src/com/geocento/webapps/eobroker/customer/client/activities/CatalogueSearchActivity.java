@@ -15,7 +15,6 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.CatalogueSearchView;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetCatalogueDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.OTSProductRequestDTO;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductDatasetDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -156,7 +155,6 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                                     @Override
                                     public void onSuccess(OpenSearchDescription result) {
                                         hideFullLoading();
-                                        // TODO - configure view to reflect the open search interface
                                         List<Parameter> parameters = openSearchUtils.getUrlParameters();
                                         parameters = ListUtil.filterValues(parameters, new ListUtil.CheckValue<Parameter>() {
                                             @Override
@@ -417,7 +415,7 @@ public class CatalogueSearchActivity extends TemplateActivity implements Catalog
                         @Override
                         public void onSuccess(SearchResponse result) {
                             catalogueSearchView.hideLoadingResults();
-                            catalogueSearchView.displayQueryResponse(result, productDatasetCatalogueDTO.isOrderable());
+                            catalogueSearchView.displayQueryResponse(result, start);
                         }
                     });
                 } catch (Exception e) {

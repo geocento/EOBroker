@@ -8,7 +8,9 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.resources.*;
 import com.geocento.webapps.eobroker.common.shared.LatLng;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
+import com.geocento.webapps.eobroker.common.shared.entities.requests.OTSProductRequest;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
+import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
@@ -27,6 +29,7 @@ import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +82,8 @@ public class OrderViewImpl extends Composite implements OrderView {
     MaterialLabel messagesComment;
     @UiField
     MaterialTooltip userTooltip;
+    @UiField
+    HTMLPanel submitResponsePanel;
 
     private Callback<Void, Exception> mapLoadedHandler = null;
 
@@ -217,7 +222,15 @@ public class OrderViewImpl extends Composite implements OrderView {
         status.setText("Submitted");
         this.requestDescription.clear();
         addRequestValue("Customer comment", otsProductRequestDTO.getComments());
-        addRequestValue("Products ID selection", otsProductRequestDTO.getSelection());
+        String productSelection = otsProductRequestDTO.getSelection();
+        int index = 1;
+        List<String> htmlValues = new ArrayList<String>();
+        for(String productId : productSelection.split(OTSProductRequest.selectionSeparator)) {
+            htmlValues.add(productId.startsWith("http") ?
+                    "<a href='" + productId + "' target='_blank;'>product #" + index++ + "</a>" :
+                    productId);
+        }
+        addRequestValue("Products ID selection", StringUtils.join(htmlValues, ", "));
         if(otsProductRequestDTO.getFormValues().size() == 0) {
             this.requestDescription.add(new HTMLPanel("<p>No search parameters provided</p>"));
         } else {
@@ -233,10 +246,12 @@ public class OrderViewImpl extends Composite implements OrderView {
 
     @Override
     public void displayResponse(String supplierResponse) {
-        if(supplierResponse == null) {
+        boolean hasResponse = supplierResponse != null;
+        submitResponsePanel.setVisible(!hasResponse);
+        requestResponse.setVisible(hasResponse);
+        if(!hasResponse) {
             responseEditor.setHTML("");
         } else {
-            responseEditor.setVisible(false);
             requestResponse.clear();
             requestResponse.add(new HTML(supplierResponse));
         }

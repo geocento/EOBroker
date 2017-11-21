@@ -139,6 +139,12 @@ public class OTSProductResponseActivity extends TemplateActivity implements OTSP
                         request.getMessages().add(event.getMessage());
                         addMessage(event.getMessage());
                     }
+                } else if(event.getType() == WebSocketMessage.TYPE.otsproductResponse) {
+                    if(event.getDestination().contentEquals(request.getId())) {
+                        if(Window.confirm("New response on this request, reload page?")) {
+                            loadOTSProductResponse(request.getId());
+                        }
+                    }
                 }
             }
         });

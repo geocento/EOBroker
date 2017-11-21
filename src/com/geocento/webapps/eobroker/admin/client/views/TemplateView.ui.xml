@@ -30,7 +30,7 @@
         }
 
         .navOpened main, .navOpened footer {
-            padding-left: 300px;
+            padding-left: 250px;
         }
 
         .title {
@@ -104,7 +104,7 @@
                 </design:MaterialNavSection>
             </design:MaterialNavBar>
             <design:MaterialDropDown constrainWidth="false" activator="notifications" belowOrigin="true" addStyleNames="{style.notificationsPanel}" ui:field="notificationsPanel"></design:MaterialDropDown>
-            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="350" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="sideNav">
+            <widgets:MaterialSideNav type="FIXED" design:id="sideNav" alwaysShowActivator="false" top="64" width="250" allowBodyScroll="true" shadow="0" addStyleNames="{style.sideNav}, {resCommon.style.slimScrollbar}" ui:field="sideNav">
                 <g:HTMLPanel addStyleNames="{style.sidenavPanel}">
                     <g:HTMLPanel addStyleNames="{style.menus}">
                         <design:MaterialLabel addStyleNames="{style.navBrand}">Show data for</design:MaterialLabel>
@@ -112,6 +112,7 @@
                             <design:MaterialLink iconType="VERIFIED_USER" iconPosition="LEFT" textColor="BLUE" text="Users" addStyleNames="{style.category}" ui:field="users"></design:MaterialLink>
                             <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Companies" addStyleNames="{style.category}" ui:field="companies"></design:MaterialLink>
                             <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Products" addStyleNames="{style.category}" ui:field="products"></design:MaterialLink>
+                            <design:MaterialLink iconType="ADJUST" iconPosition="LEFT" textColor="BLUE" text="Challenges" addStyleNames="{style.category}" ui:field="challenges"></design:MaterialLink>
                             <design:MaterialLink iconType="NEW_RELEASES" iconPosition="LEFT" textColor="BLUE" text="News Items" addStyleNames="{style.category}" ui:field="newsItems"></design:MaterialLink>
                             <design:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="BLUE" text="Feedback" addStyleNames="{style.category}" ui:field="feedback"></design:MaterialLink>
                             <design:MaterialLink iconType="SETTINGS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}" ui:field="settings"></design:MaterialLink>

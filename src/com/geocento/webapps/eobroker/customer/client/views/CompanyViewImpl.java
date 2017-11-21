@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.widgets.CountryEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLoadingButton;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
@@ -13,6 +14,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.AffiliateWidget;
 import com.geocento.webapps.eobroker.customer.client.widgets.CategorySearchBox;
 import com.geocento.webapps.eobroker.customer.client.widgets.UserImageWidget;
 import com.geocento.webapps.eobroker.customer.shared.UserDTO;
+import com.geocento.webapps.eobroker.customer.shared.utils.UserHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -84,6 +86,10 @@ public class CompanyViewImpl extends Composite implements CompanyView {
     MaterialPanel companyUsers;
     @UiField
     MaterialLoadingButton inviteColleagues;
+    @UiField
+    MaterialTextBox colleagueEmail;
+    @UiField
+    MaterialMessage inviteMessage;
 
     public CompanyViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -96,7 +102,34 @@ public class CompanyViewImpl extends Composite implements CompanyView {
         inviteColleagues.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Window.alert("TODO - request emails and send an invitation");
+                String email = colleagueEmail.getText();
+                if(email == null ||
+                        email.length() < 3 ||
+                        !email.toLowerCase().matches(UserHelper.emailregExp)) {
+                    Window.alert("Email is not a valid email");
+                    return;
+                }
+                try {
+                    inviteMessage.setVisible(false);
+                    inviteColleagues.setLoading(true);
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            inviteColleagues.setLoading(false);
+                            inviteMessage.setVisible(true);
+                            inviteMessage.displayErrorMessage("Error sending invitation to " + email + ", reason is " + method.getResponse().getText());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void result) {
+                            inviteColleagues.setLoading(false);
+                            colleagueEmail.setText("");
+                            inviteMessage.setVisible(true);
+                            inviteMessage.displaySuccessMessage("Invitation successfully sent to " + email);
+                        }
+                    }).call(ServicesUtil.assetsService).inviteColleague(email);
+                } catch (Exception e) {
+                }
             }
         });
     }

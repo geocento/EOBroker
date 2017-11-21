@@ -8,6 +8,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.*;
 import com.geocento.webapps.eobroker.common.shared.imageapi.Product;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
+import com.geocento.webapps.eobroker.customer.server.websockets.NotificationSocket;
+import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.client.services.OrdersService;
 import com.geocento.webapps.eobroker.supplier.server.util.MessageHelper;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
@@ -311,32 +313,10 @@ public class OrdersResource implements OrdersService {
         String userName = UserUtils.verifyUserSupplier(request);
         EntityManager em = EMF.get().createEntityManager();
         try {
-            em.getTransaction().begin();
             final User user = em.find(User.class, userName);
             switch (type) {
-                case image: {
-                    ImagesRequest imagesRequest = em.find(ImagesRequest.class, id);
-                    if (imagesRequest == null) {
-                        throw new RequestException("No imagery request with id " + id);
-                    }
-                    imagesRequest.setResponse(response);
-                    NotificationHelper.notifyCustomer(em, user, Notification.TYPE.IMAGEREQUEST, "New response from " + user.getCompany().getName() + " on your images request", imagesRequest.getId());
-                } break;
-                case imageservice: {
-                    ImageryFormRequest imageryFormRequest = em.find(ImageryFormRequest.class, id);
-                    if (imageryFormRequest == null) {
-                        throw new RequestException("No images request with id " + id);
-                    }
-                    ImageryFormSupplierRequest imageryFormSupplierRequest = ListUtil.findValue(imageryFormRequest.getImageServiceRequests(), new ListUtil.CheckValue<ImageryFormSupplierRequest>() {
-                        @Override
-                        public boolean isValue(ImageryFormSupplierRequest value) {
-                            return value.getImageService().getCompany() == user.getCompany();
-                        }
-                    });
-                    imageryFormSupplierRequest.setResponse(response);
-                    NotificationHelper.notifyCustomer(em, user, Notification.TYPE.IMAGESERVICEREQUEST, "New response from " + user.getCompany().getName() + " on your imagery request", imageryFormRequest.getId());
-                } break;
                 case product: {
+                    em.getTransaction().begin();
                     ProductServiceRequest productServiceRequest = em.find(ProductServiceRequest.class, id);
                     if (productServiceRequest == null) {
                         throw new RequestException("No product request with id " + id);
@@ -348,36 +328,36 @@ public class OrdersResource implements OrdersService {
                         }
                     });
                     productServiceSupplierRequest.setResponse(response);
-                    NotificationHelper.notifyCustomer(em, user, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your product request", productServiceRequest.getId());
-/*
+                    em.getTransaction().commit();
                     try {
+                        NotificationHelper.notifyCustomer(em, user, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your product request", productServiceRequest.getId());
                         WebSocketMessage webSocketMessage = new WebSocketMessage();
-                        webSocketMessage.setType(WebSocketMessage.TYPE.);
-                        NotificationSocket.sendMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
+                        webSocketMessage.setType(WebSocketMessage.TYPE.productResponse);
+                        webSocketMessage.setDestination(productServiceRequest.getId());
+                        NotificationSocket.sendMessage(user.getUsername(), webSocketMessage);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
-*/
                 } break;
                 case otsproduct: {
+                    em.getTransaction().begin();
                     OTSProductRequest otsProductRequest = em.find(OTSProductRequest.class, id);
                     if (otsProductRequest == null) {
                         throw new RequestException("No OTS product request with id " + id);
                     }
                     otsProductRequest.setResponse(response);
-                    NotificationHelper.notifyCustomer(em, user, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your OTS product request", otsProductRequest.getId());
-/*
+                    em.getTransaction().commit();
                     try {
+                        NotificationHelper.notifyCustomer(em, user, Notification.TYPE.OTSPRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your OTS product request", otsProductRequest.getId());
                         WebSocketMessage webSocketMessage = new WebSocketMessage();
-                        webSocketMessage.setType(WebSocketMessage.TYPE.);
-                        NotificationSocket.sendMessage(productServiceRequest.getCustomer(), productServiceSupplierRequest.getId() + "", message);
+                        webSocketMessage.setType(WebSocketMessage.TYPE.otsproductResponse);
+                        webSocketMessage.setDestination(otsProductRequest.getId());
+                        NotificationSocket.sendMessage(user.getUsername(), webSocketMessage);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
-*/
                 } break;
             }
-            em.getTransaction().commit();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error");
@@ -399,26 +379,6 @@ public class OrdersResource implements OrdersService {
             message.setCreationDate(new Date());
             em.persist(message);
             switch (type) {
-                case image: {
-                    ImagesRequest imagesRequest = em.find(ImagesRequest.class, id);
-                    if (imagesRequest == null) {
-                        throw new RequestException("No imagery request with id " + id);
-                    }
-                    imagesRequest.getMessages().add(message);
-                } break;
-                case imageservice: {
-                    ImageryFormRequest imageryFormRequest = em.find(ImageryFormRequest.class, id);
-                    if (imageryFormRequest == null) {
-                        throw new RequestException("No images request with id " + id);
-                    }
-                    ImageryFormSupplierRequest imageryFormSupplierRequest = ListUtil.findValue(imageryFormRequest.getImageServiceRequests(), new ListUtil.CheckValue<ImageryFormSupplierRequest>() {
-                        @Override
-                        public boolean isValue(ImageryFormSupplierRequest value) {
-                            return value.getImageService().getCompany() == user.getCompany();
-                        }
-                    });
-                    imageryFormSupplierRequest.getMessages().add(message);
-                } break;
                 case product: {
                     ProductServiceRequest productServiceRequest = em.find(ProductServiceRequest.class, id);
                     if (productServiceRequest == null) {

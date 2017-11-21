@@ -1,6 +1,8 @@
 package com.geocento.webapps.eobroker.admin.client.activities;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactory;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveNewsItem;
+import com.geocento.webapps.eobroker.admin.client.events.RemoveNewsItemHandler;
 import com.geocento.webapps.eobroker.admin.client.places.NewsItemPlace;
 import com.geocento.webapps.eobroker.admin.client.places.NewsItemsPlace;
 import com.geocento.webapps.eobroker.admin.client.services.ServicesUtil;
@@ -62,6 +64,31 @@ public class NewsItemsActivity extends TemplateActivity implements NewsItemsView
     protected void bind() {
         super.bind();
 
+        activityEventBus.addHandler(RemoveNewsItem.TYPE, new RemoveNewsItemHandler() {
+            @Override
+            public void onRemoveNewsItem(RemoveNewsItem event) {
+                try {
+                    displayLoading("Removing news item");
+                    REST.withCallback(new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            hideLoading();
+                            displayError(method.getResponse().getText());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void result) {
+                            hideLoading();
+                            displaySuccess("News item removed");
+                            reloadNewsItems();
+                        }
+                    }).call(ServicesUtil.assetsService).removeNewsItem(event.getNewsItem().getId());
+                } catch (Exception e) {
+
+                }
+            }
+        });
+
         handlers.add(newsItemsView.getCreateNewsItemButton().addClickHandler(new ClickHandler() {
 
             @Override
@@ -69,6 +96,11 @@ public class NewsItemsActivity extends TemplateActivity implements NewsItemsView
                 clientFactory.getPlaceController().goTo(new NewsItemPlace());
             }
         }));
+    }
+
+    private void reloadNewsItems() {
+        start = 0;
+        loadNewsItems();
     }
 
 

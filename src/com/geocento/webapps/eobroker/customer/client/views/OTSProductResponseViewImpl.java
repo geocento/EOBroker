@@ -33,6 +33,7 @@ import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -195,7 +196,7 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     protected void setStatus(Request.STATUS status) {
         statuses.clear();
         if(status == null) {
-            this.status.setText("Undefined");
+            this.status.setText("Submitted");
             this.status.setEnabled(false);
         } else {
             this.status.setText(status.toString());
@@ -257,7 +258,15 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
         company.setText("From company " + companyDTO.getName());
         setStatus(otsProductResponseDTO.getStatus());
         addRequestValue("Your comments", otsProductResponseDTO.getComments());
-        addRequestValue("Products ID selection", otsProductResponseDTO.getSelection());
+        String productSelection = otsProductResponseDTO.getSelection();
+        int index = 1;
+        List<String> htmlValues = new ArrayList<String>();
+        for(String productId : productSelection.split(OTSProductRequest.selectionSeparator)) {
+            htmlValues.add(productId.startsWith("http") ?
+                    "<a href='" + productId + "' target='_blank;'>product #" + index++ + "</a>" :
+                    productId);
+        }
+        addRequestValue("Products ID selection", com.geocento.webapps.eobroker.common.shared.utils.StringUtils.join(htmlValues, ", "));
         if(otsProductResponseDTO.getFormValues().size() == 0) {
             //this.requestDescription.add(new HTMLPanel("<p>No search parameters provided</p>"));
         } else {

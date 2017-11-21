@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
+import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
@@ -91,6 +92,8 @@ public class ProductResponseViewImpl extends Composite implements ProductRespons
     MaterialImageLoading image;
     @UiField
     MaterialLabel messagesComment;
+    @UiField
+    MaterialLabel creationTime;
 
     private ClientFactoryImpl clientFactory;
 
@@ -288,6 +291,7 @@ public class ProductResponseViewImpl extends Composite implements ProductRespons
     @Override
     public void displayProductRequest(ProductServiceResponseDTO productServiceResponseDTO) {
         setStatus(productServiceResponseDTO.getStatus());
+        creationTime.setText("Created on " + DateUtil.displaySimpleUTCDate(productServiceResponseDTO.getCreationTime()));
         this.requestDescription.clear();
         addRequestValue("Product requested", productServiceResponseDTO.getProduct().getName());
         if(productServiceResponseDTO.getFormValues().size() == 0) {

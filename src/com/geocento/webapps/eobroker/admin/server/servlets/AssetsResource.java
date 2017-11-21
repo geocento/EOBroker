@@ -618,10 +618,34 @@ public class AssetsResource implements AssetsService {
                     throw new RequestException("Could not find news item to update");
                 }
                 dbNewsItem.setTitle(newsItem.getTitle());
+                dbNewsItem.setImageUrl(newsItem.getImageUrl());
                 dbNewsItem.setDescription(newsItem.getDescription());
                 dbNewsItem.setWebsiteUrl(newsItem.getWebsiteUrl());
                 em.merge(dbNewsItem);
             }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void removeNewsItem(Long newsItemId) throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            NewsItem dbNewsItem = em.find(NewsItem.class, newsItemId);
+            if(dbNewsItem == null) {
+                throw new RequestException("Could not find news item to remove");
+            }
+            em.remove(dbNewsItem);
             em.getTransaction().commit();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

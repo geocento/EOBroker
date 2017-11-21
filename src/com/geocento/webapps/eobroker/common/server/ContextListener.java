@@ -65,6 +65,7 @@ public class ContextListener implements ServletContextListener {
         // apply fixes if needed
         applyFixes();
 
+/*
         // quick check of libraries
         try {
             CoordinateReferenceSystem geo = CRS.decode("EPSG:4326", false);
@@ -73,6 +74,7 @@ public class ContextListener implements ServletContextListener {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+*/
 
         // TODO - check that it works before erasing the data
         // clean up the samples

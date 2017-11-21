@@ -88,7 +88,7 @@
                 <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="VISIBILITY" iconColor="GREY" ui:field="publish"></design:MaterialLink>
             </design:MaterialTooltip>
             <design:MaterialTooltip text="View in client application">
-                <design:MaterialLink float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
+                <design:MaterialLink visible="false" float="RIGHT" iconSize="SMALL" iconType="EXIT_TO_APP" iconColor="GREY" ui:field="viewClient"></design:MaterialLink>
             </design:MaterialTooltip>
             <design:MaterialTitle title="Edit your company's profile" ui:field="title"></design:MaterialTitle>
         </design:MaterialPanel>
@@ -130,9 +130,11 @@
                 <design:MaterialLink text="Employees registered on the EO broker" textColor="BLACK" iconType="VERIFIED_USER" addStyleNames="{style.subtitle}"/>
                 <design:MaterialPanel addStyleNames="{style.sectionPanel}">
                     <design:MaterialPanel ui:field="companyUsers"></design:MaterialPanel>
-                    <design:MaterialPanel>
-                        <c:MaterialLoadingButton text="Invite a colleague" ui:field="inviteColleagues"></c:MaterialLoadingButton>
+                    <design:MaterialPanel display="FLEX">
+                        <c:MaterialLoadingButton text="Invite a colleague" marginRight="20" marginTop="10" ui:field="inviteColleagues"></c:MaterialLoadingButton>
+                        <design:MaterialTextBox display="INLINE_BLOCK" flexGrow="1" marginRight="20" marginTop="0" placeholder="Your colleagues email, work address only" ui:field="colleagueEmail"></design:MaterialTextBox>
                     </design:MaterialPanel>
+                    <c:MaterialMessage visible="false" marginTop="10" marginBottom="10" ui:field="inviteMessage"></c:MaterialMessage>
                 </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">

@@ -35,16 +35,16 @@
 
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"></ui:with>
-    <design:MaterialCard backgroundColor="BLUE_GREY" axis="HORIZONTAL">
+    <design:MaterialCard backgroundColor="WHITE" axis="HORIZONTAL">
         <design:MaterialCardImage backgroundColor="WHITE">
             <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="imagePanel"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="WHITE" padding="10">
+        <design:MaterialCardContent backgroundColor="WHITE" textColor="BLACK" padding="10">
             <design:MaterialLabel fontSize="1.2em" truncate="true" addStyleNames="{style.title}" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
-        <design:MaterialCardAction padding="10">
-            <design:MaterialLink text="REMOVE" textColor="WHITE" ui:field="remove"></design:MaterialLink>
+        <design:MaterialCardAction backgroundColor="WHITE" padding="10">
+            <design:MaterialLink text="REMOVE" textColor="BLACK" ui:field="remove"></design:MaterialLink>
         </design:MaterialCardAction>
     </design:MaterialCard>
 </ui:UiBinder>

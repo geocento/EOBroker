@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public class ProductServiceResponseDTO {
     String aoIWKT;
     List<ProductServiceSupplierResponseDTO> supplierResponses;
     private Request.STATUS status;
+    private Date creationTime;
 
     public ProductServiceResponseDTO() {
     }
@@ -69,4 +71,11 @@ public class ProductServiceResponseDTO {
         return status;
     }
 
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
 }
