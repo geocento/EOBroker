@@ -3,6 +3,8 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.admin.client.views"
              xmlns:widgets="urn:import:com.geocento.webapps.eobroker.admin.client.widgets"
+             xmlns:widgetsc="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.ChallengesViewImpl.Style">
 
@@ -15,13 +17,33 @@
             float: right;
         }
 
+        .fileForm {
+            float: right;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="View challenges" link="challenges" ui:field="template">
         <design:MaterialPanel padding="20">
             <g:HTMLPanel>
-                <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" ui:field="createNew"></design:MaterialButton>
+                <design:MaterialCard float="RIGHT" backgroundColor="TRANSPARENT" margin="0" paddingLeft="20" shadow="0">
+                    <design:MaterialCardContent layoutPosition="RELATIVE" backgroundColor="TRANSPARENT" margin="0" padding="0" shadow="0">
+                        <material:MaterialFileUploader width="auto" height="auto" backgroundColor="TRANSPARENT" shadow="0" ui:field="importCSV">
+                            <design:MaterialPanel>
+                                <widgetsc:MaterialLoadingButton backgroundColor="PINK" size="MEDIUM" type="FLOATING" float="RIGHT" iconType="CLOUD_UPLOAD" circle="true" iconColor="WHITE" ui:field="uploadSampleButton"></widgetsc:MaterialLoadingButton>
+                                <design:MaterialLabel marginRight="50" ui:field="uploadSampleTitle">Or import CSV file</design:MaterialLabel>
+                            </design:MaterialPanel>
+                        </material:MaterialFileUploader>
+                    </design:MaterialCardContent>
+                </design:MaterialCard>
+                <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" marginLeft="10" ui:field="createNew"></design:MaterialButton>
+
+                <g:FormPanel visible="false" addStyleNames="{style.fileForm}" ui:field="fileForm">
+                    <g:FileUpload ui:field="importCSVUpload">
+                    </g:FileUpload>
+                </g:FormPanel>
                 <design:MaterialTitle title="View challenges"></design:MaterialTitle>
+                <div style="clear: both;"/>
             </g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.services}">
                 <g:HTMLPanel>

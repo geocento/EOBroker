@@ -46,7 +46,7 @@ public class ChoiceEditor extends ElementEditor<ChoiceFormElement> {
     public FormElementValue getFormElementValue() throws Exception {
         String[] values = listBox.getItemsSelected();
         if(values.length == 0) {
-            throw new Exception("At least one selection is required");
+            throw new Exception("At least one selection is required in field '" + formElement.getName() + "'");
         }
         if(values[0].length() == 0) {
             return null;

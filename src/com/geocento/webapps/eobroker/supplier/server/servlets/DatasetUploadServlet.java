@@ -151,7 +151,7 @@ public class DatasetUploadServlet extends HttpServlet {
 
     protected DatasetAccess processAndStoreResource(InputStream filecontent, User user, Long resourceId, String resourceName, boolean publish) throws Exception {
         try {
-            int maxFileSize = ServerUtil.getSettings().getMaxSampleSizeMB() * (1024 * 1024);
+            long maxFileSize = ServerUtil.getSettings().getMaxSampleSizeMB() * (1024 * 1024L);
             // Process the input stream
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             int len;
@@ -159,7 +159,7 @@ public class DatasetUploadServlet extends HttpServlet {
             while ((len = filecontent.read(buffer, 0, buffer.length)) != -1) {
                 out.write(buffer, 0, len);
                 if (out.size() > maxFileSize) {
-                    throw new Exception("File is > than " + maxFileSize);
+                    throw new Exception("File is > than " + ServerUtil.getSettings().getMaxSampleSizeMB() + " MB");
                 }
             }
             // save file to disk first
@@ -181,9 +181,6 @@ public class DatasetUploadServlet extends HttpServlet {
             String extension = resourceName.substring(resourceName.lastIndexOf(".") + 1).toLowerCase();
             // create response
             DatasetAccess datasetAccess = null;
-            datasetAccess.setUri(filePath);
-            datasetAccess.setSize((int) file.length());
-            datasetAccess.setHostedData(false);
             if(publish) {
                 switch (extension) {
                     case "zip": {
@@ -218,12 +215,15 @@ public class DatasetUploadServlet extends HttpServlet {
                     default:
                         throw new Exception("File format '" + extension + "' not supported");
                 }
-                // generate thumbnail when everything is configured
-                try {
-                    datasetAccess.setImageUrl(DatasetAccessUtils.generateThumbnail(datasetAccess));
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
+            }
+            datasetAccess.setUri(filePath);
+            datasetAccess.setSize((int) file.length());
+            datasetAccess.setHostedData(false);
+            // generate thumbnail when everything is configured
+            try {
+                datasetAccess.setImageUrl(DatasetAccessUtils.generateThumbnail(datasetAccess));
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
             return datasetAccess;
         } catch (Exception e) {
@@ -317,12 +317,14 @@ public class DatasetUploadServlet extends HttpServlet {
         datasetAccessOGC.setServerUrl(ServerUtil.getSettings().getGeoserverOWS());
         datasetAccessOGC.setCorsEnabled(true);
         datasetAccessOGC.setStyleName("geometry");
+/*
         // generate thumbnail
         try {
             datasetAccessOGC.setImageUrl(DatasetAccessUtils.generateThumbnail(datasetAccessOGC));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+*/
         return datasetAccessOGC;
     }
 
@@ -421,12 +423,14 @@ public class DatasetUploadServlet extends HttpServlet {
                 // WCS is automatically published
                 datasetAccessOGC.setWcsServerUrl(ServerUtil.getSettings().getGeoserverOWS());
                 datasetAccessOGC.setWcsResourceName(layerName.replace(":", "__"));
+/*
                 // generate thumbnail
                 try {
                     datasetAccessOGC.setImageUrl(DatasetAccessUtils.generateThumbnail(datasetAccessOGC));
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
+*/
                 return datasetAccessOGC;
             } else {
                 throw new Exception("Could not publish layer");

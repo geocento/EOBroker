@@ -28,6 +28,8 @@ public interface FullView extends IsWidget {
 
     void selectSection(String tabName);
 
+    void displayChallenge(ChallengeDescriptionDTO challengeDescriptionDTO);
+
     public interface Presenter {
     }
 

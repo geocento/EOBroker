@@ -3,16 +3,17 @@ package com.geocento.webapps.eobroker.admin.client.views;
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.widgets.ChallengesList;
 import com.geocento.webapps.eobroker.admin.shared.dtos.ChallengeDTO;
-import com.geocento.webapps.eobroker.common.client.widgets.AsyncPagingWidgetList;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialTextBox;
@@ -43,6 +44,12 @@ public class ChallengesViewImpl extends Composite implements ChallengesView {
     MaterialButton createNew;
     @UiField
     MaterialTextBox filter;
+    @UiField
+    FileUpload importCSVUpload;
+    @UiField
+    FormPanel fileForm;
+    @UiField
+    MaterialFileUploader importCSV;
 
     private Presenter presenter;
 
@@ -52,18 +59,34 @@ public class ChallengesViewImpl extends Composite implements ChallengesView {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        challenges.setPresenter(new AsyncPagingWidgetList.Presenter() {
-            @Override
-            public void loadMore() {
-                presenter.loadMore();
+        challenges.setPresenter(() -> presenter.loadMore());
+
+        importCSV.setUrl(GWT.getHostPageBaseURL() + "admin/api/upload/challenges/import");
+
+        filter.addValueChangeHandler(event -> presenter.changeFilter(event.getValue()));
+
+        fileForm.setEncoding(FormPanel.ENCODING_MULTIPART);
+        fileForm.setMethod(FormPanel.METHOD_POST);
+        fileForm.setAction(GWT.getHostPageBaseURL() + "/api/upload/challenges/import");
+
+        fileForm.addSubmitHandler(new FormPanel.SubmitHandler() {
+            public void onSubmit(FormPanel.SubmitEvent event) {
             }
         });
 
-        filter.addValueChangeHandler(new ValueChangeHandler<String>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-                presenter.changeFilter(event.getValue());
+        fileForm.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+            public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
+                presenter.reload();
             }
+
+        });
+        importCSVUpload.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                fileForm.submit();
+            }
+
         });
     }
 
@@ -90,6 +113,11 @@ public class ChallengesViewImpl extends Composite implements ChallengesView {
     @Override
     public void addChallenges(boolean hasMore, List<ChallengeDTO> challengeDTOs) {
         this.challenges.addData(challengeDTOs, hasMore);
+    }
+
+    @Override
+    public HasClickHandlers getImportCSV() {
+        return importCSV;
     }
 
     @Override

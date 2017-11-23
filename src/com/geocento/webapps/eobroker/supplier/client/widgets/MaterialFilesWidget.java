@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.supplier.client.widgets;
 
-import com.geocento.webapps.eobroker.common.client.widgets.MaterialFileUploader;
+import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;

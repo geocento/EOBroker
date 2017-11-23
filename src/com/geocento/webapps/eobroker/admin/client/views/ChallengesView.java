@@ -21,12 +21,16 @@ public interface ChallengesView extends IsWidget {
 
     void addChallenges(boolean hasMore, List<ChallengeDTO> response);
 
+    HasClickHandlers getImportCSV();
+
     TemplateView getTemplateView();
 
     public interface Presenter {
         void loadMore();
 
         void changeFilter(String value);
+
+        void reload();
     }
 
 }

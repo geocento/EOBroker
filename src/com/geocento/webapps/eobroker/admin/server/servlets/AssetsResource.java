@@ -11,8 +11,6 @@ import com.geocento.webapps.eobroker.common.server.Utils.GeoserverUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.datasets.DatasetProvider;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIPolygonDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminNotification;
@@ -46,21 +44,6 @@ public class AssetsResource implements AssetsService {
 
     public AssetsResource() {
         logger.info("Starting service...");
-    }
-
-    @Override
-    public AoIDTO getAoI(Long id) {
-        return new AoIPolygonDTO();
-    }
-
-    @Override
-    public Long addAoI(AoIDTO aoi) {
-        return null;
-    }
-
-    @Override
-    public void updateAoI(AoIDTO aoi) {
-
     }
 
     @Override

@@ -77,8 +77,9 @@ public class ChallengeActivity extends TemplateActivity implements ChallengeView
         challengeView.setTitleLine(challenge.getId() == null ? "Create challenge" : "Edit challenge");
         challengeView.getName().setText(challenge.getName());
         challengeView.setIconUrl(challenge.getImageUrl());
-        challengeView.getDescription().setText(challenge.getDescription());
+        challengeView.getDescription().setText(challenge.getShortDescription());
         challengeView.setFullDescription(challenge.getDescription());
+        challengeView.setProducts(challenge.getProductDTOs());
     }
 
     @Override

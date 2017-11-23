@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.ElementEditor;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormHelper;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
@@ -23,7 +24,6 @@ import com.geocento.webapps.eobroker.customer.shared.ProductServiceDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductServiceFormDTO;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -88,6 +88,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     MaterialPanel colorPanel;
     @UiField
     HTMLPanel genericComment;
+    @UiField
+    MaterialMessage submitMessage;
 
     private Presenter presenter;
 
@@ -168,6 +170,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         // add generic comment
         genericComment.clear();
         genericComment.add(new MaterialLabel("Click on the submit button to send your request to all selected suppliers."));
+        submitMessage.setVisible(false);
         // add actions
         actions.clear();
         MaterialAnchorButton information = new MaterialAnchorButton("Information");
@@ -203,6 +206,7 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
                 new ProductFormPlace(Utils.generateTokens(ProductFormPlace.TOKENS.id.toString(), productServiceFormDTO.getProduct().getId() + "")))
                 + "'>multiple suppliers</a> at the same time."
         ));
+        submitMessage.setVisible(false);
         // add actions
         actions.clear();
         MaterialAnchorButton information = new MaterialAnchorButton("Information");
@@ -248,6 +252,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     @Override
     public void displayFormValidationError(String message) {
         Window.alert("Problem with your form " + message);
+        submitMessage.setVisible(true);
+        submitMessage.displayErrorMessage(message);
     }
 
     @Override

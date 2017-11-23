@@ -3,31 +3,18 @@ package com.geocento.webapps.eobroker.admin.client.services;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
-import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
-import com.geocento.webapps.eobroker.admin.shared.dtos.ChallengeDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
 import java.util.List;
 
 public interface AssetsService extends DirectRestService {
-
-    @GET
-    @Path("/assets/aoi/{id}")
-    @Produces("application/json")
-    public AoIDTO getAoI(@PathParam("id") Long id);
-
-    @POST
-    @Path("/assets/aoi/")
-    @Produces("application/json")
-    public Long addAoI(AoIDTO aoi);
-
-    @PUT
-    @Path("/assets/aoi/")
-    @Produces("application/json")
-    public void updateAoI(AoIDTO aoi);
 
     @POST
     @Path("/assets/products/")

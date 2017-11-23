@@ -246,6 +246,37 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public ChallengeDescriptionDTO getChallengeDescription(Long challengeId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(challengeId == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Challenge challenge = em.find(Challenge.class, challengeId);
+            if(challenge == null) {
+                throw new RequestException("Challenge does not exist");
+            }
+            ChallengeDescriptionDTO challengeDescriptionDTO = new ChallengeDescriptionDTO();
+            challengeDescriptionDTO.setImageUrl(challenge.getImageUrl());
+            challengeDescriptionDTO.setName(challenge.getName());
+            challengeDescriptionDTO.setShortDescription(challenge.getShortDescription());
+            challengeDescriptionDTO.setDescription(challenge.getDescription());
+            challengeDescriptionDTO.setProducts(ListUtil.mutate(challenge.getProducts(), new ListUtil.Mutate<Product, ProductDTO>() {
+                @Override
+                public ProductDTO mutate(Product product) {
+                    return ProductHelper.createProductDTO(product);
+                }
+            }));
+            return challengeDescriptionDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ProductFeasibilityDTO getProductFeasibility(Long id) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         if(id == null) {

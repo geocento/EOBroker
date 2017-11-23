@@ -55,6 +55,11 @@ public interface AssetsService extends DirectRestService {
     public ProductDTO getProduct(@PathParam("id") Long id) throws RequestException;
 
     @GET
+    @Path("/assets/challenges/{id}")
+    @Produces("application/json")
+    public ChallengeDescriptionDTO getChallengeDescription(@PathParam("id") Long challengeId) throws RequestException;
+
+    @GET
     @Path("/assets/product/{id}/feasibility/")
     @Produces("application/json")
     public ProductFeasibilityDTO getProductFeasibility(@PathParam("id") Long id) throws RequestException;

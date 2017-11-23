@@ -61,13 +61,6 @@ public class ChallengesActivity extends TemplateActivity implements ChallengesVi
     protected void bind() {
         super.bind();
 
-        handlers.add(challengesView.getCreateNewButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                clientFactory.getPlaceController().goTo(new ChallengePlace());
-            }
-        }));
-
         activityEventBus.addHandler(RemoveChallenge.TYPE, new RemoveChallengeHandler() {
             @Override
             public void onRemoveChallenge(RemoveChallenge event) {
@@ -94,6 +87,21 @@ public class ChallengesActivity extends TemplateActivity implements ChallengesVi
                 }
             }
         });
+
+        handlers.add(challengesView.getCreateNewButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clientFactory.getPlaceController().goTo(new ChallengePlace());
+            }
+        }));
+
+        handlers.add(challengesView.getImportCSV().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+
+            }
+        }));
+
     }
 
     private void reloadChallenges() {
@@ -134,6 +142,11 @@ public class ChallengesActivity extends TemplateActivity implements ChallengesVi
         start = 0;
         filter = value;
         loadChallenges();
+    }
+
+    @Override
+    public void reload() {
+        changeFilter(null);
     }
 
 }

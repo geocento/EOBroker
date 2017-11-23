@@ -241,4 +241,33 @@ public class ServerUtil {
     public static File getDataFile(String filePath) {
         return new File(ServerUtil.getSettings().getDataDirectory(), filePath);
     }
+
+    public static File getTmpDataFile(String filePath) {
+        File tmpDirectory = getTmpDirectory();
+        File tmpFile = new File(tmpDirectory, filePath);
+        // make sure directory is created
+        new File(tmpFile.getParent()).mkdirs();
+        return tmpFile;
+    }
+
+    private static File getTmpDirectory() {
+        return new File(ServerUtil.getSettings().getDataDirectory(), "tmp");
+    }
+
+    public static File getImageDataFile(String filePath) {
+        File imgDirectory = getImageDirectory();
+        File imgFile = new File(imgDirectory, filePath);
+        // make sure directory is created
+        new File(imgFile.getParent()).mkdirs();
+        return imgFile;
+    }
+
+    private static File getImageDirectory() {
+        return new File(ServerUtil.getSettings().getDataDirectory(), "img");
+    }
+
+    public static String getImageWebUrl(File imageFile) {
+        String imagePath = getImageDirectory().toURI().relativize(imageFile.toURI()).getPath();
+        return "./uploaded/img/" + imagePath;
+    }
 }

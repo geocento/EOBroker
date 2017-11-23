@@ -1254,7 +1254,7 @@ public class FullViewImpl extends Composite implements FullView {
             }
             addSection("Product categories covered",
                     "productcategories",
-                    "This R&D pproject works on the following product categories",
+                    "This R&D project works on the following product categories",
                     productsPanel);
         }
 
@@ -1316,6 +1316,44 @@ public class FullViewImpl extends Composite implements FullView {
                 section.getElement().scrollIntoView();
             }
         });
+    }
+
+    @Override
+    public void displayChallenge(ChallengeDescriptionDTO challengeDescriptionDTO) {
+        clearDetails();
+        image.setUrl(Utils.getImageMaybe(challengeDescriptionDTO.getImageUrl()));
+        title.setText(challengeDescriptionDTO.getName());
+        description.setText(challengeDescriptionDTO.getDescription());
+        setTabPanelColor(CategoryUtils.getColor(Category.challenges));
+
+        // create full description panel
+        String description = challengeDescriptionDTO.getDescription();
+        if(!StringUtils.isEmpty(description)) {
+            MaterialPanel fullDescriptionPanel = createFullDescriptionPanel(challengeDescriptionDTO.getDescription());
+            addSection("Description", "description", fullDescriptionPanel);
+        }
+
+        // add products tab
+        {
+            MaterialPanel productsPanel = new MaterialPanel();
+            MaterialRow materialRow = new MaterialRow();
+            materialRow.setWidth("100%");
+            productsPanel.add(materialRow);
+            List<ProductDTO> productsCovered = challengeDescriptionDTO.getProducts();
+            boolean hasProducts = !ListUtil.isNullOrEmpty(productsCovered);
+            if(hasProducts) {
+                for (ProductDTO productDTO : productsCovered) {
+                    MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
+                    ProductWidget productWidget = new ProductWidget(productDTO);
+                    materialColumn.add(productWidget);
+                    materialRow.add(materialColumn);
+                }
+            }
+            addSection("Products helping in solving this challenge",
+                    "products",
+                    hasProducts ? null : "No products solving this challenge...",
+                    productsPanel);
+        }
     }
 
     private MaterialChip addTag(String text, Color backgroundColor) {

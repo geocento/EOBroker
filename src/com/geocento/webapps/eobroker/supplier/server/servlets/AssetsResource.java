@@ -1572,6 +1572,7 @@ public class AssetsResource implements AssetsService {
                 }
                 dbProductSoftware.setPitch(productSoftwareDTO.getPitch());
                 dbProductSoftware.setProduct(product);
+                dbProductSoftware.setSoftware(software);
                 productSoftwares.add(dbProductSoftware);
             }
             software.setProducts(productSoftwares);

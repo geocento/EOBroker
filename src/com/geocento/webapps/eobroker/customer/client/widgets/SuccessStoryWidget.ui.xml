@@ -13,10 +13,10 @@
 
         .description {
             overflow: hidden;
-            line-height: 1.4em;
-            height: 1.4em;
+            line-height: normal;
+            height: 2.4em;
             /* TODO - find something more cross browser */
-            -webkit-line-clamp: 1;
+            -webkit-line-clamp: 2;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             color: #ccc;
@@ -40,7 +40,7 @@
             <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
         <design:MaterialCardContent padding="10" layoutPosition="RELATIVE" height="100%">
-            <design:MaterialCardTitle iconType="MORE_VERT" iconPosition="RIGHT" addStyleNames="{style.title}" ui:field="title"></design:MaterialCardTitle>
+            <design:MaterialCardTitle iconType="MORE_VERT" iconPosition="RIGHT" truncate="true" fontSize="1.4em" addStyleNames="{style.title}" ui:field="title"></design:MaterialCardTitle>
             <design:MaterialLabel fontSize="1em" addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
             <design:MaterialPanel padding="5" layoutPosition="ABSOLUTE" bottom="0" left="5" right="5">
                 <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.company}" ui:field="company"></design:MaterialLabel>
@@ -48,7 +48,7 @@
             </design:MaterialPanel>
         </design:MaterialCardContent>
         <design:MaterialCardReveal>
-            <design:MaterialCardTitle text="Description" iconType="CLOSE" iconPosition="RIGHT" textColor="BLACK"/>
+            <design:MaterialCardTitle text="Description" truncate="true" padding="10" fontSize="1.2em" iconType="CLOSE" iconPosition="RIGHT" textColor="BLACK" addStyleNames="{style.title}"/>
             <design:MaterialLabel fontSize="1em" addStyleNames="{style.descriptionFull}" ui:field="descriptionFull"></design:MaterialLabel>
         </design:MaterialCardReveal>
     </design:MaterialCard>

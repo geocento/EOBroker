@@ -330,11 +330,12 @@ public class OrdersResource implements OrdersService {
                     productServiceSupplierRequest.setResponse(response);
                     em.getTransaction().commit();
                     try {
-                        NotificationHelper.notifyCustomer(em, user, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your product request", productServiceRequest.getId());
+                        User customer = productServiceRequest.getCustomer();
+                        NotificationHelper.notifyCustomer(em, customer, Notification.TYPE.PRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your product request", productServiceRequest.getId());
                         WebSocketMessage webSocketMessage = new WebSocketMessage();
                         webSocketMessage.setType(WebSocketMessage.TYPE.productResponse);
                         webSocketMessage.setDestination(productServiceRequest.getId());
-                        NotificationSocket.sendMessage(user.getUsername(), webSocketMessage);
+                        NotificationSocket.sendMessage(customer.getUsername(), webSocketMessage);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -348,11 +349,12 @@ public class OrdersResource implements OrdersService {
                     otsProductRequest.setResponse(response);
                     em.getTransaction().commit();
                     try {
-                        NotificationHelper.notifyCustomer(em, user, Notification.TYPE.OTSPRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your OTS product request", otsProductRequest.getId());
+                        User customer = otsProductRequest.getCustomer();
+                        NotificationHelper.notifyCustomer(em, customer, Notification.TYPE.OTSPRODUCTREQUEST, "New response from " + user.getCompany().getName() + " on your OTS product request", otsProductRequest.getId());
                         WebSocketMessage webSocketMessage = new WebSocketMessage();
                         webSocketMessage.setType(WebSocketMessage.TYPE.otsproductResponse);
                         webSocketMessage.setDestination(otsProductRequest.getId());
-                        NotificationSocket.sendMessage(user.getUsername(), webSocketMessage);
+                        NotificationSocket.sendMessage(customer.getUsername(), webSocketMessage);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }

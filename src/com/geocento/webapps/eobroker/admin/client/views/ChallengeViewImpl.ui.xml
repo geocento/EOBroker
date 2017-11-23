@@ -16,6 +16,13 @@
             margin: 20px 0px;
         }
 
+        .sectionPanel {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid grey;
+            margin-bottom: 20px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="Edit company" link="companies" ui:field="template">
@@ -36,6 +43,12 @@
                 <design:MaterialColumn grid="s12">
                     <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="BLACK" iconColor="BLACK" fontSize="1.2em" addStyleNames="{style.subtitle}"></design:MaterialLink>
                     <material:MaterialRichEditor placeholder="Full Description" ui:field="fullDescription"></material:MaterialRichEditor>
+                </design:MaterialColumn>
+                <design:MaterialColumn>
+                    <design:MaterialLink text="Products tackling the challenge" textColor="BLACK" iconType="PERM_IDENTITY" addStyleNames="{style.subtitle}"/>
+                    <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                        <design:MaterialRow ui:field="products"></design:MaterialRow>
+                    </design:MaterialPanel>
                 </design:MaterialColumn>
             </design:MaterialRow>
             <g:HTMLPanel addStyleNames="{style.buttonsPanel}">

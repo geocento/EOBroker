@@ -108,6 +108,39 @@ public class FullViewActivity extends TemplateActivity implements FullView.Prese
             } catch (Exception e) {
 
             }
+        } else if(tokens.containsKey(FullViewPlace.TOKENS.challengeid.toString())) {
+            selectMenu("challenges");
+            try {
+                Long challengeId = Long.parseLong(tokens.get(FullViewPlace.TOKENS.challengeid.toString()));
+                loadChallengeDetails(challengeId, selectedTab);
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    private void loadChallengeDetails(Long challengeId, String selectedTab) {
+        displayFullLoading("Loading challenge information...");
+        fullView.clearDetails();
+        try {
+            REST.withCallback(new MethodCallback<ChallengeDescriptionDTO>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideFullLoading();
+                    displayFullError("Error loading challenge, reason is " + method.getResponse().getText());
+                }
+
+                @Override
+                public void onSuccess(Method method, ChallengeDescriptionDTO challengeDescriptionDTO) {
+                    hideFullLoading();
+                    setTitleText("Challenge");
+                    fullView.displayChallenge(challengeDescriptionDTO);
+                    if(selectedTab != null) {
+                        fullView.selectSection(selectedTab);
+                    }
+                }
+            }).call(ServicesUtil.assetsService).getChallengeDescription(challengeId);
+        } catch (RequestException e) {
         }
     }
 

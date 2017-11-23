@@ -8,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
  */
 public class FullViewPlace extends EOBrokerPlace {
 
-    public static enum TOKENS {productid, companyid, productserviceid, productdatasetid, softwareid, projectid, tab};
+    public static enum TOKENS {productid, companyid, productserviceid, productdatasetid, softwareid, projectid, challengeid, tab};
 
     public FullViewPlace() {
     }

@@ -1,8 +1,10 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.admin.client.views.TemplateView;
+import com.geocento.webapps.eobroker.admin.client.widgets.ProductWidget;
+import com.geocento.webapps.eobroker.admin.shared.dtos.ProductDTO;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,10 +12,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.ui.MaterialButton;
-import gwt.material.design.client.ui.MaterialTextArea;
-import gwt.material.design.client.ui.MaterialTextBox;
-import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.ui.*;
+
+import java.util.List;
 
 /**
  * Created by thomas on 09/05/2016.
@@ -40,6 +41,8 @@ public class ChallengeViewImpl extends Composite implements ChallengeView {
     MaterialTitle title;
     @UiField(provided = true)
     TemplateView template;
+    @UiField
+    MaterialRow products;
 
     public ChallengeViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -117,6 +120,25 @@ public class ChallengeViewImpl extends Composite implements ChallengeView {
     @Override
     public void hideLoading(String message) {
         template.hideLoading(message);
+    }
+
+    @Override
+    public void setProducts(List<ProductDTO> productDTOs) {
+        products.clear();
+        if(ListUtil.isNullOrEmpty(productDTOs)) {
+            products.add(new MaterialLabel("No products"));
+        } else {
+            for(ProductDTO productDTO : productDTOs) {
+                addProduct(productDTO);
+            }
+        }
+    }
+
+    private void addProduct(ProductDTO productDTO) {
+        MaterialColumn materialColumn = new MaterialColumn(12, 4, 3);
+        products.add(materialColumn);
+        // TODO - change for another product widget
+        materialColumn.add(new ProductWidget(productDTO));
     }
 
 }

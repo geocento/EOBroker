@@ -27,6 +27,8 @@ public class CategoryUtils {
                 return IconType.PICTURE_IN_PICTURE;
             case companies:
                 return IconType.BUSINESS;
+            case challenges:
+                return IconType.WHATSHOT;
             case newsItems:
                 return IconType.NOTIFICATIONS;
         }
@@ -47,6 +49,8 @@ public class CategoryUtils {
                 return Color.BLUE;
             case companies:
                 return Color.BLUE;
+            case challenges:
+                return Color.AMBER;
             case successStories:
                 return Color.AMBER;
             case imagery:

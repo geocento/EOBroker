@@ -136,6 +136,7 @@
                 </g:HTMLPanel>
                 <g:HTMLPanel addStyleNames="{style.comment}" ui:field="genericComment">
                 </g:HTMLPanel>
+                <widgets:MaterialMessage marginTop="10" marginBottom="10" ui:field="submitMessage"></widgets:MaterialMessage>
                 <g:HTMLPanel addStyleNames="{style.buttonsPanel}">
                     <design:MaterialButton text="SUBMIT" textColor="WHITE" backgroundColor="BLUE" ui:field="submit"></design:MaterialButton>
                 </g:HTMLPanel>

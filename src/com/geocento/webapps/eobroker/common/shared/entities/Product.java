@@ -67,6 +67,9 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     List<SuccessStory> successStories;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    List<Challenge> challenges;
+
     Long followers;
 
     public Product() {

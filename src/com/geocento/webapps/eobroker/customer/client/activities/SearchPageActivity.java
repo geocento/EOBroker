@@ -703,6 +703,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     case project:
                         token = FullViewPlace.TOKENS.projectid;
                         break;
+                    case challenges:
+                        token = FullViewPlace.TOKENS.challengeid;
+                        break;
                     default:
                         token = null;
                 }
