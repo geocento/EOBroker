@@ -4,6 +4,7 @@ package com.geocento.webapps.eobroker.customer.server.servlets;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.DatasetAccess;
+import com.geocento.webapps.eobroker.customer.server.utils.StatsHelper;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -53,6 +54,7 @@ public class DataDownloadResource {
                 throw new WebApplicationException("File requested is not available", Response.Status.BAD_REQUEST);
             }
 
+            StatsHelper.addCounter("download.samples", dataAccessId + "");
             // get product
             String productPath = ServerUtil.getDataFilePath(datasetAccess.getUri());
             logger.debug("Download file is at " + productPath);

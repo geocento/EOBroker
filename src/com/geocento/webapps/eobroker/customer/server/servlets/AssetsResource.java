@@ -19,7 +19,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Follow
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.services.AssetsService;
-import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
+import com.geocento.webapps.eobroker.customer.server.utils.StatsHelper;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
@@ -27,7 +27,6 @@ import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -251,6 +250,7 @@ public class AssetsResource implements AssetsService {
         if(challengeId == null) {
             throw new RequestException("Id cannot be null");
         }
+        StatsHelper.addCounter("view", challengeId + "");
         EntityManager em = EMF.get().createEntityManager();
         try {
             Challenge challenge = em.find(Challenge.class, challengeId);
@@ -371,6 +371,7 @@ public class AssetsResource implements AssetsService {
         if(id == null) {
             throw new RequestException("Id cannot be null");
         }
+        addViewCounter(Category.products.toString(), id + "");
         EntityManager em = EMF.get().createEntityManager();
         try {
             Product product = em.find(Product.class, id);
@@ -516,12 +517,21 @@ public class AssetsResource implements AssetsService {
                     return createProductServiceDTO(productService);
                 }
             }));
+            addCompanyViewCounter(productService.getCompany().getId(), Category.productservices.toString(), id + "");
             return productServiceDescriptionDTO;
         } catch (Exception e) {
             throw handleException(em, e);
         } finally {
             em.close();
         }
+    }
+
+    private void addCompanyViewCounter(Long companyId, String category, String id) {
+        addViewCounter(companyId + "." + category, id);
+    }
+
+    private void addViewCounter(String category, String id) {
+        StatsHelper.addCounter("view." + category, id);
     }
 
     @Override
@@ -565,6 +575,7 @@ public class AssetsResource implements AssetsService {
                 }
             }));
             productDatasetDescriptionDTO.setCatalogueStandard(productDataset.getDatasetStandard());
+            addCompanyViewCounter(productDataset.getCompany().getId(), Category.productdatasets.toString(), id + "");
             return productDatasetDescriptionDTO;
         } catch (Exception e) {
             throw handleException(em, e);
@@ -646,6 +657,7 @@ public class AssetsResource implements AssetsService {
                 softwareDescriptionDTO.setSuggestedSoftware(new ArrayList<SoftwareDTO>());
             }
             softwareDescriptionDTO.setTermsAndConditions(software.getTermsAndConditions());
+            addCompanyViewCounter(software.getCompany().getId(), Category.software.toString(), id + "");
             return softwareDescriptionDTO;
         } catch (Exception e) {
             throw handleException(em, e);
@@ -696,6 +708,7 @@ public class AssetsResource implements AssetsService {
             {
                 projectDescriptionDTO.setSuggestedProjects(new ArrayList<ProjectDTO>());
             }
+            addCompanyViewCounter(project.getCompany().getId(), Category.project.toString(), id + "");
             return projectDescriptionDTO;
         } catch (Exception e) {
             throw handleException(em, e);
@@ -716,6 +729,7 @@ public class AssetsResource implements AssetsService {
             if(productDataset == null) {
                 throw new RequestException("Product dataset does not exist");
             }
+            addVisualisationCounter(Category.productdatasets.toString(), id + "");
             return convertToProductDatasetVisualisationDTO(productDataset);
         } catch (Exception e) {
             throw handleException(em, e);
@@ -724,31 +738,8 @@ public class AssetsResource implements AssetsService {
         }
     }
 
-    @Override
-    public ProductDatasetVisualisationDTO getDatasetVisualisation(Long id) throws RequestException {
-        String userName = UserUtils.verifyUser(request);
-        if(id == null) {
-            throw new RequestException("Id cannot be null");
-        }
-        EntityManager em = EMF.get().createEntityManager();
-        try {
-            DatasetAccess datasetAccess = em.find(DatasetAccess.class, id);
-            if (datasetAccess == null) {
-                throw new RequestException("Dataset does not exist");
-            }
-            TypedQuery<ProductDataset> query = em.createQuery("select p from ProductDataset p where :dataset IN(p.samples)", ProductDataset.class);
-            query.setParameter("dataset", datasetAccess);
-            List<ProductDataset> productDatasets = query.getResultList();
-            if (productDatasets.size() == 0) {
-                throw new RequestException("Could not find product dataset");
-            }
-            ProductDataset productDataset = productDatasets.get(0);
-            return convertToProductDatasetVisualisationDTO(productDataset);
-        } catch (Exception e) {
-            throw handleException(em, e, "Error when retrieving dataset access");
-        } finally {
-            em.close();
-        }
+    private void addVisualisationCounter(String category, String id) {
+        StatsHelper.addCounter("visualisation." + category, id + "");
     }
 
     private ProductDatasetVisualisationDTO convertToProductDatasetVisualisationDTO(ProductDataset productDataset) {
@@ -786,6 +777,7 @@ public class AssetsResource implements AssetsService {
             if(productService == null) {
                 throw new RequestException("Product service does not exist");
             }
+            addVisualisationCounter(Category.productdatasets.toString(), id + "");
             return convertToProductServiceVisualisationDTO(productService);
         } catch (Exception e) {
             throw handleException(em, e);
@@ -840,89 +832,6 @@ public class AssetsResource implements AssetsService {
         TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate", NewsItem.class);
         query.setMaxResults(5);
         return query.getResultList();
-    }
-
-    @Override
-    public List<Offer> getRecommendations() throws RequestException {
-        String userName = UserUtils.verifyUser(request);
-        List<RankedOffer> offers = new ArrayList<RankedOffer>();
-        EntityManager em = EMF.get().createEntityManager();
-        try {
-            // TODO - find a recommendation system
-            Query q = em.createNativeQuery("SELECT id, category FROM textsearch WHERE category not in ('product') LIMIT 5;");
-            List<Object[]> results = q.getResultList();
-            if(results.size() > 0) {
-                final HashMap<Long, Double> rankings = new HashMap<Long, Double>();
-                List<Long> productServiceIds = new ArrayList<Long>();
-                List<Long> productDatasetIds = new ArrayList<Long>();
-                List<Long> softwareIds = new ArrayList<Long>();
-                for (Object[] result : results) {
-                    Long id = (Long) result[0];
-                    // TODO - provide a ranking value
-                    Double ranking = Math.random();
-                    rankings.put(id, ranking);
-                    switch((String) result[1]) {
-                        case "productservice":
-                            productServiceIds.add(id);
-                            break;
-                        case "productdataset":
-                            productDatasetIds.add(id);
-                            break;
-                        case "software":
-                            softwareIds.add(id);
-                            break;
-                    }
-                }
-                // now fetch the actual entities
-                // start with product
-                // then product services
-                if(productServiceIds.size() > 0) {
-                    TypedQuery<ProductService> productServiceQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
-                    productServiceQuery.setParameter("productIds", productServiceIds);
-                    offers.addAll(ListUtil.mutate(productServiceQuery.getResultList(), new ListUtil.Mutate<ProductService, RankedOffer>() {
-                        @Override
-                        public RankedOffer mutate(ProductService productService) {
-                            return new RankedOffer(rankings.get(productService.getId()), createProductServiceDTO(productService));
-                        }
-                    }));
-                }
-                // then product datasets
-                if(productDatasetIds.size() > 0) {
-                    TypedQuery<ProductDataset> productDatasetQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
-                    productDatasetQuery.setParameter("productIds", productServiceIds);
-                    offers.addAll(ListUtil.mutate(productDatasetQuery.getResultList(), new ListUtil.Mutate<ProductDataset, RankedOffer>() {
-                        @Override
-                        public RankedOffer mutate(ProductDataset productDataset) {
-                            return new RankedOffer(rankings.get(productDataset.getId()), createProductDatasetDTO(productDataset));
-                        }
-                    }));
-                }
-                if(softwareIds.size() > 0) {
-                    TypedQuery<Software> softwareQuery = em.createQuery("select s from Software s where s.id IN :softwareIds", Software.class);
-                    softwareQuery.setParameter("softwareIds", softwareIds);
-                    List<Software> softwares = softwareQuery.getResultList();
-                    offers.addAll(ListUtil.mutate(softwares, new ListUtil.Mutate<Software, RankedOffer>() {
-                        @Override
-                        public RankedOffer mutate(Software software) {
-                            return new RankedOffer(rankings.get(software.getId()), createSoftwareDTO(software));
-                        }
-                    }));
-                }
-            }
-            if(offers.size() > 4) {
-                offers = offers.subList(0, 4);
-            }
-            return ListUtil.mutate(offers, new ListUtil.Mutate<RankedOffer, Offer>() {
-                @Override
-                public Offer mutate(RankedOffer object) {
-                    return object.getOffer();
-                }
-            });
-        } catch (Exception e) {
-            throw handleException(em, e);
-        } finally {
-            em.close();
-        }
     }
 
     @Override
@@ -996,6 +905,7 @@ public class AssetsResource implements AssetsService {
                     return createProjectDTO(project);
                 }
             }));
+            addCompanyViewCounter(id, Category.companies.toString(), id + "");
             return companyDescriptionDTO;
         } catch (Exception e) {
             throw handleException(em, e);
@@ -1208,6 +1118,7 @@ public class AssetsResource implements AssetsService {
             if(!(datasetAccess instanceof DatasetAccessOGC)) {
                 throw new RequestException("Dataset not valid");
             }
+            addVisualisationCounter("samples", id + "");
             // now issue the request to the map server
             DatasetAccessOGC datasetAccessOGC = (DatasetAccessOGC) datasetAccess;
             String serverUrl = datasetAccessOGC.getServerUrl();
@@ -1319,12 +1230,17 @@ public class AssetsResource implements AssetsService {
             Long followers = countFollowersQuery.getSingleResult();
             company.setFollowers(followers);
             em.getTransaction().commit();
+            addFollowCounter(Category.companies.toString(), companyId + "", follow);
             return followers;
         } catch (Exception e) {
             throw handleException(em, e, "Error updating following");
         } finally {
             em.close();
         }
+    }
+
+    private void addFollowCounter(String category, String id, boolean follow) {
+        StatsHelper.addCounter("follow." + category + "." + id, follow ? 1 : -1);
     }
 
     private Boolean dummyFollow(Long companyId, Boolean follow) throws RequestException {
@@ -1380,6 +1296,7 @@ public class AssetsResource implements AssetsService {
             Long followers = countFollowersQuery.getSingleResult();
             product.setFollowers(followers);
             em.getTransaction().commit();
+            addFollowCounter(Category.products.toString(), productId + "", follow);
             return followers;
         } catch (Exception e) {
             throw handleException(em, e, "Error updating following");

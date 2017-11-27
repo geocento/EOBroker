@@ -1,11 +1,9 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
-import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.client.widgets.forms.FormCreator;
 import com.geocento.webapps.eobroker.common.shared.entities.NOTIFICATION_DELAY;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElementValue;
-import com.geocento.webapps.eobroker.common.shared.feasibility.Statistics;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.widgets.*;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.*;
@@ -99,10 +97,6 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     MaterialPanel notificationsPanel;
     @UiField
     MaterialRow notifications;
-    @UiField
-    MaterialPanel statisticsPanel;
-    @UiField
-    ChartPanel chartPanel;
 
     public DashboardViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -316,22 +310,6 @@ public class DashboardViewImpl extends Composite implements DashboardView {
             materialColumn.add(new ConversationWidget(conversationDTO));
             materialRow.add(materialColumn);
         }
-    }
-
-    @Override
-    public void displayStatistics(SupplierStatisticsDTO supplierStatisticsDTO) {
-        hideAll();
-        template.setPlace("statistics");
-        statisticsPanel.setVisible(true);
-        chartPanel.clear();
-        chartPanel.loadChartAPI(new Runnable() {
-            @Override
-            public void run() {
-                for(Statistics statistic : supplierStatisticsDTO.getStatistics()) {
-                    chartPanel.addStatistics(statistic);
-                }
-            }
-        });
     }
 
     @Override

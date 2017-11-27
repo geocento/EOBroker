@@ -1,4 +1,4 @@
-package com.geocento.webapps.eobroker.supplier.server.servlets;
+package com.geocento.webapps.eobroker.supplier.server;
 
 import com.google.gwt.http.client.RequestException;
 

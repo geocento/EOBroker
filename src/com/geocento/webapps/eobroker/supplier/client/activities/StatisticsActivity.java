@@ -1,11 +1,15 @@
 package com.geocento.webapps.eobroker.supplier.client.activities;
 
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactory;
 import com.geocento.webapps.eobroker.supplier.client.places.StatisticsPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
-import com.geocento.webapps.eobroker.supplier.client.views.DashboardView;
+import com.geocento.webapps.eobroker.supplier.client.views.StatisticsView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierStatisticsDTO;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -19,9 +23,9 @@ import java.util.HashMap;
 /**
  * Created by thomas on 09/05/2016.
  */
-public class StatisticsActivity extends TemplateActivity implements DashboardView.Presenter {
+public class StatisticsActivity extends TemplateActivity implements StatisticsView.Presenter {
 
-    private DashboardView dashboardView;
+    private StatisticsView statisticsView;
 
     public StatisticsActivity(StatisticsPlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -31,10 +35,10 @@ public class StatisticsActivity extends TemplateActivity implements DashboardVie
     @Override
     public void start(AcceptsOneWidget panel, EventBus eventBus) {
         super.start(panel, eventBus);
-        dashboardView = clientFactory.getDashboardView();
-        dashboardView.setPresenter(this);
-        setTemplateView(dashboardView.getTemplateView());
-        panel.setWidget(dashboardView.asWidget());
+        statisticsView = clientFactory.getStatisticsView();
+        statisticsView.setPresenter(this);
+        setTemplateView(statisticsView.getTemplateView());
+        panel.setWidget(statisticsView.asWidget());
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();
@@ -54,7 +58,8 @@ public class StatisticsActivity extends TemplateActivity implements DashboardVie
                 @Override
                 public void onSuccess(Method method, SupplierStatisticsDTO response) {
                     hideFullLoading();
-                    dashboardView.displayStatistics(response);
+                    statisticsView.displayStatistics(response);
+                    updateViewStats();
                 }
 
             }).call(ServicesUtil.assetsService).getStatistics();
@@ -66,6 +71,29 @@ public class StatisticsActivity extends TemplateActivity implements DashboardVie
     @Override
     protected void bind() {
         super.bind();
+
+        handlers.add(statisticsView.getViewStatsOptions().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                updateViewStats();
+            }
+        }));
+
+        handlers.add(statisticsView.getViewStatsDateOptions().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                updateViewStats();
+            }
+        }));
+    }
+
+    private void updateViewStats() {
+        statisticsView.setViewStatsImage(GWT.getModuleBaseURL() + "api/stats/view/?" +
+                        "ids=" + StringUtils.join(statisticsView.getSelectedViewStatsOptions(), ",") +
+                        "&width=" + statisticsView.getViewStatsWidthPx() +
+                        "&height=" + statisticsView.getViewStatsHeightPx() +
+                        "&dateOption=" + statisticsView.getViewStatsDateOption()
+        );
     }
 
 }

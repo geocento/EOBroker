@@ -1,0 +1,50 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+             xmlns:charts="urn:import:com.geocento.webapps.eobroker.common.client.widgets.charts"
+        >
+    <ui:style>
+        .panel {
+            max-width: 960px;
+            margin: 0px auto;
+            padding: 0px 20px;
+        }
+
+        .section {
+            margin: 1em 0;
+            font-size: 1.3em;
+        }
+
+        .subsection {
+            font-size: 1.2em;
+        }
+
+        .chartPanel {
+            margin: 20px 0px;
+        }
+
+    </ui:style>
+    <views:TemplateView titleText="Statistics" ui:field="template">
+        <g:HTMLPanel addStyleNames="{style.panel}">
+            <design:MaterialTitle title="View broker statistics"></design:MaterialTitle>
+            <design:MaterialLabel text="Generic statistics" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialPanel ui:field="genericStats">
+                <charts:ChartPanel addStyleNames="{style.chartPanel}" ui:field="chartPanel">
+                </charts:ChartPanel>
+            </design:MaterialPanel>
+            <design:MaterialLabel text="View statistics" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialPanel>
+                <design:MaterialPanel display="FLEX">
+                    <design:MaterialLabel text="Select categories for viewing statistics" marginRight="20" marginTop="10"></design:MaterialLabel>
+                    <design:MaterialListBox display="INLINE_BLOCK" flexGrow="1" marginRight="20" marginTop="0" multipleSelect="false" ui:field="viewCategory"></design:MaterialListBox>
+                    <design:MaterialLabel text="View last" marginRight="20" marginTop="10"></design:MaterialLabel>
+                    <design:MaterialListBox display="INLINE_BLOCK" marginRight="20" marginTop="0" multipleSelect="false" ui:field="viewStatsDateOptions"></design:MaterialListBox>
+                </design:MaterialPanel>
+                <widgets:MaterialImageLoading width="100%" height="400px" ui:field="viewStats"></widgets:MaterialImageLoading>
+            </design:MaterialPanel>
+            <design:MaterialLabel text="Search statistics" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialPanel ui:field="searchStats"></design:MaterialPanel>
+        </g:HTMLPanel>
+    </views:TemplateView>
+</ui:UiBinder>

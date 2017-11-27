@@ -60,8 +60,6 @@ public interface DashboardView extends IsWidget {
 
     void displayConversations(List<ConversationDTO> response);
 
-    void displayStatistics(SupplierStatisticsDTO response);
-
     public interface Presenter {
     }
 

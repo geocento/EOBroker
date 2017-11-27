@@ -14,11 +14,15 @@ import javax.servlet.http.HttpSession;
 public class UserUtils {
 
     public static String verifyUserSupplier(HttpServletRequest request) throws AuthorizationException {
+        return verifyUserSupplierSession(request).getUserName();
+    }
+
+    public static UserSession verifyUserSupplierSession(HttpServletRequest request) throws AuthorizationException {
         HttpSession session = request.getSession(true);
         if(session != null) {
             UserSession userSession = (UserSession) session.getAttribute("userSession");
             if(userSession != null && userSession.getUserRole() == User.USER_ROLE.supplier || userSession.getUserRole() == User.USER_ROLE.administrator) {
-                return userSession.getUserName();
+                return userSession;
             }
         }
         throw new AuthorizationException();

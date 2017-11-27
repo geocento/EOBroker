@@ -25,6 +25,7 @@ public class ClientFactoryImpl implements ClientFactory {
     private SoftwareView softwareView = null;
     private ProjectView projectView = null;
     private SuccessStoryView successStoryView = null;
+    private StatisticsView statisticsView = null;
 
     @Override
     public EventBus getEventBus() {
@@ -135,6 +136,14 @@ public class ClientFactoryImpl implements ClientFactory {
             successStoryView = new SuccessStoryViewImpl(this);
         }
         return successStoryView;
+    }
+
+    @Override
+    public StatisticsView getStatisticsView() {
+        if(statisticsView == null) {
+            statisticsView = new StatisticsViewImpl(this);
+        }
+        return statisticsView;
     }
 
 }

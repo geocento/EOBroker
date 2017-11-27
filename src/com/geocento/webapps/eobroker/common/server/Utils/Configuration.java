@@ -29,7 +29,8 @@ public class Configuration {
     static public enum APPLICATION_SETTINGS {
         applicationName,
         uploadPath, eiToken, geoserverRESTUri, geoserverUser, geoserverPassword, geoserverOWS,
-        email_from, email_host, email_port, email_issmpts, email_account, email_password, adminEmail, maxSampleSizeMB, email_templatesPath
+        email_from, email_host, email_port, email_issmpts, email_account, email_password, adminEmail, maxSampleSizeMB, email_templatesPath,
+        statsdserver, graphiteUrl, bucketprefix
     };
 
     static private Properties props=new Properties();

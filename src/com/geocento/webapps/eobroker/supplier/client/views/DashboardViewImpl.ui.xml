@@ -74,10 +74,6 @@
             font-size: 0.8em;
         }
 
-        .chartPanel {
-            margin: 20px 0px;
-        }
-
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.supplier.client.styles.StyleResources"/>
     <views:TemplateView titleText="Dashboard" ui:field="template">
@@ -166,13 +162,6 @@
                 </g:HTMLPanel>
                 <design:MaterialRow addStyleNames="{style.services}" ui:field="successStories">
                 </design:MaterialRow>
-            </design:MaterialPanel>
-            <design:MaterialPanel visible="false" ui:field="statisticsPanel">
-                <g:HTMLPanel>
-                    <design:MaterialTitle title="Your company statistics"></design:MaterialTitle>
-                </g:HTMLPanel>
-                <charts:ChartPanel addStyleNames="{style.chartPanel}" ui:field="chartPanel">
-                </charts:ChartPanel>
             </design:MaterialPanel>
             <design:MaterialPanel visible="false" ui:field="settingsPanel">
                 <g:HTMLPanel>

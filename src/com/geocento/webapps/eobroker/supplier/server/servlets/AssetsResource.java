@@ -35,10 +35,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
@@ -978,13 +975,27 @@ public class AssetsResource implements AssetsService {
             em.getTransaction().begin();
             User user = em.find(User.class, userName);
             SupplierStatisticsDTO supplierStatisticsDTO = new SupplierStatisticsDTO();
+            Company company = user.getCompany();
             // collect some information
-            List<Product> products = new ArrayList<Product>();
-            for(ProductService productService : user.getCompany().getServices()) {
-                products.add(productService.getProduct());
-            }
-            for(ProductDataset productDataset : user.getCompany().getDatasets()) {
+            HashSet<Product> products = new HashSet<Product>();
+            // view stats options
+            HashMap<String, String> viewStatsOptions = new HashMap<String, String>();
+            viewStatsOptions.put("Company", company.getId() + "");
+            // search stats options
+            HashMap<String, String> searchStatsOptions = new HashMap<String, String>();
+            for(ProductDataset productDataset : company.getDatasets()) {
+                viewStatsOptions.put("OTS - " + productDataset.getName(), Category.productdatasets.toString() + "." + productDataset.getId() + "");
+                if(productDataset.getDatasetStandard() != null) {
+                    searchStatsOptions.put("Catalogue for '" + productDataset.getName() + "'", Category.productdatasets.toString() + "." + productDataset.getId() + "");
+                }
                 products.add(productDataset.getProduct());
+            }
+            for(ProductService productService : user.getCompany().getServices()) {
+                viewStatsOptions.put("Bespoke - " + productService.getName(), Category.productservices.toString() + "." + productService.getId() + "");
+                if(!com.geocento.webapps.eobroker.common.client.utils.StringUtils.isEmpty(productService.getApiUrl())) {
+                    searchStatsOptions.put("Feasibility for '" + productService.getName() + "'", Category.productservices.toString() + "." + productService.getId() + "");
+                }
+                products.add(productService.getProduct());
             }
             // create a dummy one to illustrate the purpose
             BarChartStatistics barChartStatistics = new BarChartStatistics();
@@ -998,6 +1009,8 @@ public class AssetsResource implements AssetsService {
             }
             barChartStatistics.setValues(values);
             supplierStatisticsDTO.setStatistics(ListUtil.toList(barChartStatistics));
+            supplierStatisticsDTO.setViewStatsOptions(viewStatsOptions);
+            supplierStatisticsDTO.setSearchStatsOptions(searchStatsOptions);
             return supplierStatisticsDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
