@@ -68,11 +68,17 @@ public class StatsHelper {
                 "&height=" + height +
                 "&from=" + dateOptions +
                 "&hideLegend=true" +
+                "&vtitle=Number of views" +
                 ListUtil.toString(buckets, new ListUtil.GetLabel<String>() {
                     @Override
                     public String getLabel(String value) {
-                        return "&target=" + createBucket(bucket + "." + value);
+                        return "&target=stats." + createBucket(bucket + "." + value);
                     }
                 }, "");
     }
+
+    public static void addSearchCounter(Long companyId, String category, String id) {
+        addCounter(companyId + ".search." + category, id);
+    }
+
 }

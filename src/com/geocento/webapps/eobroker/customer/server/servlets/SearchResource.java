@@ -25,6 +25,7 @@ import com.geocento.webapps.eobroker.customer.client.services.SearchService;
 import com.geocento.webapps.eobroker.customer.client.utils.CSWUtils;
 import com.geocento.webapps.eobroker.customer.server.imageapi.EIAPIUtil;
 import com.geocento.webapps.eobroker.customer.server.utils.RankedOffer;
+import com.geocento.webapps.eobroker.customer.server.utils.StatsHelper;
 import com.geocento.webapps.eobroker.customer.server.utils.UserUtils;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.geocento.webapps.eobroker.customer.shared.utils.ProductHelper;
@@ -956,6 +957,7 @@ public class SearchResource implements SearchService {
                 FeasibilityResponseDTO feasibilityResponseDTO = new FeasibilityResponseDTO();
                 feasibilityResponseDTO.setSearchId(feasibilitySearch.getId());
                 feasibilityResponseDTO.setFeasibilityResponse(feasibilityResponse);
+                StatsHelper.addSearchCounter(productService.getCompany().getId(), Category.productservices.toString(), productService.getId() + "");
                 return feasibilityResponseDTO;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

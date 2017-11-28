@@ -16,6 +16,7 @@ public class EditProductDTO extends ProductDTO {
     List<FormElement> formFields;
     String recommendationRule;
     List<FormElement> apiFormFields;
+    private String otherNames;
 
     public EditProductDTO() {
     }
@@ -58,5 +59,13 @@ public class EditProductDTO extends ProductDTO {
 
     public void setApiFormFields(List<FormElement> apiFormFields) {
         this.apiFormFields = apiFormFields;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
+    }
+
+    public String getOtherNames() {
+        return otherNames;
     }
 }

@@ -124,6 +124,7 @@ public interface SearchPageView extends IsWidget {
 
         void aoiSelected(AoIDTO aoi);
 
+        void removeCategoryFilter();
     }
 
 }

@@ -16,7 +16,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServ
 import com.geocento.webapps.eobroker.common.shared.entities.requests.ProductServiceSupplierRequest;
 import com.geocento.webapps.eobroker.common.shared.entities.subscriptions.Event;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
-import com.geocento.webapps.eobroker.common.shared.feasibility.BarChartStatistics;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.common.shared.utils.StringUtils;
 import com.geocento.webapps.eobroker.supplier.client.services.AssetsService;
@@ -35,7 +34,10 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
@@ -978,37 +980,56 @@ public class AssetsResource implements AssetsService {
             Company company = user.getCompany();
             // collect some information
             HashSet<Product> products = new HashSet<Product>();
+            // offerings
+            HashMap<Category, Integer> offerings = new HashMap<Category, Integer>();
             // view stats options
             HashMap<String, String> viewStatsOptions = new HashMap<String, String>();
-            viewStatsOptions.put("Company", company.getId() + "");
+            viewStatsOptions.put("Company", Category.companies.toString() + "." + company.getId() + "");
             // search stats options
             HashMap<String, String> searchStatsOptions = new HashMap<String, String>();
-            for(ProductDataset productDataset : company.getDatasets()) {
-                viewStatsOptions.put("OTS - " + productDataset.getName(), Category.productdatasets.toString() + "." + productDataset.getId() + "");
-                if(productDataset.getDatasetStandard() != null) {
-                    searchStatsOptions.put("Catalogue for '" + productDataset.getName() + "'", Category.productdatasets.toString() + "." + productDataset.getId() + "");
+            if(!ListUtil.isNullOrEmpty(company.getDatasets())) {
+                for (ProductDataset productDataset : company.getDatasets()) {
+                    viewStatsOptions.put("OTS - " + productDataset.getName(), Category.productdatasets.toString() + "." + productDataset.getId() + "");
+                    if (productDataset.getDatasetStandard() != null) {
+                        searchStatsOptions.put("Catalogue for '" + productDataset.getName() + "'", Category.productdatasets.toString() + "." + productDataset.getId() + "");
+                    }
+                    products.add(productDataset.getProduct());
                 }
-                products.add(productDataset.getProduct());
+                offerings.put(Category.productdatasets, company.getDatasets().size());
             }
-            for(ProductService productService : user.getCompany().getServices()) {
-                viewStatsOptions.put("Bespoke - " + productService.getName(), Category.productservices.toString() + "." + productService.getId() + "");
-                if(!com.geocento.webapps.eobroker.common.client.utils.StringUtils.isEmpty(productService.getApiUrl())) {
-                    searchStatsOptions.put("Feasibility for '" + productService.getName() + "'", Category.productservices.toString() + "." + productService.getId() + "");
+            if(!ListUtil.isNullOrEmpty(company.getServices())) {
+                for (ProductService productService : user.getCompany().getServices()) {
+                    viewStatsOptions.put("Service - " + productService.getName(), Category.productservices.toString() + "." + productService.getId() + "");
+                    if (!com.geocento.webapps.eobroker.common.client.utils.StringUtils.isEmpty(productService.getApiUrl())) {
+                        searchStatsOptions.put("Feasibility for '" + productService.getName() + "'", Category.productservices.toString() + "." + productService.getId() + "");
+                    }
+                    products.add(productService.getProduct());
                 }
-                products.add(productService.getProduct());
+                offerings.put(Category.productservices, company.getServices().size());
             }
-            // create a dummy one to illustrate the purpose
-            BarChartStatistics barChartStatistics = new BarChartStatistics();
-            barChartStatistics.setName("Product searches");
-            barChartStatistics.setDescription("Number Searches involving your product categories in the past month");
-            barChartStatistics.setxLabel("Product category");
-            barChartStatistics.setyLabel("Number of searches");
-            Map<String, Double> values = new HashMap<String, Double>();
+            if(!ListUtil.isNullOrEmpty(company.getProjects())) {
+                for(Project project : user.getCompany().getProjects()) {
+                    viewStatsOptions.put("Project - " + project.getName(), Category.project.toString() + "." + project.getId() + "");
+                }
+                offerings.put(Category.project, company.getProjects().size());
+            }
+            if(!ListUtil.isNullOrEmpty(company.getSoftware())) {
+                for(Software software : user.getCompany().getSoftware()) {
+                    viewStatsOptions.put("Software - " + software.getName(), Category.software.toString() + "." + software.getId() + "");
+                }
+                offerings.put(Category.software, company.getSoftware().size());
+            }
+            supplierStatisticsDTO.setOfferingsStats(offerings);
+            HashMap<String, Double> productsFollowers = new HashMap<String, Double>();
             for(Product product : products) {
-                values.put(product.getName(), Math.floor(Math.random() * 100));
+                productsFollowers.put(product.getName(), product.getFollowers() == null ? 0.0 : product.getFollowers().doubleValue());
             }
-            barChartStatistics.setValues(values);
-            supplierStatisticsDTO.setStatistics(ListUtil.toList(barChartStatistics));
+            supplierStatisticsDTO.setProductFollowers(productsFollowers);
+            HashMap<String, String> viewProductsStatsOptions = new HashMap<String, String>();
+            for(Product product : products) {
+                viewProductsStatsOptions.put(product.getName(), product.getId() + "");
+            }
+            supplierStatisticsDTO.setViewProductsOptions(viewProductsStatsOptions);
             supplierStatisticsDTO.setViewStatsOptions(viewStatsOptions);
             supplierStatisticsDTO.setSearchStatsOptions(searchStatsOptions);
             return supplierStatisticsDTO;

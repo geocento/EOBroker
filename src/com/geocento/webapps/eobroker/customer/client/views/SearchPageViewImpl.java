@@ -1,5 +1,6 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
+import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -9,14 +10,18 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
+import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FeedbackPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.*;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -149,6 +154,10 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialSwitch filterByAffiliates;
     @UiField
     MaterialPanel companyFilterPanel;
+    @UiField
+    MaterialPanel additionalProductFilters;
+
+    MaterialIcon close;
 
     private ProductDTO productDTO;
     private CompanyDTO companyDTO;
@@ -171,6 +180,16 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                         new FeedbackPlace(FeedbackPlace.TOKENS.topic.toString() + "=Feedback on search")));
         // hide the send requirements panel
         displaySendRequirements(false);
+
+        close = filterTitle.getIcon();
+        close.setTooltip("Click to remove category filter");
+        close.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                event.stopPropagation();
+                presenter.removeCategoryFilter();
+            }
+        });
 
         // TODO - move to activity or to a generic map container for customer
         // save AoI
@@ -242,16 +261,34 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         stop.addValueChangeHandler(event -> {if(filterByTimeFrame.getValue()) filtersChanged();});
         productFilter.setPresenter(suggestion -> {
             boolean changed = false;
+            clearAdditionalProductFilters();
             if(suggestion == null) {
                 changed = productDTO != null;
                 productDTO = null;
             } else {
+                // load the product
                 // create shallow product
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setName(suggestion.getName());
                 productDTO.setId(Long.parseLong(suggestion.getUri().split("::")[1]));
                 changed = SearchPageViewImpl.this.productDTO == null || !SearchPageViewImpl.this.productDTO.getId().equals(productDTO.getId());
                 SearchPageViewImpl.this.productDTO = productDTO;
+                try {
+                    productFilter.setLoading(true);
+                    REST.withCallback(new MethodCallback<ProductWithFiltersDTO>() {
+                        @Override
+                        public void onFailure(Method method, Throwable exception) {
+                            productFilter.setLoading(false);
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, ProductWithFiltersDTO productWithFiltersDTO) {
+                            productFilter.setLoading(false);
+                            setAdditionalProductFilters(productWithFiltersDTO.getGeoinformation(), productWithFiltersDTO.getPerformances());
+                        }
+                    }).call(ServicesUtil.assetsService).getProductWithFilters(productDTO.getId());
+                } catch (RequestException e) {
+                }
             }
             if(changed) {
                 filtersChanged();
@@ -291,6 +328,19 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         updateCompanySearchBox();
 
         onResize(null);
+    }
+
+    private void setAdditionalProductFilters(List<FeatureDescription> geoinformation, List<PerformanceDescription> performances) {
+        clearAdditionalProductFilters();
+        MaterialRow materialRow = new MaterialRow();
+        MaterialColumn geoinformationProvided = new MaterialColumn(12, 6, 6);
+        materialRow.add(geoinformationProvided);
+        MaterialColumn performancesProvided = new MaterialColumn(12, 6, 6);
+        materialRow.add(performancesProvided);
+    }
+
+    private void clearAdditionalProductFilters() {
+        additionalProductFilters.clear();
     }
 
     private void updateCompanySearchBox() {

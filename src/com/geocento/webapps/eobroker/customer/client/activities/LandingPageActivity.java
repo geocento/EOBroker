@@ -39,6 +39,7 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
         landingPageView.setPresenter(this);
         setTemplateView(landingPageView.asWidget());
         selectMenu("home");
+        setTitleText("Home");
         Window.setTitle("Earth Observation Broker");
         bind();
         handleHistory();

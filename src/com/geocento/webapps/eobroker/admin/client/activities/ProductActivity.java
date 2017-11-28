@@ -77,6 +77,7 @@ public class ProductActivity extends TemplateActivity implements ProductView.Pre
         this.productDTO = editProductDTO;
         productView.getName().setText(editProductDTO.getName());
         productView.setImageUrl(editProductDTO.getImageUrl());
+        productView.getOtherNames().setText(editProductDTO.getOtherNames());
         productView.getShortDescription().setText(editProductDTO.getShortDescription());
         productView.setDescription(editProductDTO.getDescription());
         productView.setSector(editProductDTO.getSector());
@@ -97,6 +98,7 @@ public class ProductActivity extends TemplateActivity implements ProductView.Pre
             public void onClick(ClickEvent event) {
                 productDTO.setName(productView.getName().getText());
                 productDTO.setImageUrl(productView.getImageUrl());
+                productDTO.setOtherNames(productView.getOtherNames().getText());
                 productDTO.setShortDescription(productView.getShortDescription().getText());
                 productDTO.setDescription(productView.getDescription());
                 productDTO.setSector(productView.getSector());

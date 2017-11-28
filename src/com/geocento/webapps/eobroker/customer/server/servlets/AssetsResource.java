@@ -245,6 +245,31 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
+    public ProductWithFiltersDTO getProductWithFilters(Long id) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        if(id == null) {
+            throw new RequestException("Id cannot be null");
+        }
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Product product = em.find(Product.class, id);
+            if(product == null) {
+                throw new RequestException("Product does not exist");
+            }
+            ProductWithFiltersDTO productWithFiltersDTO = new ProductWithFiltersDTO();
+            productWithFiltersDTO.setId(product.getId());
+            productWithFiltersDTO.setName(product.getName());
+            productWithFiltersDTO.setGeoinformation(product.getGeoinformation());
+            productWithFiltersDTO.setPerformances(product.getPerformances());
+            return productWithFiltersDTO;
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public ChallengeDescriptionDTO getChallengeDescription(Long challengeId) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         if(challengeId == null) {
@@ -621,6 +646,7 @@ public class AssetsResource implements AssetsService {
                 productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(otherProductDataset.getCompany()));
                 return productDatasetDTO;
             }));
+            StatsHelper.addSearchCounter(productDataset.getCompany().getId(), Category.productdatasets.toString(), productDataset.getId() + "");
             return productDatasetCatalogueDTO;
         } catch (Exception e) {
             throw handleException(em, e);

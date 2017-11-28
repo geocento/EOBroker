@@ -32,4 +32,7 @@ public interface StyleResources extends ClientBundle {
     @Source("images/ajax-loader.gif")
     ImageResource loadingSmall();
 
+    @Source("images/ESA_LOGO.png")
+    ImageResource logoESA();
+
 }

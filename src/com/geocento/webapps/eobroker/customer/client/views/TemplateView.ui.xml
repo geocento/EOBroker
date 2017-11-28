@@ -132,6 +132,7 @@
                 margin-top: 20px;
                 padding-top: 20px;
                 border-top: 1px solid darkgrey;
+                margin-bottom: 20px;
             }
 
         </ui:style>
@@ -178,14 +179,14 @@
                         <g:HTMLPanel addStyleNames="{style.menus}" ui:field="menus">
                             <g:HTMLPanel>
                                 <m:MaterialLink addStyleNames="{style.category}" text="Home" iconType="HOME" ui:field="homeCategory"></m:MaterialLink>
-                                <m:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></m:MaterialLink>
-                                <m:MaterialLink addStyleNames="{style.category}, {style.notlinked}" text="Offering" iconSize="TINY" iconType="ARROW_FORWARD"></m:MaterialLink>
+                                <m:MaterialLink addStyleNames="{style.category}, {style.notlinked}" text="Offerings" iconSize="TINY" iconType="ARROW_FORWARD"></m:MaterialLink>
                                 <m:MaterialPanel addStyleNames="{style.offering}" ui:field="offering">
                                     <m:MaterialLink addStyleNames="{style.category}" text="Off-the-shelf products" iconType="MAP" ui:field="productDatasetsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Bespoke services" iconType="MAP" ui:field="productServicesCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Software solutions" iconType="MAP" ui:field="softwareCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="R&amp;D Projects" iconType="MAP" ui:field="projectsCategory"></m:MaterialLink>
                                 </m:MaterialPanel>
+                                <m:MaterialLink addStyleNames="{style.category}" text="Companies" iconType="MAP" ui:field="companiesCategory"></m:MaterialLink>
                                 <m:MaterialLink addStyleNames="{style.category}" text="Product categories" iconSize="TINY" iconType="MAP" ui:field="productsCategory"></m:MaterialLink>
                                 <m:MaterialPanel addStyleNames="{style.interactions}" ui:field="interactions">
                                     <m:MaterialLink addStyleNames="{style.category}" text="Conversations" iconType="CHAT_BUBBLE" ui:field="conversationsCategory"></m:MaterialLink>
@@ -196,9 +197,10 @@
                                 <m:MaterialPanel addStyleNames="{style.settings}" ui:field="settings">
                                     <m:MaterialLink addStyleNames="{style.category}" text="Settings" iconType="SETTINGS" ui:field="settingsCategory"></m:MaterialLink>
                                     <m:MaterialLink addStyleNames="{style.category}" text="Feedback" iconType="FEEDBACK" ui:field="feedbackCategory"></m:MaterialLink>
-                                    <m:MaterialLink addStyleNames="{style.category}" text="Help" iconType="HELP" ui:field="helpCategory"></m:MaterialLink>
+                                    <m:MaterialLink visible="false" addStyleNames="{style.category}" text="Help" iconType="HELP" ui:field="helpCategory"></m:MaterialLink>
                                 </m:MaterialPanel>
-                                <m:MaterialLabel fontSize="0.8em" text="© 2017 Copyright Geocento Ltd and partners" />
+                                <cwidgets:MaterialLabelIcon imageResource="{resCommon.logoESA}" text=""></cwidgets:MaterialLabelIcon>
+                                <m:MaterialLabel fontSize="0.8em" text="© 2017 Copyright Geocento Ltd and partners" marginTop="10" marginBottom="10"/>
                             </g:HTMLPanel>
                         </g:HTMLPanel>
                     </g:HTMLPanel>

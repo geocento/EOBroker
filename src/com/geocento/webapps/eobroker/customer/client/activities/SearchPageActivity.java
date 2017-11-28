@@ -3,11 +3,11 @@ package com.geocento.webapps.eobroker.customer.client.activities;
 import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
-import com.geocento.webapps.eobroker.common.shared.Suggestion;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
+import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImagery;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImageryHandler;
 import com.geocento.webapps.eobroker.customer.client.events.SearchImagery;
@@ -39,9 +39,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
     private String text;
     private int start;
     private int limit;
-
-    private int lastCall = 0;
-    private String previousSearch = "";
 
     public SearchPageActivity(SearchPagePlace place, ClientFactory clientFactory) {
         super(clientFactory);
@@ -320,6 +317,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         } else if(text != null) {
             setTitleText("Search Results");
             try {
+                searchPageView.showFilters(false);
                 searchPageView.displayLoadingResults("Searching matching results...");
                 boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
                 REST.withCallback(new MethodCallback<SearchResult>() {
@@ -333,22 +331,10 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     public void onSuccess(Method method, SearchResult searchResult) {
                         searchPageView.hideLoadingResults();
                         searchPageView.setResultsTitle("");
-                        searchPageView.showFilters(false);
                         // list of not founds
                         List<String> notFound = new ArrayList<String>();
                         // add all results to the interface
-                        // start with companies
-                        List<CompanyDTO> companyDTOs = searchResult.getCompanies();
-                        if(companyDTOs != null && companyDTOs.size() > 0) {
-                            boolean more = searchResult.isMoreCompanies();
-                            String moreUrl = more ? getSearchCategoryUrl(Category.companies, text) : null;
-                            if (more) {
-                                companyDTOs = companyDTOs.subList(0, 4);
-                            }
-                            searchPageView.setMatchingCompanies(companyDTOs, moreUrl);
-                        } else {
-                            notFound.add("companies");
-                        }
+                        // start with off the shelf products
                         List<ProductDatasetDTO> productDatasetDTOs = searchResult.getProductDatasets();
                         if(productDatasetDTOs != null && productDatasetDTOs.size() > 0) {
                             boolean more = searchResult.isMoreProductDatasets();
@@ -393,6 +379,17 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                             searchPageView.setMatchingProjects(projectDTOs, moreUrl);
                         } else {
                             notFound.add("R&D projects");
+                        }
+                        List<CompanyDTO> companyDTOs = searchResult.getCompanies();
+                        if(companyDTOs != null && companyDTOs.size() > 0) {
+                            boolean more = searchResult.isMoreCompanies();
+                            String moreUrl = more ? getSearchCategoryUrl(Category.companies, text) : null;
+                            if (more) {
+                                companyDTOs = companyDTOs.subList(0, 4);
+                            }
+                            searchPageView.setMatchingCompanies(companyDTOs, moreUrl);
+                        } else {
+                            notFound.add("companies");
                         }
                         List<ProductDTO> products = searchResult.getProducts();
                         if(products != null && products.size() > 0) {
@@ -483,7 +480,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 );
             } catch (RequestException e) {
             }
+/*
             previousSearch = searchHash;
+*/
         }
     }
 
@@ -621,6 +620,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         )));
     }
 
+/*
     @Override
     public void textChanged(String text) {
         this.text = text;
@@ -655,6 +655,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 e.printStackTrace();
             }
         } else {
+*/
 /*
             // TODO - move to the server side
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
@@ -662,14 +663,13 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 suggestions.addAll(getSuggestion(suggestionCategory));
             }
             displayListSuggestions(suggestions);
-*/
+*//*
+
         }
     }
+*/
 
-    private String toWkt(AoIDTO aoi) {
-        return aoi.getWktGeometry();
-    }
-
+/*
     @Override
     public void suggestionSelected(Suggestion suggestion) {
         // TODO - move to a helper class
@@ -719,57 +719,13 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             default:
                 // TODO - find something to do
         }
-/*
-        switch (suggestion.getCategory()) {
-            case products: {
-                String token = "";
-                if (action.contentEquals("access")) {
-                    searchPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + parameters);
-                } else if (action.contentEquals("browse")) {
-                    token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.products.toString();
-                    if (category != null) {
-                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-                    }
-                    searchPlace = new SearchPagePlace(token);
-                } else {
-                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
-                    if (category != null) {
-                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-                    }
-                    searchPlace = new SearchPagePlace(token);
-                }
-            } break;
-            case companies: {
-                String token = "";
-                Category category = suggestion.getCategory();
-                if (action.contentEquals("access")) {
-                    searchPlace = new FullViewPlace(FullViewPlace.TOKENS.companyid.toString() + "=" + parameters);
-                } else if (action.contentEquals("browse")) {
-                    token += SearchPagePlace.TOKENS.category.toString() + "=" + Category.companies.toString();
-                    searchPlace = new SearchPagePlace(token);
-                } else {
-                    token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
-                    if (category != null) {
-                        token += "&" + SearchPagePlace.TOKENS.category.toString() + "=" + category.toString();
-                    }
-*/
-/*
-                    if (currentAoI != null) {
-                        token += "&" + SearchPagePlace.TOKENS.aoiId.toString() + "=" + currentAoI.getId();
-                    }
-*//*
-
-                    searchPlace = new SearchPagePlace(token);
-                }
-            } break;
-        }
-*/
         if (searchPlace != null) {
             clientFactory.getPlaceController().goTo(searchPlace);
         } else {
             displaySearchError("Sorry I could not understand your request...");
         }
     }
+*/
 
     @Override
     public void textSelected(String text) {
@@ -862,6 +818,12 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         if(searchPageView.getFilterByAoI().getValue()) {
             filtersChanged();
         }
+    }
+
+    @Override
+    public void removeCategoryFilter() {
+        Customer.clientFactory.getPlaceController().goTo(
+                new SearchPagePlace(Utils.generateTokens(SearchPagePlace.TOKENS.text.toString(), text)));
     }
 
     public void setAoI(AoIDTO aoIDTO) {

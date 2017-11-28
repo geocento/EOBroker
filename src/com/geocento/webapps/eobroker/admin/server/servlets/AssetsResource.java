@@ -3,6 +3,7 @@ package com.geocento.webapps.eobroker.admin.server.servlets;
 import com.geocento.webapps.eobroker.admin.client.services.AssetsService;
 import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.MailContent;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
@@ -64,7 +65,10 @@ public class AssetsResource implements AssetsService {
             } else {
                 product = new Product();
             }
+            boolean namesHaveChanged = !StringUtils.areStringEqualsOrNull(product.getName(), productDTO.getName()) ||
+                    StringUtils.areStringEqualsOrNull(product.getOtherNames(), productDTO.getOtherNames());
             product.setName(productDTO.getName());
+            product.setOtherNames(productDTO.getOtherNames());
             product.setImageUrl(productDTO.getImageUrl());
             product.setShortDescription(productDTO.getShortDescription());
             product.setDescription(productDTO.getDescription());
@@ -105,6 +109,10 @@ public class AssetsResource implements AssetsService {
                     ", tsvname = " + DBHelper.getProductNameTSV(product) + " where id = " + product.getId() +
                     ";");
             query.executeUpdate();
+            // if names have changed we need to update all offerings related to the product
+            if(namesHaveChanged) {
+
+            }
             em.getTransaction().commit();
             return product.getId();
         } catch (Exception e) {
@@ -133,6 +141,7 @@ public class AssetsResource implements AssetsService {
             EditProductDTO productDTO = new EditProductDTO();
             productDTO.setId(product.getId());
             productDTO.setName(product.getName());
+            productDTO.setOtherNames(product.getOtherNames());
             productDTO.setShortDescription(product.getShortDescription());
             productDTO.setDescription(product.getDescription());
             productDTO.setImageUrl(product.getImageUrl());

@@ -23,6 +23,9 @@ public class Product {
     String imageUrl;
 
     @Column(length = 1000)
+    String otherNames;
+
+    @Column(length = 1000)
     String shortDescription;
 
     @Column(length = 10000)
@@ -89,6 +92,14 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOtherNames() {
+        return otherNames;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
     }
 
     public String getDescription() {

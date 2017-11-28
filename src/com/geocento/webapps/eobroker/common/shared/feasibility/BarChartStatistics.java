@@ -7,6 +7,7 @@ public class BarChartStatistics extends ValueStatistics {
 
     String xLabel;
     String yLabel;
+    private boolean vertical;
 
     public BarChartStatistics() {
     }
@@ -25,5 +26,13 @@ public class BarChartStatistics extends ValueStatistics {
 
     public void setyLabel(String yLabel) {
         this.yLabel = yLabel;
+    }
+
+    public void setVertical(boolean vertical) {
+        this.vertical = vertical;
+    }
+
+    public boolean isVertical() {
+        return vertical;
     }
 }

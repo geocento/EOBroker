@@ -10,6 +10,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.*;
+import com.geocento.webapps.eobroker.customer.client.places.EOBrokerPlace;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -38,6 +40,9 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
     private TemplateView templateView;
 
     protected Category category = null;
+
+    private String text;
+    private int lastCall = 0;
 
     static protected AoIDTO currentAoI = null;
 
@@ -201,16 +206,114 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
 
     @Override
     public void textChanged(String text) {
-        // go to search activity by default
-        clientFactory.getPlaceController().goTo(new SearchPagePlace(Utils.generateTokens(SearchPagePlace.TOKENS.text.toString(), text)));
+        this.text = text;
+        updateSuggestions();
+    }
+
+    private void updateSuggestions() {
+        this.lastCall++;
+        final long lastCall = this.lastCall;
+
+        if(text != null && text.length() > 0) {
+            displayListSuggestionsLoading("Searching...");
+            try {
+                REST.withCallback(new MethodCallback<List<Suggestion>>() {
+
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        hideListSuggestionsLoading();
+                        displayListSuggestionsError(method.getResponse().getText());
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, List<Suggestion> response) {
+                        // show only if last one to be called
+                        if (lastCall == TemplateActivity.this.lastCall) {
+                            hideListSuggestionsLoading();
+                            displayListSuggestions(response);
+                        }
+                    }
+                }).call(ServicesUtil.searchService).complete(text, category);
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
+        } else {
+/*
+            // TODO - move to the server side
+            List<Suggestion> suggestions = new ArrayList<Suggestion>();
+            for(Category suggestionCategory : Category.values()) {
+                suggestions.addAll(getSuggestion(suggestionCategory));
+            }
+            displayListSuggestions(suggestions);
+*/
+        }
     }
 
     @Override
     public void suggestionSelected(Suggestion suggestion) {
+        // TODO - move to a helper class
+        String uri = suggestion.getUri();
+        String action = uri.split("::")[0];
+        String parameters = uri.split("::")[1];
+        if (parameters == null) {
+            parameters = "";
+        }
+        EOBrokerPlace searchPlace = null;
+        Category suggestionCategory = suggestion.getCategory();
+        switch(action) {
+            case "access": {
+                FullViewPlace.TOKENS token = null;
+                switch (suggestionCategory) {
+                    case products:
+                        token = FullViewPlace.TOKENS.productid;
+                        break;
+                    case companies:
+                        token = FullViewPlace.TOKENS.companyid;
+                        break;
+                    case productdatasets:
+                        token = FullViewPlace.TOKENS.productdatasetid;
+                        break;
+                    case productservices:
+                        token = FullViewPlace.TOKENS.productserviceid;
+                        break;
+                    case software:
+                        token = FullViewPlace.TOKENS.softwareid;
+                        break;
+                    case project:
+                        token = FullViewPlace.TOKENS.projectid;
+                        break;
+                    case challenges:
+                        token = FullViewPlace.TOKENS.challengeid;
+                        break;
+                    default:
+                        token = null;
+                }
+                if(token != null) {
+                    searchPlace = new FullViewPlace(token.toString() + "=" + parameters);
+                }
+            } break;
+            case "browse": {
+                searchPlace = new SearchPagePlace(SearchPagePlace.TOKENS.category.toString() + "=" + suggestionCategory.toString());
+            } break;
+            default:
+                // TODO - find something to do
+        }
+        if (searchPlace != null) {
+            clientFactory.getPlaceController().goTo(searchPlace);
+        } else {
+            displaySearchError("Sorry I could not understand your request...");
+        }
     }
 
     @Override
     public void textSelected(String text) {
+        this.text = text;
+        EOBrokerPlace eoBrokerPlace = null;
+        // go to general search results page
+        String token = "";
+        token += SearchPagePlace.TOKENS.text.toString() + "=" + text;
+        eoBrokerPlace = new SearchPagePlace(token);
+        clientFactory.getPlaceController().goTo(eoBrokerPlace);
     }
 
     @Override
@@ -284,4 +387,9 @@ public abstract class TemplateActivity extends AbstractApplicationActivity imple
         templateView.setTitleText(title);
     }
 
+    @Override
+    public void onStop() {
+        // make sure we won't display the suggestions after stopping
+        lastCall = 0;
+    }
 }

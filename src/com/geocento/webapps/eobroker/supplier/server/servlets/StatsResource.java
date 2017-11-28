@@ -49,4 +49,46 @@ public class StatsResource {
             throw new RequestException("Issue retrieving stats");
         }
     }
+
+    @GET
+    @Path("search")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput getSearchStatsImage(@QueryParam("ids") String ids, @QueryParam("width") int width, @QueryParam("height") int height, @QueryParam("dateOption") String dateOption) throws RequestException {
+        UserSession userSession = UserUtils.verifyUserSupplierSession(request);
+        // build statsd url
+        String statsdUrl = StatsHelper.getStatsUrl("search." + userSession.getUserCompanyId(), ListUtil.toList(ids.split(",")), width, height, dateOption);
+        try {
+            logger.debug("Streaming stats from URL " + statsdUrl);
+            InputStream inputStream = new URL(statsdUrl).openStream();
+            return new StreamingOutput() {
+                @Override
+                public void write(OutputStream outputStream) throws IOException, WebApplicationException {
+                    IOUtils.copy(inputStream, outputStream);
+                }
+            };
+        } catch (Exception e) {
+            throw new RequestException("Issue retrieving stats");
+        }
+    }
+
+    @GET
+    @Path("productsview")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput getProductsViewStatsImage(@QueryParam("ids") String ids, @QueryParam("width") int width, @QueryParam("height") int height, @QueryParam("dateOption") String dateOption) throws RequestException {
+        UserSession userSession = UserUtils.verifyUserSupplierSession(request);
+        // build statsd url
+        String statsdUrl = StatsHelper.getStatsUrl("view.products", ListUtil.toList(ids.split(",")), width, height, dateOption);
+        try {
+            logger.debug("Streaming stats from URL " + statsdUrl);
+            InputStream inputStream = new URL(statsdUrl).openStream();
+            return new StreamingOutput() {
+                @Override
+                public void write(OutputStream outputStream) throws IOException, WebApplicationException {
+                    IOUtils.copy(inputStream, outputStream);
+                }
+            };
+        } catch (Exception e) {
+            throw new RequestException("Issue retrieving stats");
+        }
+    }
 }

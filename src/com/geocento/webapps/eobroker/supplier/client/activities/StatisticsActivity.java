@@ -59,7 +59,9 @@ public class StatisticsActivity extends TemplateActivity implements StatisticsVi
                 public void onSuccess(Method method, SupplierStatisticsDTO response) {
                     hideFullLoading();
                     statisticsView.displayStatistics(response);
+                    updateProductsViewStats();
                     updateViewStats();
+                    updateSearchStats();
                 }
 
             }).call(ServicesUtil.assetsService).getStatistics();
@@ -85,6 +87,34 @@ public class StatisticsActivity extends TemplateActivity implements StatisticsVi
                 updateViewStats();
             }
         }));
+
+        handlers.add(statisticsView.getSearchStatsOptions().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                updateSearchStats();
+            }
+        }));
+
+        handlers.add(statisticsView.getSearchStatsDateOptions().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                updateSearchStats();
+            }
+        }));
+
+        handlers.add(statisticsView.getProductsStatsOptions().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                updateProductsViewStats();
+            }
+        }));
+
+        handlers.add(statisticsView.getProductsStatsDateOptions().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                updateProductsViewStats();
+            }
+        }));
     }
 
     private void updateViewStats() {
@@ -93,6 +123,24 @@ public class StatisticsActivity extends TemplateActivity implements StatisticsVi
                         "&width=" + statisticsView.getViewStatsWidthPx() +
                         "&height=" + statisticsView.getViewStatsHeightPx() +
                         "&dateOption=" + statisticsView.getViewStatsDateOption()
+        );
+    }
+
+    private void updateSearchStats() {
+        statisticsView.setSearchStatsImage(GWT.getModuleBaseURL() + "api/stats/search/?" +
+                        "ids=" + StringUtils.join(statisticsView.getSelectedSearchStatsOptions(), ",") +
+                        "&width=" + statisticsView.getSearchStatsWidthPx() +
+                        "&height=" + statisticsView.getSearchStatsHeightPx() +
+                        "&dateOption=" + statisticsView.getSearchStatsDateOption()
+        );
+    }
+
+    private void updateProductsViewStats() {
+        statisticsView.setProductsStatsImage(GWT.getModuleBaseURL() + "api/stats/productsview/?" +
+                        "ids=" + StringUtils.join(statisticsView.getSelectedProductsStatsOptions(), ",") +
+                        "&width=" + statisticsView.getProductsStatsWidthPx() +
+                        "&height=" + statisticsView.getProductsStatsHeightPx() +
+                        "&dateOption=" + statisticsView.getProductsStatsDateOption()
         );
     }
 

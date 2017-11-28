@@ -3,7 +3,6 @@ package com.geocento.webapps.eobroker.common.client.widgets.charts;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.client.widgets.WidgetUtil;
 import com.geocento.webapps.eobroker.common.shared.feasibility.*;
-import com.geocento.webapps.eobroker.customer.client.widgets.LayerWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -15,13 +14,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
-import com.googlecode.gwt.charts.client.corechart.BarChart;
-import com.googlecode.gwt.charts.client.corechart.BarChartOptions;
-import com.googlecode.gwt.charts.client.corechart.PieChart;
-import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.corechart.*;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
-import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialTooltip;
@@ -134,7 +129,7 @@ public class ChartWidget extends Composite implements ResizeHandler {
     }
 
     public void setBarChartStatistics(BarChartStatistics barChartStatistics) {
-        BarChart chart = new BarChart();
+        CoreChartWidget chart = barChartStatistics.isVertical() ? new ColumnChart() : new BarChart();
         chart.setWidth("100%");
         chart.setHeight("100%");
         chart.getElement().getStyle().setProperty("boxSizing", "border-box");

@@ -4,6 +4,8 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierStatisticsDTO;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
+import java.util.List;
+
 /**
  * Created by thomas on 09/05/2016.
  */
@@ -17,7 +19,7 @@ public interface StatisticsView extends IsWidget {
 
     HasChangeHandlers getViewStatsOptions();
 
-    java.util.List<String> getSelectedViewStatsOptions();
+    List<String> getSelectedViewStatsOptions();
 
     void setViewStatsImage(String imageUrl);
 
@@ -30,6 +32,38 @@ public interface StatisticsView extends IsWidget {
     String getViewStatsDateOption();
 
     HasChangeHandlers getViewStatsDateOptions();
+
+    HasChangeHandlers getSearchStatsOptions();
+
+    HasChangeHandlers getSearchStatsDateOptions();
+
+    List<String> getSelectedSearchStatsOptions();
+
+    void setSearchStatsImage(String imageUrl);
+
+    void displaySearchStatsLoading(String message);
+
+    int getSearchStatsWidthPx();
+
+    int getSearchStatsHeightPx();
+
+    String getSearchStatsDateOption();
+
+    HasChangeHandlers getProductsStatsOptions();
+
+    List<String> getSelectedProductsStatsOptions();
+
+    void setProductsStatsImage(String imageUrl);
+
+    void displayProductsStatsLoading(String message);
+
+    int getProductsStatsWidthPx();
+
+    int getProductsStatsHeightPx();
+
+    String getProductsStatsDateOption();
+
+    HasChangeHandlers getProductsStatsDateOptions();
 
     public interface Presenter {
     }

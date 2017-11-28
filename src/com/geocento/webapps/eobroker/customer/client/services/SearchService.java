@@ -113,5 +113,4 @@ public interface SearchService extends DirectRestService {
     @Path("/search/opensearch/description")
     @Produces("application/json")
     OSDescriptionResponse getOSDescriptionResponse(String requestUrl) throws Exception;
-
 }

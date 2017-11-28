@@ -166,8 +166,8 @@
         <design:MaterialCollapsible shadow="0" addStyleNames="{style.filtersPanel}" ui:field="filtersContainer">
             <design:MaterialCollapsibleItem ui:field="filtersPanel">
                 <design:MaterialCollapsibleHeader addStyleNames="{style.filtersPanel}" backgroundColor="TRANSPARENT" ui:field="filtersHeader">
-                    <design:MaterialLink text="Filter title" fontSize="1.2em" textColor="BLACK" ui:field="filterTitle"/>
                     <design:MaterialLink float="RIGHT" circle="true" waves="DEFAULT" iconType="ARROW_DROP_DOWN" iconColor="BLUE_GREY" iconPosition="RIGHT" textColor="BLUE_GREY" text="Show filters" ui:field="showFilters"></design:MaterialLink>
+                    <design:MaterialLink text="Filter title" fontSize="1.2em" textColor="BLACK" iconType="CLOSE" iconSize="TINY" iconPosition="LEFT" ui:field="filterTitle"/>
                 </design:MaterialCollapsibleHeader>
                 <design:MaterialCollapsibleBody padding="5" backgroundColor="WHITE">
                     <design:MaterialRow marginTop="10" marginBottom="10" addStyleNames="{style.filtersBody}" ui:field="filters">
@@ -203,11 +203,7 @@
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
                             <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="250px" layer="false" basemapVisible="false" ui:field="mapContainer"></cmaps:MapContainer>
                         </g:HTMLPanel>
-<!--
-                        <design:MaterialTooltip text="Only show results from affiliate companies">
-                            <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAffiliates">affiliates only</design:MaterialCheckBox>
-                        </design:MaterialTooltip>
--->
+                        <design:MaterialPanel ui:field="additionalProductFilters"></design:MaterialPanel>
                     </design:MaterialRow>
                 </design:MaterialCollapsibleBody>
             </design:MaterialCollapsibleItem>

@@ -26,6 +26,8 @@ public interface ProductView extends IsWidget {
 
     void setImageUrl(String imageUrl);
 
+    HasText getOtherNames();
+
     String getDescription();
 
     void setDescription(String description);

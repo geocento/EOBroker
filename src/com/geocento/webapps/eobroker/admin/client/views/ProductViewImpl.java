@@ -78,6 +78,8 @@ public class ProductViewImpl extends Composite implements ProductView {
     MaterialRow performances;
     @UiField
     MaterialButton addPerformance;
+    @UiField
+    MaterialTextBox otherNames;
 
     private Presenter presenter;
 
@@ -125,6 +127,11 @@ public class ProductViewImpl extends Composite implements ProductView {
     @Override
     public void setImageUrl(String imageUrl) {
         imageUploader.setImageUrl(imageUrl);
+    }
+
+    @Override
+    public HasText getOtherNames() {
+        return otherNames;
     }
 
     @Override
