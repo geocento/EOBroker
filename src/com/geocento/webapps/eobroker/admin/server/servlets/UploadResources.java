@@ -7,8 +7,7 @@ import com.geocento.webapps.eobroker.common.server.ServerUtil;
 import com.geocento.webapps.eobroker.common.server.Utils.DBHelper;
 import com.geocento.webapps.eobroker.common.server.Utils.ImageUtils;
 import com.geocento.webapps.eobroker.common.server.Utils.KeyGenerator;
-import com.geocento.webapps.eobroker.common.shared.entities.Challenge;
-import com.geocento.webapps.eobroker.common.shared.entities.Product;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.utils.LevenshteinDistance;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.google.gwt.http.client.RequestException;
@@ -155,6 +154,144 @@ public class UploadResources {
         } finally {
             em.close();
         }
+    }
+
+    @POST
+    @Path("/productcategories/import")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("application/json")
+    public void importProductCategories(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) throws Exception {
+        String userName = UserUtils.verifyUserAdmin(request);
+        logger.debug("Importing product categories from CSV file " + fileDetail.getFileName());
+        File csvFile = ServerUtil.getTmpDataFile(userName + "/" + fileDetail.getFileName());
+        FileUtils.copyInputStreamToFile(inputStream, csvFile);
+        CSVParser csvParser = CSVParser.parse(csvFile, Charset.defaultCharset(), CSVFormat.EXCEL);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // remove all product categories first
+            TypedQuery<ProductCategory> query = em.createQuery("select p from ProductCategory p", ProductCategory.class);
+            List<ProductCategory> productCategories = query.getResultList();
+            for(ProductCategory productCategory : productCategories) {
+                em.remove(productCategory);
+            }
+            for (CSVRecord csvRecord : csvParser.getRecords()) {
+                ProductCategory productCategory = new ProductCategory();
+                String categoryName = csvRecord.get(0);
+                productCategory.setName(categoryName);
+                List<String> tags = new ArrayList<String>();
+                for(int tagIndex = 1; tagIndex < csvRecord.size(); tagIndex++) {
+                    String tag = csvRecord.get(tagIndex);
+                    if(tag.length() > 0) {
+                        tags.add(tag);
+                    }
+                }
+                productCategory.setTags(tags);
+                em.persist(productCategory);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @POST
+    @Path("/productcategories/assign/import")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("application/json")
+    public void importAssignProductCategories(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) throws Exception {
+        String userName = UserUtils.verifyUserAdmin(request);
+        logger.debug("Importing product categories from CSV file " + fileDetail.getFileName());
+        File csvFile = ServerUtil.getTmpDataFile(userName + "/" + fileDetail.getFileName());
+        FileUtils.copyInputStreamToFile(inputStream, csvFile);
+        CSVParser csvParser = CSVParser.parse(csvFile, Charset.defaultCharset(), CSVFormat.EXCEL.withHeader());
+        List<CSVRecord> records = csvParser.getRecords();
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            List<String> productsNames = new ArrayList<String>();
+            // collect product names from first column
+            for (CSVRecord csvRecord : records) {
+                productsNames.add(csvRecord.get("Product"));
+            }
+            HashMap<String, Product> productHashMap = getProducts(em, productsNames);
+            HashMap<String, ProductCategory> productCategoriesHashMap = new HashMap<String, ProductCategory>();
+            TypedQuery<ProductCategory> query = em.createQuery("select p from ProductCategory p", ProductCategory.class);
+            List<ProductCategory> productCategories = query.getResultList();
+            for(ProductCategory productCategory : productCategories) {
+                productCategoriesHashMap.put(productCategory.getName(), productCategory);
+            }
+            em.getTransaction().begin();
+            // reload file
+            for (CSVRecord csvRecord : records) {
+                String productName = csvRecord.get("Product");
+                logger.debug("Processing product " + productName);
+                Product product = productHashMap.get(productName);
+                if(product == null) {
+                    throw new RequestException("No product found for " + productName);
+                }
+                logger.debug("Assiging product categories");
+                // find which products are matching the challenge
+                List<ProductCategory> productProductCategories = new ArrayList<ProductCategory>();
+                for(String productCategoryName : productCategoriesHashMap.keySet()) {
+                    if(csvRecord.get(productCategoryName) != null && csvRecord.get(productCategoryName).contentEquals("1")) {
+                        ProductCategory productCategory = productCategoriesHashMap.get(productCategoryName);
+                        if(productCategory != null && !productProductCategories.contains(productCategory)) {
+                            productProductCategories.add(productCategory);
+                        } else {
+                            if(productCategory == null) {
+                                logger.error("No product category for " + productCategoryName);
+                            } else {
+                                logger.error("Product " + productCategory.getName() + " for " + productCategoryName + " repeated!");
+                            }
+                        }
+                    }
+                }
+                product.setCategories(productProductCategories);
+                // update the keyphrases
+                // for product but also for any related offerings
+                DBHelper.updateProductTSV(em, product);
+                if(product.getProductDatasets() != null) {
+                    for(ProductDataset productDataset : product.getProductDatasets()) {
+                        DBHelper.updateProductDatasetTSV(em, productDataset);
+                    }
+                }
+                if(product.getProductServices() != null) {
+                    for(ProductService productService : product.getProductServices()) {
+                        DBHelper.updateProductServiceTSV(em, productService);
+                    }
+                }
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Server error");
+        } finally {
+            em.close();
+        }
+    }
+
+    private HashMap<String, Product> getProducts(EntityManager em, List<String> productsNames) {
+        List<Product> products = em.createQuery("select p from Product p", Product.class).getResultList();
+        // match products and labels in csv file
+        HashMap<String, Product> productHashMap = new HashMap<String, Product>();
+        for (String productName : productsNames) {
+            HashMap<Integer, Product> productMatching = new HashMap<Integer, Product>();
+            Product selectedProduct = null;
+            int distance = 1000;
+            for(Product product : products) {
+                int currentDistance = LevenshteinDistance.getDefaultInstance().
+                        apply(productName.toLowerCase(), product.getName().toLowerCase());
+                if(currentDistance < distance) {
+                    selectedProduct = product;
+                    distance = currentDistance;
+                }
+            }
+            productHashMap.put(productName, selectedProduct);
+        }
+        return productHashMap;
     }
 
 }

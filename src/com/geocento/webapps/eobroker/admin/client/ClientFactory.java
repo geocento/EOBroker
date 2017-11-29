@@ -42,4 +42,6 @@ public interface ClientFactory {
     ChallengesView getChallengesView();
 
     ChallengeView getChallengeView();
+
+    ProductCategoriesView getProductCategoriesView();
 }

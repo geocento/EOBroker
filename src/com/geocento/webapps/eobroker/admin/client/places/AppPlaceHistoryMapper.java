@@ -10,6 +10,7 @@ import com.google.gwt.place.shared.WithTokenizers;
         CompanyPlace.Tokenizer.class,
         ProductsPlace.Tokenizer.class,
         ProductPlace.Tokenizer.class,
+        ProductCategoriesPlace.Tokenizer.class,
         ChallengesPlace.Tokenizer.class,
         ChallengePlace.Tokenizer.class,
         NewsItemsPlace.Tokenizer.class,

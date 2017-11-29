@@ -1,10 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
-import com.geocento.webapps.eobroker.common.shared.entities.Sector;
-import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -25,8 +22,6 @@ public interface ProductView extends IsWidget {
     String getImageUrl();
 
     void setImageUrl(String imageUrl);
-
-    HasText getOtherNames();
 
     String getDescription();
 
@@ -69,6 +64,12 @@ public interface ProductView extends IsWidget {
     List<PerformanceDescription> getPerformances();
 
     TemplateView getTemplateView();
+
+    void setAvailableCategories(List<ProductCategory> availableCategories);
+
+    void setCategories(List<ProductCategory> categories);
+
+    List<ProductCategory> getCategories();
 
     public interface Presenter {
     }

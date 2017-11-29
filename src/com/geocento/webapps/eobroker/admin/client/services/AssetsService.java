@@ -3,15 +3,12 @@ package com.geocento.webapps.eobroker.admin.client.services;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
 import com.geocento.webapps.eobroker.common.shared.entities.ApplicationSettings;
 import com.geocento.webapps.eobroker.common.shared.entities.NewsItem;
+import com.geocento.webapps.eobroker.common.shared.entities.ProductCategory;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.google.gwt.http.client.RequestException;
 import org.fusesource.restygwt.client.DirectRestService;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.io.InputStream;
 import java.util.List;
 
 public interface AssetsService extends DirectRestService {
@@ -38,6 +35,14 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/products/{id}")
     @Produces("application/json")
     public void removeProduct(@PathParam("id") Long id) throws RequestException;
+
+    @GET
+    @Path("/assets/productcategories/")
+    @Produces("application/json")
+    public List<ProductCategory> listProductCategories(@QueryParam("start") int start,
+                                         @QueryParam("limit") int limit,
+                                         @QueryParam("orderby") String orderBy,
+                                         @QueryParam("filter") String filter) throws RequestException;
 
     @GET
     @Path("/assets/companies/{id}")

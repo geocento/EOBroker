@@ -5,11 +5,10 @@ import com.geocento.webapps.eobroker.admin.client.widgets.CodeEditor;
 import com.geocento.webapps.eobroker.admin.client.widgets.FormEditor;
 import com.geocento.webapps.eobroker.admin.client.widgets.GeoinformationWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageUploader;
-import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription;
-import com.geocento.webapps.eobroker.common.shared.entities.Sector;
-import com.geocento.webapps.eobroker.common.shared.entities.Thematic;
+import com.geocento.webapps.eobroker.common.client.widgets.material.*;
+import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -22,6 +21,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.MaterialListValueBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class ProductViewImpl extends Composite implements ProductView {
     @UiField
     MaterialButton addPerformance;
     @UiField
-    MaterialTextBox otherNames;
+    MaterialListValueBox<ProductCategory> categories;
 
     private Presenter presenter;
 
@@ -127,11 +127,6 @@ public class ProductViewImpl extends Composite implements ProductView {
     @Override
     public void setImageUrl(String imageUrl) {
         imageUploader.setImageUrl(imageUrl);
-    }
-
-    @Override
-    public HasText getOtherNames() {
-        return otherNames;
     }
 
     @Override
@@ -308,6 +303,33 @@ public class ProductViewImpl extends Composite implements ProductView {
     @UiHandler("addPerformance")
     void addPerformance(ClickEvent clickEvent) {
         addPerformance(new PerformanceDescription());
+    }
+
+    @Override
+    public void setAvailableCategories(List<ProductCategory> availableCategories) {
+        this.categories.clear();
+        for(ProductCategory productCategory : availableCategories) {
+            categories.addItem(productCategory, productCategory.getName());
+        }
+    }
+
+    @Override
+    public void setCategories(List<ProductCategory> categories) {
+        List<Long> ids = ListUtil.mutate(categories, productCategory -> productCategory.getId());
+        for(int index = 0; index < this.categories.getItemCount(); index++) {
+            this.categories.setItemSelected(index, categories != null && ids.contains(this.categories.getValue(index).getId()));
+        }
+    }
+
+    @Override
+    public List<ProductCategory> getCategories() {
+        List<ProductCategory> selectedCategories = new ArrayList<ProductCategory>();
+        for(int index = 0; index < this.categories.getItemCount(); index++) {
+            if(this.categories.isItemSelected(index)) {
+                selectedCategories.add(this.categories.getValue(index));
+            }
+        }
+        return selectedCategories;
     }
 
     @Override

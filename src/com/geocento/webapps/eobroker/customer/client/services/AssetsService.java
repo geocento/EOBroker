@@ -57,7 +57,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/product/filters/{id}")
     @Produces("application/json")
-    ProductWithFiltersDTO getProductWithFilters(Long id) throws RequestException;
+    ProductWithFiltersDTO getProductWithFilters(@PathParam("id") Long id) throws RequestException;
 
     @GET
     @Path("/assets/challenges/{id}")

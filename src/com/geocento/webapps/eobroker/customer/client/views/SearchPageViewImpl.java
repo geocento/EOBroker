@@ -1,6 +1,5 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
-import com.geocento.webapps.eobroker.common.client.utils.Utils;
 import com.geocento.webapps.eobroker.common.client.widgets.*;
 import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
@@ -18,6 +17,7 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.*;
+import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductGeoinformation;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -332,15 +332,90 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
 
     private void setAdditionalProductFilters(List<FeatureDescription> geoinformation, List<PerformanceDescription> performances) {
         clearAdditionalProductFilters();
+        if(ListUtil.isNullOrEmpty(geoinformation) && ListUtil.isNullOrEmpty(performances)) {
+            return;
+        }
+        addFilter(additionalProductFilters, "s12 m12 l12");
         MaterialRow materialRow = new MaterialRow();
-        MaterialColumn geoinformationProvided = new MaterialColumn(12, 6, 6);
-        materialRow.add(geoinformationProvided);
-        MaterialColumn performancesProvided = new MaterialColumn(12, 6, 6);
-        materialRow.add(performancesProvided);
+        additionalProductFilters.add(materialRow);
+        if(!ListUtil.isNullOrEmpty(geoinformation)) {
+            MaterialColumn geoinformationProvided = new MaterialColumn(12, 6, 6);
+            materialRow.add(geoinformationProvided);
+            MaterialLabel label = new MaterialLabel("Select compulsory geo information");
+            label.setMarginTop(10);
+            label.setMarginBottom(10);
+            geoinformationProvided.add(label);
+            for (FeatureDescription featureDescription : geoinformation) {
+                MaterialCheckBox materialCheckBox = new MaterialCheckBox(featureDescription.getName());
+                materialCheckBox.setObject(featureDescription);
+                geoinformationProvided.add(materialCheckBox);
+            }
+        }
+        if(!ListUtil.isNullOrEmpty(geoinformation)) {
+            MaterialColumn performancesProvided = new MaterialColumn(12, 6, 6);
+            materialRow.add(performancesProvided);
+            MaterialLabel label = new MaterialLabel("Select required performances");
+            label.setMarginTop(10);
+            label.setMarginBottom(10);
+            performancesProvided.add(label);
+            for (PerformanceDescription performanceDescription : performances) {
+                PerformanceValueWidget performanceValueWidget = new PerformanceValueWidget();
+                performanceValueWidget.setPerformanceDescription(performanceDescription);
+                performancesProvided.add(performanceValueWidget);
+            }
+        }
+        MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
+        materialRow.add(materialColumn);
+        MaterialButton materialButton = new MaterialButton("UPDATE");
+        materialButton.add(materialButton);
+        materialButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                presenter.filtersChanged();
+            }
+        });
     }
 
     private void clearAdditionalProductFilters() {
         additionalProductFilters.clear();
+    }
+
+    @Override
+    public List<FeatureDescription> getSelectedGeoInformation() {
+        if (additionalProductFilters.isVisible()) {
+            List<Widget> widgets = WidgetUtil.findChildren(additionalProductFilters, new WidgetUtil.CheckValue() {
+                @Override
+                public boolean isValue(Widget widget) {
+                    return widget instanceof MaterialCheckBox && ((MaterialCheckBox) widget).getValue() && ((MaterialCheckBox) widget).getObject() != null && ((MaterialCheckBox) widget).getObject() instanceof FeatureDescription;
+                }
+            });
+            return ListUtil.mutate(widgets, new ListUtil.Mutate<Widget, FeatureDescription>() {
+                @Override
+                public FeatureDescription mutate(Widget widget) {
+                    return (FeatureDescription) ((MaterialCheckBox) widget).getObject();
+                }
+            });
+        }
+        return null;
+    }
+
+    @Override
+    public List<PerformanceValue> getSelectedPerformances() {
+        if (additionalProductFilters.isVisible()) {
+            List<Widget> widgets = WidgetUtil.findChildren(additionalProductFilters, new WidgetUtil.CheckValue() {
+                @Override
+                public boolean isValue(Widget widget) {
+                    return widget instanceof PerformanceValueWidget && ((PerformanceValueWidget) widget).getPerformanceValue() != null;
+                }
+            });
+            return ListUtil.mutate(widgets, new ListUtil.Mutate<Widget, PerformanceValue>() {
+                @Override
+                public PerformanceValue mutate(Widget widget) {
+                    return ((PerformanceValueWidget) widget).getPerformanceValue();
+                }
+            });
+        }
+        return null;
     }
 
     private void updateCompanySearchBox() {

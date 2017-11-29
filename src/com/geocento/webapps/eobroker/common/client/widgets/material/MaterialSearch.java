@@ -245,6 +245,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
             link.setIconColor(Color.GREY);
             link.setTextColor(Color.BLACK);
             link.setText("No Result...");
+            link.setTruncate(true);
             searchResult.add(link);
         } else {
             // Populate the search result items
@@ -252,6 +253,7 @@ public class MaterialSearch extends MaterialValueBox<String> implements HasClose
                 MaterialLink link = new MaterialLink();
                 link.setIconColor(Color.GREY);
                 link.setTextColor(Color.BLACK);
+                link.setTruncate(true);
                 if (suggestion.getIcon() != null) {
                     link.setIconType(suggestion.getIcon());
                 }

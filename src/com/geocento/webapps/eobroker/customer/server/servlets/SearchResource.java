@@ -232,7 +232,7 @@ public class SearchResource implements SearchService {
         }
         // now search for services
         {
-            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null, false, null, null);
+            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null, false, null, null, null, null);
             boolean more = productServiceDTOs.size() > 4;
             if (more) {
                 productServiceDTOs = productServiceDTOs.subList(0, 4);
@@ -242,7 +242,7 @@ public class SearchResource implements SearchService {
         }
         // now search for datasets
         {
-            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, null, null, null, null, null, false, null, null);
+            List<ProductDatasetDTO> productDatasetDTOs = listProductDatasets(text, 0, 5, null, null, null, null, null, false, null, null, null, null);
             boolean more = productDatasetDTOs.size() > 4;
             if (more) {
                 productDatasetDTOs = productDatasetDTOs.subList(0, 4);
@@ -568,113 +568,158 @@ public class SearchResource implements SearchService {
     @Override
     public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
-                                                       boolean affiliatesOnly, Long companyId, Long productId) throws RequestException {
+                                                       boolean affiliatesOnly, Long companyId, Long productId,
+                                                       List<Long> requestedGeoInformation,
+                                                       List<PerformanceValueDTO> requestedPerformances) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<ProductService> productServices = null;
         EntityManager em = EMF.get().createEntityManager();
-        List<String> additionalStatements = new ArrayList<String>();
-        if(aoiId != null) {
-            AoI aoi = em.find(AoI.class, aoiId);
-            if(aoi != null) {
-                additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't')");
-            }
-        } else if(aoiWKT != null) {
-            additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
-        }
-        addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
-        if(productId != null) {
-            additionalStatements.add("product_id = " + productId);
-        }
-        List<Long> productIds = getFilteredIds(em, "productservice", textFilter, start, limit,
-                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
-        if(productIds.size() > 0) {
-            TypedQuery<ProductService> productQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
-            productQuery.setParameter("productIds", productIds);
-            productServices = productQuery.getResultList();
-        } else {
-            productServices = new ArrayList<ProductService>();
-        }
-        em.close();
-        // make sure order has stayed the same
-                List<ProductService> sortedItems = new ArrayList<ProductService>();
-        for(final Long id : productIds) {
-            sortedItems.add(ListUtil.findValue(productServices, new ListUtil.CheckValue<ProductService>() {
-                @Override
-                public boolean isValue(ProductService value) {
-                    return value.getId().equals(id);
+        try {
+            List<String> additionalStatements = new ArrayList<String>();
+            if (aoiId != null) {
+                AoI aoi = em.find(AoI.class, aoiId);
+                if (aoi != null) {
+                    additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't')");
                 }
-            }));
-        }
-        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<ProductService, ProductServiceDTO>() {
-            @Override
-            public ProductServiceDTO mutate(ProductService productService) {
-                return createProductServiceDTO(productService);
+            } else if (aoiWKT != null) {
+                additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
             }
-        });
+            addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
+            if (productId != null) {
+                additionalStatements.add("product_id = " + productId);
+            }
+            List<Long> productIds = getFilteredIds(em, "productservice", textFilter, start, limit,
+                    additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
+            if (productIds.size() > 0) {
+                TypedQuery<ProductService> productQuery = em.createQuery("select p from ProductService p where p.id IN :productIds", ProductService.class);
+                productQuery.setParameter("productIds", productIds);
+                productServices = productQuery.getResultList();
+            } else {
+                productServices = new ArrayList<ProductService>();
+            }
+            // make sure order has stayed the same
+            List<ProductService> sortedItems = new ArrayList<ProductService>();
+            for(final Long id : productIds) {
+                sortedItems.add(ListUtil.findValue(productServices, new ListUtil.CheckValue<ProductService>() {
+                    @Override
+                    public boolean isValue(ProductService value) {
+                        return value.getId().equals(id);
+                    }
+                }));
+            }
+            // if filtering by geoinformation and performances was requested
+            if(!ListUtil.isNullOrEmpty(requestedGeoInformation)) {
+                sortedItems = ListUtil.filterValues(sortedItems, new ListUtil.CheckValue<ProductService>() {
+                    @Override
+                    public boolean isValue(ProductService productService) {
+                        List<Long> supportedGeoInformation = ListUtil.mutate(productService.getGeoinformation(), object -> object.getId());
+                        return ListUtil.count(requestedGeoInformation, value -> !supportedGeoInformation.contains(value)) == 0;
+                    }
+                });
+            }
+            if(!ListUtil.isNullOrEmpty(requestedPerformances)) {
+                sortedItems = ListUtil.filterValues(sortedItems, new ListUtil.CheckValue<ProductService>() {
+                    @Override
+                    public boolean isValue(ProductService productService) {
+                        // make sure every requested performance is matched
+                        List<PerformanceValue> supportedPerformances = productService.getPerformances();
+                        for(PerformanceValueDTO performanceValue : requestedPerformances) {
+                            // find matching performance in service
+                            PerformanceValue servicePerformance = ListUtil.findValue(supportedPerformances, value -> value.getId().equals(performanceValue.getId()));
+                            if(servicePerformance == null) {
+                                return false;
+                            }
+                            double requestedMin = performanceValue.getMinValue() == null ? Double.MIN_VALUE : performanceValue.getMinValue();
+                            double requestedMax = performanceValue.getMaxValue() == null ? Double.MAX_VALUE : performanceValue.getMaxValue();
+                            double supportedMin = servicePerformance.getMinValue() == null ? Double.MIN_VALUE : servicePerformance.getMinValue();
+                            double supportedMax = servicePerformance.getMaxValue() == null ? Double.MAX_VALUE : servicePerformance.getMaxValue();
+                            boolean inRange = requestedMin < supportedMax && requestedMax > supportedMin;
+                            if(!inRange) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                });
+            }
+            return ListUtil.mutate(sortedItems, productService -> createProductServiceDTO(productService));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error searching for product services");
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
                                                        ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame,
-                                                       boolean affiliatesOnly, Long companyId, Long productId) throws RequestException {
+                                                       boolean affiliatesOnly, Long companyId, Long productId,
+                                                       List<Long> selectedFeatures, List<PerformanceValueDTO> selectedPerformances) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
-        List<String> additionalStatements = new ArrayList<String>();
-        if(aoiId != null) {
-            AoI aoi = em.find(AoI.class, aoiId);
-            if(aoi != null) {
-                additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't')");
-            }
-        } else if(aoiWKT != null) {
-            additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
-        }
-        if(serviceType != null) {
-            additionalStatements.add("servicetype = '" + serviceType.toString() + "'");
-        }
-        // TODO - add filter for inclusiveness or not of time frame
-/*
-        SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd");
-*/
-        if(startTimeFrame != null && stopTimeFrame != null) {
-            additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ") AND " +
-                    "(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
-        } else if(startTimeFrame != null) {
-            additionalStatements.add("(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
-        } else if(stopTimeFrame != null) {
-            additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ")");
-        }
-        addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
-        if(productId != null) {
-            additionalStatements.add("product_id = " + productId);
-        }
-        List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit,
-                additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
-        if(productIds.size() > 0) {
-            TypedQuery<ProductDataset> productQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
-            productQuery.setParameter("productIds", productIds);
-            productDatasets = productQuery.getResultList();
-        } else {
-            productDatasets = new ArrayList<ProductDataset>();
-        }
-        em.close();
-        // make sure order has stayed the same
-        List<ProductDataset> sortedItems = new ArrayList<ProductDataset>();
-        for(final Long id : productIds) {
-            sortedItems.add(ListUtil.findValue(productDatasets, new ListUtil.CheckValue<ProductDataset>() {
-                @Override
-                public boolean isValue(ProductDataset value) {
-                    return value.getId().equals(id);
+        try {
+            List<String> additionalStatements = new ArrayList<String>();
+            if(aoiId != null) {
+                AoI aoi = em.find(AoI.class, aoiId);
+                if(aoi != null) {
+                    additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoi.getGeometry() + "'::geometry) = 't')");
                 }
-            }));
-        }
-        return ListUtil.mutate(sortedItems, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
-            @Override
-            public ProductDatasetDTO mutate(ProductDataset productDataset) {
-                return createProductDatasetDTO(productDataset);
+            } else if(aoiWKT != null) {
+                additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
             }
-        });
+            if(serviceType != null) {
+                additionalStatements.add("servicetype = '" + serviceType.toString() + "'");
+            }
+            // TODO - add filter for inclusiveness or not of time frame
+    /*
+            SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd");
+    */
+            if(startTimeFrame != null && stopTimeFrame != null) {
+                additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ") AND " +
+                        "(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
+            } else if(startTimeFrame != null) {
+                additionalStatements.add("(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
+            } else if(stopTimeFrame != null) {
+                additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ")");
+            }
+            addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
+            if(productId != null) {
+                additionalStatements.add("product_id = " + productId);
+            }
+            List<Long> productIds = getFilteredIds(em, "productdataset", textFilter, start, limit,
+                    additionalStatements.size() == 0 ? null : StringUtils.join(additionalStatements, " AND "));
+            if(productIds.size() > 0) {
+                TypedQuery<ProductDataset> productQuery = em.createQuery("select p from ProductDataset p where p.id IN :productIds", ProductDataset.class);
+                productQuery.setParameter("productIds", productIds);
+                productDatasets = productQuery.getResultList();
+            } else {
+                productDatasets = new ArrayList<ProductDataset>();
+            }
+            // make sure order has stayed the same
+            List<ProductDataset> sortedItems = new ArrayList<ProductDataset>();
+            for(final Long id : productIds) {
+                sortedItems.add(ListUtil.findValue(productDatasets, new ListUtil.CheckValue<ProductDataset>() {
+                    @Override
+                    public boolean isValue(ProductDataset value) {
+                        return value.getId().equals(id);
+                    }
+                }));
+            }
+            return ListUtil.mutate(sortedItems, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
+                @Override
+                public ProductDatasetDTO mutate(ProductDataset productDataset) {
+                    return createProductDatasetDTO(productDataset);
+                }
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException("Error searching for product datasets");
+        } finally {
+            em.close();
+        }
     }
 
     private void addAffiliatesStatement(EntityManager em, List<String> additionalStatements, String userName, boolean affiliatesOnly, Long companyId) throws RequestException {

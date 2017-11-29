@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.admin.client.widgets.ChallengesList;
+import com.geocento.webapps.eobroker.admin.client.widgets.SimpleFileUpload;
 import com.geocento.webapps.eobroker.admin.shared.dtos.ChallengeDTO;
 import com.geocento.webapps.eobroker.common.client.widgets.material.MaterialFileUploader;
 import com.google.gwt.core.client.GWT;
@@ -49,7 +50,7 @@ public class ChallengesViewImpl extends Composite implements ChallengesView {
     @UiField
     FormPanel fileForm;
     @UiField
-    MaterialFileUploader importCSV;
+    SimpleFileUpload importCSV;
 
     private Presenter presenter;
 
@@ -62,32 +63,8 @@ public class ChallengesViewImpl extends Composite implements ChallengesView {
         challenges.setPresenter(() -> presenter.loadMore());
 
         importCSV.setUrl(GWT.getHostPageBaseURL() + "admin/api/upload/challenges/import");
+        importCSV.addSuccessHandler(event -> presenter.reloadChallenges());
 
-        filter.addValueChangeHandler(event -> presenter.changeFilter(event.getValue()));
-
-        fileForm.setEncoding(FormPanel.ENCODING_MULTIPART);
-        fileForm.setMethod(FormPanel.METHOD_POST);
-        fileForm.setAction(GWT.getHostPageBaseURL() + "/api/upload/challenges/import");
-
-        fileForm.addSubmitHandler(new FormPanel.SubmitHandler() {
-            public void onSubmit(FormPanel.SubmitEvent event) {
-            }
-        });
-
-        fileForm.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-            public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
-                presenter.reload();
-            }
-
-        });
-        importCSVUpload.addChangeHandler(new ChangeHandler() {
-
-            @Override
-            public void onChange(ChangeEvent event) {
-                fileForm.submit();
-            }
-
-        });
     }
 
     @Override
@@ -113,11 +90,6 @@ public class ChallengesViewImpl extends Composite implements ChallengesView {
     @Override
     public void addChallenges(boolean hasMore, List<ChallengeDTO> challengeDTOs) {
         this.challenges.addData(challengeDTOs, hasMore);
-    }
-
-    @Override
-    public HasClickHandlers getImportCSV() {
-        return importCSV;
     }
 
     @Override

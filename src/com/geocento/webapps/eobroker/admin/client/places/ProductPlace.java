@@ -21,7 +21,7 @@ public class ProductPlace extends EOBrokerPlace {
         super(token);
     }
 
-    @Prefix("products")
+    @Prefix("product")
     public static class Tokenizer implements PlaceTokenizer<ProductPlace> {
         @Override
         public String getToken(ProductPlace place) {

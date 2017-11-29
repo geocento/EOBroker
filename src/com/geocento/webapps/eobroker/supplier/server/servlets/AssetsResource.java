@@ -333,10 +333,7 @@ public class AssetsResource implements AssetsService {
             productService.setSamples(dbSamples);
             productService.setTermsAndConditions(productService.getTermsAndConditions());
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE productservice SET tsv = " + DBHelper.getProductServiceTSV(productService) +
-                    ", tsvname = " + DBHelper.getProductServiceNameTSV(productService) + " where id = " + productService.getId() +
-                    ";");
-            query.executeUpdate();
+            DBHelper.updateProductServiceTSV(em, productService);
             em.getTransaction().commit();
             // send notifications
             if(newService) {
@@ -1456,10 +1453,7 @@ public class AssetsResource implements AssetsService {
             productDataset.setDatasetURL(productDatasetDTO.getDatasetURL());
             productDataset.setTermsAndConditions(productDatasetDTO.getTermsAndConditions());
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE productdataset SET tsv = " + DBHelper.getProductDatasetTSV(productDataset) +
-                    ", tsvname = " + DBHelper.getProductDatasetNameTSV(productDataset) + " where id = " + productDataset.getId() +
-                    ";");
-            query.executeUpdate();
+            DBHelper.updateProductDatasetTSV(em, productDataset);
             em.getTransaction().commit();
             if(newDataset) {
                 // fail silently

@@ -558,7 +558,6 @@ public class ContextListener implements ServletContextListener {
                             "alter table feasibilitysearch add column selectiongeometry geometry;").executeUpdate();
                 }
             }
-
         } catch (Exception e) {
             if(em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

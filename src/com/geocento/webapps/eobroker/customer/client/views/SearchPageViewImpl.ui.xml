@@ -159,6 +159,10 @@
             white-space: nowrap;
         }
 
+        .additionalProductFilters {
+            border: 1px solid gray;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
     <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -203,7 +207,7 @@
                             <design:MaterialCheckBox addStyleNames="{style.optionTitle}" ui:field="filterByAoI">Filter by area of interest</design:MaterialCheckBox>
                             <cmaps:MapContainer addStyleNames="{style.mapPanel}" height="250px" layer="false" basemapVisible="false" ui:field="mapContainer"></cmaps:MapContainer>
                         </g:HTMLPanel>
-                        <design:MaterialPanel ui:field="additionalProductFilters"></design:MaterialPanel>
+                        <design:MaterialPanel addStyleNames="{style.additionalProductFilters}" ui:field="additionalProductFilters"></design:MaterialPanel>
                     </design:MaterialRow>
                 </design:MaterialCollapsibleBody>
             </design:MaterialCollapsibleItem>

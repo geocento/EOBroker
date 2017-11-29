@@ -1,0 +1,36 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .panel {
+            white-space: nowrap;
+            line-height: 30px;
+        }
+
+        .panel > * {
+            display: inline-block;
+        }
+
+        .details > span {
+            padding-right: 10px;
+            color: #aaa;
+        }
+
+        .performance {
+
+        }
+
+    </ui:style>
+    <design:MaterialPanel addStyleNames="{style.panel}">
+        <design:MaterialTooltip position="BOTTOM" ui:field="tooltip">
+            <design:MaterialCheckBox addStyleNames="{style.performance}" ui:field="performance"></design:MaterialCheckBox>
+        </design:MaterialTooltip>
+        <g:HTMLPanel addStyleNames="{style.details}" ui:field="details">
+            <span>min</span>
+            <g:DoubleBox width="50px" ui:field="minValue"></g:DoubleBox>
+            <span>max</span>
+            <g:DoubleBox width="50px" ui:field="maxValue"></g:DoubleBox>
+            <span ui:field="unit"></span>
+        </g:HTMLPanel>
+    </design:MaterialPanel>
+</ui:UiBinder>

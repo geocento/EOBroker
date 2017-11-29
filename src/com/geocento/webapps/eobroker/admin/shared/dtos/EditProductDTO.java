@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.admin.shared.dtos;
 
 import com.geocento.webapps.eobroker.common.shared.entities.FeatureDescription;
 import com.geocento.webapps.eobroker.common.shared.entities.PerformanceDescription;
+import com.geocento.webapps.eobroker.common.shared.entities.ProductCategory;
 import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormElement;
 
 import java.util.List;
@@ -16,7 +17,8 @@ public class EditProductDTO extends ProductDTO {
     List<FormElement> formFields;
     String recommendationRule;
     List<FormElement> apiFormFields;
-    private String otherNames;
+    List<ProductCategory> categories;
+    private List<ProductCategory> availableCategories;
 
     public EditProductDTO() {
     }
@@ -61,11 +63,19 @@ public class EditProductDTO extends ProductDTO {
         this.apiFormFields = apiFormFields;
     }
 
-    public void setOtherNames(String otherNames) {
-        this.otherNames = otherNames;
+    public List<ProductCategory> getCategories() {
+        return categories;
     }
 
-    public String getOtherNames() {
-        return otherNames;
+    public void setCategories(List<ProductCategory> categories) {
+        this.categories = categories;
+    }
+
+    public List<ProductCategory> getAvailableCategories() {
+        return availableCategories;
+    }
+
+    public void setAvailableCategories(List<ProductCategory> availableCategories) {
+        this.availableCategories = availableCategories;
     }
 }

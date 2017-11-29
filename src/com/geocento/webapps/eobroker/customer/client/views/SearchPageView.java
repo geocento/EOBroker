@@ -16,6 +16,10 @@ import java.util.List;
  */
 public interface SearchPageView extends IsWidget {
 
+    List<FeatureDescription> getSelectedGeoInformation();
+
+    List<PerformanceValue> getSelectedPerformances();
+
     void setMapLoadedHandler(Callback<Void, Exception> mapLoadedHandler);
 
     void setPresenter(Presenter presenter);

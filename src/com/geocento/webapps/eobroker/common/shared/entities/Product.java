@@ -4,7 +4,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.formelements.FormEle
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by thomas on 06/06/2016.
@@ -22,8 +21,8 @@ public class Product {
     @Column(length = 1000)
     String imageUrl;
 
-    @Column(length = 1000)
-    String otherNames;
+    @OneToMany
+    List<ProductCategory> categories;
 
     @Column(length = 1000)
     String shortDescription;
@@ -94,12 +93,12 @@ public class Product {
         this.name = name;
     }
 
-    public String getOtherNames() {
-        return otherNames;
+    public List<ProductCategory> getCategories() {
+        return categories;
     }
 
-    public void setOtherNames(String otherNames) {
-        this.otherNames = otherNames;
+    public void setCategories(List<ProductCategory> categories) {
+        this.categories = categories;
     }
 
     public String getDescription() {

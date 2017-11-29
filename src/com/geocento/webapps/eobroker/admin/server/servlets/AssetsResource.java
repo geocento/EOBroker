@@ -3,7 +3,6 @@ package com.geocento.webapps.eobroker.admin.server.servlets;
 import com.geocento.webapps.eobroker.admin.client.services.AssetsService;
 import com.geocento.webapps.eobroker.admin.server.util.UserUtils;
 import com.geocento.webapps.eobroker.admin.shared.dtos.*;
-import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.MailContent;
 import com.geocento.webapps.eobroker.common.server.ServerUtil;
@@ -65,10 +64,15 @@ public class AssetsResource implements AssetsService {
             } else {
                 product = new Product();
             }
-            boolean namesHaveChanged = !StringUtils.areStringEqualsOrNull(product.getName(), productDTO.getName()) ||
-                    StringUtils.areStringEqualsOrNull(product.getOtherNames(), productDTO.getOtherNames());
             product.setName(productDTO.getName());
-            product.setOtherNames(productDTO.getOtherNames());
+            List<Long> dbCategoryIds = ListUtil.mutate(product.getCategories(), productCategory -> productCategory.getId());
+            List<Long> dtoCategoryIds = ListUtil.mutate(productDTO.getCategories(), productCategory -> productCategory.getId());
+            boolean namesHaveChanged = ListUtil.listEquals(dbCategoryIds, dtoCategoryIds);
+            if(namesHaveChanged) {
+                TypedQuery<ProductCategory> productCategoryTypedQuery = em.createQuery("select p from ProductCategory p where p.id IN :categories", ProductCategory.class);
+                productCategoryTypedQuery.setParameter("categories", dtoCategoryIds);
+                product.setCategories(productCategoryTypedQuery.getResultList());
+            }
             product.setImageUrl(productDTO.getImageUrl());
             product.setShortDescription(productDTO.getShortDescription());
             product.setDescription(productDTO.getDescription());
@@ -105,13 +109,21 @@ public class AssetsResource implements AssetsService {
                 em.merge(product);
             }
             // update the keyphrases
-            Query query = em.createNativeQuery("UPDATE product SET tsv = " + DBHelper.getProductTSV(product) +
-                    ", tsvname = " + DBHelper.getProductNameTSV(product) + " where id = " + product.getId() +
-                    ";");
-            query.executeUpdate();
             // if names have changed we need to update all offerings related to the product
             if(namesHaveChanged) {
-
+                // update the keyphrases
+                // for product but also for any related offerings
+                DBHelper.updateProductTSV(em, product);
+                if(product.getProductDatasets() != null) {
+                    for(ProductDataset productDataset : product.getProductDatasets()) {
+                        DBHelper.updateProductDatasetTSV(em, productDataset);
+                    }
+                }
+                if(product.getProductServices() != null) {
+                    for(ProductService productService : product.getProductServices()) {
+                        DBHelper.updateProductServiceTSV(em, productService);
+                    }
+                }
             }
             em.getTransaction().commit();
             return product.getId();
@@ -141,7 +153,8 @@ public class AssetsResource implements AssetsService {
             EditProductDTO productDTO = new EditProductDTO();
             productDTO.setId(product.getId());
             productDTO.setName(product.getName());
-            productDTO.setOtherNames(product.getOtherNames());
+            productDTO.setAvailableCategories(em.createQuery("select p from ProductCategory  p", ProductCategory.class).getResultList());
+            productDTO.setCategories(product.getCategories());
             productDTO.setShortDescription(product.getShortDescription());
             productDTO.setDescription(product.getDescription());
             productDTO.setImageUrl(product.getImageUrl());
@@ -213,6 +226,39 @@ public class AssetsResource implements AssetsService {
             }
             em.remove(product);
             em.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RequestException("Error");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<ProductCategory> listProductCategories(int start, int limit, String orderBy, String filter) throws RequestException {
+        UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            if(orderBy == null) {
+                orderBy = "p.name";
+            } else {
+                switch(orderBy) {
+                    case "name":
+                        orderBy = "p.name";
+                        break;
+                    default:
+                        orderBy = "p.name";
+                }
+            }
+            boolean hasFilter = filter != null && filter.length() > 0;
+            TypedQuery<ProductCategory> query = em.createQuery("select p from ProductCategory p" +
+                    (hasFilter ?  "  where UPPER(p.name) LIKE UPPER(:filter)" : "") +
+                    " order by " + orderBy, ProductCategory.class);
+            if(hasFilter) {
+                query.setParameter("filter", "%" + filter + "%");
+            }
+            query.setFirstResult(start);
+            query.setMaxResults(limit);
+            return query.getResultList();
         } catch (Exception e) {
             throw new RequestException("Error");
         } finally {

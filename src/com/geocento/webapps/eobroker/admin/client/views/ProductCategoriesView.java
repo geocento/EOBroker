@@ -1,6 +1,6 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
-import com.geocento.webapps.eobroker.admin.shared.dtos.ChallengeDTO;
+import com.geocento.webapps.eobroker.common.shared.entities.ProductCategory;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -9,17 +9,17 @@ import java.util.List;
 /**
  * Created by thomas on 09/05/2016.
  */
-public interface ChallengesView extends IsWidget {
+public interface ProductCategoriesView extends IsWidget {
 
     void setPresenter(Presenter presenter);
 
-    HasClickHandlers getCreateNewButton();
+    void clearProductCategories();
 
-    void clearChallenges();
+    void addProductCategories(boolean hasMore, List<ProductCategory> response);
 
-    void setChallengesLoading(boolean loading);
+    HasClickHandlers getCreateNew();
 
-    void addChallenges(boolean hasMore, List<ChallengeDTO> response);
+    void setProductCategoriesLoading(boolean loading);
 
     TemplateView getTemplateView();
 
@@ -28,9 +28,7 @@ public interface ChallengesView extends IsWidget {
 
         void changeFilter(String value);
 
-        void reload();
-
-        void reloadChallenges();
+        void reloadProductCategories();
     }
 
 }

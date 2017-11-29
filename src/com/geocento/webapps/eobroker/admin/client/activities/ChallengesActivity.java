@@ -95,16 +95,10 @@ public class ChallengesActivity extends TemplateActivity implements ChallengesVi
             }
         }));
 
-        handlers.add(challengesView.getImportCSV().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-
-            }
-        }));
-
     }
 
-    private void reloadChallenges() {
+    @Override
+    public void reloadChallenges() {
         start = 0;
         loadChallenges();
     }

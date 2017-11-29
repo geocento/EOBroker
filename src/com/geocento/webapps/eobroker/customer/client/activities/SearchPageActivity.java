@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.common.client.widgets.maps.AoIUtil;
 import com.geocento.webapps.eobroker.common.shared.entities.*;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.RequestImagery;
@@ -447,6 +448,7 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         ProductDTO product = searchPageView.getProductSelection();
         CompanyDTO company = searchPageView.getCompanySelection();
         boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
+        List<PerformanceValue> selectedPerformances = searchPageView.getSelectedPerformances();
         String searchHash = generateSearchHash("productservices" + text, start, limit,
                 null,
                 filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
@@ -476,7 +478,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                         filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
                         affiliatesOnly,
                         company != null ? company.getId() : null,
-                        product != null ? product.getId() : null
+                        product != null ? product.getId() : null,
+                        getSelectedFeatures(),
+                        selectedPerformances
                 );
             } catch (RequestException e) {
             }
@@ -484,6 +488,19 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             previousSearch = searchHash;
 */
         }
+    }
+
+    private List<Long> getSelectedFeatures() {
+        List<FeatureDescription> selectedFeatures = searchPageView.getSelectedGeoInformation();
+        if(ListUtil.isNullOrEmpty(selectedFeatures)) {
+            return null;
+        }
+        return ListUtil.mutate(selectedFeatures, new ListUtil.Mutate<FeatureDescription, Long>() {
+            @Override
+            public Long mutate(FeatureDescription featureDescription) {
+                return featureDescription.getId();
+            }
+        });
     }
 
     private void loadProductDatasets(final String text, final int start, final int limit) {
@@ -494,6 +511,8 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         ProductDTO product = searchPageView.getProductSelection();
         CompanyDTO company = searchPageView.getCompanySelection();
         boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
+        List<FeatureDescription> selectedFeatures = searchPageView.getSelectedGeoInformation();
+        List<PerformanceValue> selectedPerformances = searchPageView.getSelectedPerformances();
         searchPageView.displayLoadingResults("Loading data...");
         try {
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
@@ -516,7 +535,9 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     startTimeFrame == null ? null : startTimeFrame.getTime() / 1000, stopTimeFrame == null ? null : stopTimeFrame.getTime() / 1000,
                     affiliatesOnly,
                     company != null ? company.getId() : null,
-                    product != null ? product.getId() : null
+                    product != null ? product.getId() : null,
+                    selectedFeatures,
+                    selectedPerformances
             );
         } catch (RequestException e) {
         }

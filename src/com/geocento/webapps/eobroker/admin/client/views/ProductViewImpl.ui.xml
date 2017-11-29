@@ -64,8 +64,8 @@
                     <design:MaterialListValueBox ui:field="sector"></design:MaterialListValueBox>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
-                    <design:MaterialLink addStyleNames="{style.label}" text="Other names" iconType="TEXT_FIELDS"/>
-                    <design:MaterialTextBox placeholder="Comma separated list of other names for this product category" type="TEXT" iconType="TAG_FACES" ui:field="otherNames"/>
+                    <design:MaterialLink addStyleNames="{style.label}" text="Product higher level categories" iconType="TEXT_FIELDS"/>
+                    <design:MaterialListValueBox placeholder="Select the product categories for this product" multipleSelect="true" ui:field="categories"/>
                 </design:MaterialColumn>
                 <design:MaterialColumn grid="s12">
                     <design:MaterialTextBox placeholder="Short Description" type="TEXT" iconType="DESCRIPTION" ui:field="shortDescription"/>

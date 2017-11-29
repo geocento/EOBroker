@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:design="urn:import:gwt.material.design.client.ui">
+    <ui:style>
+
+        .intervalPanel {
+            white-space: nowrap;
+        }
+
+    </ui:style>
+    <design:MaterialPanel display="FLEX">
+        <design:MaterialLabel truncate="true" display="INLINE_BLOCK" ui:field="label"></design:MaterialLabel>
+        <design:MaterialPanel display="INLINE_BLOCK" addStyleNames="{style.intervalPanel}">
+            <design:MaterialDoubleBox width="50px" display="INLINE_BLOCK" ui:field="minValue"></design:MaterialDoubleBox>
+            <design:MaterialLabel text=" - " display="INLINE_BLOCK"></design:MaterialLabel>
+            <design:MaterialDoubleBox width="50px" display="INLINE_BLOCK" ui:field="maxValue"></design:MaterialDoubleBox>
+        </design:MaterialPanel>
+    </design:MaterialPanel>
+</ui:UiBinder>

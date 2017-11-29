@@ -96,6 +96,29 @@ public class WidgetUtil {
         return null;
     }
 
+    /**
+     *
+     * Scans children tree adding children matching the check value conditions
+     *
+     * @param parentWidget
+     * @param checkValue
+     * @return
+     */
+    public static List<Widget> findChildren(HasWidgets parentWidget, CheckValue checkValue) {
+        List<Widget> widgets = new ArrayList<Widget>();
+        Iterator<Widget> iterator = parentWidget.iterator();
+        while(iterator.hasNext()) {
+            Widget widget = iterator.next();
+            if(checkValue.isValue(widget)) {
+                widgets.add(widget);
+            }
+            if(widget instanceof HasWidgets) {
+                widgets.addAll(findChildren((HasWidgets) widget, checkValue));
+            }
+        }
+        return widgets;
+    }
+
     static class Position {
         int x;
         int y;

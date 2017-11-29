@@ -195,32 +195,6 @@ public class ProductDatasetViewImpl extends Composite implements ProductDatasetV
             DatasetAccessMapper datasetAccessMapper = GWT.create(DatasetAccessMapper.class);
             DatasetAccess datasetAccess = datasetAccessMapper.read(response);
             addSample(datasetAccess);
-
-/*
-            JSONObject sampleUploadDTOJson = JSONParser.parseLenient(response).isObject();
-            SampleUploadDTO sampleUploadDTO = new SampleUploadDTO();
-            sampleUploadDTO.setFileUri(sampleUploadDTOJson.containsKey("fileUri") ? sampleUploadDTOJson.get("fileUri").isString().stringValue() : null);
-            sampleUploadDTO.setLayerName(sampleUploadDTOJson.containsKey("layerName") ? sampleUploadDTOJson.get("layerName").isString().stringValue() : null);
-            sampleUploadDTO.setServer(sampleUploadDTOJson.containsKey("server") ? sampleUploadDTOJson.get("server").isString().stringValue() : null);
-            sampleUploadDTO.setStyleName(sampleUploadDTOJson.containsKey("styleName") ? sampleUploadDTOJson.get("styleName").isString().stringValue() : null);
-            if(sampleUploadDTO.getFileUri() != null) {
-                DatasetAccessFile datasetAccessFile = new DatasetAccessFile();
-                datasetAccessFile.setUri(sampleUploadDTO.getFileUri());
-                datasetAccessFile.setTitle("Sample file");
-                datasetAccessFile.setHostedData(false);
-                addSample(datasetAccessFile);
-            }
-            if(sampleUploadDTO.getLayerName() != null) {
-                DatasetAccessOGC datasetAccessOGC = new DatasetAccessOGC();
-                // TODO - change to use the geoserver address
-                datasetAccessOGC.setServerUrl(sampleUploadDTO.getServer());
-                datasetAccessOGC.setUri(sampleUploadDTO.getLayerName());
-                datasetAccessOGC.setTitle("Sample data available as OGC service");
-                datasetAccessOGC.setStyleName(sampleUploadDTO.getStyleName());
-                datasetAccessOGC.setHostedData(false);
-                addSample(datasetAccessOGC);
-            }
-*/
         });
 
         sampleUploader.addDragOverHandler(event -> MaterialAnimator.animate(Transition.RUBBERBAND, sampleUploader, 0));
