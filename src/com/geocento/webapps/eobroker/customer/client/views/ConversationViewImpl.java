@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.common.client.widgets.ProgressButton;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
@@ -52,6 +53,8 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     MaterialPanel conversationStarter;
     @UiField
     MaterialLabel previousConversationsTitle;
+    @UiField
+    MaterialMessage conversationStatus;
 
     private ClientFactoryImpl clientFactory;
 
@@ -106,6 +109,20 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @Override
     public void displayConversationStarter(boolean display) {
         conversationStarter.setVisible(display);
+    }
+
+    @Override
+    public void setPresenceStatus(Boolean isOnline) {
+        if(isOnline == null) {
+            conversationStatus.setVisible(false);
+            return;
+        }
+        conversationStatus.setVisible(true);
+        if(isOnline) {
+            conversationStatus.displaySuccessMessage("Company is online and maybe able to reply immediately...");
+        } else {
+            conversationStatus.displayWarningMessage("Company is offline, they will be notified of your message...");
+        }
     }
 
     @Override

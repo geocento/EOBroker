@@ -2,12 +2,17 @@ package com.geocento.webapps.eobroker.customer.server.websockets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
+import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
+import com.geocento.webapps.eobroker.supplier.server.websockets.SupplierNotificationSocket;
+import com.google.gwt.http.client.RequestException;
 import org.apache.log4j.Logger;
 
+import javax.persistence.EntityManager;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -59,8 +64,38 @@ public class NotificationSocket extends BaseNotificationSocket {
     }
 
     @OnMessage
-    public String echo(String message) {
-        return message + " (from your server)";
+    public String echo(String message, Session session) {
+        if(message != null && message.startsWith("follow:")) {
+            String conversationId = message.replace("follow:", "");
+            boolean online = subscribeConversation(conversationId, session);
+            WebSocketMessage webSocketMessage = new WebSocketMessage();
+            webSocketMessage.setType(WebSocketMessage.TYPE.conversationOnline);
+            webSocketMessage.setDestination(conversationId);
+            webSocketMessage.setConversationStatus(online);
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                return objectMapper.writeValueAsString(webSocketMessage);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private boolean subscribeConversation(String conversationId, Session session) {
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Conversation conversation = em.find(Conversation.class, conversationId);
+            if(conversation == null) {
+                throw new RequestException("Could not find conversation with id " + conversationId);
+            }
+            return SupplierNotificationSocket.subscribeConversation(conversation, session);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            em.close();
+        }
+        return false;
     }
 
     @OnError

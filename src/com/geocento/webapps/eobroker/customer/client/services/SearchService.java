@@ -74,17 +74,19 @@ public interface SearchService extends DirectRestService {
     @Produces("application/json")
     public List<ProductServiceDTO> listProductServices(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit,
                                                        @QueryParam("aoiId") Long aoiId, @QueryParam("aoiIdWKT") String aoiWKT,
+                                                       @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame,
                                                        @QueryParam("affiliatesOnly") boolean affiliatesOnly, @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId,
-                                                       @QueryParam("selectedFeatures") List<Long> selectedFeatures, @QueryParam("selectedPerformances") List<PerformanceValueDTO> selectedPerformances) throws RequestException;
+                                                       @QueryParam("selectedFeatures") String selectedFeatures, @QueryParam("selectedPerformances") String selectedPerformances) throws RequestException;
 
     @GET
     @Path("/search/productdatasets")
     @Produces("application/json")
     public List<ProductDatasetDTO> listProductDatasets(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit,
                                                        @QueryParam("aoiId") Long aoiId, @QueryParam("aoiIdWKT") String aoiWKT,
-                                                       @QueryParam("serviceType") ServiceType serviceType, @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame,
+                                                       @QueryParam("serviceType") ServiceType serviceType,
+                                                       @QueryParam("startDate") Long startTimeFrame, @QueryParam("stopDate") Long stopTimeFrame,
                                                        @QueryParam("affiliatesOnly") boolean affiliatesOnly, @QueryParam("companyId") Long companyId, @QueryParam("productId") Long productId,
-                                                       @QueryParam("selectedFeatures") List<Long> selectedFeatures, @QueryParam("selectedPerformances") List<PerformanceValueDTO> selectedPerformances) throws RequestException;
+                                                       @QueryParam("selectedFeatures") String selectedFeatures, @QueryParam("selectedPerformances") String selectedPerformances) throws RequestException;
 
     @GET
     @Path("/search/software")

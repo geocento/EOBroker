@@ -7,12 +7,14 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 public class Suggestion {
 
     private String name;
+    private String additional;
     private Category category;
     private String uri;
 
     @JsonCreator
-    public Suggestion(@JsonProperty("name") String name, @JsonProperty("category") Category category, @JsonProperty("uri") String uri) {
+    public Suggestion(@JsonProperty("name") String name, String additional, @JsonProperty("category") Category category, @JsonProperty("uri") String uri) {
         this.name = name;
+        this.additional = additional;
         this.category = category;
         this.uri = uri;
     }
@@ -23,6 +25,14 @@ public class Suggestion {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAdditional() {
+        return additional;
+    }
+
+    public void setAdditional(String additional) {
+        this.additional = additional;
     }
 
     public Category getCategory() {

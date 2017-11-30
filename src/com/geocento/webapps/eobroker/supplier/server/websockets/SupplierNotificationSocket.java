@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
+import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierWebSocketMessage;
 import org.apache.log4j.Logger;
@@ -23,6 +25,7 @@ public class SupplierNotificationSocket extends BaseNotificationSocket {
 
     static private ConcurrentHashMap<Long, List<Session>> companySessions = new ConcurrentHashMap<Long, List<Session>>();
     static private ConcurrentHashMap<String, List<Session>> userSessions = new ConcurrentHashMap<String, List<Session>>();
+    static private ConcurrentHashMap<String, Session> conversationSubscriptions = new ConcurrentHashMap<String, Session>();
 
     public SupplierNotificationSocket() {
         logger.info("Starting websocket handler");
@@ -155,4 +158,14 @@ public class SupplierNotificationSocket extends BaseNotificationSocket {
         session.getBasicRemote().sendText(message);
     }
 
+    public static Boolean subscribeConversation(Conversation conversation, Session session) {
+        conversationSubscriptions.put(conversation.getId(), session);
+        return !ListUtil.isNullOrEmpty(companySessions.get(conversation.getCompany().getId()));
+    }
+
+    public static Boolean unSubscribeConversation(String userName, Conversation conversation) {
+        //supplierConversations.put(conversation.getCompany().getId(), conversation.getId());
+        conversationSubscriptions.remove(conversation.getId(), userName);
+        return !ListUtil.isNullOrEmpty(companySessions.get(conversation.getCompany().getId()));
+    }
 }

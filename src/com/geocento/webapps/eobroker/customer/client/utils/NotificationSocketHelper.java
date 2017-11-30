@@ -2,10 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.utils;
 
 import com.geocento.webapps.eobroker.common.shared.entities.notifications.Notification;
 import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
-import com.geocento.webapps.eobroker.customer.client.events.NotificationEvent;
-import com.geocento.webapps.eobroker.customer.client.events.WebSocketClosedEvent;
-import com.geocento.webapps.eobroker.customer.client.events.WebSocketFailedEvent;
+import com.geocento.webapps.eobroker.customer.client.events.*;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -62,6 +59,12 @@ public class NotificationSocketHelper {
                                 MaterialToast.fireToast("New notification!");
                             }
                             break;
+                        case conversationOnline:
+                            ConversationEvent conversationEvent = new ConversationEvent();
+                            conversationEvent.setOnline(webSocketMessage.isConversationStatus());
+                            conversationEvent.setDestination(webSocketMessage.getDestination());
+                            Customer.clientFactory.getEventBus().fireEvent(conversationEvent);
+                            break;
                         case productResponse:
                         case otsproductResponse:
                         case conversationMessage:
@@ -104,5 +107,12 @@ public class NotificationSocketHelper {
             } );
             webSocket.connect("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "notifications");
         }
+    }
+
+    public void subscribeCompanyMessages(String conversationId) {
+        if(webSocket == null) {
+            return;
+        }
+        webSocket.send("follow:" + conversationId);
     }
 }

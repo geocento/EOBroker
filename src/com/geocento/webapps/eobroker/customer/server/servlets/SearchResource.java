@@ -88,7 +88,7 @@ public class SearchResource implements SearchService {
         double rank;
 
         public RankedSuggestion(String name, Category category, String uri, double rank) {
-            super(name, category, uri);
+            super(name, null, category, uri);
             this.rank = rank;
         }
 
@@ -128,7 +128,8 @@ public class SearchResource implements SearchService {
                         Long id = (Long) result[0];
                         String category = (String) result[1];
                         String name = (String) result[3];
-                        return new Suggestion(name, Category.valueOf(category), "access" + "::" + id);
+                        String additional = (String) result[4];
+                        return new Suggestion(name, additional, Category.valueOf(category), "access" + "::" + id);
                     }
                 });
             } catch (Exception e) {
@@ -188,7 +189,8 @@ public class SearchResource implements SearchService {
                 public Suggestion mutate(Object[] result) {
                     Long id = (Long) result[0];
                     String name = (String) result[2];
-                    return new Suggestion(name, category, "access" + "::" + id);
+                    String additional = (String) result[3];
+                    return new Suggestion(name, additional, category, "access" + "::" + id);
                 }
             });
         } catch (Exception e) {
@@ -232,7 +234,7 @@ public class SearchResource implements SearchService {
         }
         // now search for services
         {
-            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null, false, null, null, null, null);
+            List<ProductServiceDTO> productServiceDTOs = listProductServices(text, 0, 5, null, null,  null, null, false, null, null, null, null);
             boolean more = productServiceDTOs.size() > 4;
             if (more) {
                 productServiceDTOs = productServiceDTOs.subList(0, 4);
@@ -568,9 +570,9 @@ public class SearchResource implements SearchService {
     @Override
     public List<ProductServiceDTO> listProductServices(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
+                                                       Long startTimeFrame, Long stopTimeFrame,
                                                        boolean affiliatesOnly, Long companyId, Long productId,
-                                                       List<Long> requestedGeoInformation,
-                                                       List<PerformanceValueDTO> requestedPerformances) throws RequestException {
+                                                       String selectedFeaturesString, String selectedPerformancesString) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<ProductService> productServices = null;
         EntityManager em = EMF.get().createEntityManager();
@@ -585,6 +587,17 @@ public class SearchResource implements SearchService {
                 additionalStatements.add("(extent is NULL OR ST_Intersects(extent, '" + aoiWKT + "'::geometry) = 't')");
             }
             addAffiliatesStatement(em, additionalStatements, userName, affiliatesOnly, companyId);
+/*
+            // add filter for inclusiveness or not of time frame
+            if(startTimeFrame != null && stopTimeFrame != null) {
+                additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ") AND " +
+                        "(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
+            } else if(startTimeFrame != null) {
+                additionalStatements.add("(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
+            } else if(stopTimeFrame != null) {
+                additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ")");
+            }
+*/
             if (productId != null) {
                 additionalStatements.add("product_id = " + productId);
             }
@@ -608,7 +621,8 @@ public class SearchResource implements SearchService {
                 }));
             }
             // if filtering by geoinformation and performances was requested
-            if(!ListUtil.isNullOrEmpty(requestedGeoInformation)) {
+            if(selectedFeaturesString != null) {
+                List<Long> requestedGeoInformation = getRequestedGeoInformation(selectedFeaturesString);
                 sortedItems = ListUtil.filterValues(sortedItems, new ListUtil.CheckValue<ProductService>() {
                     @Override
                     public boolean isValue(ProductService productService) {
@@ -617,7 +631,9 @@ public class SearchResource implements SearchService {
                     }
                 });
             }
-            if(!ListUtil.isNullOrEmpty(requestedPerformances)) {
+            // if filtering by performances was requested
+            if(selectedPerformancesString != null) {
+                List<PerformanceValueDTO> requestedPerformances = getRequestedPerformances(selectedPerformancesString);
                 sortedItems = ListUtil.filterValues(sortedItems, new ListUtil.CheckValue<ProductService>() {
                     @Override
                     public boolean isValue(ProductService productService) {
@@ -654,9 +670,10 @@ public class SearchResource implements SearchService {
     @Override
     public List<ProductDatasetDTO> listProductDatasets(String textFilter, Integer start, Integer limit,
                                                        Long aoiId, String aoiWKT,
-                                                       ServiceType serviceType, Long startTimeFrame, Long stopTimeFrame,
+                                                       ServiceType serviceType,
+                                                       Long startTimeFrame, Long stopTimeFrame,
                                                        boolean affiliatesOnly, Long companyId, Long productId,
-                                                       List<Long> selectedFeatures, List<PerformanceValueDTO> selectedPerformances) throws RequestException {
+                                                       String selectedFeaturesString, String selectedPerformancesString) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<ProductDataset> productDatasets = null;
         EntityManager em = EMF.get().createEntityManager();
@@ -673,10 +690,7 @@ public class SearchResource implements SearchService {
             if(serviceType != null) {
                 additionalStatements.add("servicetype = '" + serviceType.toString() + "'");
             }
-            // TODO - add filter for inclusiveness or not of time frame
-    /*
-            SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd");
-    */
+            // add filter for inclusiveness or not of time frame
             if(startTimeFrame != null && stopTimeFrame != null) {
                 additionalStatements.add("startdate < to_timestamp(" + stopTimeFrame + ") AND " +
                         "(stopdate is null OR stopdate > to_timestamp(" + startTimeFrame + "))");
@@ -708,6 +722,44 @@ public class SearchResource implements SearchService {
                     }
                 }));
             }
+            // if filtering by geoinformation and performances was requested
+            if(selectedFeaturesString != null) {
+                List<Long> requestedGeoInformation = getRequestedGeoInformation(selectedFeaturesString);
+                sortedItems = ListUtil.filterValues(sortedItems, new ListUtil.CheckValue<ProductDataset>() {
+                    @Override
+                    public boolean isValue(ProductDataset productDataset) {
+                        List<Long> supportedGeoInformation = ListUtil.mutate(productDataset.getGeoinformation(), object -> object.getId());
+                        return ListUtil.count(requestedGeoInformation, value -> !supportedGeoInformation.contains(value)) == 0;
+                    }
+                });
+            }
+            // if filtering by performances was requested
+            if(selectedPerformancesString != null) {
+                List<PerformanceValueDTO> requestedPerformances = getRequestedPerformances(selectedPerformancesString);
+                sortedItems = ListUtil.filterValues(sortedItems, new ListUtil.CheckValue<ProductDataset>() {
+                    @Override
+                    public boolean isValue(ProductDataset productDataset) {
+                        // make sure every requested performance is matched
+                        List<PerformanceValue> supportedPerformances = productDataset.getPerformances();
+                        for(PerformanceValueDTO performanceValue : requestedPerformances) {
+                            // find matching performance in service
+                            PerformanceValue servicePerformance = ListUtil.findValue(supportedPerformances, value -> value.getPerformanceDescription().getId().equals(performanceValue.getId()));
+                            if(servicePerformance == null) {
+                                return false;
+                            }
+                            double requestedMin = performanceValue.getMinValue() == null ? Double.MIN_VALUE : performanceValue.getMinValue();
+                            double requestedMax = performanceValue.getMaxValue() == null ? Double.MAX_VALUE : performanceValue.getMaxValue();
+                            double supportedMin = servicePerformance.getMinValue() == null ? Double.MIN_VALUE : servicePerformance.getMinValue();
+                            double supportedMax = servicePerformance.getMaxValue() == null ? Double.MAX_VALUE : servicePerformance.getMaxValue();
+                            boolean inRange = requestedMin < supportedMax && requestedMax > supportedMin;
+                            if(!inRange) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                });
+            }
             return ListUtil.mutate(sortedItems, new ListUtil.Mutate<ProductDataset, ProductDatasetDTO>() {
                 @Override
                 public ProductDatasetDTO mutate(ProductDataset productDataset) {
@@ -720,6 +772,27 @@ public class SearchResource implements SearchService {
         } finally {
             em.close();
         }
+    }
+
+    private List<PerformanceValueDTO> getRequestedPerformances(String selectedPerformancesString) {
+        List<PerformanceValueDTO> performanceValueDTOs = new ArrayList<PerformanceValueDTO>();
+        for(String value : selectedPerformancesString.split(",")) {
+            PerformanceValueDTO performanceValueDTO = new PerformanceValueDTO();
+            String[] values = value.split(":");
+            performanceValueDTO.setId(Long.valueOf(values[0]));
+            performanceValueDTO.setMinValue(values.length < 2 || values[1].length() == 0 ? null : Double.valueOf(values[1]));
+            performanceValueDTO.setMaxValue(values.length < 3 || values[2].length() == 0 ? null : Double.valueOf(values[2]));
+            performanceValueDTOs.add(performanceValueDTO);
+        }
+        return performanceValueDTOs;
+    }
+
+    private List<Long> getRequestedGeoInformation(String selectedFeaturesString) {
+        List<Long> selectedFeatures = new ArrayList<Long>();
+        for(String value : selectedFeaturesString.split(",")) {
+            selectedFeatures.add(Long.valueOf(value));
+        }
+        return selectedFeatures;
     }
 
     private void addAffiliatesStatement(EntityManager em, List<String> additionalStatements, String userName, boolean affiliatesOnly, Long companyId) throws RequestException {

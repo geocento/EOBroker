@@ -142,7 +142,7 @@ public interface AssetsService extends DirectRestService {
     @GET
     @Path("/assets/newsitems")
     @Produces("application/json")
-    List<NewsItem> getNewsItems();
+    List<NewsItem> getNewsItems() throws RequestException;
 
     @GET
     @Path("/assets/notifications/")
@@ -301,4 +301,8 @@ public interface AssetsService extends DirectRestService {
     @Path("/assets/user/invite/")
     @Produces("application/json")
     void inviteColleague(String email) throws RequestException;
+
+    @POST
+    @Path("/assets/conversations/subscribe/")
+    Boolean subscribeCompanyMessages(String companyId) throws RequestException;
 }

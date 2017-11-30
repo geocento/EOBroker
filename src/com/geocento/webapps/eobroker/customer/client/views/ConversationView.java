@@ -33,6 +33,8 @@ public interface ConversationView extends IsWidget {
 
     void displayConversationStarter(boolean display);
 
+    void setPresenceStatus(Boolean isOnline);
+
     public interface Presenter {
     }
 

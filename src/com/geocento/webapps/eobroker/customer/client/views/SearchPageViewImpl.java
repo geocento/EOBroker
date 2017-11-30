@@ -17,7 +17,6 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
 import com.geocento.webapps.eobroker.customer.shared.*;
-import com.geocento.webapps.eobroker.supplier.shared.dtos.ProductGeoinformation;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,6 +32,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.scrollfire.MaterialScrollfire;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.jquery.client.api.Functions;
@@ -156,6 +156,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialPanel companyFilterPanel;
     @UiField
     MaterialPanel additionalProductFilters;
+    @UiField
+    MaterialListValueBox<ProductCategoryDTO> productCategoryFilter;
 
     MaterialIcon close;
 
@@ -265,6 +267,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             if(suggestion == null) {
                 changed = productDTO != null;
                 productDTO = null;
+                additionalProductFilters.setVisible(false);
             } else {
                 // load the product
                 // create shallow product
@@ -327,6 +330,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         filterByAffiliates.setValue(false);
         updateCompanySearchBox();
 
+        // TODO - add loading and displaying of product categories
+        productCategoryFilter.addValueChangeHandler(new ValueChangeHandler() {
+            @Override
+            public void onValueChange(ValueChangeEvent event) {
+
+            }
+        });
+
         onResize(null);
     }
 
@@ -335,6 +346,7 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         if(ListUtil.isNullOrEmpty(geoinformation) && ListUtil.isNullOrEmpty(performances)) {
             return;
         }
+        additionalProductFilters.setVisible(true);
         addFilter(additionalProductFilters, "s12 m12 l12");
         MaterialRow materialRow = new MaterialRow();
         additionalProductFilters.add(materialRow);
@@ -345,10 +357,13 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             label.setMarginTop(10);
             label.setMarginBottom(10);
             geoinformationProvided.add(label);
+            MaterialPanel materialPanel = new MaterialPanel();
+            materialPanel.setMarginLeft(20);
+            geoinformationProvided.add(materialPanel);
             for (FeatureDescription featureDescription : geoinformation) {
                 MaterialCheckBox materialCheckBox = new MaterialCheckBox(featureDescription.getName());
                 materialCheckBox.setObject(featureDescription);
-                geoinformationProvided.add(materialCheckBox);
+                materialPanel.add(materialCheckBox);
             }
         }
         if(!ListUtil.isNullOrEmpty(geoinformation)) {
@@ -358,22 +373,25 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             label.setMarginTop(10);
             label.setMarginBottom(10);
             performancesProvided.add(label);
+            MaterialPanel materialPanel = new MaterialPanel();
+            materialPanel.setMarginLeft(20);
+            performancesProvided.add(materialPanel);
             for (PerformanceDescription performanceDescription : performances) {
                 PerformanceValueWidget performanceValueWidget = new PerformanceValueWidget();
                 performanceValueWidget.setPerformanceDescription(performanceDescription);
-                performancesProvided.add(performanceValueWidget);
+                materialPanel.add(performanceValueWidget);
             }
         }
         MaterialColumn materialColumn = new MaterialColumn(12, 12, 12);
         materialRow.add(materialColumn);
+        materialColumn.setMarginTop(20);
         MaterialButton materialButton = new MaterialButton("UPDATE");
-        materialButton.add(materialButton);
-        materialButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                presenter.filtersChanged();
-            }
-        });
+        materialColumn.add(materialButton);
+        materialButton.addClickHandler(event -> presenter.filtersChanged());
+        MaterialLabel materialLabel = new MaterialLabel("Change the product characteristics selections and press update to refresh the results");
+        materialLabel.setDisplay(Display.INLINE_BLOCK);
+        materialLabel.setMarginLeft(20);
+        materialColumn.add(materialLabel);
     }
 
     private void clearAdditionalProductFilters() {

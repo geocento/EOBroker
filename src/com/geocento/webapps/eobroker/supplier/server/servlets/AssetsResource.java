@@ -133,7 +133,7 @@ public class AssetsResource implements AssetsService {
                     Long id = (Long) result[0];
                     String category = (String) result[1];
                     String name = (String) result[3];
-                    return new Suggestion(name, Category.valueOf(category), id + "");
+                    return new Suggestion(name, null, Category.valueOf(category), id + "");
                 }
             });
         } catch (Exception e) {
@@ -1017,6 +1017,8 @@ public class AssetsResource implements AssetsService {
                 offerings.put(Category.software, company.getSoftware().size());
             }
             supplierStatisticsDTO.setOfferingsStats(offerings);
+            // set the company followers
+            supplierStatisticsDTO.setNumberOfFollowers(user.getCompany().getFollowers() == null ? 0 : user.getCompany().getFollowers().intValue());
             HashMap<String, Double> productsFollowers = new HashMap<String, Double>();
             for(Product product : products) {
                 productsFollowers.put(product.getName(), product.getFollowers() == null ? 0.0 : product.getFollowers().doubleValue());
@@ -1226,6 +1228,7 @@ public class AssetsResource implements AssetsService {
         productDatasetDTO.setName(productDataset.getName());
         productDatasetDTO.setImageUrl(productDataset.getImageUrl());
         productDatasetDTO.setDescription(productDataset.getDescription());
+        productDatasetDTO.setServiceType(productDataset.getServiceType());
         productDatasetDTO.setCompany(CompanyHelper.createCompanyDTO(productDataset.getCompany()));
         return productDatasetDTO;
     }
@@ -1419,6 +1422,7 @@ public class AssetsResource implements AssetsService {
                             dbDatasetAccess = datasetAccess;
                         }
                         dbDatasetAccess.setTitle(datasetAccess.getTitle());
+                        dbDatasetAccess.setImageUrl(datasetAccess.getImageUrl());
                         dbDatasetAccess.setPitch(datasetAccess.getPitch());
                         dbDatasetAccess.setUri(datasetAccess.getUri());
                         dbDatasetAccess.setSize(datasetAccess.getSize());

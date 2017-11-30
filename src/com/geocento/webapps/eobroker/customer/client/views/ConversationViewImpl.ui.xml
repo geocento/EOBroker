@@ -36,6 +36,11 @@
             font-style: italic;
         }
 
+        .conversationStatus {
+            margin: 10px 0px;
+            font-size: 0.8em;
+        }
+
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.panel}">
         <design:MaterialPanel ui:field="conversationStarter">
@@ -43,6 +48,7 @@
             <design:MaterialLabel addStyleNames="{style.comment}" ui:field="comment"></design:MaterialLabel>
             <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
             </design:MaterialRow>
+            <widgets:MaterialMessage addStyleNames="{style.conversationStatus}" ui:field="conversationStatus"></widgets:MaterialMessage>
             <design:MaterialPanel>
                 <widgets:UserWidget float="LEFT" size="64" marginTop="20" ui:field="userImage"/>
                 <widgets:ProgressButton float="RIGHT" iconType="SEND" type="FLOATING" size="LARGE" marginTop="20" ui:field="submitMessage">

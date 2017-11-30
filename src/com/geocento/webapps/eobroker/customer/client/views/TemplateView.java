@@ -2,6 +2,7 @@ package com.geocento.webapps.eobroker.customer.client.views;
 
 import com.geocento.webapps.eobroker.common.client.utils.CategoryUtils;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.LoadingWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialMessage;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
@@ -17,6 +18,7 @@ import com.geocento.webapps.eobroker.customer.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.customer.shared.NotificationDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -163,6 +165,12 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         logo.addClickHandler(event -> clientFactory.getPlaceController().goTo(clientFactory.getDefaultPlace()));
 
         orders.setHref("#" + PlaceHistoryHelper.convertPlace(new RequestsPlace()));
+
+        Image ogeoLogo = new Image("./images/OGEO_logo single.png");
+        ogeoLogo.getElement().getStyle().setPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
+        ogeoLogo.getElement().getStyle().setTop(10, com.google.gwt.dom.client.Style.Unit.PX);
+        ogeoLogo.getElement().getStyle().setRight(60, com.google.gwt.dom.client.Style.Unit.PX);
+        textSearch.add(ogeoLogo);
 
         // update icons
         productsCategory.setIconType(CategoryUtils.getIconType(Category.products));
@@ -444,7 +452,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
             public SearchObject mutate(Suggestion suggestion) {
                 SearchObject searchObject = new SearchObject();
                 searchObject.setIcon(CategoryUtils.getIconType(suggestion.getCategory()));
-                searchObject.setKeyword(suggestion.getName());
+                searchObject.setKeyword(suggestion.getName() + (StringUtils.isEmpty(suggestion.getAdditional()) ? "" : (" (" + suggestion.getAdditional() + ")")));
                 searchObject.setO(suggestion);
                 return searchObject;
             }

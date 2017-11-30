@@ -67,11 +67,15 @@ public class AssetsResource implements AssetsService {
             product.setName(productDTO.getName());
             List<Long> dbCategoryIds = ListUtil.mutate(product.getCategories(), productCategory -> productCategory.getId());
             List<Long> dtoCategoryIds = ListUtil.mutate(productDTO.getCategories(), productCategory -> productCategory.getId());
-            boolean namesHaveChanged = ListUtil.listEquals(dbCategoryIds, dtoCategoryIds);
+            boolean namesHaveChanged = !ListUtil.listEquals(dbCategoryIds, dtoCategoryIds);
             if(namesHaveChanged) {
-                TypedQuery<ProductCategory> productCategoryTypedQuery = em.createQuery("select p from ProductCategory p where p.id IN :categories", ProductCategory.class);
-                productCategoryTypedQuery.setParameter("categories", dtoCategoryIds);
-                product.setCategories(productCategoryTypedQuery.getResultList());
+                if(dtoCategoryIds.size() == 0) {
+                    product.setCategories(null);
+                } else {
+                    TypedQuery<ProductCategory> productCategoryTypedQuery = em.createQuery("select p from ProductCategory p where p.id IN :categories", ProductCategory.class);
+                    productCategoryTypedQuery.setParameter("categories", dtoCategoryIds);
+                    product.setCategories(productCategoryTypedQuery.getResultList());
+                }
             }
             product.setImageUrl(productDTO.getImageUrl());
             product.setShortDescription(productDTO.getShortDescription());

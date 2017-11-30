@@ -445,10 +445,11 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
 
     private void loadProductServices(final String text, final int start, final int limit) {
         boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
+        Date startTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStartTimeFrameFilter().getValue() : null;
+        Date stopTimeFrame = searchPageView.getTimeFrameFilterActivated().getValue() ? searchPageView.getStopTimeFrameFilter().getValue() : null;
         ProductDTO product = searchPageView.getProductSelection();
         CompanyDTO company = searchPageView.getCompanySelection();
         boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
-        List<PerformanceValue> selectedPerformances = searchPageView.getSelectedPerformances();
         String searchHash = generateSearchHash("productservices" + text, start, limit,
                 null,
                 filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
@@ -476,11 +477,12 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                 }).call(ServicesUtil.searchService).listProductServices(text, start, limit,
                         null,
                         filterByAoI ? AoIUtil.toWKT(currentAoI) : null,
+                        null, null, //startTimeFrame == null ? null : startTimeFrame.getTime() / 1000, stopTimeFrame == null ? null : stopTimeFrame.getTime() / 1000,
                         affiliatesOnly,
                         company != null ? company.getId() : null,
                         product != null ? product.getId() : null,
                         getSelectedFeatures(),
-                        selectedPerformances
+                        getSelectedPerformances()
                 );
             } catch (RequestException e) {
             }
@@ -488,19 +490,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
             previousSearch = searchHash;
 */
         }
-    }
-
-    private List<Long> getSelectedFeatures() {
-        List<FeatureDescription> selectedFeatures = searchPageView.getSelectedGeoInformation();
-        if(ListUtil.isNullOrEmpty(selectedFeatures)) {
-            return null;
-        }
-        return ListUtil.mutate(selectedFeatures, new ListUtil.Mutate<FeatureDescription, Long>() {
-            @Override
-            public Long mutate(FeatureDescription featureDescription) {
-                return featureDescription.getId();
-            }
-        });
     }
 
     private void loadProductDatasets(final String text, final int start, final int limit) {
@@ -511,8 +500,6 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         ProductDTO product = searchPageView.getProductSelection();
         CompanyDTO company = searchPageView.getCompanySelection();
         boolean affiliatesOnly = searchPageView.getFilterByAffiliates().getValue();
-        List<FeatureDescription> selectedFeatures = searchPageView.getSelectedGeoInformation();
-        List<PerformanceValue> selectedPerformances = searchPageView.getSelectedPerformances();
         searchPageView.displayLoadingResults("Loading data...");
         try {
             REST.withCallback(new MethodCallback<List<ProductDatasetDTO>>() {
@@ -536,11 +523,39 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
                     affiliatesOnly,
                     company != null ? company.getId() : null,
                     product != null ? product.getId() : null,
-                    selectedFeatures,
-                    selectedPerformances
+                    getSelectedFeatures(),
+                    getSelectedPerformances()
             );
         } catch (RequestException e) {
         }
+    }
+
+    private String getSelectedPerformances() {
+        List<PerformanceValue> selectedPerformances = searchPageView.getSelectedPerformances();
+        if(!ListUtil.isNullOrEmpty(selectedPerformances)) {
+            return ListUtil.toString(selectedPerformances, new ListUtil.GetLabel<PerformanceValue>() {
+                @Override
+                public String getLabel(PerformanceValue value) {
+                    return value.getPerformanceDescription().getId() + ":" +
+                            (value.getMinValue() == null ? "" : value.getMinValue()) + ":" +
+                            (value.getMaxValue() == null ? "" : value.getMaxValue());
+                }
+            }, ",");
+        }
+        return null;
+    }
+
+    private String getSelectedFeatures() {
+        List<FeatureDescription> selectedFeatures = searchPageView.getSelectedGeoInformation();
+        if(ListUtil.isNullOrEmpty(selectedFeatures)) {
+            return null;
+        }
+        return ListUtil.toString(selectedFeatures, new ListUtil.GetLabel<FeatureDescription>() {
+            @Override
+            public String getLabel(FeatureDescription value) {
+                return value.getId() + "";
+            }
+        }, ",");
     }
 
     private String generateSearchHash(String text, int start, int limit, Long aoiId, String aoiWKT, ServiceType serviceType, Long startTime, Long stopTime, boolean affiliatesOnly, Long companyId, Long productId) {

@@ -853,11 +853,17 @@ public class AssetsResource implements AssetsService {
     }
 
     @Override
-    public List<NewsItem> getNewsItems() {
+    public List<NewsItem> getNewsItems() throws RequestException {
         EntityManager em = EMF.get().createEntityManager();
-        TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate", NewsItem.class);
-        query.setMaxResults(5);
-        return query.getResultList();
+        try {
+            TypedQuery<NewsItem> query = em.createQuery("select n from NewsItem n ORDER BY n.creationDate DESC", NewsItem.class);
+            query.setMaxResults(5);
+            return query.getResultList();
+        } catch (Exception e) {
+            throw handleException(em, e);
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -1921,6 +1927,26 @@ public class AssetsResource implements AssetsService {
         }
     }
 
+    @Override
+    public Boolean subscribeCompanyMessages(String conversationId) throws RequestException {
+/*
+        String userName = UserUtils.verifyUser(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            Conversation conversation = em.find(Conversation.class, conversationId);
+            if(conversation == null) {
+                throw new RequestException("Could not find conversation with id " + conversationId);
+            }
+            return SupplierNotificationSocket.subscribeConversation(userName, conversation);
+        } catch (Exception e) {
+            throw handleException(e);
+        } finally {
+            em.close();
+        }
+*/
+        return false;
+    }
+
     private SuccessStoryDTO convertToSuccessStoryDTO(SuccessStory successStory, boolean full) {
         SuccessStoryDTO successStoryDTO = new SuccessStoryDTO();
         successStoryDTO.setId(successStory.getId());
@@ -1956,12 +1982,16 @@ public class AssetsResource implements AssetsService {
         return endorsementDTO;
     }
 
+    private RequestException handleException(Exception e) {
+        return handleException(null, e, "Server side error");
+    }
+
     private RequestException handleException(EntityManager em, Exception e) {
         return handleException(em, e, "Server side error");
     }
 
     private RequestException handleException(EntityManager em, Exception e, String message) {
-        if(em.getTransaction().isActive()) {
+        if(em != null && em.getTransaction().isActive()) {
             em.getTransaction().rollback();
         }
         logger.error(e.getMessage(), e);

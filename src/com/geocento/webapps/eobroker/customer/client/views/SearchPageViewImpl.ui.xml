@@ -160,6 +160,7 @@
         }
 
         .additionalProductFilters {
+            margin-top: 20px;
             border: 1px solid gray;
         }
 
@@ -177,6 +178,7 @@
                     <design:MaterialRow marginTop="10" marginBottom="10" addStyleNames="{style.filtersBody}" ui:field="filters">
                         <design:MaterialListValueBox placeholder="Sector" addStyleNames="{style.option}" ui:field="sectorFilter"></design:MaterialListValueBox>
                         <design:MaterialListValueBox placeholder="Thematic" addStyleNames="{style.option}" ui:field="thematicFilter"></design:MaterialListValueBox>
+                        <design:MaterialListValueBox placeholder="Classification" addStyleNames="{style.option}" ui:field="productCategoryFilter"></design:MaterialListValueBox>
                         <material:MaterialListValueBox placeholder="Company Size" addStyleNames="{style.option}" ui:field="companySizeFilter"></material:MaterialListValueBox>
                         <design:MaterialListValueBox placeholder="Years since incorporation" addStyleNames="{style.option}" ui:field="companyAgeFilter"></design:MaterialListValueBox>
                         <widgetsc:CountryEditor placeholder="Country of incorporation" addStyleNames="{style.option}" ui:field="companyCountryFilter"></widgetsc:CountryEditor>

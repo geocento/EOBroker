@@ -5,11 +5,14 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
+import com.geocento.webapps.eobroker.customer.client.events.ConversationEvent;
+import com.geocento.webapps.eobroker.customer.client.events.ConversationEventHandler;
 import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
 import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.customer.client.utils.NotificationSocketHelper;
 import com.geocento.webapps.eobroker.customer.client.views.ConversationView;
 import com.geocento.webapps.eobroker.customer.shared.ConversationDTO;
 import com.geocento.webapps.eobroker.customer.shared.CreateConversationDTO;
@@ -77,6 +80,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                         ConversationActivity.this.conversationDTO = conversationDTO;
                         conversationView.displayConversation(conversationDTO);
                         loadPreviousConversations(conversationDTO.getCompany(), conversationDTO.getId());
+                        subscribeMessages(conversationDTO.getId());
                     }
                 }).call(ServicesUtil.requestsService).getConversation(conversationid);
             } catch (Exception e) {
@@ -112,6 +116,28 @@ public class ConversationActivity extends TemplateActivity implements Conversati
             conversationView.displayConversationStarter(false);
             loadAllConversations();
         }
+    }
+
+    private void subscribeMessages(String conversationId) {
+        conversationView.setPresenceStatus(null);
+        NotificationSocketHelper.getInstance().subscribeCompanyMessages(conversationId);
+/*
+        // susbcribe for messages from company
+        try {
+            REST.withCallback(new MethodCallback<Boolean>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                }
+
+                @Override
+                public void onSuccess(Method method, Boolean isOnline) {
+                    conversationView.setPresenceStatus(isOnline);
+                }
+            }).call(ServicesUtil.assetsService).subscribeCompanyMessages(conversationId);
+        } catch (Exception e) {
+
+        }
+*/
     }
 
     private void loadAllConversations() {
@@ -167,6 +193,15 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                 // check this is a relevant message
                 if(event.getType() == WebSocketMessage.TYPE.conversationMessage && event.getDestination().contentEquals(conversationDTO.getId())) {
                     addMessage(event.getMessage());
+                }
+            }
+        });
+
+        activityEventBus.addHandler(ConversationEvent.TYPE, new ConversationEventHandler() {
+            @Override
+            public void onConversation(ConversationEvent event) {
+                if(event.getDestination().contentEquals(conversationDTO.getId())) {
+                    conversationView.setPresenceStatus(event.isOnline());
                 }
             }
         });

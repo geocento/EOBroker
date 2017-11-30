@@ -8,12 +8,15 @@ import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.views.LandingPageView;
 import com.geocento.webapps.eobroker.customer.shared.FollowingEventDTO;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.REST;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,22 +92,32 @@ public class LandingPageActivity extends TemplateActivity implements LandingPage
     }
 
     private void loadNewsItems() {
-        REST.withCallback(new MethodCallback<List<NewsItem>>() {
-            @Override
-            public void onFailure(Method method, Throwable exception) {
-                Window.alert("Error loading news items please reload");
-            }
+        try {
+            REST.withCallback(new MethodCallback<List<NewsItem>>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    Window.alert("Error loading news items please reload");
+                }
 
-            @Override
-            public void onSuccess(Method method, List<NewsItem> newsItems) {
-                NewsItem newsItem = new NewsItem();
-                newsItem.setTitle("Welcome to the EO Broker portal");
-                newsItem.setDescription("The marketplace for images and services tailored to the Oil and Gas industry");
-                newsItem.setImageUrl("http://www.ogeo-portal.eu/images/1440.jpg");
-                newsItems.add(0, newsItem);
-                landingPageView.setNewsItems(newsItems);
-            }
-        }).call(ServicesUtil.assetsService).getNewsItems();
+                @Override
+                public void onSuccess(Method method, List<NewsItem> newsItems) {
+                    // randomize
+                    Collections.sort(newsItems, new Comparator<NewsItem>() {
+                        @Override
+                        public int compare(NewsItem o1, NewsItem o2) {
+                            return Math.random() > 0.5 ? 1 : -1;
+                        }
+                    });
+                    NewsItem newsItem = new NewsItem();
+                    newsItem.setTitle("Welcome to the EO Broker portal");
+                    newsItem.setDescription("The marketplace for images and services tailored to the Oil and Gas industry");
+                    newsItem.setImageUrl("./images/eobrokerWelcome.jpg");
+                    newsItems.add(0, newsItem);
+                    landingPageView.setNewsItems(newsItems);
+                }
+            }).call(ServicesUtil.assetsService).getNewsItems();
+        } catch (RequestException e) {
+        }
     }
 
     @Override
