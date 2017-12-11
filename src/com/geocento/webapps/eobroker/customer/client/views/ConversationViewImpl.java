@@ -14,6 +14,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
@@ -55,8 +56,12 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     MaterialLabel previousConversationsTitle;
     @UiField
     MaterialMessage conversationStatus;
+    @UiField
+    MaterialLabel supplierTyping;
 
     private ClientFactoryImpl clientFactory;
+
+    private Timer supplierTypingTimer;
 
     public ConversationViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -119,10 +124,27 @@ public class ConversationViewImpl extends Composite implements ConversationView 
         }
         conversationStatus.setVisible(true);
         if(isOnline) {
-            conversationStatus.displaySuccessMessage("Company is online and maybe able to reply immediately...");
+            conversationStatus.displaySuccessMessage("Company is online and may be able to reply immediately...");
         } else {
             conversationStatus.displayWarningMessage("Company is offline, they will be notified of your message...");
         }
+    }
+
+    @Override
+    public void setSupplierTyping(String message, int duration) {
+        supplierTyping.setText(message);
+        if(supplierTypingTimer != null) {
+            supplierTypingTimer.cancel();
+            supplierTypingTimer = null;
+        }
+        supplierTypingTimer = new Timer() {
+            @Override
+            public void run() {
+                supplierTyping.setText("");
+                supplierTypingTimer = null;
+            }
+        };
+        supplierTypingTimer.schedule(duration);
     }
 
     @Override

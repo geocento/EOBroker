@@ -10,7 +10,7 @@ public class WebSocketMessage {
 
     public static interface WebSocketMessageMapper extends ObjectMapper<WebSocketMessage> {};
 
-    static public enum TYPE {notification, conversationMessage, logout, productResponse, otsproductResponse, conversationOnline, requestMessage};
+    static public enum TYPE {notification, conversationMessage, logout, productResponse, otsproductResponse, conversationOnline, conversationTyping, requestMessage};
 
     TYPE type;
 
@@ -19,6 +19,7 @@ public class WebSocketMessage {
     MessageDTO messageDTO;
     // indicate if recipient of conversation is online
     boolean conversationStatus;
+    boolean typing;
 
     String destination;
 
@@ -65,5 +66,12 @@ public class WebSocketMessage {
         return conversationStatus;
     }
 
+    public void setTyping(boolean typing) {
+        this.typing = typing;
+    }
+
+    public boolean isTyping() {
+        return typing;
+    }
 
 }

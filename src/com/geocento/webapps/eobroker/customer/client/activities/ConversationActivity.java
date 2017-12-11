@@ -5,10 +5,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactory;
 import com.geocento.webapps.eobroker.customer.client.Customer;
-import com.geocento.webapps.eobroker.customer.client.events.ConversationEvent;
-import com.geocento.webapps.eobroker.customer.client.events.ConversationEventHandler;
-import com.geocento.webapps.eobroker.customer.client.events.MessageEvent;
-import com.geocento.webapps.eobroker.customer.client.events.MessageEventHandler;
+import com.geocento.webapps.eobroker.customer.client.events.*;
 import com.geocento.webapps.eobroker.customer.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
@@ -202,6 +199,15 @@ public class ConversationActivity extends TemplateActivity implements Conversati
             public void onConversation(ConversationEvent event) {
                 if(event.getDestination().contentEquals(conversationDTO.getId())) {
                     conversationView.setPresenceStatus(event.isOnline());
+                }
+            }
+        });
+
+        activityEventBus.addHandler(ConversationTypingEvent.TYPE, new ConversationTypingEventHandler() {
+            @Override
+            public void onConversationTyping(ConversationTypingEvent event) {
+                if(event.getDestination().contentEquals(conversationDTO.getId())) {
+                    conversationView.setSupplierTyping("Supplier is typing...", 3000);
                 }
             }
         });

@@ -10,8 +10,11 @@ import com.geocento.webapps.eobroker.supplier.shared.dtos.MessageDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,6 +52,8 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @UiField
     UserWidget userImage;
 
+    private Presenter presenter;
+
     public ConversationViewImpl(ClientFactoryImpl clientFactory) {
 
         template = new TemplateView(clientFactory);
@@ -57,7 +62,44 @@ public class ConversationViewImpl extends Composite implements ConversationView 
 
         userImage.setUser(Supplier.getLoginInfo().getUserName());
 
+        message.addKeyUpHandler(new KeyUpHandler() {
+
+            private Timer fetchTimer;
+            private String currentMessage = "";
+
+            @Override
+            public void onKeyUp(final KeyUpEvent event) {
+                if (fetchTimer != null) {
+                    fetchTimer.cancel();
+                    fetchTimer = null;
+                }
+                final int nativeKeyCode = event.getNativeKeyCode();
+                // create a timer to make sure we don't query too soon
+                fetchTimer = new Timer() {
+
+                    @Override
+                    public void run() {
+                        fetchTimer = null;
+                        String message = getMessageText().getText();
+                        boolean hasChanged = !message.equals(currentMessage);
+                        currentMessage = message;
+                        if(hasChanged && presenter != null) {
+                            presenter.userTyping();
+                        }
+                    }
+                };
+                // start the timer to make sure we waited long enough
+                fetchTimer.schedule(1000);
+            }
+
+        });
+
         template.setPlace(null);
+    }
+
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -68,11 +110,6 @@ public class ConversationViewImpl extends Composite implements ConversationView 
     @Override
     public TemplateView getTemplateView() {
         return template;
-    }
-
-    @Override
-    public void setPresenter(Presenter presenter) {
-
     }
 
     @Override

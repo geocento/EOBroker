@@ -59,12 +59,17 @@ public class NotificationSocketHelper {
                                 MaterialToast.fireToast("New notification!");
                             }
                             break;
-                        case conversationOnline:
+                        case conversationOnline: {
                             ConversationEvent conversationEvent = new ConversationEvent();
                             conversationEvent.setOnline(webSocketMessage.isConversationStatus());
                             conversationEvent.setDestination(webSocketMessage.getDestination());
                             Customer.clientFactory.getEventBus().fireEvent(conversationEvent);
-                            break;
+                        } break;
+                        case conversationTyping: {
+                            ConversationTypingEvent conversationTypingEvent = new ConversationTypingEvent();
+                            conversationTypingEvent.setDestination(webSocketMessage.getDestination());
+                            Customer.clientFactory.getEventBus().fireEvent(conversationTypingEvent);
+                        } break;
                         case productResponse:
                         case otsproductResponse:
                         case conversationMessage:

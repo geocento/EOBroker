@@ -103,4 +103,11 @@ public class SupplierNotificationSocketHelper {
             webSocket.connect("ws://" + baseUrl.substring(baseUrl.indexOf("://") + 3) + "suppliernotifications");
         }
     }
+
+    public void sendMessage(String message) {
+        if(webSocket == null) {
+            return;
+        }
+        webSocket.send(message);
+    }
 }

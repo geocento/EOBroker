@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.supplier.client.events.MessageEvent;
 import com.geocento.webapps.eobroker.supplier.client.events.MessageEventHandler;
 import com.geocento.webapps.eobroker.supplier.client.places.ConversationPlace;
 import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
+import com.geocento.webapps.eobroker.supplier.client.utils.SupplierNotificationSocketHelper;
 import com.geocento.webapps.eobroker.supplier.client.views.ConversationView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.ConversationDTO;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.MessageDTO;
@@ -82,6 +83,7 @@ public class ConversationActivity extends TemplateActivity implements Conversati
 
     @Override
     protected void bind() {
+
         super.bind();
 
         handlers.add(conversationView.getSubmitMessage().addClickHandler(new ClickHandler() {
@@ -129,4 +131,10 @@ public class ConversationActivity extends TemplateActivity implements Conversati
                 isCustomer, messageDTO.getMessage(), messageDTO.getCreationDate());
     }
 
+    @Override
+    public void userTyping() {
+        if(conversationDTO != null && conversationDTO.getId() != null) {
+            SupplierNotificationSocketHelper.getInstance().sendMessage("typing:" + conversationDTO.getId());
+        }
+    }
 }

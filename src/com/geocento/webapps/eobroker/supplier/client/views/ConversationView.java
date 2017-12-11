@@ -25,6 +25,7 @@ public interface ConversationView extends IsWidget {
     void setPresenter(Presenter presenter);
 
     public interface Presenter {
+        void userTyping();
     }
 
 }

@@ -28,6 +28,7 @@
 
         .panel {
             margin: 0px auto;
+            padding: 0px 10px;
             max-width: 960px;
         }
 
@@ -48,7 +49,10 @@
             <design:MaterialLabel addStyleNames="{style.comment}" ui:field="comment"></design:MaterialLabel>
             <design:MaterialRow ui:field="messages" addStyleNames="{style.formValues}">
             </design:MaterialRow>
-            <widgets:MaterialMessage addStyleNames="{style.conversationStatus}" ui:field="conversationStatus"></widgets:MaterialMessage>
+            <design:MaterialPanel addStyleNames="{style.conversationStatus}">
+                <design:MaterialLabel float="RIGHT" ui:field="supplierTyping"></design:MaterialLabel>
+                <widgets:MaterialMessage ui:field="conversationStatus"></widgets:MaterialMessage>
+            </design:MaterialPanel>
             <design:MaterialPanel>
                 <widgets:UserWidget float="LEFT" size="64" marginTop="20" ui:field="userImage"/>
                 <widgets:ProgressButton float="RIGHT" iconType="SEND" type="FLOATING" size="LARGE" marginTop="20" ui:field="submitMessage">

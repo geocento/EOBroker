@@ -35,6 +35,8 @@ public interface ConversationView extends IsWidget {
 
     void setPresenceStatus(Boolean isOnline);
 
+    void setSupplierTyping(String message, int duration);
+
     public interface Presenter {
     }
 

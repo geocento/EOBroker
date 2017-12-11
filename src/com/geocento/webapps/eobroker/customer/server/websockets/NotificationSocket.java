@@ -7,6 +7,7 @@ import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseCustomConfigurator;
 import com.geocento.webapps.eobroker.common.server.websockets.BaseNotificationSocket;
 import com.geocento.webapps.eobroker.common.shared.entities.Conversation;
+import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.shared.WebSocketMessage;
 import com.geocento.webapps.eobroker.supplier.server.websockets.SupplierNotificationSocket;
 import com.google.gwt.http.client.RequestException;
@@ -117,9 +118,17 @@ public class NotificationSocket extends BaseNotificationSocket {
 
     static public void sendMessage(String userName, WebSocketMessage webSocketMessage) throws JsonProcessingException {
         List<Session> sessions = userSessions.get(userName);
-        if(sessions == null) {
+        if (sessions == null) {
             return;
         }
+        sendMessageSessions(sessions, webSocketMessage);
+    }
+
+    static public void sendMessageSession(Session session, WebSocketMessage webSocketMessage) throws JsonProcessingException {
+        sendMessageSessions(ListUtil.toList(session), webSocketMessage);
+    }
+
+    static public void sendMessageSessions(List<Session> sessions, WebSocketMessage webSocketMessage) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(webSocketMessage);
         for(Session session : sessions) {
@@ -148,4 +157,10 @@ public class NotificationSocket extends BaseNotificationSocket {
         session.getBasicRemote().sendText(message);
     }
 
+    public static void broadcastTyping(List<Session> sessions, String conversationId) throws JsonProcessingException {
+        WebSocketMessage webSocketMessage = new WebSocketMessage();
+        webSocketMessage.setType(WebSocketMessage.TYPE.conversationTyping);
+        webSocketMessage.setDestination(conversationId);
+        sendMessageSessions(sessions, webSocketMessage);
+    }
 }
