@@ -117,6 +117,7 @@ public class SearchResource implements SearchService {
                         "category, " +
                         "ts_rank(tsvname, keywords, 8) AS rank, " +
                         "name " +
+                        //"additional" +
                         "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
                         "          WHERE tsvname @@ keywords\n" +
                         "          ORDER BY rank DESC\n" +
@@ -128,7 +129,7 @@ public class SearchResource implements SearchService {
                         Long id = (Long) result[0];
                         String category = (String) result[1];
                         String name = (String) result[3];
-                        String additional = (String) result[4];
+                        String additional = null; //(String) result[4];
                         return new Suggestion(name, additional, Category.valueOf(category), "access" + "::" + id);
                     }
                 });
@@ -178,6 +179,7 @@ public class SearchResource implements SearchService {
             Query q = em.createNativeQuery("SELECT id, " +
                     "ts_rank(tsvname, keywords, 8) AS rank, " +
                     "name " +
+                    //"additional" +
                     "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsvname @@ keywords\n" +
                     (additionalStatement != null ? additionalStatement : "") +
@@ -189,7 +191,7 @@ public class SearchResource implements SearchService {
                 public Suggestion mutate(Object[] result) {
                     Long id = (Long) result[0];
                     String name = (String) result[2];
-                    String additional = (String) result[3];
+                    String additional = null; //(String) result[3];
                     return new Suggestion(name, additional, category, "access" + "::" + id);
                 }
             });

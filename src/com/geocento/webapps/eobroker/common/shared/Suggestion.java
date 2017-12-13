@@ -12,7 +12,7 @@ public class Suggestion {
     private String uri;
 
     @JsonCreator
-    public Suggestion(@JsonProperty("name") String name, String additional, @JsonProperty("category") Category category, @JsonProperty("uri") String uri) {
+    public Suggestion(@JsonProperty("name") String name, @JsonProperty("additional") String additional, @JsonProperty("category") Category category, @JsonProperty("uri") String uri) {
         this.name = name;
         this.additional = additional;
         this.category = category;

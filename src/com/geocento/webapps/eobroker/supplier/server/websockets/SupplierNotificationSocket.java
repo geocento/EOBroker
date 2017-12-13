@@ -90,20 +90,23 @@ public class SupplierNotificationSocket extends BaseNotificationSocket {
         // look for conversations opened with the user's company
         EntityManager em = EMF.get().createEntityManager();
         try {
-            TypedQuery<String> query = em.createQuery("select c.id from Conversation c where c.id IN :ids and c.company.id = :companyId", String.class);
-            query.setParameter("ids", new ArrayList<String>(conversationSubscriptions.keySet()));
-            query.setParameter("companyId", companyId);
-            List<String> conversationIds = query.getResultList();
-            if(!ListUtil.isNullOrEmpty(conversationIds)) {
-                for(String conversationId : conversationIds) {
-                    WebSocketMessage webSocketMessage = new WebSocketMessage();
-                    webSocketMessage.setType(WebSocketMessage.TYPE.conversationOnline);
-                    webSocketMessage.setDestination(conversationId);
-                    webSocketMessage.setConversationStatus(online);
-                    try {
-                        NotificationSocket.sendMessageSessions(conversationSubscriptions.get(conversationId), webSocketMessage);
-                    } catch (JsonProcessingException e) {
-                        logger.error(e.getMessage(), e);
+            ArrayList<String> conversationKeys = new ArrayList<String>(conversationSubscriptions.keySet());
+            if(conversationKeys.size() > 0) {
+                TypedQuery<String> query = em.createQuery("select c.id from Conversation c where c.id IN :ids and c.company.id = :companyId", String.class);
+                query.setParameter("ids", conversationKeys);
+                query.setParameter("companyId", companyId);
+                List<String> conversationIds = query.getResultList();
+                if (!ListUtil.isNullOrEmpty(conversationIds)) {
+                    for (String conversationId : conversationIds) {
+                        WebSocketMessage webSocketMessage = new WebSocketMessage();
+                        webSocketMessage.setType(WebSocketMessage.TYPE.conversationOnline);
+                        webSocketMessage.setDestination(conversationId);
+                        webSocketMessage.setConversationStatus(online);
+                        try {
+                            NotificationSocket.sendMessageSessions(conversationSubscriptions.get(conversationId), webSocketMessage);
+                        } catch (JsonProcessingException e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     }
                 }
             }
