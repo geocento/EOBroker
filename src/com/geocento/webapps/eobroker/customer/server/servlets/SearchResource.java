@@ -545,6 +545,8 @@ public class SearchResource implements SearchService {
             if(productIds.size() > 0) {
                 additionalStatement = (additionalStatement == null ? "" : additionalStatement + " AND ") +
                         "id IN(" + StringUtils.join(productIds, ",") + ")";
+            } else {
+                return new ArrayList<ProductDTO>();
             }
         }
         List<Long> productIds = getFilteredIds(em, "product", textFilter, start, limit, additionalStatement);
