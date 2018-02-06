@@ -36,11 +36,11 @@
     <g:HTMLPanel addStyleNames="{style.formPanel}">
         <design:MaterialTitle title="Add a new testimonial"></design:MaterialTitle>
         <design:MaterialRow>
-            <design:MaterialColumn grid="s12">
+            <design:MaterialColumn grid="s12 m6 l6">
                 <design:MaterialLabel addStyleNames="{style.section}" text="Type"></design:MaterialLabel>
                 <design:MaterialListValueBox ui:field="category"></design:MaterialListValueBox>
             </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
+            <design:MaterialColumn grid="s12 m6 l6">
                 <design:MaterialLabel addStyleNames="{style.section}" text="Name"></design:MaterialLabel>
                 <material:MaterialSearch placeholder="Type text" addStyleNames="{style.searchBox}" ui:field="searchBox"></material:MaterialSearch>
             </design:MaterialColumn>

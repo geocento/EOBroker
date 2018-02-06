@@ -135,6 +135,10 @@
                 margin-bottom: 20px;
             }
 
+            .copyright {
+                margin: 10px 0px;
+            }
+
         </ui:style>
         <ui:with field="res" type="com.geocento.webapps.eobroker.customer.client.styles.StyleResources"/>
         <ui:with field="resCommon" type="com.geocento.webapps.eobroker.common.client.styles.StyleResources"/>
@@ -200,7 +204,7 @@
                                     <m:MaterialLink visible="false" addStyleNames="{style.category}" text="Help" iconType="HELP" ui:field="helpCategory"></m:MaterialLink>
                                 </m:MaterialPanel>
                                 <cwidgets:MaterialLabelIcon imageResource="{resCommon.logoESA}" text=""></cwidgets:MaterialLabelIcon>
-                                <m:MaterialLabel fontSize="0.8em" text="© 2017 Copyright Geocento Ltd and partners" marginTop="10" marginBottom="10"/>
+                                <cwidgets:CopyrightWidget addStyleNames="{style.copyright}"></cwidgets:CopyrightWidget>
                             </g:HTMLPanel>
                         </g:HTMLPanel>
                     </g:HTMLPanel>

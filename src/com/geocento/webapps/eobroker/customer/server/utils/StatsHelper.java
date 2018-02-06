@@ -66,6 +66,7 @@ public class StatsHelper {
         return Configuration.getProperty(Configuration.APPLICATION_SETTINGS.graphiteUrl) +
                 "?width=" + width +
                 "&height=" + height +
+                "&bgcolor=white&fgcolor=black" +
                 "&from=" + dateOptions +
                 "&hideLegend=true" +
                 "&vtitle=Number of views" +

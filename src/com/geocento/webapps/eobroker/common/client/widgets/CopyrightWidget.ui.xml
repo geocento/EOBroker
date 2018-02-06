@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+
+        .copyright {
+            font-size: 0.8em;
+        }
+
+    </ui:style>
+    <g:HTMLPanel addStyleNames="{style.copyright}">© <span ui:field="copyrightYear"/> Copyright Geocento Ltd and partners</g:HTMLPanel>
+</ui:UiBinder>

@@ -21,13 +21,18 @@
             float: right;
         }
 
+        .importCSV {
+            float: right;
+            margin-left: 10px;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="View challenges" link="challenges" ui:field="template">
         <design:MaterialPanel padding="20">
             <g:HTMLPanel>
-                <widgets:SimpleFileUpload text="Import from CSV" ui:field="importCSV"></widgets:SimpleFileUpload>
                 <design:MaterialButton text="CREATE NEW" width="200px" float="RIGHT" marginLeft="10" ui:field="createNew"></design:MaterialButton>
+                <widgets:SimpleFileUpload addStyleNames="{style.importCSV}" ui:field="importCSV"></widgets:SimpleFileUpload>
 
                 <g:FormPanel visible="false" addStyleNames="{style.fileForm}" ui:field="fileForm">
                     <g:FileUpload ui:field="importCSVUpload">
@@ -37,7 +42,7 @@
                 <div style="clear: both;"/>
             </g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.services}">
-                <g:HTMLPanel>
+                <g:HTMLPanel visible="false">
                     <design:MaterialTextBox addStyleNames="{style.filter}" placeholder="Search by name" ui:field="filter"></design:MaterialTextBox>
                     <div style="clear: both;"></div>
                 </g:HTMLPanel>

@@ -36,7 +36,7 @@ public class ConversationWidget extends MaterialPanel {
 
         image.setUrl(conversationDTO.getCompany().getIconURL());
 
-        title.setText("Conversation '" + conversationDTO.getTopic() + "'");
+        title.setText("'" + conversationDTO.getTopic() + "'");
         comment.setText("with company " + conversationDTO.getCompany().getName() + " started on " + DateUtils.formatDateOnly(conversationDTO.getCreationDate()));
 
         title.setHref("#" + PlaceHistoryHelper.convertPlace(

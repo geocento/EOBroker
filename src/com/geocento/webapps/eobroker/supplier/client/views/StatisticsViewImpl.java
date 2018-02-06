@@ -3,7 +3,7 @@ package com.geocento.webapps.eobroker.supplier.client.views;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
 import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.feasibility.BarChartStatistics;
+import com.geocento.webapps.eobroker.common.shared.feasibility.PieChartStatistics;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierStatisticsDTO;
@@ -116,14 +116,13 @@ public class StatisticsViewImpl extends Composite implements StatisticsView {
         chartPanel.loadChartAPI(new Runnable() {
             @Override
             public void run() {
-                BarChartStatistics barChartStatistics = new BarChartStatistics();
+                PieChartStatistics pieChartStatistics = new PieChartStatistics();
                 //barChartStatistics.setName("Product followers");
-                barChartStatistics.setDescription("Number of followers for each product category");
-                barChartStatistics.setxLabel("Product category");
-                barChartStatistics.setyLabel("Number of followers");
-                barChartStatistics.setValues(supplierStatisticsDTO.getProductFollowers());
+                pieChartStatistics.setDescription("Number of followers for each product category");
+                pieChartStatistics.setName("Followers");
+                pieChartStatistics.setValues(supplierStatisticsDTO.getProductFollowers());
                 //barChartStatistics.setVertical(true);
-                chartPanel.addStatistics(barChartStatistics);
+                chartPanel.addStatistics(pieChartStatistics);
             }
         });
         HashMap<String, String> productsViewStatsOptions = supplierStatisticsDTO.getViewProductsOptions();

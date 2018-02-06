@@ -8,19 +8,10 @@ import com.geocento.webapps.eobroker.common.client.widgets.MaterialSideNav;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
-import com.geocento.webapps.eobroker.common.shared.entities.notifications.SupplierNotification;
-import com.geocento.webapps.eobroker.common.shared.entities.requests.RequestDTO;
-import com.geocento.webapps.eobroker.customer.client.places.*;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.client.Supplier;
 import com.geocento.webapps.eobroker.supplier.client.events.LogOut;
 import com.geocento.webapps.eobroker.supplier.client.places.*;
-import com.geocento.webapps.eobroker.supplier.client.places.CompanyPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.EOBrokerPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.NotificationsPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.supplier.client.places.SettingsPlace;
-import com.geocento.webapps.eobroker.supplier.client.places.TestimonialsPlace;
 import com.geocento.webapps.eobroker.supplier.client.utils.NotificationHelper;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierNotificationDTO;
 import com.google.gwt.core.client.GWT;
@@ -246,7 +237,6 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     }
 
     public void setNotifications(List<SupplierNotificationDTO> notifications) {
-        notificationsBadge.setText(notifications.size() + "");
         notificationsPanel.clear();
         boolean hasNotifications = notifications != null && notifications.size() > 0;
         notificationsBadge.setVisible(hasNotifications);
@@ -255,6 +245,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
             if(hasMore) {
                 notifications = notifications.subList(0, maxNotifications);
             }
+            notificationsBadge.setText(notifications.size() + "");
             for (SupplierNotificationDTO supplierNotificationDTO : notifications) {
                 addNotification(supplierNotificationDTO);
             }
@@ -269,6 +260,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
                 notificationsPanel.add(materialLink);
             }
         } else {
+            notificationsBadge.setText("");
             notificationsPanel.add(new MaterialLabel("No new notification"));
         }
     }
@@ -277,7 +269,8 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
         MaterialLink message = new MaterialLink(supplierNotificationDTO.getMessage());
         message.setTruncate(true);
         message.getElement().getStyle().setFontSize(0.8, com.google.gwt.dom.client.Style.Unit.EM);
-        message.add(new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(supplierNotificationDTO.getCreationDate()) + "</span>"));
+        HTML timePanel = new HTML("<span style='text-align: right; font-size: 0.8em; color: black;'>" + DateUtils.getDuration(supplierNotificationDTO.getCreationDate()) + "</span>");
+        timePanel.getElement().getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.RIGHT);
         message.setHref("#" + PlaceHistoryHelper.convertPlace(NotificationHelper.convertToPlace(supplierNotificationDTO)));
         notificationsPanel.add(message);
     }

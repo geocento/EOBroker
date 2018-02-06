@@ -305,4 +305,5 @@ public interface AssetsService extends DirectRestService {
     @POST
     @Path("/assets/conversations/subscribe/")
     Boolean subscribeCompanyMessages(String companyId) throws RequestException;
+
 }

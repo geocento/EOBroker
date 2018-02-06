@@ -46,6 +46,7 @@
         .mainPanel {
             max-width: 960px;
             margin: auto;
+            margin-top: -32px;
             padding: 0px 10px;
         }
 
@@ -62,12 +63,13 @@
         .menus {
             padding: 30px;
             line-height: normal !important;
+            font-size: 0.9em;
         }
 
         a.category {
             height: inherit;
             font-size: 1em;
-            line-height: 3.6em;
+            line-height: 2.6em;
             padding: 0 !important;
             margin: 0;
         }
@@ -77,6 +79,14 @@
         }
 
         .notificationsPanel {
+        }
+
+        .copyright {
+            margin: 10px 0px;
+        }
+
+        .esaLogo {
+            margin-top: 20px;
         }
 
     </ui:style>
@@ -118,6 +128,8 @@
                             <design:MaterialLink iconType="SETTINGS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}" ui:field="settings"></design:MaterialLink>
                             <design:MaterialLink iconType="DEVELOPER_BOARD" iconPosition="LEFT" textColor="BLUE" text="Logs" addStyleNames="{style.category}" ui:field="logs"></design:MaterialLink>
                         </g:HTMLPanel>
+                        <widgets:MaterialLabelIcon addStyleNames="{style.esaLogo}" imageResource="{resCommon.logoESA}" text=""></widgets:MaterialLabelIcon>
+                        <widgets:CopyrightWidget addStyleNames="{style.copyright}"></widgets:CopyrightWidget>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
             </widgets:MaterialSideNav>
@@ -126,11 +138,6 @@
         <design:MaterialContainer fontSize="0.8em" paddingTop="64">
             <design:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></design:MaterialPanel>
         </design:MaterialContainer>
-        <design:MaterialFooter backgroundColor="TRANSPARENT" textColor="BLACK">
-            <design:MaterialFooterCopyright>
-                <design:MaterialLabel text="© 2016 Copyright Geocento Ltd" />
-            </design:MaterialFooterCopyright>
-        </design:MaterialFooter>
 
     </g:HTMLPanel>
 </ui:UiBinder>

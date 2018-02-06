@@ -37,7 +37,7 @@
             <design:MaterialLabel truncate="true" fontSize="1.2em" ui:field="title"/>
             <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
         </design:MaterialCardContent>
-        <design:MaterialCardAction ui:field="action" padding="10">
+        <design:MaterialCardAction padding="10" ui:field="action">
             <widgetsc:ProductFollowWidget addStyleNames="{style.follow}" ui:field="follow"></widgetsc:ProductFollowWidget>
             <design:MaterialLink text="OFFERINGS" textColor="WHITE" ui:field="offerings"></design:MaterialLink>
         </design:MaterialCardAction>

@@ -172,6 +172,9 @@ public class SearchResource implements SearchService {
             case project:
                 categoryTable = "project";
                 break;
+            case challenges:
+                categoryTable = "challenge";
+                break;
         }
         // change the last word so that it allows for partial match
         EntityManager em = EMF.get().createEntityManager();
@@ -226,7 +229,7 @@ public class SearchResource implements SearchService {
         SearchResult searchResult = new SearchResult();
         // start with products
         {
-            List<ProductDTO> products = listProducts(text, 0, 5, null, Sector.all, Thematic.all);
+            List<ProductDTO> products = listProducts(text, 0, 5, null, null, Sector.all, Thematic.all);
             boolean more = products.size() > 4;
             if (more) {
                 products = products.subList(0, 4);
@@ -522,7 +525,7 @@ public class SearchResource implements SearchService {
     }
 
     @Override
-    public List<ProductDTO> listProducts(String textFilter, Integer start, Integer limit, Long aoiId, Sector sector, Thematic thematic) throws RequestException {
+    public List<ProductDTO> listProducts(String textFilter, Integer start, Integer limit, Long aoiId, Long challengeId, Sector sector, Thematic thematic) throws RequestException {
         String userName = UserUtils.verifyUser(request);
         List<Product> products = null;
         EntityManager em = EMF.get().createEntityManager();
@@ -535,6 +538,14 @@ public class SearchResource implements SearchService {
         if(hasThematic) {
             additionalStatement = (additionalStatement == null ? "" : additionalStatement + " AND ") +
                     "thematic = '" + thematic.toString() + "'";
+        }
+        if(challengeId != null) {
+            Challenge challenge = em.find(Challenge.class, challengeId);
+            List<String> productIds = ListUtil.mutate(challenge.getProducts(), (ListUtil.Mutate<Product, String>) product -> product.getId() + "");
+            if(productIds.size() > 0) {
+                additionalStatement = (additionalStatement == null ? "" : additionalStatement + " AND ") +
+                        "id IN(" + StringUtils.join(productIds, ",") + ")";
+            }
         }
         List<Long> productIds = getFilteredIds(em, "product", textFilter, start, limit, additionalStatement);
         if(productIds.size() > 0) {
@@ -566,6 +577,30 @@ public class SearchResource implements SearchService {
                 productDTO.setFollowing(followings.contains(product.getId()));
                 return productDTO;
             }
+        });
+    }
+
+    @Override
+    public List<ChallengeDTO> listChallenges(String textFilter, Integer start, Integer limit, Long aoiId) throws RequestException {
+        String userName = UserUtils.verifyUser(request);
+        List<Challenge> challenges = null;
+        EntityManager em = EMF.get().createEntityManager();
+        List<Long> challengeIds = getFilteredIds(em, "challenge", textFilter, start, limit, null);
+        if(challengeIds.size() > 0) {
+            TypedQuery<Challenge> challengeQuery = em.createQuery("select c from Challenge c where c.id IN :challengeIds order by c.name", Challenge.class);
+            challengeQuery.setParameter("challengeIds", challengeIds);
+            challenges = challengeQuery.getResultList();
+        } else {
+            challenges = new ArrayList<Challenge>();
+        }
+        return ListUtil.mutate(challenges, (ListUtil.Mutate<Challenge, ChallengeDTO>) challenge -> {
+            ChallengeDTO challengeDTO = new ChallengeDTO();
+            challengeDTO.setId(challenge.getId());
+            challengeDTO.setName(challenge.getName());
+            challengeDTO.setShortDescription(challenge.getShortDescription());
+            challengeDTO.setImageUrl(challenge.getImageUrl());
+            challengeDTO.setNumberProducts(challenge.getProducts() == null ? 0 : challenge.getProducts().size());
+            return challengeDTO;
         });
     }
 

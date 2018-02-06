@@ -64,6 +64,8 @@ public interface SearchPageView extends IsWidget {
 
     void addCompanies(List<CompanyDTO> companyDTOs, int start, boolean hasMore, String text);
 
+    void addChallenges(List<ChallengeDTO> challengeDTOS, int start, boolean hasMore, String text);
+
     HasValue<Boolean> getFilterByAoI();
 
     ServiceType getProductServiceType();
@@ -96,6 +98,10 @@ public interface SearchPageView extends IsWidget {
 
     void setProductSelection(ProductDTO productDTO);
 
+    ChallengeDTO getChallengeSelection();
+
+    void setChallengeSelection(ChallengeDTO challengeDTO);
+
     CompanyDTO getCompanySelection();
 
     void setCompanySelection(CompanyDTO companyDTO);
@@ -107,6 +113,8 @@ public interface SearchPageView extends IsWidget {
     void displaySearchError(String text);
 
     void setMatchingComments(String comment);
+
+    boolean isChallengesSelected();
 
     public interface Presenter {
 

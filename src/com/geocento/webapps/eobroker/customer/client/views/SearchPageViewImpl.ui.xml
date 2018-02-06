@@ -176,6 +176,12 @@
                 </design:MaterialCollapsibleHeader>
                 <design:MaterialCollapsibleBody padding="5" backgroundColor="WHITE">
                     <design:MaterialRow marginTop="10" marginBottom="10" addStyleNames="{style.filtersBody}" ui:field="filters">
+                        <design:MaterialPanel display="FLEX" lineHeight="54" ui:field="challengesFilterPanel">
+                            <design:MaterialTooltip text="Display list as challenges or products">
+                                <design:MaterialSwitch onLabel="Display challenges" offLabel="Display products" ui:field="displayChallenges"></design:MaterialSwitch>
+                            </design:MaterialTooltip>
+                            <widgets:CategorySearchBox category="challenges" placeholder="Type in your challenge to see relevant products" addStyleNames="{style.searchBox}" flex="AUTO" marginTop="5" ui:field="challengeFilter"></widgets:CategorySearchBox>
+                        </design:MaterialPanel>
                         <design:MaterialListValueBox placeholder="Sector" addStyleNames="{style.option}" ui:field="sectorFilter"></design:MaterialListValueBox>
                         <design:MaterialListValueBox placeholder="Thematic" addStyleNames="{style.option}" ui:field="thematicFilter"></design:MaterialListValueBox>
                         <design:MaterialListValueBox placeholder="Classification" addStyleNames="{style.option}" ui:field="productCategoryFilter"></design:MaterialListValueBox>

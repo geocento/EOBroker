@@ -9,10 +9,8 @@ import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.CompanyDTO;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
-import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FeedbackPlace;
 import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
-import com.geocento.webapps.eobroker.customer.client.places.SearchPagePlace;
 import com.geocento.webapps.eobroker.customer.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.customer.client.widgets.*;
 import com.geocento.webapps.eobroker.customer.client.widgets.maps.MapContainer;
@@ -158,11 +156,18 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     MaterialPanel additionalProductFilters;
     @UiField
     MaterialListValueBox<ProductCategoryDTO> productCategoryFilter;
+    @UiField
+    CategorySearchBox challengeFilter;
+    @UiField
+    MaterialPanel challengesFilterPanel;
+    @UiField
+    MaterialSwitch displayChallenges;
 
     MaterialIcon close;
 
     private ProductDTO productDTO;
     private CompanyDTO companyDTO;
+    private ChallengeDTO challengeDTO;
 
     private Presenter presenter;
 
@@ -316,6 +321,25 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             }
         });
 
+        challengeFilter.setPresenter(suggestion -> {
+            // create shallow company
+            boolean changed = false;
+            if(suggestion == null) {
+                changed = challengeDTO != null;
+                challengeDTO = null;
+            } else {
+                ChallengeDTO challengeDTO = new ChallengeDTO();
+                challengeDTO.setName(suggestion.getName());
+                challengeDTO.setId(Long.parseLong(suggestion.getUri().split("::")[1]));
+                changed = SearchPageViewImpl.this.challengeDTO == null || !SearchPageViewImpl.this.challengeDTO.getId().equals(challengeDTO.getId());
+                SearchPageViewImpl.this.challengeDTO = challengeDTO;
+            }
+            // make sure values have changed
+            if(changed) {
+                filtersChanged();
+            }
+        });
+
         // TODO - not the right method to detect a change in active maybe replace by another widget
         filtersHeader.addClickHandler(event -> updateShowFilter());
         updateShowFilter();
@@ -329,6 +353,16 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         });
         filterByAffiliates.setValue(false);
         updateCompanySearchBox();
+
+        displayChallenges.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                updateChallengesSearchBox();
+                filtersChanged();
+            }
+        });
+        displayChallenges.setValue(false);
+        updateChallengesSearchBox();
 
         // TODO - add loading and displaying of product categories
         productCategoryFilter.addValueChangeHandler(new ValueChangeHandler() {
@@ -442,6 +476,14 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
         filterByAffiliates.setOnLabel(withAffiliates ? "Only results from affiliated companies" : "");
     }
 
+    private void updateChallengesSearchBox() {
+        boolean isChallenges = isChallengesSelected();
+        challengeFilter.setVisible(!isChallenges);
+        displayChallenges.setOnLabel(isChallenges ? "Display challenges" : "");
+        sectorFilter.setVisible(!isChallenges);
+        thematicFilter.setVisible(!isChallenges);
+    }
+
     private void filtersChanged() {
         updateShowFilter();
         presenter.filtersChanged();
@@ -476,6 +518,9 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
             activeFilters++;
         }
         if(isFilterVisible(companyFilterPanel) && (getCompanySelection() != null || getFilterByAffiliates().getValue())) {
+            activeFilters++;
+        }
+        if(!isChallengesSelected() && isFilterVisible(challengeFilter) && getChallengeSelection() != null) {
             activeFilters++;
         }
         if(isFilterVisible(productFilter) && getProductSelection() != null) {
@@ -708,6 +753,11 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     @Override
+    public boolean isChallengesSelected() {
+        return displayChallenges.getValue();
+    }
+
+    @Override
     public void setMatchingImagery(String text) {
         MaterialRow productRow = new MaterialRow();
         container.add(productRow);
@@ -831,6 +881,34 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
                 MaterialColumn materialColumn = new MaterialColumn(12, 6, 3);
                 productRow.add(materialColumn);
                 materialColumn.add(new ProductWidget(productDTO));
+            }
+            if(hasMore) {
+                MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
+                    @Override
+                    public void call() {
+                        presenter.loadMoreProducts();
+                    }
+                });
+            }
+        }
+        displaySendRequirements(!hasMore);
+    }
+
+    @Override
+    public void addChallenges(List<ChallengeDTO> challengeDTOS, int start, boolean hasMore, String text) {
+        MaterialRow productRow = new MaterialRow();
+        container.add(productRow);
+        if(challengeDTOS == null || challengeDTOS.size() == 0) {
+            if(start == 0) {
+                MaterialLabel label = new MaterialLabel("No challenges found for your request...");
+                label.addStyleName(style.subtext());
+                productRow.add(label);
+            }
+        } else {
+            for (ChallengeDTO challengeDTO : challengeDTOS) {
+                MaterialColumn materialColumn = new MaterialColumn(12, 6, 4);
+                productRow.add(materialColumn);
+                materialColumn.add(new ChallengeWidget(challengeDTO));
             }
             if(hasMore) {
                 MaterialScrollfire.apply(productRow.getWidget(productRow.getWidgetCount() - 1).getElement(), new Functions.Func() {
@@ -992,6 +1070,8 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     }
 
     private void displayProductFilters() {
+        // add challenge selection
+        addFilter(challengesFilterPanel, "s12");
         // add sector selection
         addFilter(sectorFilter, "s12 m6 l4");
         // add thematic selection
@@ -1117,6 +1197,17 @@ public class SearchPageViewImpl extends Composite implements SearchPageView, Res
     public void setProductSelection(ProductDTO productDTO) {
         this.productDTO = productDTO;
         productFilter.setValue(productDTO == null ? "" : productDTO.getName());
+    }
+
+    @Override
+    public ChallengeDTO getChallengeSelection() {
+        return challengeDTO;
+    }
+
+    @Override
+    public void setChallengeSelection(ChallengeDTO challengeDTO) {
+        this.challengeDTO = challengeDTO;
+        challengeFilter.setValue(challengeDTO == null ? "" : challengeDTO.getName());
     }
 
     @Override

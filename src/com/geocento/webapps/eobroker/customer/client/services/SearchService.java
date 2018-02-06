@@ -66,7 +66,12 @@ public interface SearchService extends DirectRestService {
     @GET
     @Path("/search/products")
     @Produces("application/json")
-    public List<ProductDTO> listProducts(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("sector") Sector sector, @QueryParam("thematic") Thematic thematic) throws RequestException;
+    public List<ProductDTO> listProducts(@QueryParam("text") String textFilter, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId, @QueryParam("challengeId") Long challengeId, @QueryParam("sector") Sector sector, @QueryParam("thematic") Thematic thematic) throws RequestException;
+
+    @GET
+    @Path("/search/challenges")
+    @Produces("application/json")
+    List<ChallengeDTO> listChallenges(@QueryParam("text") String text, @QueryParam("start") Integer start, @QueryParam("limit") Integer limit, @QueryParam("aoiId") Long aoiId) throws RequestException;
 
     // use POST to be able to query by AOI WKT
     @POST

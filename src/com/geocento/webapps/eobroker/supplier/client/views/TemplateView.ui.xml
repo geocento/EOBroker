@@ -80,7 +80,7 @@
         a.category {
             height: inherit;
             font-size: 1em;
-            line-height: 3.6em;
+            line-height: 2.6em;
             padding: 0 !important;
             margin: 0;
         }
@@ -90,8 +90,9 @@
         }
 
         .menus {
-            padding: 0px 30px;
+            padding: 30px;
             line-height: normal !important;
+            font-size: 0.9em;
         }
 
         .navOpened main, .navOpened footer {
@@ -103,6 +104,14 @@
             display: block;
             margin: 10px 0px;
             border-top: 1px solid #aaa;
+        }
+
+        .copyright {
+            margin: 10px 0px;
+        }
+
+        .esaLogo {
+            margin-top: 20px;
         }
 
     </ui:style>
@@ -143,7 +152,7 @@
                     <m:MaterialLabel visible="false" ui:field="companyName"></m:MaterialLabel>
                 </m:MaterialPanel>
                 <g:HTMLPanel addStyleNames="{style.menus}">
-                    <m:MaterialLabel addStyleNames="{style.navBrand}" text="Access your"/>
+                    <!--<m:MaterialLabel addStyleNames="{style.navBrand}" text="Access your"/>-->
                     <g:HTMLPanel ui:field="links">
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Company information" addStyleNames="{style.category}" ui:field="company"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Bespoke services" addStyleNames="{style.category}" ui:field="services"></m:MaterialLink>
@@ -157,7 +166,8 @@
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Notifications" addStyleNames="{style.category}" ui:field="notificationsLink"></m:MaterialLink>
                         <m:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}, {style.settings}" ui:field="settings"></m:MaterialLink>
                     </g:HTMLPanel>
-                    <m:MaterialLabel fontSize="0.8em" text="© 2017 Copyright Geocento Ltd and partners" />
+                    <widgets:MaterialLabelIcon addStyleNames="{style.esaLogo}" imageResource="{resCommon.logoESA}" text=""></widgets:MaterialLabelIcon>
+                    <widgets:CopyrightWidget addStyleNames="{style.copyright}"></widgets:CopyrightWidget>
                 </g:HTMLPanel>
             </g:HTMLPanel>
         </widgets:MaterialSideNav>
@@ -165,6 +175,7 @@
             <widgets:LoadingWidget visible="false" addStyleNames="{style.loading}" ui:field="loading"></widgets:LoadingWidget>
             <m:MaterialPanel addStyleNames="{style.mainPanel}" ui:field="mainPanel"></m:MaterialPanel>
         </m:MaterialContainer>
+<!--
         <m:MaterialFooter backgroundColor="GREEN_LIGHTEN_1">
             <m:MaterialRow>
                 <m:MaterialColumn grid="s12 m6 l6">
@@ -180,5 +191,6 @@
                 <m:MaterialLabel text="© 2016 Copyright Geocento Ltd and partners" />
             </m:MaterialFooterCopyright>
         </m:MaterialFooter>
+-->
     </g:HTMLPanel>
 </ui:UiBinder>

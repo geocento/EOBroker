@@ -423,22 +423,42 @@ public class SearchPageActivity extends TemplateActivity implements SearchPageVi
         try {
             searchPageView.displayLoadingResults("Loading products...");
             boolean filterByAoI = currentAoI != null && searchPageView.getFilterByAoI().getValue();
-            Sector sector = searchPageView.getSectorFilter();
-            Thematic thematic = searchPageView.getThematicFilter();
-            REST.withCallback(new MethodCallback<List<ProductDTO>>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-                    searchPageView.hideLoadingResults();
-                    searchPageView.displaySearchError(method.getResponse().getText());
-                }
+            boolean isChallenges = searchPageView.isChallengesSelected();
+            if(isChallenges) {
+                REST.withCallback(new MethodCallback<List<ChallengeDTO>>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        searchPageView.hideLoadingResults();
+                        searchPageView.displaySearchError(method.getResponse().getText());
+                    }
 
-                @Override
-                public void onSuccess(Method method, List<ProductDTO> products) {
-                    searchPageView.hideLoadingResults();
-                    // add all results to the interface
-                    searchPageView.addProducts(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
-                }
-            }).call(ServicesUtil.searchService).listProducts(text, start, limit, filterByAoI ? currentAoI.getId() : null, sector, thematic);
+                    @Override
+                    public void onSuccess(Method method, List<ChallengeDTO> challengeDTOS) {
+                        searchPageView.hideLoadingResults();
+                        // add all results to the interface
+                        searchPageView.addChallenges(challengeDTOS, start, challengeDTOS != null && challengeDTOS.size() != 0 && challengeDTOS.size() % limit == 0, text);
+                    }
+                }).call(ServicesUtil.searchService).listChallenges(text, start, limit, filterByAoI ? currentAoI.getId() : null);
+            } else {
+                ChallengeDTO challengeDTO = searchPageView.getChallengeSelection();
+                Sector sector = searchPageView.getSectorFilter();
+                Thematic thematic = searchPageView.getThematicFilter();
+                REST.withCallback(new MethodCallback<List<ProductDTO>>() {
+                    @Override
+                    public void onFailure(Method method, Throwable exception) {
+                        searchPageView.hideLoadingResults();
+                        searchPageView.displaySearchError(method.getResponse().getText());
+                    }
+
+                    @Override
+                    public void onSuccess(Method method, List<ProductDTO> products) {
+                        searchPageView.hideLoadingResults();
+                        // add all results to the interface
+                        searchPageView.addProducts(products, start, products != null && products.size() != 0 && products.size() % limit == 0, text);
+                    }
+                }).call(ServicesUtil.searchService).listProducts(text, start, limit, filterByAoI ? currentAoI.getId() : null,
+                        challengeDTO == null ? null : challengeDTO.getId(), sector, thematic);
+            }
         } catch (RequestException e) {
         }
     }
