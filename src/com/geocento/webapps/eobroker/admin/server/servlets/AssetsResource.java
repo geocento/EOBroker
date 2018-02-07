@@ -29,9 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Path("/")
 public class AssetsResource implements AssetsService {
@@ -1161,6 +1159,144 @@ public class AssetsResource implements AssetsService {
             suggestions.add(companyDTO);
         }
         return suggestions;
+    }
+
+    @Override
+    public AdminStatisticsDTO getAdminStatistics() throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, userName);
+            AdminStatisticsDTO adminStatisticsDTO = new AdminStatisticsDTO();
+            // collect some information
+            // general stats such as number of users, companies, products...
+            HashMap<String, String> userStatistics = new HashMap<String, String>();
+            {
+                Long numberOfUsers = em.createQuery("select count(u.username) from users u", Long.class).getSingleResult();
+                userStatistics.put("Total number of users", numberOfUsers + "");
+            }
+            {
+                TypedQuery<Long> query = em.createQuery("select count(u.username) from users u where u.role = :role ", Long.class);
+                query.setParameter("role", User.USER_ROLE.customer);
+                userStatistics.put("Total number of customer users", query.getSingleResult() + "");
+            }
+            {
+                TypedQuery<Long> query = em.createQuery("select count(u.username) from users u where u.role = :role ", Long.class);
+                query.setParameter("role", User.USER_ROLE.supplier);
+                userStatistics.put("Total number of supplier users", query.getSingleResult() + "");
+            }
+            {
+                TypedQuery<Long> query = em.createQuery("select count(u.username) from users u where u.role = :role ", Long.class);
+                query.setParameter("role", User.USER_ROLE.administrator);
+                userStatistics.put("Total number of admin users", query.getSingleResult() + "");
+            }
+            {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.MONTH, -1);
+                TypedQuery<Long> query = em.createQuery("select count(u.username) from users u where u.creationDate < :creationDate", Long.class);
+                query.setParameter("creationDate", calendar.getTime());
+                userStatistics.put("Users registered last month", query.getSingleResult() + "");
+            }
+            {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.MONTH, -1);
+                TypedQuery<Long> query = em.createQuery("select count(u.username) from users u where u.lastLoggedIn < :creationDate", Long.class);
+                query.setParameter("creationDate", calendar.getTime());
+                userStatistics.put("Users connected last month", query.getSingleResult() + "");
+            }
+            adminStatisticsDTO.setUsersStatistics(userStatistics);
+
+            HashMap<String, Double> usersPerCountry = new HashMap<String, Double>();
+            {
+                Query q = em.createNativeQuery("select c.countrycode, count(u.username) from users u left join company c on u.company_id = c.id group by c.countrycode");
+                List<Object[]> results = q.getResultList();
+                for (Object[] result : results) {
+                    String countryCode = (String) result[0];
+                    if(countryCode == null) {
+                        countryCode = "Unknown";
+                    }
+                    usersPerCountry.put(countryCode, Double.valueOf((Long) result[1]));
+                }
+            }
+            adminStatisticsDTO.setUsersPerCountry(usersPerCountry);
+            HashMap<String, String> supplierStatistics = new HashMap<String, String>();
+            {
+                Long numberOfSuppliers = em.createQuery("select count(c.id) from Company c where c.supplier = true", Long.class).getSingleResult();
+                supplierStatistics.put("Total number of suppliers", numberOfSuppliers + "");
+            }
+            {
+                Long numberOfSmallSuppliers = em.createQuery("select count(c.id) from Company c where c.supplier = true and c.companySize = com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE.small", Long.class).getSingleResult();
+                supplierStatistics.put("Number of small size suppliers", numberOfSmallSuppliers + "");
+            }
+            {
+                Long numberOfMediumSuppliers = em.createQuery("select count(c.id) from Company c where c.supplier = true and c.companySize = com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE.medium", Long.class).getSingleResult();
+                supplierStatistics.put("Number of medium size suppliers", numberOfMediumSuppliers + "");
+            }
+            {
+                Long numberOfLargeSuppliers = em.createQuery("select count(c.id) from Company c where c.supplier = true and c.companySize = com.geocento.webapps.eobroker.common.shared.entities.COMPANY_SIZE.large", Long.class).getSingleResult();
+                supplierStatistics.put("Number of large size suppliers", numberOfLargeSuppliers + "");
+            }
+            adminStatisticsDTO.setSupplierStatistics(supplierStatistics);
+
+            HashMap<String, Double> suppliersPerCountry = new HashMap<String, Double>();
+            {
+                Query q = em.createNativeQuery("select c.countrycode, count(c) from company c where c.supplier = true group by c.countrycode");
+                List<Object[]> results = q.getResultList();
+                for (Object[] result : results) {
+                    String countryCode = (String) result[0];
+                    if(countryCode == null) {
+                        countryCode = "Unknown";
+                    }
+                    suppliersPerCountry.put(countryCode, Double.valueOf((Long) result[1]));
+                }
+            }
+            adminStatisticsDTO.setSuppliersPerCountry(suppliersPerCountry);
+
+            HashMap<String, String> offeringStatistics = new HashMap<String, String>();
+            {
+                Long numberOfProducts = em.createQuery("select count(p.id) from Product p", Long.class).getSingleResult();
+                offeringStatistics.put("Total number of product categories", numberOfProducts + "");
+            }
+            {
+                Long numberOfChallenges = em.createQuery("select count(c.id) from Challenge c", Long.class).getSingleResult();
+                offeringStatistics.put("Total number of challenges", numberOfChallenges + "");
+            }
+            {
+                Long numberOfOffTheShelf = em.createQuery("select count(p.id) from ProductDataset p", Long.class).getSingleResult();
+                offeringStatistics.put("Total number of off the shelf offerings", numberOfOffTheShelf + "");
+            }
+            {
+                Long numberOfServices = em.createQuery("select count(p.id) from ProductService p", Long.class).getSingleResult();
+                offeringStatistics.put("Total number of bespoke service offerings", numberOfServices + "");
+            }
+            {
+                Long numberOfSoftware = em.createQuery("select count(s.id) from Software s", Long.class).getSingleResult();
+                offeringStatistics.put("Total number of software offerings", numberOfSoftware + "");
+            }
+            {
+                Long numberOfProjects = em.createQuery("select count(p.id) from Project p", Long.class).getSingleResult();
+                offeringStatistics.put("Total number of project offerings", numberOfProjects + "");
+            }
+            adminStatisticsDTO.setOfferingStatistics(offeringStatistics);
+
+            HashMap<String, Double> productFollowers = new HashMap<String, Double>();
+            {
+                Query q = em.createNativeQuery("select p.name, p.followers from product p where p.followers is not null ORDER by p.followers DESC limit 10");
+                List<Object[]> results = q.getResultList();
+                for (Object[] result : results) {
+                    productFollowers.put((String) result[0], Double.valueOf((Long) result[1]));
+                }
+            }
+            adminStatisticsDTO.setProductFollowers(productFollowers);
+            
+            return adminStatisticsDTO;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error getting statistics");
+        } finally {
+            em.close();
+        }
     }
 
 }

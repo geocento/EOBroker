@@ -9,6 +9,20 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface StatsView extends IsWidget {
 
+    HasValueChangeHandlers<String> getProductsGraphStatsType();
+
+    HasValueChangeHandlers<String> getProductsGraphStatsDuration();
+
+    String getProductsStatsGraphSelection();
+
+    int getProductsStatsGraphWidthPx();
+
+    int getProductsStatsGrapheightPx();
+
+    String getProductsStatsGraphDateOption();
+
+    void setProductsStatsGraphImage(String url);
+
     void setPresenter(Presenter presenter);
 
     void setStats(AdminStatisticsDTO adminStatisticsDTO);

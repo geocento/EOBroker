@@ -58,6 +58,8 @@ public class StatsActivity extends TemplateActivity implements StatsView.Present
                     hideLoading();
                     statsView.setStats(response);
                     updateUserGraphStats();
+                    updateSupplierGraphStats();
+                    updateProductsGraphStats();
                 }
 
             }).call(ServicesUtil.assetsService).getAdminStatistics();
@@ -76,6 +78,9 @@ public class StatsActivity extends TemplateActivity implements StatsView.Present
         handlers.add(statsView.getSupplierGraphStatsType().addValueChangeHandler((ValueChangeHandler) event -> updateSupplierGraphStats()));
         handlers.add(statsView.getSupplierGraphStatsDuration().addValueChangeHandler((ValueChangeHandler) event -> updateSupplierGraphStats()));
 
+        handlers.add(statsView.getProductsGraphStatsType().addValueChangeHandler((ValueChangeHandler) event -> updateProductsGraphStats()));
+        handlers.add(statsView.getProductsGraphStatsDuration().addValueChangeHandler((ValueChangeHandler) event -> updateProductsGraphStats()));
+
     }
 
     private void updateUserGraphStats() {
@@ -93,6 +98,15 @@ public class StatsActivity extends TemplateActivity implements StatsView.Present
                 "&width=" + statsView.getSupplierStatsGraphWidthPx() +
                 "&height=" + statsView.getSupplierStatsGrapheightPx() +
                 "&dateOption=" + statsView.getSupplierStatsGraphDateOption()
+        );
+    }
+
+    private void updateProductsGraphStats() {
+        statsView.setProductsStatsGraphImage(GWT.getModuleBaseURL() + "api/stats/view/?" +
+                "statsType=" + statsView.getProductsStatsGraphSelection() +
+                "&width=" + statsView.getProductsStatsGraphWidthPx() +
+                "&height=" + statsView.getProductsStatsGrapheightPx() +
+                "&dateOption=" + statsView.getProductsStatsGraphDateOption()
         );
     }
 

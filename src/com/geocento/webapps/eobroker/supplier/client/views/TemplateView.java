@@ -110,7 +110,7 @@ public class TemplateView extends Composite implements HasWidgets, ResizeHandler
     @UiField
     MaterialLink statistics;
 
-    private int maxNotifications = 10;
+    private int maxNotifications = 5;
 
     private final ClientFactoryImpl clientFactory;
 

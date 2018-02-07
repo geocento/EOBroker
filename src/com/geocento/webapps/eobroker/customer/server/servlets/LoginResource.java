@@ -9,6 +9,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.User;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.AoIDTO;
 import com.geocento.webapps.eobroker.common.shared.entities.dtos.LoginInfo;
 import com.geocento.webapps.eobroker.customer.server.entities.UserResetToken;
+import com.geocento.webapps.eobroker.customer.server.utils.StatsHelper;
 import com.google.gwt.http.client.RequestException;
 
 import javax.persistence.EntityManager;
@@ -37,6 +38,7 @@ public class LoginResource extends com.geocento.webapps.eobroker.common.server.s
                 aoIDTO.setWktGeometry(dbAoI.getGeometry());
                 loginInfo.setAoIDTO(aoIDTO);
             }
+            StatsHelper.addCounter("users.signin", 1);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         } finally {
@@ -75,6 +77,7 @@ public class LoginResource extends com.geocento.webapps.eobroker.common.server.s
                 logger.error(e.getMessage());
                 throw new Exception("Could not send email, please try again...");
             }
+            StatsHelper.addCounter("users.reset", 1);
         } catch(Exception e) {
             logger.error(e.getMessage(), e);
             if(em.getTransaction().isActive()) {
@@ -128,6 +131,7 @@ public class LoginResource extends com.geocento.webapps.eobroker.common.server.s
                 em.remove(token);
             }
             em.getTransaction().commit();
+            StatsHelper.addCounter("users.changepassword", 1);
         } catch(Exception e) {
             logger.error(e.getMessage(), e);
             if(em.getTransaction().isActive()) {

@@ -124,6 +124,7 @@
                             <design:MaterialLink iconType="BUSINESS" iconPosition="LEFT" textColor="BLUE" text="Products" addStyleNames="{style.category}" ui:field="products"></design:MaterialLink>
                             <design:MaterialLink iconType="ADJUST" iconPosition="LEFT" textColor="BLUE" text="Challenges" addStyleNames="{style.category}" ui:field="challenges"></design:MaterialLink>
                             <design:MaterialLink iconType="NEW_RELEASES" iconPosition="LEFT" textColor="BLUE" text="News Items" addStyleNames="{style.category}" ui:field="newsItems"></design:MaterialLink>
+                            <design:MaterialLink iconType="PIE_CHART" iconPosition="LEFT" textColor="BLUE" text="Statistics" addStyleNames="{style.category}" ui:field="statistics"></design:MaterialLink>
                             <design:MaterialLink iconType="FEEDBACK" iconPosition="LEFT" textColor="BLUE" text="Feedback" addStyleNames="{style.category}" ui:field="feedback"></design:MaterialLink>
                             <design:MaterialLink iconType="SETTINGS" iconPosition="LEFT" textColor="BLUE" text="Settings" addStyleNames="{style.category}" ui:field="settings"></design:MaterialLink>
                             <design:MaterialLink iconType="DEVELOPER_BOARD" iconPosition="LEFT" textColor="BLUE" text="Logs" addStyleNames="{style.category}" ui:field="logs"></design:MaterialLink>

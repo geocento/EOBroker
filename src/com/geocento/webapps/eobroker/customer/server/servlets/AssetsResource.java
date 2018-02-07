@@ -275,7 +275,7 @@ public class AssetsResource implements AssetsService {
         if(challengeId == null) {
             throw new RequestException("Id cannot be null");
         }
-        StatsHelper.addCounter("view", challengeId + "");
+        addViewCounter("challenge", challengeId + "");
         EntityManager em = EMF.get().createEntityManager();
         try {
             Challenge challenge = em.find(Challenge.class, challengeId);
@@ -1660,6 +1660,7 @@ public class AssetsResource implements AssetsService {
                 logger.error(e.getMessage(), e);
             }
             em.getTransaction().commit();
+            StatsHelper.addCounter("users.signup", 1);
         } catch (Exception e) {
             throw handleException(em, e);
         } finally {

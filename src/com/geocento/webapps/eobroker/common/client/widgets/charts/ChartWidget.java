@@ -114,10 +114,24 @@ public class ChartWidget extends Composite implements ResizeHandler {
         chartPanel.add(chart);
     }
 
-    private DataTable createDataTable(Map<String, Double> values, String textLabel, String valueLabel) {
+    public static DataTable createDataTable(Map<String, Double> values, String textLabel, String valueLabel) {
         DataTable dataTable = DataTable.create();
         dataTable.addColumn(ColumnType.STRING, textLabel);
         dataTable.addColumn(ColumnType.NUMBER, valueLabel);
+        dataTable.addRows(values.size());
+        int index = 0;
+        for(String label : values.keySet()) {
+            dataTable.setValue(index, 0, label);
+            dataTable.setValue(index, 1, values.get(label));
+            index++;
+        }
+        return dataTable;
+    }
+
+    public static DataTable createDataTableString(Map<String, String> values, String textLabel, String valueLabel) {
+        DataTable dataTable = DataTable.create();
+        dataTable.addColumn(ColumnType.STRING, textLabel);
+        dataTable.addColumn(ColumnType.STRING, valueLabel);
         dataTable.addRows(values.size());
         int index = 0;
         for(String label : values.keySet()) {

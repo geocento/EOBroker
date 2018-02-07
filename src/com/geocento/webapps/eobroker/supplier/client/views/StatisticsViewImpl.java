@@ -1,9 +1,8 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialImageLoading;
-import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartPanel;
+import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartWidget;
 import com.geocento.webapps.eobroker.common.shared.entities.Category;
-import com.geocento.webapps.eobroker.common.shared.feasibility.PieChartStatistics;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.geocento.webapps.eobroker.supplier.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierStatisticsDTO;
@@ -12,11 +11,19 @@ import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.googlecode.gwt.charts.client.ChartLoader;
+import com.googlecode.gwt.charts.client.ChartPackage;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.options.PieSliceText;
+import com.googlecode.gwt.charts.client.table.Table;
+import com.googlecode.gwt.charts.client.table.TableOptions;
 import gwt.material.design.client.ui.MaterialListBox;
 import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialRow;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +51,7 @@ public class StatisticsViewImpl extends Composite implements StatisticsView {
     @UiField
     MaterialListValueBox<String> viewStatsDateOptions;
     @UiField
-    ChartPanel chartPanel;
+    MaterialPanel followersStats;
     @UiField
     MaterialListBox searchCategory;
     @UiField
@@ -59,6 +66,8 @@ public class StatisticsViewImpl extends Composite implements StatisticsView {
     MaterialListBox productsCategory;
     @UiField
     MaterialPanel offeringsStats;
+    @UiField
+    MaterialRow charts;
 
     public StatisticsViewImpl(ClientFactoryImpl clientFactory) {
 
@@ -104,25 +113,44 @@ public class StatisticsViewImpl extends Composite implements StatisticsView {
 
     @Override
     public void displayStatistics(SupplierStatisticsDTO supplierStatisticsDTO) {
-        offeringsStats.add(new HTMLPanel("" +
-                addProperty("Number of off the shelf products", supplierStatisticsDTO.getOfferingsStats().get(Category.productdatasets)) +
-                addProperty("Number of bespoke services", supplierStatisticsDTO.getOfferingsStats().get(Category.productservices)) +
-                addProperty("Number of software solutions", supplierStatisticsDTO.getOfferingsStats().get(Category.software)) +
-                addProperty("Number of projects", supplierStatisticsDTO.getOfferingsStats().get(Category.project)) +
-                addProperty("Number of product categories covered", supplierStatisticsDTO.getViewProductsOptions().size()) +
-                addProperty("Number of followers", supplierStatisticsDTO.getNumberOfFollowers())
-        ));
-        chartPanel.clear();
-        chartPanel.loadChartAPI(new Runnable() {
+        ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART,
+                ChartPackage.TABLE,
+                ChartPackage.GEOCHART);
+        chartLoader.loadApi(new Runnable() {
             @Override
             public void run() {
-                PieChartStatistics pieChartStatistics = new PieChartStatistics();
-                //barChartStatistics.setName("Product followers");
-                pieChartStatistics.setDescription("Number of followers for each product category");
-                pieChartStatistics.setName("Followers");
-                pieChartStatistics.setValues(supplierStatisticsDTO.getProductFollowers());
-                //barChartStatistics.setVertical(true);
-                chartPanel.addStatistics(pieChartStatistics);
+                // add the numbers on offerings
+                {
+                    HashMap<String, Double> values = new HashMap<String, Double>();
+                    values.put("off the shelf products", Double.valueOf(supplierStatisticsDTO.getOfferingsStats().get(Category.productdatasets)));
+                    values.put("bespoke services", Double.valueOf(supplierStatisticsDTO.getOfferingsStats().get(Category.productservices)));
+                    values.put("software solutions", Double.valueOf(supplierStatisticsDTO.getOfferingsStats().get(Category.software)));
+                    values.put("Number of projects", Double.valueOf(supplierStatisticsDTO.getOfferingsStats().get(Category.project)));
+                    values.put("Number of product categories covered", Double.valueOf(supplierStatisticsDTO.getViewProductsOptions().size()));
+                    values.put("Number of followers", Double.valueOf(supplierStatisticsDTO.getNumberOfFollowers()));
+                    Table chart = new Table();
+                    chart.setWidth("100%");
+                    offeringsStats.clear();
+                    offeringsStats.add(chart);
+                    DataTable dataTable = ChartWidget.createDataTable(values, "Type of Offering", "Number registered");
+                    TableOptions options = TableOptions.create();
+                    options.setAlternatingRowStyle(true);
+                    chart.draw(dataTable, options);
+                }
+
+                // add the stats on followers
+                {
+                    PieChart chart = new PieChart();
+                    chart.setWidth("100%");
+                    chart.setHeight("100%");
+                    followersStats.clear();
+                    followersStats.add(chart);
+                    DataTable dataTable = ChartWidget.createDataTable(supplierStatisticsDTO.getProductFollowers(), "Labels", "Values");
+                    PieChartOptions options = PieChartOptions.create();
+                    options.setPieSliceText(PieSliceText.VALUE);
+                    options.setTitle("Followers per product category");
+                    chart.draw(dataTable, options);
+                }
             }
         });
         HashMap<String, String> productsViewStatsOptions = supplierStatisticsDTO.getViewProductsOptions();

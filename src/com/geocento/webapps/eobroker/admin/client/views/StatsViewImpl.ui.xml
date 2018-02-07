@@ -1,0 +1,75 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:design="urn:import:gwt.material.design.client.ui"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:widgets="urn:import:com.geocento.webapps.eobroker.admin.client.widgets"
+             xmlns:views="urn:import:com.geocento.webapps.eobroker.admin.client.views"
+             xmlns:charts="urn:import:com.geocento.webapps.eobroker.common.client.widgets.charts"
+             xmlns:cwidgets="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
+>
+    <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.StatsViewImpl.Style">
+
+        .services {
+            margin: 20px 0px;
+        }
+
+        .section {
+            margin: 30px 0px;
+            font-size: 1.6em;
+        }
+
+    </ui:style>
+    <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
+    <views:TemplateView titleText="Dashboard" ui:field="template">
+        <design:MaterialPanel padding="20">
+            <design:MaterialTitle title="EO Broker statistics"></design:MaterialTitle>
+            <design:MaterialLabel text="User statistics" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialRow ui:field="userCharts">
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="userStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="userCountryStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l12">
+                    <charts:StatsViewer ui:field="userGraphStats"></charts:StatsViewer>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialLabel text="Supplier statistics" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialRow ui:field="supplierCharts">
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="supplierStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="supplierCountryStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l12">
+                    <charts:StatsViewer ui:field="supplierGraphStats"></charts:StatsViewer>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+            <design:MaterialLabel text="Offering statistics" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialRow ui:field="offeringCharts">
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="offeringStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="productFollowersStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l12">
+                    <charts:StatsViewer ui:field="productGraphStats"></charts:StatsViewer>
+                </design:MaterialColumn>
+            </design:MaterialRow>
+        </design:MaterialPanel>
+    </views:TemplateView>
+</ui:UiBinder>

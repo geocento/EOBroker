@@ -30,11 +30,20 @@
             <design:MaterialTitle title="Your EO Broker statistics"></design:MaterialTitle>
             <design:MaterialLabel text="Generic statistics" addStyleNames="{style.section}"></design:MaterialLabel>
             <design:MaterialPanel marginLeft="10" ui:field="genericStats">
+                <design:MaterialRow ui:field="charts">
+                    <design:MaterialColumn grid="s12 m12 l6">
+                        <design:MaterialPanel marginLeft="10" ui:field="offeringsStats"></design:MaterialPanel>
+                    </design:MaterialColumn>
+                    <design:MaterialColumn grid="s12 m12 l6">
+                        <design:MaterialPanel marginLeft="10" ui:field="followersStats"></design:MaterialPanel>
+                    </design:MaterialColumn>
+                </design:MaterialRow>
+<!--
                 <design:MaterialLabel text="Statistics on offerings" addStyleNames="{style.subsection}"></design:MaterialLabel>
-                <design:MaterialPanel marginLeft="10" ui:field="offeringsStats"></design:MaterialPanel>
                 <design:MaterialLabel text="Product category followers, from your product categories" addStyleNames="{style.subsection}"></design:MaterialLabel>
-                <charts:ChartPanel marginLeft="10" addStyleNames="{style.chartPanel}" ui:field="chartPanel">
+                <charts:ChartPanel marginLeft="10" addStyleNames="{style.followersStats}" ui:field="followersStats">
                 </charts:ChartPanel>
+-->
                 <design:MaterialLabel text="View statistics on products covered" addStyleNames="{style.subsection}"></design:MaterialLabel>
                 <design:MaterialPanel marginLeft="10">
                     <design:MaterialPanel display="FLEX">

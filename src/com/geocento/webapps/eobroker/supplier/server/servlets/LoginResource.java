@@ -4,6 +4,7 @@ import com.geocento.webapps.eobroker.common.server.EMF;
 import com.geocento.webapps.eobroker.common.server.UserSession;
 import com.geocento.webapps.eobroker.common.server.Utils.BCrypt;
 import com.geocento.webapps.eobroker.common.shared.entities.User;
+import com.geocento.webapps.eobroker.customer.server.utils.StatsHelper;
 import com.geocento.webapps.eobroker.supplier.client.services.LoginService;
 import com.geocento.webapps.eobroker.supplier.server.util.UserUtils;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.LoginInfo;
@@ -91,6 +92,7 @@ public class LoginResource implements LoginService {
     }
 
     protected LoginInfo getLoginInfo(User user) {
+        StatsHelper.addCounter("suppliers.signin", 1);
         return UserUtils.getLoginInfo(user);
     }
 

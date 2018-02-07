@@ -182,8 +182,12 @@ public interface AssetsService extends DirectRestService {
     void saveSettings(ApplicationSettings settings) throws RequestException;
 
     @GET
+    @Path("/statistics/")
+    @Produces("application/json")
+    AdminStatisticsDTO getAdminStatistics() throws RequestException;
+
+    @GET
     @Path("/logs/")
-    @Consumes("application/json")
     @Produces("application/json")
     LogsDTO getLogs() throws RequestException;
 }
