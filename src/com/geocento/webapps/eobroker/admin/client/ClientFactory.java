@@ -15,7 +15,7 @@ public interface ClientFactory {
 
     LoginPageView getLoginPageView();
 
-    DashboardView getDashboardView();
+    StatsView getStatsView();
 
     ProductsView getProductsView();
 
