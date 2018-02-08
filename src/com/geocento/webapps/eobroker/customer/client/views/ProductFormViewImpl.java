@@ -90,6 +90,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     HTMLPanel genericComment;
     @UiField
     MaterialMessage submitMessage;
+    @UiField
+    MaterialLink productTitle;
 
     private Presenter presenter;
 
@@ -100,6 +102,8 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         this.clientFactory = clientFactory;
 
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        colorPanel.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
 
         mapContainer.setPresenter(new MapContainer.Presenter() {
             @Override
@@ -151,7 +155,9 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
     public void setProduct(ProductFormDTO productFormDTO) {
         navigation.setVisible(false);
         image.setImageUrl(productFormDTO.getImageUrl());
-        title.setText(productFormDTO.getName());
+        title.setText("Request for multiple suppliers bespoke service quotation");
+        productTitle.setIconType(CategoryUtils.getIconType(Category.products));
+        productTitle.setText(productFormDTO.getName());
         description.setText(productFormDTO.getDescription());
         setFormElements(productFormDTO.getFormFields());
         // add choice of suppliers
@@ -189,11 +195,12 @@ public class ProductFormViewImpl extends Composite implements ProductFormView {
         navigation.setVisible(true);
         navigation.clear();
         navigation.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
-        colorPanel.setBackgroundColor(CategoryUtils.getColor(Category.productservices));
         addBreadcrumb(productServiceFormDTO.getCompanyDTO());
         addBreadcrumb(productServiceFormDTO.getProduct());
         image.setImageUrl(productServiceFormDTO.getServiceImage());
-        title.setText(productServiceFormDTO.getName());
+        title.setText("Request for supplier bespoke service quotation");
+        productTitle.setIconType(CategoryUtils.getIconType(Category.productservices));
+        productTitle.setText(productServiceFormDTO.getName());
         description.setText(productServiceFormDTO.getDescription());
         setFormElements(productServiceFormDTO.getFormFields());
         // add choice of suppliers

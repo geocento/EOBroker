@@ -33,6 +33,7 @@ public class DoubleEditor extends ElementEditor<DoubleFormElement> {
     @Override
     protected void setPlaceHolder(String placeHolder) {
         doubleBox.setPlaceholder(placeHolder);
+        doubleBox.setHelperText(placeHolder);
     }
 
     @Override

@@ -91,20 +91,9 @@ public class StatsHelper {
         return getStatsUrl(ListUtil.toList(target), width, height, dateOptions, title);
     }
 
-    public static String getStatsUrl(String bucket, List<String> buckets, int width, int height, String dateOptions) {
-        return Configuration.getProperty(Configuration.APPLICATION_SETTINGS.graphiteUrl) +
-                "?width=" + width +
-                "&height=" + height +
-                "&bgcolor=white&fgcolor=black" +
-                "&from=" + dateOptions +
-                "&hideLegend=true" +
-                "&vtitle=Number of views" +
-                ListUtil.toString(buckets, new ListUtil.GetLabel<String>() {
-                    @Override
-                    public String getLabel(String value) {
-                        return "&target=stats." + createBucket(bucket + "." + value);
-                    }
-                }, "");
+    public static String getStatsUrl(String bucket, List<String> buckets, int width, int height, String dateOptions, String title) {
+        List<String> targets = ListUtil.mutate(buckets, (ListUtil.Mutate<String, String>) value -> "stats." + createBucket(bucket + "." + value));
+        return getStatsUrl(targets, width, height, dateOptions, title);
     }
 
     public static void addSearchCounter(Long companyId, String category, String id) {

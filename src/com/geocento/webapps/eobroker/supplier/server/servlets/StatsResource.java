@@ -35,7 +35,7 @@ public class StatsResource {
     public StreamingOutput getViewStatsImage(@QueryParam("ids") String ids, @QueryParam("width") int width, @QueryParam("height") int height, @QueryParam("dateOption") String dateOption) throws RequestException {
         UserSession userSession = UserUtils.verifyUserSupplierSession(request);
         // build statsd url
-        String statsdUrl = StatsHelper.getStatsUrl("view." + userSession.getUserCompanyId(), ListUtil.toList(ids.split(",")), width, height, dateOption);
+        String statsdUrl = StatsHelper.getStatsUrl("view." + userSession.getUserCompanyId(), ListUtil.toList(ids.split(",")), width, height, dateOption, null);
         try {
             logger.debug("Streaming stats from URL " + statsdUrl);
             InputStream inputStream = new URL(statsdUrl).openStream();
@@ -56,7 +56,7 @@ public class StatsResource {
     public StreamingOutput getSearchStatsImage(@QueryParam("ids") String ids, @QueryParam("width") int width, @QueryParam("height") int height, @QueryParam("dateOption") String dateOption) throws RequestException {
         UserSession userSession = UserUtils.verifyUserSupplierSession(request);
         // build statsd url
-        String statsdUrl = StatsHelper.getStatsUrl("search." + userSession.getUserCompanyId(), ListUtil.toList(ids.split(",")), width, height, dateOption);
+        String statsdUrl = StatsHelper.getStatsUrl("search." + userSession.getUserCompanyId(), ListUtil.toList(ids.split(",")), width, height, dateOption, null);
         try {
             logger.debug("Streaming stats from URL " + statsdUrl);
             InputStream inputStream = new URL(statsdUrl).openStream();
@@ -77,7 +77,7 @@ public class StatsResource {
     public StreamingOutput getProductsViewStatsImage(@QueryParam("ids") String ids, @QueryParam("width") int width, @QueryParam("height") int height, @QueryParam("dateOption") String dateOption) throws RequestException {
         UserSession userSession = UserUtils.verifyUserSupplierSession(request);
         // build statsd url
-        String statsdUrl = StatsHelper.getStatsUrl("view.products", ListUtil.toList(ids.split(",")), width, height, dateOption);
+        String statsdUrl = StatsHelper.getStatsUrl("view.products", ListUtil.toList(ids.split(",")), width, height, dateOption, null);
         try {
             logger.debug("Streaming stats from URL " + statsdUrl);
             InputStream inputStream = new URL(statsdUrl).openStream();

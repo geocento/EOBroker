@@ -60,6 +60,6 @@ public class ChallengeWidget extends Composite {
                     new SearchPagePlace(Utils.generateTokens(SearchPagePlace.TOKENS.challengeId.toString(), challengeDTO.getId() + ""))));
         }
 
-        description.setText("'" + challengeDTO.getName() + "' " + challengeDTO.getShortDescription());
+        descriptionFull.setText("'" + challengeDTO.getName() + "' " + challengeDTO.getShortDescription());
     }
 }

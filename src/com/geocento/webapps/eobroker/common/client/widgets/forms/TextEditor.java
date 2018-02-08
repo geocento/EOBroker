@@ -30,6 +30,7 @@ public class TextEditor extends ElementEditor<TextFormElement> {
     @Override
     protected void setPlaceHolder(String placeHolder) {
         textBox.setPlaceholder(placeHolder);
+        textBox.setHelperText(placeHolder);
     }
 
     @Override

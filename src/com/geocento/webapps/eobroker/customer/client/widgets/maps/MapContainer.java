@@ -17,6 +17,7 @@ import com.geocento.webapps.eobroker.customer.client.widgets.SelectLayers;
 import com.geocento.webapps.eobroker.customer.shared.LayerInfoDTO;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.RequestException;
@@ -156,9 +157,9 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
         layersListPanel.add(layersList);
         layersList.add(new LoadingWidget("Loading layers..."));
         MaterialLink addNewLayerButton = new MaterialLink("Add new layer");
-        addNewLayerButton.setIconType(IconType.PLUS_ONE);
+        addNewLayerButton.setIconType(IconType.ADD);
         addNewLayerButton.setBackgroundColor(Color.WHITE);
-        addNewLayerButton.setTextColor(Color.GREY);
+        addNewLayerButton.setTextColor(Color.GREY_DARKEN_3);
         addNewLayerButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -280,6 +281,8 @@ public class MapContainer extends com.geocento.webapps.eobroker.common.client.wi
         LayerWidget layerWidget = new LayerWidget(layerSettings.datasetAccessOGC);
         layerWidget.getSelection().setValue(layerSettings.activated);
         layersList.add(layerWidget);
+        layerWidget.addDomHandler(DomEvent::stopPropagation, ClickEvent.getType());
+        //layerWidget.stopTouchStartEvent();
         layerWidget.getSelectionHandler().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
             @Override

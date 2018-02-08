@@ -14,7 +14,6 @@
         .section {
             padding: 10px 0px 10px 10px;
             font-size: 1rem;
-            color: #9e9e9e;
         }
 
         .buttonPanel {
@@ -23,6 +22,7 @@
 
         .mapPanel {
             position: relative;
+            border: 1px solid #333;
         }
 
         .panel {
@@ -112,6 +112,8 @@
 
     </ui:style>
     <design:MaterialPanel addStyleNames="{style.panel}">
+        <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE" ui:field="navigation">
+        </design:MaterialNavBar>
         <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
             <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
                 <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
@@ -123,7 +125,7 @@
                     </design:MaterialPanel>
                     <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
                     <design:MaterialPanel paddingTop="30">
-                        <widgets:MaterialLabelIcon imageHeight="30px" ui:field="company"></widgets:MaterialLabelIcon>
+                        <widgets:MaterialLabelIcon visible="false" imageHeight="30px" ui:field="company"></widgets:MaterialLabelIcon>
                         <design:MaterialPanel float="RIGHT" ui:field="actions">
                             <design:MaterialButton activates="statuses" width="150px" shadow="0" backgroundColor="GREEN" addStyleNames="{style.status}" float="RIGHT" ui:field="status"></design:MaterialButton>
                         </design:MaterialPanel>

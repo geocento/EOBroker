@@ -10,10 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.ui.MaterialCardAction;
-import gwt.material.design.client.ui.MaterialIcon;
-import gwt.material.design.client.ui.MaterialLabel;
-import gwt.material.design.client.ui.MaterialLink;
+import gwt.material.design.client.ui.*;
 
 /**
  * Created by thomas on 08/11/2016.
@@ -24,18 +21,21 @@ public class DataAccessWidget extends Composite {
     }
 
     private static DataAccessWidgetUiBinder ourUiBinder = GWT.create(DataAccessWidgetUiBinder.class);
+
     @UiField
     MaterialImageLoading image;
     @UiField
     MaterialLabel pitch;
     @UiField
-    MaterialLabel title;
+    MaterialCardTitle title;
     @UiField
     MaterialLabel details;
     @UiField
-    MaterialCardAction actions;
+    MaterialPanel actions;
     @UiField
     MaterialIcon imageIcon;
+    @UiField
+    MaterialLabel descriptionFull;
 
     private Color color;
 
@@ -68,6 +68,7 @@ public class DataAccessWidget extends Composite {
             }
             imageIcon.setIconType(iconType);
         }
+        descriptionFull.setText(datasetAccess.getTitle() + ": " + datasetAccess.getPitch());
     }
 
     public MaterialLink addAction(String name, String url, String target, String tooltip) {

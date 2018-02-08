@@ -8,6 +8,8 @@
 >
     <ui:style field="style" type="com.geocento.webapps.eobroker.admin.client.views.StatsViewImpl.Style">
 
+        @external google-visualization-table;
+
         .services {
             margin: 20px 0px;
         }
@@ -17,13 +19,17 @@
             font-size: 1.6em;
         }
 
+        .charts .google-visualization-table {
+            width: 100% !important;
+        }
+
     </ui:style>
     <ui:with field="res" type="com.geocento.webapps.eobroker.admin.client.styles.StyleResources"/>
     <views:TemplateView titleText="Dashboard" ui:field="template">
         <design:MaterialPanel padding="20">
             <design:MaterialTitle title="EO Broker statistics"></design:MaterialTitle>
             <design:MaterialLabel text="User statistics" addStyleNames="{style.section}"></design:MaterialLabel>
-            <design:MaterialRow ui:field="userCharts">
+            <design:MaterialRow addStyleNames="{style.charts}" ui:field="userCharts">
                 <design:MaterialColumn grid="s12 m12 l6">
                     <design:MaterialPanel marginLeft="10" ui:field="userStats">
                         <cwidgets:MaterialImageLoading/>
@@ -39,7 +45,7 @@
                 </design:MaterialColumn>
             </design:MaterialRow>
             <design:MaterialLabel text="Supplier statistics" addStyleNames="{style.section}"></design:MaterialLabel>
-            <design:MaterialRow ui:field="supplierCharts">
+            <design:MaterialRow addStyleNames="{style.charts}" ui:field="supplierCharts">
                 <design:MaterialColumn grid="s12 m12 l6">
                     <design:MaterialPanel marginLeft="10" ui:field="supplierStats">
                         <cwidgets:MaterialImageLoading/>
@@ -55,7 +61,7 @@
                 </design:MaterialColumn>
             </design:MaterialRow>
             <design:MaterialLabel text="Offering statistics" addStyleNames="{style.section}"></design:MaterialLabel>
-            <design:MaterialRow ui:field="offeringCharts">
+            <design:MaterialRow addStyleNames="{style.charts}" ui:field="offeringCharts">
                 <design:MaterialColumn grid="s12 m12 l6">
                     <design:MaterialPanel marginLeft="10" ui:field="offeringStats">
                         <cwidgets:MaterialImageLoading/>

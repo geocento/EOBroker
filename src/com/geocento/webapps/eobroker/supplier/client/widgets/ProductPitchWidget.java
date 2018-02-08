@@ -19,10 +19,10 @@ import gwt.material.design.client.ui.MaterialLink;
  */
 public class ProductPitchWidget extends Composite {
 
-    interface CompanyWidgetUiBinder extends UiBinder<Widget, ProductPitchWidget> {
+    interface ProductPitchWidgetUiBinder extends UiBinder<Widget, ProductPitchWidget> {
     }
 
-    private static CompanyWidgetUiBinder ourUiBinder = GWT.create(CompanyWidgetUiBinder.class);
+    private static ProductPitchWidgetUiBinder ourUiBinder = GWT.create(ProductPitchWidgetUiBinder.class);
 
     @UiField
     MaterialLabel title;

@@ -89,13 +89,9 @@ public class FullViewImpl extends Composite implements FullView {
     @UiField
     MaterialPanel colorPanel;
     @UiField
-    MaterialPanel recommendationsPanel;
-    @UiField
     MaterialNavBar navigation;
     @UiField
     MaterialPanel actions;
-    @UiField
-    MaterialLabel recommendationsLabel;
 
     private Presenter presenter;
 
@@ -216,14 +212,9 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add suggestions
-        recommendationsPanel.clear();
-        recommendationsLabel.setText("Similar products...");
         List<ProductDTO> suggestedProducts = productDescriptionDTO.getSuggestedProducts();
-        if(suggestedProducts == null || suggestedProducts.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
-            materialLabel.setPadding(20);
-            recommendationsPanel.add(materialLabel);
-        } else {
+        if(!ListUtil.isNullOrEmpty(suggestedProducts)) {
+            MaterialPanel recommendationsPanel = new MaterialPanel();
             MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for(ProductDTO productDTO : suggestedProducts) {
@@ -232,11 +223,16 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(productWidget);
                 materialRow.add(materialColumn);
             }
+            addSection("Similar products...", "recommendations", "A selection of product categories similar to this product category", recommendationsPanel, 1000);
         }
     }
 
     private ExpandPanel addSection(String label, String tag, String comment, Widget widget) {
-        ExpandPanel section = createSection(label, tag, comment, widget);
+        return addSection(label, tag, comment, widget, 400);
+    }
+
+    private ExpandPanel addSection(String label, String tag, String comment, Widget widget, int maxHeight) {
+        ExpandPanel section = createSection(label, tag, comment, widget, maxHeight);
         tabsContent.add(section);
         return section;
     }
@@ -245,18 +241,25 @@ public class FullViewImpl extends Composite implements FullView {
         return addSection(label, tag, null, widget);
     }
 
-    private ExpandPanel createSection(String label, String tag, String comment, Widget widget) {
+    private ExpandPanel addSection(String label, String tag, Widget widget, int maxHeight) {
+        return addSection(label, tag, null, widget, maxHeight);
+    }
+
+    private ExpandPanel createSection(String label, String tag, String comment, Widget widget, int maxHeight) {
         ExpandPanel expandPanel = new ExpandPanel();
         expandPanel.setLabel(label);
         expandPanel.setLabelStyle(style.sectionLabel());
-        expandPanel.setLabelColor(Color.WHITE);
+        expandPanel.setLabelColor(Color.BLACK);
         expandPanel.setId(tag);
         //expandPanel.setContentMargin(20);
-        MorePanel morePanel = new MorePanel(300);
+        MorePanel morePanel = new MorePanel(maxHeight);
         widget.getElement().getStyle().setMarginLeft(20, com.google.gwt.dom.client.Style.Unit.PX);
         if(comment != null && comment.length() > 0) {
             MaterialPanel materialPanel = new MaterialPanel();
-            materialPanel.add(createComment(comment));
+            MaterialLabel commentWidget = createComment(comment);
+            commentWidget.setMarginTop(20);
+            commentWidget.setMarginBottom(20);
+            materialPanel.add(commentWidget);
             materialPanel.add(widget);
             morePanel.setContent(materialPanel);
         } else {
@@ -321,6 +324,7 @@ public class FullViewImpl extends Composite implements FullView {
         comparedServiceLabel.getElement().insertFirst(spanElement);
         // add link to view the off the shelf product
         MaterialLink comparedServiceLink = new MaterialLink();
+        comparedServiceLink.setTextColor(Color.BLACK);
         comparedServiceLabel.add(comparedServiceLink);
         comparedServiceLabel.getElement().getStyle().setProperty("margin", "10px 0px");
         characteristicsPanel.add(comparedServiceLabel);
@@ -438,6 +442,7 @@ public class FullViewImpl extends Composite implements FullView {
             // add label with drop down to select the service
             MaterialLoadingLink compareLink = new MaterialLoadingLink();
             compareLink.setText("compare");
+            compareLink.setTextColor(Color.BLACK);
             compareLink.setDisplay(Display.INLINE_BLOCK);
             compareLink.setMarginLeft(10);
             compareLink.setIconType(IconType.ARROW_DROP_DOWN);
@@ -594,14 +599,9 @@ public class FullViewImpl extends Composite implements FullView {
                     createSubsection(""));
         }
 
-        recommendationsPanel.clear();
-        recommendationsLabel.setText("You might also be interested in...");
         List<ProductServiceDTO> suggestedServices = productServiceDescriptionDTO.getSuggestedServices();
-        if(suggestedServices == null || suggestedServices.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
-            materialLabel.setPadding(20);
-            recommendationsPanel.add(materialLabel);
-        } else {
+        if(!ListUtil.isNullOrEmpty(suggestedServices)) {
+            MaterialPanel recommendationsPanel = new MaterialPanel();
             MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for(ProductServiceDTO productServiceDTO : productServiceDescriptionDTO.getSuggestedServices()) {
@@ -610,6 +610,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(productServiceWidget);
                 materialRow.add(materialColumn);
             }
+            addSection("You might also be interested in...", "recommendations", "Suggested bespoke services matching this service", recommendationsPanel, 1000);
         }
     }
 
@@ -916,6 +917,7 @@ public class FullViewImpl extends Composite implements FullView {
             // add label with drop down to select the off the shelf product
             MaterialLoadingLink compareLink = new MaterialLoadingLink();
             compareLink.setText("compare");
+            compareLink.setTextColor(Color.BLACK);
             compareLink.setDisplay(Display.INLINE_BLOCK);
             compareLink.setMarginLeft(10);
             compareLink.setIconType(IconType.ARROW_DROP_DOWN);
@@ -1098,14 +1100,9 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add recommendations
-        recommendationsPanel.clear();
-        recommendationsLabel.setText("You might also be interested in...");
         List<ProductDatasetDTO> suggestedDatasets = productDatasetDescriptionDTO.getSuggestedDatasets();
-        if(suggestedDatasets == null || suggestedDatasets.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
-            materialLabel.setPadding(20);
-            recommendationsPanel.add(materialLabel);
-        } else {
+        if(!ListUtil.isNullOrEmpty(suggestedDatasets)) {
+            MaterialPanel recommendationsPanel = new MaterialPanel();
             MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for (ProductDatasetDTO productDatasetDTO : suggestedDatasets) {
@@ -1114,6 +1111,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(productDatasetWidget);
                 materialRow.add(materialColumn);
             }
+            addSection("You might also be interested in...", "recommendations", "Suggested off the shelf products", recommendationsPanel, 1000);
         }
     }
 
@@ -1156,7 +1154,7 @@ public class FullViewImpl extends Composite implements FullView {
                 productsPanel.add(materialRow);
                 for(ProductSoftwareDTO productSoftwareDTO : productsCovered) {
                     MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
-                    ProductSoftwareWidget productSoftwareWidget = new ProductSoftwareWidget(productSoftwareDTO);
+                    ProductPitchWidget productSoftwareWidget = new ProductPitchWidget(productSoftwareDTO.getProduct(), productSoftwareDTO.getPitch());
                     materialColumn.add(productSoftwareWidget);
                     materialRow.add(materialColumn);
                 }
@@ -1181,14 +1179,9 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add recommendations
-        recommendationsPanel.clear();
-        recommendationsLabel.setText("You might also be interested in...");
         List<SoftwareDTO> suggestedSoftware = softwareDescriptionDTO.getSuggestedSoftware();
-        if(suggestedSoftware == null || suggestedSoftware.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
-            materialLabel.setPadding(20);
-            recommendationsPanel.add(materialLabel);
-        } else {
+        if(!ListUtil.isNullOrEmpty(suggestedSoftware)) {
+            MaterialPanel recommendationsPanel = new MaterialPanel();
             MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for (SoftwareDTO softwareDTO : suggestedSoftware) {
@@ -1197,6 +1190,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(softwareWidget);
                 materialRow.add(materialColumn);
             }
+            addSection("You might also be interested in...", "recommendations", "Suggested software solutions similar to this one", recommendationsPanel, 1000);
         }
     }
 
@@ -1239,16 +1233,12 @@ public class FullViewImpl extends Composite implements FullView {
             if (productsCovered == null || productsCovered.size() == 0) {
                 addColumnLine(new MaterialLabel("No products..."));
             } else {
+                MaterialRow materialRow = new MaterialRow();
+                productsPanel.add(materialRow);
                 for (ProductProjectDTO productProjectDTO : productsCovered) {
-                    MaterialRow materialRow = new MaterialRow();
-                    materialRow.setWidth("100%");
-                    productsPanel.add(materialRow);
-                    MaterialColumn materialColumn = new MaterialColumn(6, 4, 3);
-                    ProductWidget productWidget = new ProductWidget(productProjectDTO.getProduct());
-                    materialColumn.add(productWidget);
-                    materialRow.add(materialColumn);
-                    materialColumn = new MaterialColumn(6, 8, 9);
-                    materialColumn.add(new HTML("<h5>Pitch</h5>" + productProjectDTO.getPitch()));
+                    MaterialColumn materialColumn = new MaterialColumn(12, 12, 6);
+                    ProductPitchWidget productProjectWidget = new ProductPitchWidget(productProjectDTO.getProduct(), productProjectDTO.getPitch());
+                    materialColumn.add(productProjectWidget);
                     materialRow.add(materialColumn);
                 }
             }
@@ -1281,14 +1271,9 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add recommendations
-        recommendationsPanel.clear();
-        recommendationsLabel.setText("You might also be interested in...");
         List<ProjectDTO> suggestedProjects = projectDescriptionDTO.getSuggestedProjects();
-        if(suggestedProjects == null || suggestedProjects.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
-            materialLabel.setPadding(20);
-            recommendationsPanel.add(materialLabel);
-        } else {
+        if(!ListUtil.isNullOrEmpty(suggestedProjects)) {
+            MaterialPanel recommendationsPanel = new MaterialPanel();
             MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for (ProjectDTO projectDTO : suggestedProjects) {
@@ -1297,6 +1282,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(projectWidget);
                 materialRow.add(materialColumn);
             }
+            addSection("You might also be interested in...", "recommendations", "Suggested R&D projects similar to this one", recommendationsPanel, 1000);
         }
     }
 
@@ -1567,14 +1553,9 @@ public class FullViewImpl extends Composite implements FullView {
         }
 
         // add recommendations
-        recommendationsPanel.clear();
-        recommendationsLabel.setText("Other similar companies...");
         List<CompanyDTO> suggestedCompanies = companyDescriptionDTO.getSuggestedCompanies();
-        if(suggestedCompanies == null || suggestedCompanies.size() == 0) {
-            MaterialLabel materialLabel = new MaterialLabel("No suggestions...");
-            materialLabel.setPadding(20);
-            recommendationsPanel.add(materialLabel);
-        } else {
+        if(!ListUtil.isNullOrEmpty(suggestedCompanies)) {
+            MaterialPanel recommendationsPanel = new MaterialPanel();
             MaterialRow materialRow = new MaterialRow();
             recommendationsPanel.add(materialRow);
             for (CompanyDTO companyDTO : suggestedCompanies) {
@@ -1583,6 +1564,7 @@ public class FullViewImpl extends Composite implements FullView {
                 materialColumn.add(companyWidget);
                 materialRow.add(materialColumn);
             }
+            addSection("You might also be interested in...", "recommendations", "Suggested success stories similar to this one", recommendationsPanel, 1000);
         }
     }
 

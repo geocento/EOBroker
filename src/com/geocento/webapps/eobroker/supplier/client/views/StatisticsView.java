@@ -1,7 +1,7 @@
 package com.geocento.webapps.eobroker.supplier.client.views;
 
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierStatisticsDTO;
-import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface StatisticsView extends IsWidget {
 
     void displayStatistics(SupplierStatisticsDTO response);
 
-    HasChangeHandlers getViewStatsOptions();
+    HasValueChangeHandlers<String> getViewStatsOptions();
 
     List<String> getSelectedViewStatsOptions();
 
@@ -31,11 +31,11 @@ public interface StatisticsView extends IsWidget {
 
     String getViewStatsDateOption();
 
-    HasChangeHandlers getViewStatsDateOptions();
+    HasValueChangeHandlers<String> getViewStatsDateOptions();
 
-    HasChangeHandlers getSearchStatsOptions();
+    HasValueChangeHandlers<String> getSearchStatsOptions();
 
-    HasChangeHandlers getSearchStatsDateOptions();
+    HasValueChangeHandlers<String> getSearchStatsDateOptions();
 
     List<String> getSelectedSearchStatsOptions();
 
@@ -49,7 +49,7 @@ public interface StatisticsView extends IsWidget {
 
     String getSearchStatsDateOption();
 
-    HasChangeHandlers getProductsStatsOptions();
+    HasValueChangeHandlers<String> getProductsStatsOptions();
 
     List<String> getSelectedProductsStatsOptions();
 
@@ -63,7 +63,7 @@ public interface StatisticsView extends IsWidget {
 
     String getProductsStatsDateOption();
 
-    HasChangeHandlers getProductsStatsDateOptions();
+    HasValueChangeHandlers<String> getProductsStatsDateOptions();
 
     public interface Presenter {
     }

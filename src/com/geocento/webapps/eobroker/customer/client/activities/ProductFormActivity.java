@@ -109,19 +109,19 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
         }
 
         clearRequest();
-        displayLoading();
         if(productId != null) {
+            displayFullLoading("Loading product information...");
             try {
                 REST.withCallback(new MethodCallback<ProductFormDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        hideLoading();
+                        hideFullLoading();
                         displayError("Could not retrieve product information");
                     }
 
                     @Override
                     public void onSuccess(Method method, final ProductFormDTO productFormDTO) {
-                        hideLoading();
+                        hideFullLoading();
                         productFormView.setProduct(productFormDTO);
                         clearRequest();
                     }
@@ -129,17 +129,18 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
             } catch (RequestException e) {
             }
         } else if(productServiceId != null) {
+            displayFullLoading("Loading service information...");
             try {
                 REST.withCallback(new MethodCallback<ProductServiceFormDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        hideLoading();
+                        hideFullLoading();
                         displayError("Could not retrieve product information");
                     }
 
                     @Override
                     public void onSuccess(Method method, final ProductServiceFormDTO productServiceFormDTO) {
-                        hideLoading();
+                        hideFullLoading();
                         // make sure we also update the product id
                         productId = productServiceFormDTO.getProduct().getId();
                         productFormView.setProductService(productServiceFormDTO);
@@ -149,17 +150,18 @@ public class ProductFormActivity extends TemplateActivity implements ProductForm
             } catch (RequestException e) {
             }
         } else if(searchId != null) {
+            displayFullLoading("Loading service information...");
             try {
                 REST.withCallback(new MethodCallback<ProductServiceSearchFormDTO>() {
                     @Override
                     public void onFailure(Method method, Throwable exception) {
-                        hideLoading();
+                        hideFullLoading();
                         displayError("Could not retrieve product information");
                     }
 
                     @Override
                     public void onSuccess(Method method, final ProductServiceSearchFormDTO productServiceSearchFormDTO) {
-                        hideLoading();
+                        hideFullLoading();
                         clearRequest();
                         // make sure we also update the product id
                         ProductServiceFormDTO productServiceFormDTO = productServiceSearchFormDTO.getProductServiceFormDTO();

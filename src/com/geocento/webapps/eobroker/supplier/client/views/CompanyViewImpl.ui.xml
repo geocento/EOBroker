@@ -1,12 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:design="urn:import:gwt.material.design.client.ui"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:richeditor="urn:import:gwt.material.design.addins.client.richeditor"
              xmlns:c="urn:import:com.geocento.webapps.eobroker.common.client.widgets"
              xmlns:views="urn:import:com.geocento.webapps.eobroker.supplier.client.views"
              xmlns:material="urn:import:com.geocento.webapps.eobroker.common.client.widgets.material"
         >
     <ui:style>
+
         .panel header {
 
         }
@@ -88,16 +88,16 @@
                 <c:MaterialImageUploader imageWidth="300" imageHeight="200" ui:field="imageUploader"></c:MaterialImageUploader>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextBox placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
+                <design:MaterialTextBox helperText="Company Name" placeholder="Company Name" iconType="ACCOUNT_CIRCLE" ui:field="name"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextBox placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
+                <design:MaterialTextBox helperText="Contact Email" placeholder="Contact Email" type="EMAIL" iconType="EMAIL" ui:field="email"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextBox placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
+                <design:MaterialTextBox helperText="Company website" placeholder="Company website" type="URL" iconType="WEB" ui:field="website"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <design:MaterialTextArea placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
+                <design:MaterialTextArea helperText="Short description" placeholder="Short description" iconType="TEXT_FIELDS" ui:field="description"/>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Full description" iconType="TEXT_FIELDS" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
@@ -105,17 +105,20 @@
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Founded in" iconType="ACCESS_TIME" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
-                <design:MaterialDatePicker autoClose="true" placeholder="Date of the incorporation of the company" dateSelectionType="YEAR_MONTH_DAY" ui:field="startedIn"></design:MaterialDatePicker>
+                <design:MaterialDatePicker autoClose="true" helperText="Date of the incorporation of the company" dateSelectionType="YEAR_MONTH_DAY" ui:field="startedIn"></design:MaterialDatePicker>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Address" iconType="LOCATION_CITY" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
-                <design:MaterialTextArea placeholder="The postal address of your company" ui:field="address"/>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialTextArea helperText="The postal address of your company" placeholder="The postal address of your company" ui:field="address"/>
+                    <c:CountryEditor marginTop="20" ui:field="country"></c:CountryEditor>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
-                <c:CountryEditor placeholder="Country" ui:field="country"></c:CountryEditor>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12">
-                <design:MaterialListBox placeholder="Company size" ui:field="companySize"></design:MaterialListBox>
+                <design:MaterialLink text="Company size" iconType="FORMAT_SIZE" textColor="BLACK" addStyleNames="{style.subtitle}"></design:MaterialLink>
+                <design:MaterialPanel addStyleNames="{style.sectionPanel}">
+                    <design:MaterialListBox ui:field="companySize"></design:MaterialListBox>
+                </design:MaterialPanel>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12">
                 <design:MaterialLink text="Awards" textColor="BLACK" iconType="STAR" addStyleNames="{style.subtitle}"/>

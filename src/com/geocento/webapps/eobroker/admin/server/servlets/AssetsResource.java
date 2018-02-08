@@ -1171,7 +1171,7 @@ public class AssetsResource implements AssetsService {
             AdminStatisticsDTO adminStatisticsDTO = new AdminStatisticsDTO();
             // collect some information
             // general stats such as number of users, companies, products...
-            HashMap<String, String> userStatistics = new HashMap<String, String>();
+            LinkedHashMap<String, String> userStatistics = new LinkedHashMap<String, String>();
             {
                 Long numberOfUsers = em.createQuery("select count(u.username) from users u", Long.class).getSingleResult();
                 userStatistics.put("Total number of users", numberOfUsers + "");
@@ -1207,7 +1207,7 @@ public class AssetsResource implements AssetsService {
             }
             adminStatisticsDTO.setUsersStatistics(userStatistics);
 
-            HashMap<String, Double> usersPerCountry = new HashMap<String, Double>();
+            LinkedHashMap<String, Double> usersPerCountry = new LinkedHashMap<String, Double>();
             {
                 Query q = em.createNativeQuery("select c.countrycode, count(u.username) from users u left join company c on u.company_id = c.id group by c.countrycode");
                 List<Object[]> results = q.getResultList();
@@ -1220,7 +1220,7 @@ public class AssetsResource implements AssetsService {
                 }
             }
             adminStatisticsDTO.setUsersPerCountry(usersPerCountry);
-            HashMap<String, String> supplierStatistics = new HashMap<String, String>();
+            LinkedHashMap<String, String> supplierStatistics = new LinkedHashMap<String, String>();
             {
                 Long numberOfSuppliers = em.createQuery("select count(c.id) from Company c where c.supplier = true", Long.class).getSingleResult();
                 supplierStatistics.put("Total number of suppliers", numberOfSuppliers + "");
@@ -1239,7 +1239,7 @@ public class AssetsResource implements AssetsService {
             }
             adminStatisticsDTO.setSupplierStatistics(supplierStatistics);
 
-            HashMap<String, Double> suppliersPerCountry = new HashMap<String, Double>();
+            LinkedHashMap<String, Double> suppliersPerCountry = new LinkedHashMap<String, Double>();
             {
                 Query q = em.createNativeQuery("select c.countrycode, count(c) from company c where c.supplier = true group by c.countrycode");
                 List<Object[]> results = q.getResultList();
@@ -1253,7 +1253,7 @@ public class AssetsResource implements AssetsService {
             }
             adminStatisticsDTO.setSuppliersPerCountry(suppliersPerCountry);
 
-            HashMap<String, String> offeringStatistics = new HashMap<String, String>();
+            LinkedHashMap<String, String> offeringStatistics = new LinkedHashMap<String, String>();
             {
                 Long numberOfProducts = em.createQuery("select count(p.id) from Product p", Long.class).getSingleResult();
                 offeringStatistics.put("Total number of product categories", numberOfProducts + "");
@@ -1280,7 +1280,7 @@ public class AssetsResource implements AssetsService {
             }
             adminStatisticsDTO.setOfferingStatistics(offeringStatistics);
 
-            HashMap<String, Double> productFollowers = new HashMap<String, Double>();
+            LinkedHashMap<String, Double> productFollowers = new LinkedHashMap<String, Double>();
             {
                 Query q = em.createNativeQuery("select p.name, p.followers from product p where p.followers is not null ORDER by p.followers DESC limit 10");
                 List<Object[]> results = q.getResultList();

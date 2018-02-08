@@ -22,7 +22,8 @@
 
         .sectionLabel {
             padding: 10px;
-            background: linear-gradient(to right, #809dab, rgba(0, 0, 0, 0));
+            background: #ccc;
+            /*background: linear-gradient(to bottom, #809dab, rgba(0, 0, 0, 0));*/
             text-transform: capitalize;
         }
 
@@ -130,23 +131,23 @@
     <design:MaterialPanel addStyleNames="{style.panel}">
         <design:MaterialNavBar shadow="0" backgroundColor="BLUE_GREY_LIGHTEN_3" paddingLeft="30" textColor="WHITE" ui:field="navigation">
         </design:MaterialNavBar>
-        <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="WHITE" paddingTop="10" paddingBottom="10">
-            <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
-                <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
-            </design:MaterialColumn>
-            <design:MaterialColumn grid="s12 m8 l8">
-                <design:MaterialPanel>
-                    <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
-                    <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
-                </design:MaterialPanel>
-                <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
-                    <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
-                </design:MaterialPanel>
-            </design:MaterialColumn>
-        </design:MaterialRow>
         <design:MaterialPanel layoutPosition="RELATIVE">
             <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
+            <design:MaterialRow marginBottom="0" shadow="0" backgroundColor="TRANSPARENT" paddingTop="10" paddingBottom="10" layoutPosition="RELATIVE">
+                <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
+                    <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m8 l8">
+                    <design:MaterialPanel>
+                        <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
+                        <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                    </design:MaterialPanel>
+                    <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
+                        <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+            </design:MaterialRow>
             <design:MaterialPanel addStyleNames="{style.tabsContent}" ui:field="tabsContent"></design:MaterialPanel>
         </design:MaterialPanel>
 <!--

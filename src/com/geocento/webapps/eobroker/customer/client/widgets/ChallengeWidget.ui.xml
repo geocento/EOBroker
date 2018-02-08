@@ -29,6 +29,14 @@
         .title {
             line-height: normal !important;
         }
+        .title span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .title i {
+            margin-left: 5px !important;
+        }
 
     </ui:style>
     <design:MaterialCard backgroundColor="BLUE_GREY" axis="VERTICAL" shadow="1">

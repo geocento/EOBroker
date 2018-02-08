@@ -51,7 +51,6 @@
         .section {
             padding: 10px 0px 10px 10px;
             font-size: 1rem;
-            color: #9e9e9e;
         }
 
         .tags {
@@ -85,34 +84,19 @@
                 <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12 m8 l8">
-                <design:MaterialPanel>
-                    <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags"></g:HTMLPanel>
-                    <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
-                </design:MaterialPanel>
-                <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
-                    <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                <design:MaterialLabel addStyleNames="{style.title}" ui:field="title"></design:MaterialLabel>
+                <design:MaterialLink fontSize="1.2em" iconFontSize="1.2em" marginTop="10" marginBottom="10" textColor="BLACK" iconType="FORMAT_SIZE" ui:field="productTitle"></design:MaterialLink>
+                <design:MaterialPanel paddingLeft="30">
+                    <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT">
+                        <design:MaterialPanel ui:field="actions"></design:MaterialPanel>
+                    </design:MaterialPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
         </design:MaterialRow>
         <design:MaterialPanel layoutPosition="RELATIVE">
             <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
             <design:MaterialPanel padding="20">
-                <design:MaterialLabel marginTop="20" fontSize="1.4em">Request for quotation</design:MaterialLabel>
-                <!--
-                        <design:MaterialRow>
-                            <design:MaterialColumn grid="s12 m4 l4" paddingRight="30">
-                                <design:MaterialImage addStyleNames="{style.image}" ui:field="image"></design:MaterialImage>
-                            </design:MaterialColumn>
-                            <design:MaterialColumn grid="s12 m8 l8">
-                                <design:MaterialLabel title="" addStyleNames="{style.title}" ui:field="name"></design:MaterialLabel>
-                                <design:MaterialLabel addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
-                                <g:HTMLPanel addStyleNames="{style.tags}" ui:field="tags">
-                                    <design:MaterialChip textColor="WHITE" backgroundColor="GREY" text="Information" letter="i" letterColor="WHITE" letterBackgroundColor="RED" ui:field="information"></design:MaterialChip>
-                                </g:HTMLPanel>
-                            </design:MaterialColumn>
-                        </design:MaterialRow>
-                -->
                 <g:HTMLPanel>
                     <design:MaterialLabel text="Please fill in the form" marginTop="20" marginBottom="20" fontSize="1.2em"/>
                     <design:MaterialRow>

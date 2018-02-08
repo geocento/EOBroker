@@ -33,6 +33,7 @@ public class IntegerEditor extends ElementEditor<IntegerFormElement> {
     @Override
     protected void setPlaceHolder(String placeHolder) {
         integerBox.setPlaceholder(placeHolder);
+        integerBox.setHelperText(placeHolder);
     }
 
     @Override

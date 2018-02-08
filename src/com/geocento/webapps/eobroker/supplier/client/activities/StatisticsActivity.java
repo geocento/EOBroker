@@ -8,8 +8,7 @@ import com.geocento.webapps.eobroker.supplier.client.services.ServicesUtil;
 import com.geocento.webapps.eobroker.supplier.client.views.StatisticsView;
 import com.geocento.webapps.eobroker.supplier.shared.dtos.SupplierStatisticsDTO;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
@@ -74,47 +73,14 @@ public class StatisticsActivity extends TemplateActivity implements StatisticsVi
     protected void bind() {
         super.bind();
 
-        handlers.add(statisticsView.getViewStatsOptions().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                updateViewStats();
-            }
-        }));
+        handlers.add(statisticsView.getViewStatsOptions().addValueChangeHandler((ValueChangeHandler) event -> updateViewStats()));
+        handlers.add(statisticsView.getViewStatsDateOptions().addValueChangeHandler((ValueChangeHandler) event -> updateViewStats()));
 
-        handlers.add(statisticsView.getViewStatsDateOptions().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                updateViewStats();
-            }
-        }));
+        handlers.add(statisticsView.getSearchStatsOptions().addValueChangeHandler((ValueChangeHandler) event -> updateSearchStats()));
+        handlers.add(statisticsView.getSearchStatsDateOptions().addValueChangeHandler((ValueChangeHandler) event -> updateSearchStats()));
 
-        handlers.add(statisticsView.getSearchStatsOptions().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                updateSearchStats();
-            }
-        }));
-
-        handlers.add(statisticsView.getSearchStatsDateOptions().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                updateSearchStats();
-            }
-        }));
-
-        handlers.add(statisticsView.getProductsStatsOptions().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                updateProductsViewStats();
-            }
-        }));
-
-        handlers.add(statisticsView.getProductsStatsDateOptions().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                updateProductsViewStats();
-            }
-        }));
+        handlers.add(statisticsView.getProductsStatsOptions().addValueChangeHandler((ValueChangeHandler) event -> updateProductsViewStats()));
+        handlers.add(statisticsView.getProductsStatsDateOptions().addValueChangeHandler((ValueChangeHandler) event -> updateProductsViewStats()));
     }
 
     private void updateViewStats() {

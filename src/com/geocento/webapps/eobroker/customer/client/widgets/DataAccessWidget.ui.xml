@@ -6,19 +6,27 @@
         .pitch {
             overflow: hidden;
             line-height: 1.2em;
-            height: 1.2em;
+            height: 2.4em;
             font-size: 1em;
             /* TODO - find something more cross browser */
-            -webkit-line-clamp: 1;
+            -webkit-line-clamp: 2;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             color: grey;
         }
 
         .title {
-            line-height: 1.6em;
+            line-height: normal !important;
             font-size: 1.2em;
             color: #333;
+        }
+        .title span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .title i {
+            margin-left: 5px !important;
         }
 
         .image {
@@ -29,19 +37,27 @@
             font-size: 8rem !important;
         }
 
+        .descriptionFull {
+
+        }
+
     </ui:style>
     <design:MaterialCard backgroundColor="WHITE" axis="HORIZONTAL" shadow="1">
         <design:MaterialCardImage>
             <design:MaterialIcon iconSize="LARGE" backgroundColor="GREEN" textColor="WHITE" addStyleNames="{style.imageIcon}" ui:field="imageIcon"></design:MaterialIcon>
             <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="image"></widgets:MaterialImageLoading>
         </design:MaterialCardImage>
-        <design:MaterialCardContent textColor="BLACK" padding="10">
-            <design:MaterialLabel truncate="true" fontSize="1.2em" ui:field="title"/>
+        <design:MaterialCardContent textColor="BLACK" padding="10" layoutPosition="RELATIVE" height="100%">
+            <design:MaterialCardTitle iconType="MORE_VERT" iconPosition="RIGHT" truncate="true" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></design:MaterialCardTitle>
             <design:MaterialLabel addStyleNames="{style.pitch}" ui:field="pitch"></design:MaterialLabel>
+            <design:MaterialPanel padding="5" fontSize="0.9em" layoutPosition="ABSOLUTE" bottom="0" left="5" right="5" ui:field="actions">
+                <design:MaterialLabel float="RIGHT" ui:field="details"></design:MaterialLabel>
+            </design:MaterialPanel>
         </design:MaterialCardContent>
-        <design:MaterialCardAction fontSize="0.8em" padding="10" ui:field="actions">
-            <design:MaterialLabel float="RIGHT" ui:field="details"></design:MaterialLabel>
-        </design:MaterialCardAction>
+        <design:MaterialCardReveal padding="5">
+            <design:MaterialCardTitle text="Description" truncate="true" padding="5" fontSize="1.2em" iconType="CLOSE" iconPosition="RIGHT" textColor="BLACK" addStyleNames="{style.title}"/>
+            <design:MaterialLabel fontSize="1em" addStyleNames="{style.descriptionFull}" ui:field="descriptionFull"></design:MaterialLabel>
+        </design:MaterialCardReveal>
     </design:MaterialCard>
 <!--
     <design:MaterialPanel height="6em" backgroundColor="WHITE" padding="0" margin="0" shadow="1">

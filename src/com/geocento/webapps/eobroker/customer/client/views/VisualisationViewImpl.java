@@ -333,6 +333,7 @@ public class VisualisationViewImpl extends Composite implements VisualisationVie
         MaterialLink materialLink = new MaterialLink();
         materialLink.setIconType(IconType.CLOUD_CIRCLE);
         materialLink.setText(datasetAccess.getTitle());
+        materialLink.setTextColor(Color.BLACK);
         materialLink.setTruncate(true);
         dataAccessList.add(materialLink);
         materialLink.addClickHandler(event -> presenter.datasetAccessSelected(datasetAccess));

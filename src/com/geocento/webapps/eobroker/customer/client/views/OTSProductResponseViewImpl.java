@@ -15,6 +15,9 @@ import com.geocento.webapps.eobroker.common.shared.entities.requests.Request;
 import com.geocento.webapps.eobroker.customer.client.ClientFactoryImpl;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.events.ChangeStatus;
+import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
+import com.geocento.webapps.eobroker.customer.client.places.PlaceHistoryHelper;
+import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
 import com.geocento.webapps.eobroker.customer.shared.ProductDatasetDTO;
 import com.geocento.webapps.eobroker.customer.shared.requests.*;
 import com.google.gwt.core.client.Callback;
@@ -30,6 +33,7 @@ import com.google.gwt.user.client.ui.*;
 import gwt.material.design.addins.client.bubble.MaterialBubble;
 import gwt.material.design.addins.client.rating.MaterialRating;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.*;
 
@@ -88,6 +92,8 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     MaterialLabel messagesComment;
     @UiField
     MaterialLabelIcon company;
+    @UiField
+    MaterialNavBar navigation;
 
     private ClientFactoryImpl clientFactory;
 
@@ -248,12 +254,16 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
     public void displayProductResponse(OTSProductResponseDTO otsProductResponseDTO) {
         this.requestDescription.clear();
         ProductDatasetDTO productDataset = otsProductResponseDTO.getProductDataset();
+        CompanyDTO companyDTO = productDataset.getCompany();
+        navigation.clear();
+        navigation.setBackgroundColor(CategoryUtils.getColor(Category.productdatasets));
+        addBreadcrumb(companyDTO);
+        addBreadcrumb(otsProductResponseDTO.getProduct());
         title.setText("Off the shelf product request '" + productDataset.getName() + "'");
         image.setImageUrl(productDataset.getImageUrl());
-        description.setText("Off the shelf product '" + otsProductResponseDTO.getId() + "' " +
+        description.setText("Off the shelf product request #" + otsProductResponseDTO.getId() + " " +
                 "requested on " + otsProductResponseDTO.getCreationTime().toString() +
                 " for " + otsProductResponseDTO.getSelection().split(OTSProductRequest.selectionSeparator).length + " products");
-        CompanyDTO companyDTO = productDataset.getCompany();
         company.setImageUrl(companyDTO.getIconURL());
         company.setText("From company " + companyDTO.getName());
         setStatus(otsProductResponseDTO.getStatus());
@@ -286,6 +296,33 @@ public class OTSProductResponseViewImpl extends Composite implements OTSProductR
         // now add the responses
         displayResponse(otsProductResponseDTO.getResponse());
         displayMessages(otsProductResponseDTO.getMessages());
+    }
+
+    private void addBreadcrumb(Object dto) {
+        navigation.setVisible(true);
+        MaterialBreadcrumb materialBreadcrumb = new MaterialBreadcrumb();
+        Color color = Color.WHITE; //CategoryUtils.getColor(category);
+        materialBreadcrumb.setTextColor(color);
+        materialBreadcrumb.setIconColor(color);
+        String token = "";
+        IconType iconType = IconType.ERROR;
+        String text = "Unknown";
+        String id = null;
+        if(dto instanceof CompanyDTO) {
+            token = FullViewPlace.TOKENS.companyid.toString();
+            iconType = CategoryUtils.getIconType(Category.companies);
+            text = ((CompanyDTO) dto).getName();
+            id = ((CompanyDTO) dto).getId() + "";
+        } else if(dto instanceof ProductDTO) {
+            token = FullViewPlace.TOKENS.productid.toString();
+            iconType = CategoryUtils.getIconType(Category.products);
+            text = ((ProductDTO) dto).getName();
+            id = ((ProductDTO) dto).getId() + "";
+        }
+        materialBreadcrumb.setIconType(iconType);
+        materialBreadcrumb.setText(text);
+        materialBreadcrumb.setHref("#" + PlaceHistoryHelper.convertPlace(new FullViewPlace(token + "=" + id)));
+        navigation.add(materialBreadcrumb);
     }
 
 }

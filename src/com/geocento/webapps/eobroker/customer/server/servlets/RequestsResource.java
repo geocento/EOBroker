@@ -497,6 +497,7 @@ public class RequestsResource implements RequestsService {
             OTSProductResponseDTO otsProductResponseDTO = new OTSProductResponseDTO();
             otsProductResponseDTO.setId(otsProductRequest.getId());
             otsProductResponseDTO.setProductDataset(createProductDatasetDTO(otsProductRequest.getProductDataset()));
+            otsProductResponseDTO.setProduct(ProductHelper.createProductDTO(otsProductRequest.getProductDataset().getProduct()));
             otsProductResponseDTO.setAoIWKT(otsProductRequest.getAoIWKT());
             otsProductResponseDTO.setFormValues(otsProductRequest.getFormValues());
             otsProductResponseDTO.setSelection(otsProductRequest.getSelection());

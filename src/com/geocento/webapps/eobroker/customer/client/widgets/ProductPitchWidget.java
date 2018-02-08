@@ -6,7 +6,6 @@ import com.geocento.webapps.eobroker.common.shared.entities.Category;
 import com.geocento.webapps.eobroker.customer.client.Customer;
 import com.geocento.webapps.eobroker.customer.client.places.FullViewPlace;
 import com.geocento.webapps.eobroker.customer.shared.ProductDTO;
-import com.geocento.webapps.eobroker.customer.shared.ProductSoftwareDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -18,12 +17,12 @@ import gwt.material.design.client.ui.MaterialLabel;
 /**
  * Created by thomas on 09/06/2016.
  */
-public class ProductSoftwareWidget extends Composite {
+public class ProductPitchWidget extends Composite {
 
-    interface ProductSoftwareUiBinder extends UiBinder<Widget, ProductSoftwareWidget> {
+    interface ProductPitchUiBinder extends UiBinder<Widget, ProductPitchWidget> {
     }
 
-    private static ProductSoftwareUiBinder ourUiBinder = GWT.create(ProductSoftwareUiBinder.class);
+    private static ProductPitchUiBinder ourUiBinder = GWT.create(ProductPitchUiBinder.class);
 
     @UiField
     MaterialLabel title;
@@ -32,21 +31,19 @@ public class ProductSoftwareWidget extends Composite {
     @UiField
     MaterialImageLoading imagePanel;
 
-    public ProductSoftwareWidget(ProductSoftwareDTO softwareDTO) {
+    public ProductPitchWidget(ProductDTO productDTO, String pitch) {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
         ((MaterialCard) getWidget()).setBackgroundColor(CategoryUtils.getColor(Category.software));
 
-        ProductDTO product = softwareDTO.getProduct();
+        FullViewPlace productPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + productDTO.getId());
 
-        FullViewPlace productPlace = new FullViewPlace(FullViewPlace.TOKENS.productid.toString() + "=" + product.getId());
-
-        imagePanel.setImageUrl(product.getImageUrl());
+        imagePanel.setImageUrl(productDTO.getImageUrl());
         imagePanel.addClickHandler(event -> Customer.clientFactory.getPlaceController().goTo(productPlace));
 
-        title.setText(product.getName());
-        pitchDescription.setText(softwareDTO.getPitch());
+        title.setText(productDTO.getName());
+        pitchDescription.setText(pitch);
     }
 
 }

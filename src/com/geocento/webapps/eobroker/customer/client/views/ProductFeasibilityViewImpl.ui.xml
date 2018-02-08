@@ -148,8 +148,6 @@
                                     <m:MaterialChip fontSize="0.8em" addStyleNames="{style.supplier}" ui:field="supplier"></m:MaterialChip>
                                 </m:MaterialPanel>
                             </m:MaterialPanel>
-                            <m:MaterialDropDown activator="service" alignment="RIGHT" belowOrigin="true" constrainWidth="false" addStyleNames="{style.servicesPanel}" ui:field="serviceDropdown">
-                            </m:MaterialDropDown>
                         </sideprofile:MaterialSideProfile>
                         <m:MaterialTab ui:field="tab" backgroundColor="TEAL_LIGHTEN_2">
                             <m:MaterialTabItem waves="YELLOW" grid="s6">
@@ -182,9 +180,9 @@
                             </m:MaterialRow>
                         </m:MaterialColumn>
                         <m:MaterialColumn m:id="results" grid="s12" padding="0">
-                            <widgets:LoadingWidget addStyleNames="{style.loadingResults}" ui:field="loadingResults"></widgets:LoadingWidget>
-                            <m:MaterialLabel padding="10" ui:field="message"></m:MaterialLabel>
-                            <g:HTMLPanel ui:field="results">
+                            <widgets:LoadingWidget visible="false" addStyleNames="{style.loadingResults}" ui:field="loadingResults"></widgets:LoadingWidget>
+                            <m:MaterialLabel padding="10" text="No results yet... please start a search." ui:field="message"></m:MaterialLabel>
+                            <g:HTMLPanel visible="false" ui:field="results">
                                 <m:MaterialCollapsible margin="0" backgroundColor="WHITE" shadow="0" accordion="true">
                                     <m:MaterialCollapsibleItem ui:field="feasibilityPanel">
                                         <m:MaterialCollapsibleHeader backgroundColor="WHITE">
@@ -250,5 +248,7 @@
                 </g:HTMLPanel>
             </g:center>
         </g:DockLayoutPanel>
+        <m:MaterialDropDown activator="service" alignment="RIGHT" belowOrigin="true" constrainWidth="false" addStyleNames="{style.servicesPanel}" ui:field="serviceDropdown">
+        </m:MaterialDropDown>
     </m:MaterialPanel>
 </ui:UiBinder>

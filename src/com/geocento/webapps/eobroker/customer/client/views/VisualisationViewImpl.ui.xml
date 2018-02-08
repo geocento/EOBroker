@@ -140,18 +140,22 @@
                                     <design:MaterialLink iconType="LAYERS" overflow="HIDDEN" truncate="true" ui:field="layerName"></design:MaterialLink>
                                 </design:MaterialColumn>
                                 <design:MaterialColumn grid="s12">
-                                    <design:MaterialLabel text="Opacity" marginRight="20" display="INLINE_BLOCK"></design:MaterialLabel>
-                                    <design:MaterialRange min="0" max="100" display="INLINE_BLOCK" width="200px" ui:field="opacity"></design:MaterialRange>
+                                    <design:MaterialPanel display="FLEX">
+                                        <design:MaterialLabel text="Opacity" marginRight="20" lineHeight="64"></design:MaterialLabel>
+                                        <design:MaterialRange flex="AUTO" min="0" max="100" width="200px" ui:field="opacity"></design:MaterialRange>
+                                    </design:MaterialPanel>
                                 </design:MaterialColumn>
                                 <design:MaterialColumn grid="s12">
-                                    <design:MaterialLabel text="Get feature information"></design:MaterialLabel>
-                                    <design:MaterialSwitch onLabel="ON" offLabel="OFF" marginLeft="20" ui:field="getFeature"></design:MaterialSwitch>
+                                    <design:MaterialPanel display="FLEX">
+                                        <design:MaterialLabel flex="AUTO" text="Get feature information"></design:MaterialLabel>
+                                        <design:MaterialSwitch onLabel="ON" offLabel="OFF" marginLeft="20" ui:field="getFeature"></design:MaterialSwitch>
+                                    </design:MaterialPanel>
                                 </design:MaterialColumn>
                             </design:MaterialRow>
                         </design:MaterialPanel>
                     </design:MaterialPanel>
                     <design:MaterialPanel height="40px" padding="5" backgroundColor="WHITE">
-                        <design:MaterialLink text="" fontSize="1em" activates="datasets" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="BLUE_GREY" truncate="true" addStyleNames="{style.selectedDataset}" ui:field="moreDatasets"/>
+                        <design:MaterialLink text="" fontSize="1em" activates="datasets" iconType="ARROW_DROP_DOWN" iconPosition="RIGHT" textColor="BLACK" truncate="true" addStyleNames="{style.selectedDataset}" ui:field="moreDatasets"/>
                         <design:MaterialDropDown activator="datasets" addStyleNames="{style.dataAccessList}" ui:field="dataAccessList">
                         </design:MaterialDropDown>
                     </design:MaterialPanel>
@@ -163,7 +167,7 @@
                 </g:HTMLPanel>
             </g:center>
             <g:south size="120">
-                <design:MaterialPanel ui:field="featureInfo"></design:MaterialPanel>
+                <design:MaterialPanel backgroundColor="WHITE" padding="10" ui:field="featureInfo"></design:MaterialPanel>
             </g:south>
         </g:DockLayoutPanel>
     </design:MaterialPanel>
