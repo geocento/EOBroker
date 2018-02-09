@@ -187,6 +187,11 @@ public interface AssetsService extends DirectRestService {
     AdminStatisticsDTO getAdminStatistics() throws RequestException;
 
     @GET
+    @Path("/reindex/")
+    @Produces("application/json")
+    void reindexSearches() throws RequestException;
+
+    @GET
     @Path("/logs/")
     @Produces("application/json")
     LogsDTO getLogs() throws RequestException;

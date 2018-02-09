@@ -20,6 +20,7 @@ public class AdminStatisticsDTO {
 
     HashMap<String, String> productsStatistics;
     HashMap<String, Double> productFollowers;
+    private HashMap<String, String> platformStatistics;
 
     public AdminStatisticsDTO() {
     }
@@ -94,5 +95,13 @@ public class AdminStatisticsDTO {
 
     public void setProductFollowers(HashMap<String, Double> productFollowers) {
         this.productFollowers = productFollowers;
+    }
+
+    public HashMap<String, String> getPlatformStatistics() {
+        return platformStatistics;
+    }
+
+    public void setPlatformStatistics(HashMap<String, String> platformStatistics) {
+        this.platformStatistics = platformStatistics;
     }
 }

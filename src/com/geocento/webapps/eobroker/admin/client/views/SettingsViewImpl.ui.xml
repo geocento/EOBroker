@@ -97,8 +97,8 @@
             <design:MaterialLabel margin="20" textColor="BLACK" text="These layers are provided to all users as background context layers"></design:MaterialLabel>
         </design:MaterialPanel>
 
-        <g:HTMLPanel>
+        <design:MaterialPanel marginBottom="30">
             <design:MaterialButton text="Submit" ui:field="submit"/>
-        </g:HTMLPanel>
+        </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>

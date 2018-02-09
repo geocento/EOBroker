@@ -6,6 +6,7 @@ import com.geocento.webapps.eobroker.admin.shared.dtos.STATS_GRAPHS;
 import com.geocento.webapps.eobroker.common.client.widgets.charts.ChartWidget;
 import com.geocento.webapps.eobroker.common.client.widgets.charts.StatsViewer;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,7 +23,9 @@ import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.googlecode.gwt.charts.client.options.PieSliceText;
 import com.googlecode.gwt.charts.client.table.Table;
 import com.googlecode.gwt.charts.client.table.TableOptions;
+import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialRow;
 
 import java.util.HashMap;
 
@@ -62,6 +65,16 @@ public class StatsViewImpl extends Composite implements StatsView {
     MaterialPanel productFollowersStats;
     @UiField
     StatsViewer productGraphStats;
+    @UiField
+    MaterialButton platformReindex;
+    @UiField
+    MaterialRow platformCharts;
+    @UiField
+    MaterialPanel platformStats;
+    @UiField
+    MaterialPanel textSearch;
+    @UiField
+    StatsViewer platformGraphStats;
 
     private Presenter presenter;
 
@@ -102,10 +115,16 @@ public class StatsViewImpl extends Composite implements StatsView {
                 new String[]{"Product category page views",
                         "Challenge page views"});
 
+        platformGraphStats.setCategories(new String[]{
+                        STATS_GRAPHS.cpuView.toString()
+                },
+                new String[]{"CPU usage"});
+
         // default duration selection to -3days
         userGraphStats.setDuration("-3days");
         supplierGraphStats.setDuration("-3days");
         productGraphStats.setDuration("-3days");
+        platformGraphStats.setDuration("-3days");
 
     }
 
@@ -204,6 +223,19 @@ public class StatsViewImpl extends Composite implements StatsView {
                     followersStats.draw(dataTable, options);
                     productFollowersStats.add(followersStats);
                 }
+
+                // add plaform stats
+                platformStats.clear();
+                {
+                    HashMap<String, String> platformStatistics = adminStatisticsDTO.getPlatformStatistics();
+                    Table chart = new Table();
+                    chart.setWidth("100%");
+                    platformStats.add(chart);
+                    DataTable dataTable = ChartWidget.createDataTableString(platformStatistics, "Platform statistic", "Value");
+                    TableOptions options = TableOptions.create();
+                    options.setAlternatingRowStyle(true);
+                    chart.draw(dataTable, options);
+                }
             }});
     }
 
@@ -283,6 +315,11 @@ public class StatsViewImpl extends Composite implements StatsView {
     }
 
     @Override
+    public HasClickHandlers getPlatformReindex() {
+        return platformReindex;
+    }
+
+    @Override
     public HasValueChangeHandlers<String> getProductsGraphStatsType() {
         return productGraphStats.getCategorySelection();
     }
@@ -315,6 +352,41 @@ public class StatsViewImpl extends Composite implements StatsView {
     @Override
     public void setProductsStatsGraphImage(String url) {
         productGraphStats.setGraphImage(url);
+    }
+
+    @Override
+    public HasValueChangeHandlers<String> getPlatformGraphStatsType() {
+        return platformGraphStats.getCategorySelection();
+    }
+
+    @Override
+    public HasValueChangeHandlers<String> getPlatformGraphStatsDuration() {
+        return platformGraphStats.getDurationSelection();
+    }
+
+    @Override
+    public String getPlatformStatsGraphSelection() {
+        return platformGraphStats.getCategorySelectionValue();
+    }
+
+    @Override
+    public int getPlatformStatsGraphWidthPx() {
+        return platformGraphStats.getGraphWidth();
+    }
+
+    @Override
+    public int getPlatformStatsGrapheightPx() {
+        return platformGraphStats.getGraphHeight();
+    }
+
+    @Override
+    public String getPlatformStatsGraphDateOption() {
+        return platformGraphStats.getDurationSelectionValue();
+    }
+
+    @Override
+    public void setPlatformStatsGraphImage(String url) {
+        platformGraphStats.setGraphImage(url);
     }
 
     @Override

@@ -60,6 +60,7 @@ public class StatsActivity extends TemplateActivity implements StatsView.Present
                     updateUserGraphStats();
                     updateSupplierGraphStats();
                     updateProductsGraphStats();
+                    updatePlatformGraphStats();
                 }
 
             }).call(ServicesUtil.assetsService).getAdminStatistics();
@@ -81,6 +82,32 @@ public class StatsActivity extends TemplateActivity implements StatsView.Present
         handlers.add(statsView.getProductsGraphStatsType().addValueChangeHandler((ValueChangeHandler) event -> updateProductsGraphStats()));
         handlers.add(statsView.getProductsGraphStatsDuration().addValueChangeHandler((ValueChangeHandler) event -> updateProductsGraphStats()));
 
+        handlers.add(statsView.getPlatformGraphStatsType().addValueChangeHandler((ValueChangeHandler) event -> updatePlatformGraphStats()));
+        handlers.add(statsView.getPlatformGraphStatsDuration().addValueChangeHandler((ValueChangeHandler) event -> updatePlatformGraphStats()));
+
+        handlers.add(statsView.getPlatformReindex().addClickHandler(event -> reindexSearches()));
+
+    }
+
+    private void reindexSearches() {
+        displayLoading("Reindexing searches...");
+        try {
+            REST.withCallback(new MethodCallback<Void>() {
+                @Override
+                public void onFailure(Method method, Throwable exception) {
+                    hideLoading();
+                    displayError(method.getResponse().getText());
+                }
+
+                @Override
+                public void onSuccess(Method method, Void response) {
+                    hideLoading();
+                    displaySuccess("Reindexing successful");
+                }
+            }).call(ServicesUtil.assetsService).reindexSearches();
+        } catch (Exception e) {
+
+        }
     }
 
     private void updateUserGraphStats() {
@@ -107,6 +134,15 @@ public class StatsActivity extends TemplateActivity implements StatsView.Present
                 "&width=" + statsView.getProductsStatsGraphWidthPx() +
                 "&height=" + statsView.getProductsStatsGrapheightPx() +
                 "&dateOption=" + statsView.getProductsStatsGraphDateOption()
+        );
+    }
+
+    private void updatePlatformGraphStats() {
+        statsView.setPlatformStatsGraphImage(GWT.getModuleBaseURL() + "api/stats/view/?" +
+                "statsType=" + statsView.getPlatformStatsGraphSelection() +
+                "&width=" + statsView.getPlatformStatsGraphWidthPx() +
+                "&height=" + statsView.getPlatformStatsGrapheightPx() +
+                "&dateOption=" + statsView.getPlatformStatsGraphDateOption()
         );
     }
 

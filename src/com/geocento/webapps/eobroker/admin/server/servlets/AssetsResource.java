@@ -17,6 +17,7 @@ import com.geocento.webapps.eobroker.common.shared.entities.notifications.AdminN
 import com.geocento.webapps.eobroker.common.shared.entities.utils.CompanyHelper;
 import com.geocento.webapps.eobroker.common.shared.utils.ListUtil;
 import com.google.gwt.http.client.RequestException;
+import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
@@ -29,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Path("/")
@@ -39,6 +41,8 @@ public class AssetsResource implements AssetsService {
     // assumes service is not a singleton
     @Context
     HttpServletRequest request;
+
+    static private DecimalFormat fileSizeGB = new DecimalFormat(".##");
 
     public AssetsResource() {
         logger.info("Starting service...");
@@ -1289,11 +1293,64 @@ public class AssetsResource implements AssetsService {
                 }
             }
             adminStatisticsDTO.setProductFollowers(productFollowers);
+
+            LinkedHashMap<String, String> platformStats = new LinkedHashMap<String, String>();
+            platformStats.put("Total free disk space available", fileSizeGB.format(FileSystemUtils.freeSpaceKb() / (1024.0 * 1024.0)) + " GB");
+            platformStats.put("Data directory size", (FileUtils.sizeOfDirectory(ServerUtil.getDataFile("")) / (1024.0 * 1024.0 * 1024.0)) + " GB");
+            adminStatisticsDTO.setPlatformStatistics(platformStats);
             
             return adminStatisticsDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error getting statistics");
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void reindexSearches() throws RequestException {
+        String userName = UserUtils.verifyUserAdmin(request);
+        EntityManager em = EMF.get().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // update the keyphrases
+            //  start with products
+            logger.info("Reindexing searches...");
+            {
+                TypedQuery<Product> query = em.createQuery("select p from Product p", Product.class);
+                for (Product product : query.getResultList()) {
+                    DBHelper.updateProductTSV(em, product);
+                }
+            }
+            {
+                TypedQuery<ProductService> query = em.createQuery("select p from ProductService p", ProductService.class);
+                for (ProductService productService : query.getResultList()) {
+                    DBHelper.updateProductServiceTSV(em, productService);
+                }
+            }
+            {
+                TypedQuery<ProductDataset> query = em.createQuery("select p from ProductDataset p", ProductDataset.class);
+                for (ProductDataset productDataset : query.getResultList()) {
+                    DBHelper.updateProductDatasetTSV(em, productDataset);
+                }
+            }
+            {
+                TypedQuery<Software> query = em.createQuery("select s from Software s", Software.class);
+                for (Software software : query.getResultList()) {
+                    DBHelper.updateSoftwareTSV(em, software);
+                }
+            }
+            {
+                TypedQuery<Project> query = em.createQuery("select p from Project p", Project.class);
+                for (Project project : query.getResultList()) {
+                    DBHelper.updateProjectTSV(em, project);
+                }
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RequestException(e instanceof RequestException ? e.getMessage() : "Error reindexing searches");
         } finally {
             em.close();
         }

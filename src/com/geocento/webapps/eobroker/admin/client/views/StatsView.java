@@ -1,6 +1,7 @@
 package com.geocento.webapps.eobroker.admin.client.views;
 
 import com.geocento.webapps.eobroker.admin.shared.dtos.AdminStatisticsDTO;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -22,6 +23,20 @@ public interface StatsView extends IsWidget {
     String getProductsStatsGraphDateOption();
 
     void setProductsStatsGraphImage(String url);
+
+    HasValueChangeHandlers<String> getPlatformGraphStatsType();
+
+    HasValueChangeHandlers<String> getPlatformGraphStatsDuration();
+
+    String getPlatformStatsGraphSelection();
+
+    int getPlatformStatsGraphWidthPx();
+
+    int getPlatformStatsGrapheightPx();
+
+    String getPlatformStatsGraphDateOption();
+
+    void setPlatformStatsGraphImage(String url);
 
     void setPresenter(Presenter presenter);
 
@@ -56,6 +71,8 @@ public interface StatsView extends IsWidget {
     String getSupplierStatsGraphDateOption();
 
     void setSupplierStatsGraphImage(String url);
+
+    HasClickHandlers getPlatformReindex();
 
     public interface Presenter {
     }

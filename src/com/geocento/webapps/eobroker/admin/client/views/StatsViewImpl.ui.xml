@@ -76,6 +76,22 @@
                     <charts:StatsViewer ui:field="productGraphStats"></charts:StatsViewer>
                 </design:MaterialColumn>
             </design:MaterialRow>
+            <design:MaterialLabel text="Platform status" addStyleNames="{style.section}"></design:MaterialLabel>
+            <design:MaterialRow addStyleNames="{style.charts}" ui:field="platformCharts">
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="platformStats">
+                        <cwidgets:MaterialImageLoading/>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l6">
+                    <design:MaterialPanel marginLeft="10" ui:field="textSearch">
+                        <design:MaterialButton text="Re-index items" ui:field="platformReindex"></design:MaterialButton>
+                    </design:MaterialPanel>
+                </design:MaterialColumn>
+                <design:MaterialColumn grid="s12 m12 l12">
+                    <charts:StatsViewer ui:field="platformGraphStats"></charts:StatsViewer>
+                </design:MaterialColumn>
+            </design:MaterialRow>
         </design:MaterialPanel>
     </views:TemplateView>
 </ui:UiBinder>
