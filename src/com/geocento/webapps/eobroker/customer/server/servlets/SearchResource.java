@@ -113,9 +113,10 @@ public class SearchResource implements SearchService {
             try {
                 // look in the generic view table
                 // change the last word so that it allows for partial match
+                // sets mormalizer to 0 to not be influenced by the number of words in the tsvname
                 Query q = em.createNativeQuery("SELECT id, " +
                         "category, " +
-                        "ts_rank(tsvname, keywords, 8) AS rank, " +
+                        "ts_rank(tsvname, keywords, 0) AS rank, " +
                         "name " +
                         //"additional" +
                         "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
@@ -179,8 +180,9 @@ public class SearchResource implements SearchService {
         // change the last word so that it allows for partial match
         EntityManager em = EMF.get().createEntityManager();
         try {
+            // sets mormalizer to 0 to not be influenced by the number of words in the tsvname
             Query q = em.createNativeQuery("SELECT id, " +
-                    "ts_rank(tsvname, keywords, 8) AS rank, " +
+                    "ts_rank(tsvname, keywords, 0) AS rank, " +
                     "name " +
                     //"additional" +
                     "          FROM " + categoryTable + ", to_tsquery('" + keywords + "') AS keywords\n" +
@@ -312,7 +314,8 @@ public class SearchResource implements SearchService {
         EntityManager em = EMF.get().createEntityManager();
         try {
             // change the last word so that it allows for partial match
-            Query q = em.createNativeQuery("SELECT id, category, ts_rank(tsvname, keywords, 8) AS rank\n" +
+            // sets mormalizer to 0 to not be influenced by the number of words in the tsvname
+            Query q = em.createNativeQuery("SELECT id, category, ts_rank(tsvname, keywords, 0) AS rank\n" +
                     "          FROM textsearch, to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsvname @@ keywords\n" +
                     "          ORDER BY rank DESC\n" +
@@ -417,7 +420,8 @@ public class SearchResource implements SearchService {
 */
             String keywords = DBHelper.generateKeywords(textFilter);
             // change the last word so that it allows for partial match
-            String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 8) AS rank\n" +
+            // sets mormalizer to 16 to not be too influenced (log value) by the number of words in the tsvname
+            String sqlStatement = "SELECT id, ts_rank(tsv, keywords, 16) AS rank\n" +
                     "          FROM datasetprovider, to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsv @@ keywords\n" +
                     "          ORDER BY rank DESC;";
@@ -497,7 +501,8 @@ public class SearchResource implements SearchService {
         if(textFilter != null && textFilter.length() > 0) {
             String keywords = DBHelper.generateKeywords(textFilter);
             // change the last word so that it allows for partial match
-            sqlStatement = "SELECT t.id, ts_rank(tsv, keywords, 8) AS rank\n" +
+            // sets mormalizer to 16 to not be too influenced (log value) by the number of words in the tsvname
+            sqlStatement = "SELECT t.id, ts_rank(tsv, keywords, 16) AS rank\n" +
                     "          FROM " + tableName + " t, to_tsquery('" + keywords + "') AS keywords\n" +
                     (joinStatement == null ? "" : " " + joinStatement) +
                     "          WHERE tsv @@ keywords\n" +

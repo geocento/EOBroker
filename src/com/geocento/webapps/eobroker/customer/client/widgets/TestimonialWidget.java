@@ -1,9 +1,12 @@
 package com.geocento.webapps.eobroker.customer.client.widgets;
 
+import com.geocento.webapps.eobroker.common.client.utils.DateUtil;
 import com.geocento.webapps.eobroker.common.client.utils.DateUtils;
+import com.geocento.webapps.eobroker.common.client.utils.StringUtils;
 import com.geocento.webapps.eobroker.common.client.widgets.MaterialLabelIcon;
 import com.geocento.webapps.eobroker.common.client.widgets.UserWidget;
 import com.geocento.webapps.eobroker.customer.shared.TestimonialDTO;
+import com.geocento.webapps.eobroker.customer.shared.UserDTO;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -44,9 +47,16 @@ public class TestimonialWidget extends Composite {
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        if(testimonialDTO.getFromUser() != null) {
-            user.setUser(testimonialDTO.getFromUser().getName());
-            userName.setText(testimonialDTO.getFromUser() == null ? "" : "From user '" + testimonialDTO.getFromUser().getName() + "'");
+        UserDTO testimonialUser = testimonialDTO.getFromUser();
+        if(testimonialUser != null) {
+            user.setUser(testimonialUser.getName());
+            if(!StringUtils.isEmpty(testimonialUser.getIconURL())) {
+                user.setUserImage(testimonialUser.getIconURL());
+            }
+            user.setUserDescription("User " + testimonialUser.getFullName() + " " +
+                    "from company '" + testimonialUser.getCompanyDTO().getName() + "', " +
+                    "registered since " + DateUtil.displayDateOnly(testimonialUser.getCreationDate()));
+            userName.setText("From user '" + testimonialUser.getFullName() + "'");
         } else {
             displayUser(false);
         }

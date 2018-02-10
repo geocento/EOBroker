@@ -255,8 +255,8 @@ public class ProductFeasibilityViewImpl extends Composite implements ProductFeas
         SubrowTableBuilder tableBuilder = new SubrowTableBuilder<ProductCandidate>(resultsTable) {
 
             @Override
-            protected String getInformation(ProductCandidate coverageFeature) {
-                return coverageFeature.getDescription() == null ? "No information" : coverageFeature.getDescription();
+            protected String getInformation(ProductCandidate productCandidate) {
+                return productCandidate.getDescription() == null ? "No information" : productCandidate.getDescription();
             }
 
         };

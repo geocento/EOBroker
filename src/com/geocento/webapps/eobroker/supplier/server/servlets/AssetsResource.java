@@ -115,7 +115,7 @@ public class AssetsResource implements AssetsService {
             List<Category> categories = ListUtil.toList(new Category[] {Category.productdatasets, Category.productservices, Category.software});
             Query q = em.createNativeQuery("SELECT id, " +
                     "category, " +
-                    "ts_rank(tsvname, keywords, 8) AS rank, " +
+                    "ts_rank(tsvname, keywords, 0) AS rank, " +
                     "name " +
                     "          FROM textsearchofferings, to_tsquery('" + keywords + "') AS keywords\n" +
                     "          WHERE tsvname @@ keywords\n" +
@@ -600,7 +600,8 @@ public class AssetsResource implements AssetsService {
     public List<ProductDTO> findProducts(String textFilter) {
         String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
-        String sqlStatement = "SELECT id, \"name\", imageurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+        // sets mormalizer to 0 to not be influenced by the number of words in the tsvname
+        String sqlStatement = "SELECT id, \"name\", imageurl, ts_rank(tsvname, keywords, 0) AS rank, id\n" +
                 "          FROM product, to_tsquery('" + keywords + "') AS keywords\n" +
                 "          WHERE tsvname @@ keywords\n" +
                 "          ORDER BY rank\n" +
@@ -623,7 +624,8 @@ public class AssetsResource implements AssetsService {
     public List<CompanyDTO> findCompanies(String textFilter) {
         String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
-        String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+        // sets mormalizer to 0 to not be influenced by the number of words in the tsvname
+        String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 0) AS rank, id\n" +
                 "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +
                 "          WHERE tsvname @@ keywords\n" +
                 "          ORDER BY rank\n" +

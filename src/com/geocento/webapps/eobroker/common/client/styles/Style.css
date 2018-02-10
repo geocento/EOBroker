@@ -1,4 +1,4 @@
-@external highlighted;
+@external highlighted, dropdown-content;
 
 .highlighted {
      background: #ccc;
@@ -24,4 +24,8 @@
 
 .slimScrollbar::-webkit-scrollbar-thumb {
     background-color: #aaa;
+}
+
+.dropdown-content {
+    z-index: 996 !important;
 }

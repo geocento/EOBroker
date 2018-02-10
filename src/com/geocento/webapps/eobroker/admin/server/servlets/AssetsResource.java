@@ -1146,7 +1146,8 @@ public class AssetsResource implements AssetsService {
 */
         String keywords = DBHelper.generateKeywords(textFilter);
         // change the last word so that it allows for partial match
-        String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 8) AS rank, id\n" +
+        // sets mormalizer to 0 to not be influenced by the number of words in the tsvname
+        String sqlStatement = "SELECT id, \"name\", iconurl, ts_rank(tsvname, keywords, 0) AS rank, id\n" +
                 "          FROM company, to_tsquery('" + keywords + "') AS keywords\n" +
                 "          WHERE tsvname @@ keywords\n" +
                 "          ORDER BY rank\n" +
@@ -1295,10 +1296,13 @@ public class AssetsResource implements AssetsService {
             adminStatisticsDTO.setProductFollowers(productFollowers);
 
             LinkedHashMap<String, String> platformStats = new LinkedHashMap<String, String>();
+            // TODO - change to scan all available disks
             platformStats.put("Total free disk space available", fileSizeGB.format(FileSystemUtils.freeSpaceKb() / (1024.0 * 1024.0)) + " GB");
-            platformStats.put("Data directory size", (FileUtils.sizeOfDirectory(ServerUtil.getDataFile("")) / (1024.0 * 1024.0 * 1024.0)) + " GB");
+            platformStats.put("Data directory size", fileSizeGB.format(FileUtils.sizeOfDirectory(ServerUtil.getDataFile("")) / (1024.0 * 1024.0 * 1024.0)) + " GB");
+            // TODO - add size of tables
+            // TODO - add geoserver information
+            // TODO - add graphite information
             adminStatisticsDTO.setPlatformStatistics(platformStats);
-            
             return adminStatisticsDTO;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

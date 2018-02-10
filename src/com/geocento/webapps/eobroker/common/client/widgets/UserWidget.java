@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.HasText;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.ui.html.Span;
 
 /**
@@ -32,11 +33,22 @@ public class UserWidget extends Span implements HasText {
         setBackgroundColor(colors[(Math.abs(userName.hashCode()) % colors.length)]);
     }
 
+    public void setUserImage(String userImageUrl) {
+        setText("");
+        getElement().getStyle().setProperty("background", "url(" + userImageUrl + ") no-repeat");
+        getElement().getStyle().setProperty("backgroundSize", "100% 100%");
+    }
+
     public void setSize(int size) {
         super.setFontSize(((int) size / 2) + "px");
         setWidth(size + "px");
         setHeight(size + "px");
         getElement().getStyle().setLineHeight(size, Style.Unit.PX);
+    }
+
+    public void setUserDescription(String description) {
+        setTooltip(description);
+        setTooltipPosition(Position.RIGHT);
     }
 
     @Override
