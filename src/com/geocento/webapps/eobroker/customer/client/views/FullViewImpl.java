@@ -1500,6 +1500,7 @@ public class FullViewImpl extends Composite implements FullView {
             label.setDisplay(Display.INLINE_BLOCK);
             materialPanel.add(label);
             MaterialLink addTestimonial = new MaterialLink("Add your own testimonial");
+            addTestimonial.setTextColor(Color.BLUE_GREY);
             addTestimonial.setPaddingLeft(10);
             addTestimonial.addClickHandler(new ClickHandler() {
                 @Override
@@ -1527,6 +1528,7 @@ public class FullViewImpl extends Composite implements FullView {
                     MaterialLink awardLabel = new MaterialLink(award);
                     awardLabel.setIconType(IconType.STAR);
                     awardLabel.setDisplay(Display.BLOCK);
+                    awardLabel.setTextColor(Color.BLUE_GREY);
                     awardLabel.setMarginTop(20);
                     materialPanel.add(awardLabel);
                 }

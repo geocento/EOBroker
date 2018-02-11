@@ -35,7 +35,7 @@ public class UserWidget extends Span implements HasText {
 
     public void setUserImage(String userImageUrl) {
         setText("");
-        getElement().getStyle().setProperty("background", "url(" + userImageUrl + ") no-repeat");
+        getElement().getStyle().setProperty("background", "url('" + userImageUrl + "') no-repeat");
         getElement().getStyle().setProperty("backgroundSize", "100% 100%");
     }
 

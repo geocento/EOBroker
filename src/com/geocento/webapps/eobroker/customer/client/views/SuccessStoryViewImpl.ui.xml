@@ -8,7 +8,7 @@
         .formPanel {
             max-width: 960px;
             margin: 0px auto;
-            padding: 10px 0px;
+            padding: 0px;
             background: white;
         }
 
@@ -36,7 +36,6 @@
         }
 
         .image {
-            margin: 10px;
         }
 
         .description {
@@ -89,18 +88,21 @@
 
     </ui:style>
     <g:HTMLPanel addStyleNames="{style.formPanel}">
-        <design:MaterialRow>
-            <design:MaterialColumn grid="s12 m6 l4">
+        <design:MaterialNavBar shadow="0" backgroundColor="AMBER" paddingLeft="30" textColor="WHITE" ui:field="navigation">
+        </design:MaterialNavBar>
+        <design:MaterialRow paddingTop="10" paddingBottom="10" marginBottom="0">
+            <design:MaterialColumn grid="s12 m6 l4" paddingRight="30">
                 <widgets:MaterialImageLoading addStyleNames="{style.image}" ui:field="iconUrl"></widgets:MaterialImageLoading>
             </design:MaterialColumn>
             <design:MaterialColumn grid="s12 m6 l8">
-                <design:MaterialLabel fontSize="2em" ui:field="title"></design:MaterialLabel>
-                <design:MaterialChip fontSize="1.2em" backgroundColor="AMBER" iconType="STAR" iconColor="WHITE" textColor="WHITE" text="Success story"></design:MaterialChip>
-                <design:MaterialPanel textAlign="LEFT" paddingLeft="30" fontSize="0.8em">
-                    <g:HTMLPanel addStyleNames="{style.items}">From company <widgets:MaterialLabelIcon imageHeight="30px" ui:field="company"></widgets:MaterialLabelIcon></g:HTMLPanel>
-                    <g:HTMLPanel addStyleNames="{style.items}">Client company <widgets:MaterialLabelIcon imageHeight="20px" ui:field="clientCompany"></widgets:MaterialLabelIcon></g:HTMLPanel>
-                    <g:HTMLPanel addStyleNames="{style.items}">Product category <widgets:MaterialLabelIcon imageHeight="20px" ui:field="productCategory"></widgets:MaterialLabelIcon></g:HTMLPanel>
-                    <g:HTMLPanel addStyleNames="{style.items}">When? <design:MaterialLink textColor="BLACK" ui:field="date"></design:MaterialLink></g:HTMLPanel>
+                <design:MaterialLabel fontSize="1.6em" ui:field="title"></design:MaterialLabel>
+                <design:MaterialPanel textAlign="LEFT" paddingLeft="10">
+                    <g:HTMLPanel addStyleNames="{style.items}">
+                        Client company <widgets:MaterialLabelIcon imageHeight="25px" ui:field="clientCompany"></widgets:MaterialLabelIcon>
+                        <design:MaterialIcon iconColor="GREEN" iconType="CHECK" tooltip="This success story has been endorsed by the customer" ui:field="endorsementsIcon"></design:MaterialIcon>
+                    </g:HTMLPanel>
+                    <design:MaterialLabel addStyleNames="{style.items}" ui:field="date"></design:MaterialLabel>
+                    <design:MaterialPanel paddingTop="30" textAlign="RIGHT" ui:field="actions"></design:MaterialPanel>
                 </design:MaterialPanel>
             </design:MaterialColumn>
         </design:MaterialRow>
@@ -109,9 +111,10 @@
 -->
         <design:MaterialPanel layoutPosition="RELATIVE">
             <design:MaterialPanel addStyleNames="{style.colorPanel}" ui:field="colorPanel"></design:MaterialPanel>
-            <design:MaterialPanel paddingTop="20">
+            <design:MaterialPanel>
                 <design:MaterialRow>
                     <design:MaterialColumn grid="s12">
+                        <design:MaterialLabel addStyleNames="{style.endorsements}" text="Full story"></design:MaterialLabel>
                         <g:HTMLPanel addStyleNames="{style.fullDescription}" ui:field="fullDescription"></g:HTMLPanel>
                     </design:MaterialColumn>
                     <design:MaterialColumn grid="s12">

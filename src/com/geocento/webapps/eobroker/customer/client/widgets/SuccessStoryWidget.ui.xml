@@ -48,10 +48,10 @@
         </design:MaterialCardImage>
         <design:MaterialCardContent padding="10" paddingTop="5" layoutPosition="RELATIVE" height="100%">
             <design:MaterialCardTitle iconType="MORE_VERT" iconPosition="RIGHT" truncate="true" fontSize="1.2em" addStyleNames="{style.title}" ui:field="title"></design:MaterialCardTitle>
-            <design:MaterialLabel fontSize="1em" addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
+            <design:MaterialLabel fontSize="1em" marginTop="5" addStyleNames="{style.description}" ui:field="description"></design:MaterialLabel>
             <design:MaterialPanel padding="5" layoutPosition="ABSOLUTE" bottom="0" left="5" right="5">
                 <design:MaterialLabel fontSize="0.8em" addStyleNames="{style.company}" ui:field="company"></design:MaterialLabel>
-                <design:MaterialLink text="MORE" textColor="BLACK" ui:field="info"></design:MaterialLink>
+                <design:MaterialLink text="VIEW" textColor="BLACK" fontSize="0.9em" ui:field="info"></design:MaterialLink>
             </design:MaterialPanel>
         </design:MaterialCardContent>
         <design:MaterialCardReveal padding="5">
